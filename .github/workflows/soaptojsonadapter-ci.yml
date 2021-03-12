@@ -14,9 +14,9 @@
 name: SoapToJSONAdapter CI
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
+      - renetnielsen/migrate-project-from-other-repo
     paths:
       - source/soap-to-json-adapter/**
       - .github/workflows/soap-to-json-adapter-cicd.yml
