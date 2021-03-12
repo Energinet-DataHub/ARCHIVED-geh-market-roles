@@ -16,7 +16,7 @@ name: Infrastructure CD
 on:
   push:
     branches:
-      - main
+      - renetnielsen/migrate-project-from-other-repo
     paths:
       - build/infrastructure/**
       - build/modules/**
