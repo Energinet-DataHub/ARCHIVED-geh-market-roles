@@ -28,7 +28,7 @@ env:
   SOLUTION_FILE_PATH: 'source/soap-to-json-adapter/Energinet.DataHub.SoapAdapter.sln'
   DOTNET_VERSION: '3.1'
   ORGANISATION_NAME: 'endk'
-  AZURE_FUNCTIONAPP_NAME: 'soaptojson'
+  AZURE_FUNCTIONAPP_NAME: 'soaptojsonadapter'
   PROJECT_NAME: marketroles
   REPOSITORY_NAME: Energinet-DataHub/geh-charges
 
