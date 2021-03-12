@@ -18,18 +18,14 @@ limitations under the License.
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <Nullable>enable</Nullable>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="NodaTime" Version="3.0.5" />
+      <ProjectReference Include="..\GreenEnergyHub.TestHelpers\GreenEnergyHub.TestHelpers.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\messaging\source\GreenEnergyHub.Messaging\GreenEnergyHub.Messaging.csproj" />
-      <ProjectReference Include="..\Energinet.DataHub.SoapAdapter.Domain\Energinet.DataHub.SoapAdapter.Domain.csproj" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
     </ItemGroup>
 
 </Project>

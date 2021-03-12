@@ -16,20 +16,20 @@ limitations under the License.
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
-        <Nullable>enable</Nullable>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+      <TargetFramework>netcoreapp3.1</TargetFramework>
+      <Nullable>enable</Nullable>
+      <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+      <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+      <GenerateDocumentationFile>true</GenerateDocumentationFile>
+      <RootNamespace>GreenEnergyHub.Messaging.Protobuf</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="NodaTime" Version="3.0.5" />
+      <PackageReference Include="Google.Protobuf" Version="3.15.1" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\messaging\source\GreenEnergyHub.Messaging\GreenEnergyHub.Messaging.csproj" />
-      <ProjectReference Include="..\Energinet.DataHub.SoapAdapter.Domain\Energinet.DataHub.SoapAdapter.Domain.csproj" />
+      <ProjectReference Include="..\GreenEnergyHub.Messaging\GreenEnergyHub.Messaging.csproj" />
     </ItemGroup>
 
 </Project>

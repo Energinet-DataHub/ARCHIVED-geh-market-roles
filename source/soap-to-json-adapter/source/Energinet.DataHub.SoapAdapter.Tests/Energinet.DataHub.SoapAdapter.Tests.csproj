@@ -24,7 +24,7 @@ limitations under the License.
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\..\..\src\shared\GreenEnergyHub\source\GreenEnergyHub.TestHelpers\GreenEnergyHub.TestHelpers.csproj" />
+      <ProjectReference Include="..\..\..\shared\source\GreenEnergyHub.TestHelpers\GreenEnergyHub.TestHelpers.csproj" />
       <ProjectReference Include="..\Energinet.DataHub.SoapAdapter.Application\Energinet.DataHub.SoapAdapter.Application.csproj" />
       <ProjectReference Include="..\Energinet.DataHub.SoapAdapter.Domain\Energinet.DataHub.SoapAdapter.Domain.csproj" />
       <ProjectReference Include="..\Energinet.DataHub.SoapAdapter.Infrastructure\Energinet.DataHub.SoapAdapter.Infrastructure.csproj" />
