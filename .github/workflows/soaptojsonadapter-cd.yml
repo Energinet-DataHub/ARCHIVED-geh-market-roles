@@ -19,7 +19,7 @@ on:
       - renetnielsen/migrate-project-from-other-repo
     paths:
       - source/soap-to-json-adapter/**
-      - .github/workflows/soap-to-json-adapter-cicd.yml
+      - .github/workflows/soaptojsonadapter-cd.yml
       - .github/actions/dotnet-build-and-test
   workflow_dispatch: {}
 
