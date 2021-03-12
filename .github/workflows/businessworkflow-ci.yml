@@ -11,21 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-name: SoapToJSONAdapter CI
+name: BusinessWorkflow CD
 
 on:
   push:
     branches:
       - renetnielsen/migrate-project-from-other-repo
     paths:
-      - source/soap-to-json-adapter/**
-      - .github/workflows/soaptojsonadapter-ci.yml
+      - source/business-workflow/**
+      - .github/workflows/businessworkflow-ci.yml
       - .github/actions/dotnet-build-and-test
   workflow_dispatch: {}
 
 env:
-  CSPROJ_FILE_PATH: 'source/soap-to-json-adapter/source/Energinet.DataHub.SoapAdapter.EntryPoint/Energinet.DataHub.SoapAdapter.EntryPoint.csproj'
-  SOLUTION_FILE_PATH: 'source/soap-to-json-adapter/Energinet.DataHub.SoapAdapter.sln'
+  CSPROJ_FILE_PATH: 'source/business-workflow/source/Energinet.DataHub.MarketData.EntryPoint/Energinet.DataHub.MarketData.EntryPoint.csproj'
+  SOLUTION_FILE_PATH: 'source/business-workflow/Energinet.DataHub.MarketData.sln'
   DOTNET_VERSION: '3.1'
 
 jobs:
