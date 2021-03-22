@@ -12,17 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Energinet.DataHub.MarketData.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketData.Domain.Customers
+namespace Energinet.DataHub.MarketData.Domain.BusinessProcesses
 {
-    public abstract class CustomerId : ValueObject
+    public class BusinessProcessIntent : EnumerationType
     {
-        protected CustomerId(string value)
-        {
-            Value = value;
-        }
+        public static readonly BusinessProcessIntent Supplier =
+            new BusinessProcessIntent(0b00000001, nameof(Supplier));
 
-        public string Value { get; }
+        public static readonly BusinessProcessIntent Customer =
+            new BusinessProcessIntent(0b00000010, nameof(Customer));
+
+        public static readonly BusinessProcessIntent AllIntents =
+            new BusinessProcessIntent(0b00000011, nameof(AllIntents));
+
+        public BusinessProcessIntent(int id, string name)
+            : base(id, name)
+        {
+        }
     }
 }

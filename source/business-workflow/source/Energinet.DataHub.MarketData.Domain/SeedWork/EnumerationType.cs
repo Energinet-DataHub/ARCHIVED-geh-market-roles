@@ -27,11 +27,11 @@ namespace Energinet.DataHub.MarketData.Domain.SeedWork
             Name = name;
         }
 
-        public string Name { get; private set; }
+        public string Name { get; }
 
-        public int Id { get; private set; }
+        public int Id { get; }
 
-        public static bool operator ==(EnumerationType left, EnumerationType right)
+        public static bool operator ==(EnumerationType? left, EnumerationType? right)
         {
             if (ReferenceEquals(left, null))
             {
@@ -41,27 +41,27 @@ namespace Energinet.DataHub.MarketData.Domain.SeedWork
             return left.Equals(right);
         }
 
-        public static bool operator !=(EnumerationType left, EnumerationType right)
+        public static bool operator !=(EnumerationType? left, EnumerationType? right)
         {
             return !(left == right);
         }
 
-        public static bool operator <(EnumerationType left, EnumerationType right)
+        public static bool operator <(EnumerationType? left, EnumerationType? right)
         {
             return ReferenceEquals(left, null) ? !ReferenceEquals(right, null) : left.CompareTo(right) < 0;
         }
 
-        public static bool operator <=(EnumerationType left, EnumerationType right)
+        public static bool operator <=(EnumerationType? left, EnumerationType? right)
         {
             return ReferenceEquals(left, null) || left.CompareTo(right) <= 0;
         }
 
-        public static bool operator >(EnumerationType left, EnumerationType right)
+        public static bool operator >(EnumerationType? left, EnumerationType? right)
         {
             return !ReferenceEquals(left, null) && left.CompareTo(right) > 0;
         }
 
-        public static bool operator >=(EnumerationType left, EnumerationType right)
+        public static bool operator >=(EnumerationType? left, EnumerationType? right)
         {
             return ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.CompareTo(right) >= 0;
         }
@@ -125,6 +125,15 @@ namespace Energinet.DataHub.MarketData.Domain.SeedWork
         }
 
         public override int GetHashCode() => Id.GetHashCode();
+
+        public bool HasFlag(EnumerationType flag)
+        {
+            if (flag == null) throw new ArgumentNullException(nameof(flag));
+            if (GetType() != flag.GetType()) throw new ArgumentException("EnumerationType mismatch", nameof(flag));
+
+            var compare = Id & flag.Id;
+            return compare == flag.Id;
+        }
 
         public int CompareTo(object? other)
         {

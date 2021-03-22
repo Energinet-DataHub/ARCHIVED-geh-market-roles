@@ -19,20 +19,8 @@ namespace Energinet.DataHub.MarketData.Domain.BusinessProcesses
     public class MoveInProcess : BusinessProcess
     {
         public MoveInProcess(ProcessId processId, Instant effectiveDate)
-            : base(processId, effectiveDate)
+            : base(processId, effectiveDate, BusinessProcessType.MoveIn)
         {
-        }
-
-        internal override bool MustSuspendProcessOf(BusinessProcess businessProcess)
-        {
-            // TODO: Better handling of suspendable processes
-            return businessProcess.GetType().Equals(typeof(ChangeOfSupplierProcess));
-        }
-
-        internal override bool ShouldBlockProcessOf(BusinessProcess businessProcess)
-        {
-            // TODO: Better handling of blocking processes
-            return businessProcess.GetType().Equals(typeof(ChangeOfSupplierProcess));
         }
     }
 }

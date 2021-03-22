@@ -16,20 +16,23 @@ using Energinet.DataHub.MarketData.Domain.SeedWork;
 
 namespace Energinet.DataHub.MarketData.Domain.BusinessProcesses
 {
-    public class ProcessId : ValueObject
+    public class BusinessProcessType : EnumerationType
     {
-        public ProcessId(string value)
+        public static readonly BusinessProcessType ChangeOfSupplier =
+            new BusinessProcessType(1, nameof(ChangeOfSupplier), BusinessProcessIntent.Supplier);
+
+        public static readonly BusinessProcessType MoveIn =
+            new BusinessProcessType(2, nameof(MoveIn), BusinessProcessIntent.Customer);
+
+        public static readonly BusinessProcessType MoveOut =
+            new BusinessProcessType(3, nameof(MoveOut), BusinessProcessIntent.Customer);
+
+        public BusinessProcessType(int id, string name, BusinessProcessIntent intent)
+            : base(id, name)
         {
-            Value = value;
+            Intent = intent;
         }
 
-        public static ProcessId Empty => new ProcessId(string.Empty);
-
-        public string Value { get; }
-
-        public override string ToString()
-        {
-            return Value;
-        }
+        public BusinessProcessIntent Intent { get; }
     }
 }

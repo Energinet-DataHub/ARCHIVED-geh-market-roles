@@ -19,7 +19,7 @@ namespace Energinet.DataHub.MarketData.Domain.BusinessProcesses
     public class ChangeOfSupplierProcess : BusinessProcess
     {
         public ChangeOfSupplierProcess(ProcessId processId, Instant effectiveDate)
-            : base(processId, effectiveDate)
+            : base(processId, effectiveDate, BusinessProcessType.ChangeOfSupplier)
         {
         }
     }

@@ -29,7 +29,25 @@ namespace Energinet.DataHub.MarketData.Domain.BusinessProcesses
             ProcessCoordinatorId = processCoordinatorId;
         }
 
+        private ProcessCoordinator(
+            in int id,
+            ProcessCoordinatorId processCoordinatorId,
+            List<BusinessProcessSnapshot> snapshotBusinessProcesses,
+            in int version)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public ProcessCoordinatorId ProcessCoordinatorId { get; }
+
+        public static ProcessCoordinator CreateFrom(ProcessCoordinatorSnapshot snapshot)
+        {
+            return new ProcessCoordinator(
+                snapshot.Id,
+                snapshot.ProcessCoordinatorId,
+                snapshot.BusinessProcesses,
+                snapshot.Version);
+        }
 
         public void Register(BusinessProcess businessProcess)
         {
@@ -70,6 +88,15 @@ namespace Energinet.DataHub.MarketData.Domain.BusinessProcesses
 
             _processes.FindAll(p => p.State == ProcessState.Suspended && p.SuspendedByProcessId!.Equals(processId))
                 .ForEach(p => p.Reactivate());
+        }
+
+        public ProcessCoordinatorSnapshot GetSnapshot()
+        {
+            return new ProcessCoordinatorSnapshot(
+                Id,
+                ProcessCoordinatorId,
+                _processes.Select(process => process.GetSnapshot()).ToList(),
+                Version);
         }
 
         private void ThrowIfRegistered(ProcessId processId)

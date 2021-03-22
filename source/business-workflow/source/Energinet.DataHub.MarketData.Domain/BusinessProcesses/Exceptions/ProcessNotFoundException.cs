@@ -18,6 +18,9 @@ namespace Energinet.DataHub.MarketData.Domain.BusinessProcesses.Exceptions
 {
     public class ProcessNotFoundException : BusinessProcessException
     {
+        public ProcessNotFoundException()
+            : this(ProcessId.Empty) { }
+
         public ProcessNotFoundException(ProcessId processId)
             : base($"Process id {processId} was not found.")
         {

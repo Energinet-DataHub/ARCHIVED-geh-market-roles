@@ -12,20 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 
-namespace Energinet.DataHub.MarketData.Domain.BusinessProcesses.Exceptions
+namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence.ProcessCoordinators
 {
-    public class BlockingProcessRegisteredException : BusinessProcessException
+    public class ProcessCoordinatorDataModel : IDataModel
     {
-        public BlockingProcessRegisteredException(List<ProcessId> blockingProcessIds)
-        : base($"Existing blocking business processes detected.")
+        public ProcessCoordinatorDataModel(int id, string processCoordinatorId, List<BusinessProcessDataModel> businessProcesses, int version)
         {
-            BlockingProcessIds = blockingProcessIds.AsReadOnly();
+            Id = id;
+            ProcessCoordinatorId = processCoordinatorId;
+            BusinessProcesses = businessProcesses;
+            Version = version;
         }
 
-        public ReadOnlyCollection<ProcessId> BlockingProcessIds { get; }
+        public int Id { get; }
+
+        public string ProcessCoordinatorId { get; }
+
+        public List<BusinessProcessDataModel> BusinessProcesses { get; }
+
+        public int Version { get; }
     }
 }

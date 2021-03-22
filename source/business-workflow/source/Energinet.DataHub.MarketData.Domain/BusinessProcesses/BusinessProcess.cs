@@ -20,12 +20,13 @@ using NodaTime;
 
 namespace Energinet.DataHub.MarketData.Domain.BusinessProcesses
 {
-    public abstract class BusinessProcess : Entity
+    public class BusinessProcess : Entity
     {
-        public BusinessProcess(ProcessId processId, Instant effectiveDate)
+        public BusinessProcess(ProcessId processId, Instant effectiveDate, BusinessProcessType processType)
         {
             ProcessId = processId ?? throw new ArgumentNullException(nameof(processId));
             EffectiveDate = effectiveDate;
+            ProcessType = processType;
             State = ProcessState.Registered;
         }
 
@@ -33,9 +34,16 @@ namespace Energinet.DataHub.MarketData.Domain.BusinessProcesses
 
         public Instant EffectiveDate { get; }
 
+        public BusinessProcessType ProcessType { get; }
+
         public ProcessState State { get; private set; }
 
         public ProcessId? SuspendedByProcessId { get; private set; }
+
+        public BusinessProcessSnapshot GetSnapshot()
+        {
+            return new BusinessProcessSnapshot(Id, ProcessId, EffectiveDate, State, ProcessType, SuspendedByProcessId);
+        }
 
         internal virtual bool MustSuspendProcessOf(BusinessProcess businessProcess)
         {
@@ -65,7 +73,7 @@ namespace Energinet.DataHub.MarketData.Domain.BusinessProcesses
             AddDomainEvent(new ProcessCancelled(ProcessId));
         }
 
-        protected internal virtual void Reactivate()
+        internal void Reactivate()
         {
             if (State != ProcessState.Suspended)
             {

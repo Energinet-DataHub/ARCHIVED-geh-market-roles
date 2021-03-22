@@ -22,7 +22,7 @@ namespace Energinet.DataHub.MarketData.Domain.SeedWork
         public DomainEventBase()
         {
             Id = Guid.NewGuid();
-            OccurredOn = SystemClock.Instance.GetCurrentInstant();
+            OccurredOn = SystemClock.Instance.GetCurrentInstant(); // Fyyy Kristian
         }
 
         public Guid Id { get; }

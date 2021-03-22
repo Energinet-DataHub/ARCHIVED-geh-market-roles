@@ -12,24 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.MarketData.Domain.SeedWork;
+using System.Collections.Generic;
 
 namespace Energinet.DataHub.MarketData.Domain.BusinessProcesses
 {
-    public class ProcessId : ValueObject
+    public class ProcessCoordinatorSnapshot
     {
-        public ProcessId(string value)
+        public ProcessCoordinatorSnapshot(
+            int id,
+            ProcessCoordinatorId processCoordinatorId,
+            List<BusinessProcessSnapshot> businessProcesses,
+            int version)
         {
-            Value = value;
+            Id = id;
+            ProcessCoordinatorId = processCoordinatorId;
+            BusinessProcesses = businessProcesses;
+            Version = version;
         }
 
-        public static ProcessId Empty => new ProcessId(string.Empty);
+        public int Id { get; }
 
-        public string Value { get; }
+        public ProcessCoordinatorId ProcessCoordinatorId { get; }
 
-        public override string ToString()
-        {
-            return Value;
-        }
+        public List<BusinessProcessSnapshot> BusinessProcesses { get; }
+
+        public int Version { get; }
     }
 }

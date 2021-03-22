@@ -14,10 +14,16 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using AutoFixture;
+using AutoFixture.AutoMoq;
 using Energinet.DataHub.MarketData.Domain.BusinessProcesses;
 using Energinet.DataHub.MarketData.Domain.BusinessProcesses.Events;
 using Energinet.DataHub.MarketData.Domain.BusinessProcesses.Exceptions;
+using Energinet.DataHub.MarketData.Infrastructure.DataPersistence;
+using Energinet.DataHub.MarketData.Infrastructure.DataPersistence.ProcessCoordinators;
 using GreenEnergyHub.TestHelpers.Traits;
+using Moq;
 using NodaTime;
 using Xunit;
 
@@ -124,6 +130,29 @@ namespace Energinet.DataHub.MarketData.Tests.Domain.BusinessProcesses
             var changeOfSupplierProcess = processCoordinator.GetProcessOrThrow(changeOfSupplierProcessId);
             Assert.Equal(ProcessState.Suspended, changeOfSupplierProcess.State);
             Assert.Equal(moveInProcessId, changeOfSupplierProcess.SuspendedByProcessId);
+        }
+
+        [Fact]
+        public async Task ProcessCoordinator_can_be_saved_and_retrieved_via_repository()
+        {
+            var fixture = new Fixture();
+            fixture.Customize(new AutoMoqCustomization());
+
+            var processCoordinator = Create();
+
+            var changeOfSupplierProcessId = CreateProcessId();
+            var changeOfSupplierEffectiveDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(5));
+            processCoordinator.Register(new ChangeOfSupplierProcess(changeOfSupplierProcessId, changeOfSupplierEffectiveDate));
+
+            var moveInEffectiveDate = _systemDateTimeProvider.Now();
+            var moveInProcessId = CreateProcessId();
+            processCoordinator.Register(new MoveInProcess(moveInProcessId, moveInEffectiveDate));
+
+            var unitOfWorkMock = fixture.Freeze<Mock<IUnitOfWork>>();
+            var repository = fixture.Create<ProcessCoordinatorRepository>();
+
+            await repository.SaveAsync(processCoordinator);
+            await repository.GetByProcessCoordinatorIdAsync(processCoordinator.ProcessCoordinatorId);
         }
 
         private ProcessId CreateProcessId()
