@@ -16,7 +16,6 @@ using Xunit;
 
 namespace Energinet.DataHub.MarketData.Tests.ApplyDBMigrationsApp.Helpers
 {
-    [Trait("Category", "Unit")]
     public class ConnectionStringFactoryTests
     {
         [Fact]

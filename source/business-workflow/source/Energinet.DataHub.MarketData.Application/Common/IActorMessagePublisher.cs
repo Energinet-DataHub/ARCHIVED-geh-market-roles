@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Threading.Tasks;
 
 namespace Energinet.DataHub.MarketData.Application.Common
@@ -26,8 +25,7 @@ namespace Energinet.DataHub.MarketData.Application.Common
         /// Publishes a message
         /// </summary>
         /// <param name="message"></param>
-        /// <param name="recipient">The id of the message recipient</param>
         /// <returns><see cref="Task"/></returns>
-        Task PublishAsync<TMessage>(TMessage message, string recipient);
+        Task PublishAsync<TMessage>(TMessage message);
     }
 }

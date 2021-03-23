@@ -11,8 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-using System.Linq;
+using System;
+using System.Reflection;
+using DbUp;
 using Energinet.DataHub.MarketData.ApplyDBMigrationsApp.Helpers;
 
 namespace Energinet.DataHub.MarketData.ApplyDBMigrationsApp
@@ -22,16 +23,22 @@ namespace Energinet.DataHub.MarketData.ApplyDBMigrationsApp
         public static int Main(string[] args)
         {
             var connectionString = ConnectionStringFactory.GetConnectionString(args);
-            var filter = EnvironmentFilter.GetFilter(args);
-            var isDryRun = args.Contains("dryRun");
 
-            // This is the new way of doing it, but for backwards compatibility, the "old way" is still default.
-            // var upgrader = UpgradeFactory.GetUpgradeEngine(connectionString, filter, isDryRun);
-            var upgrader = UpgradeFactory.GetUpgradeEngine(connectionString);
+            try
+            {
+                Console.WriteLine("Using connectionstring: {0}", connectionString);
+                var upgrader = UpgradeFactory.GetUpgradeEngine(connectionString);
 
-            var result = upgrader.PerformUpgrade();
+                var result = upgrader.PerformUpgrade();
 
-            return ResultReporter.ReportResult(result);
+                return ResultReporter.ReportResult(result);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            return -1;
         }
     }
 }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.MarketData.Application.Common;
 using GreenEnergyHub.Messaging;
 using GreenEnergyHub.Messaging.MessageTypes;
 using GreenEnergyHub.Messaging.MessageTypes.Common;
@@ -23,8 +24,8 @@ namespace Energinet.DataHub.MarketData.Application.ChangeOfSupplier
     /// <summary>
     /// POCO for a InitiateChangeOfSupplier.
     /// </summary>
-    [HubMessage("RequestChangeOfSupplier")]
-    public class RequestChangeOfSupplier : IHubMessage, IRequest<RequestChangeOfSupplierResult>
+    [HubMessage("ChangeSupplier")]
+    public class RequestChangeOfSupplier : IHubMessage, IRequest<BusinessProcessResult>
     {
         /// <summary>
         /// The id of the ChangeOfSupplierMessage. Should be unique.

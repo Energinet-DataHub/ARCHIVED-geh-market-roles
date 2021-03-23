@@ -14,8 +14,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.MarketData.Infrastructure.Outbox;
+using Energinet.DataHub.MarketData.Application.Outbox;
 using GreenEnergyHub.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -29,12 +28,10 @@ namespace Energinet.DataHub.MarketData.Tests.Outbox
     public class ForwardMessageServiceTests
     {
         private readonly Mock<IForwardMessageRepository> _forwardMessageRepositoryMock;
-        private readonly Mock<IPostOfficeService> _postOfficeServiceMock;
 
         public ForwardMessageServiceTests()
         {
             _forwardMessageRepositoryMock = new Mock<IForwardMessageRepository>();
-            _postOfficeServiceMock = new Mock<IPostOfficeService>();
             _forwardMessageRepositoryMock.SetupSequence(m => m.GetUnprocessedForwardMessageAsync())
                 .ReturnsAsync(new ForwardMessage
                 {
@@ -42,7 +39,6 @@ namespace Energinet.DataHub.MarketData.Tests.Outbox
                     Type = "something",
                     OccurredOn = default(Instant),
                     Data = "{'Name':'Boom'}",
-                    Recipient = "1234567890",
                 })
                 .ReturnsAsync(new ForwardMessage
                 {
@@ -50,23 +46,27 @@ namespace Energinet.DataHub.MarketData.Tests.Outbox
                     Type = "something twice",
                     OccurredOn = default(Instant),
                     Data = "{'Name':'Boomer'}",
-                    Recipient = "1234567890",
                 })
-                .ReturnsAsync((ForwardMessage?)null);
+                .ReturnsAsync(null);
             _forwardMessageRepositoryMock.Setup(m => m.MarkForwardedMessageAsProcessedAsync(It.IsAny<int>()))
                 .Returns(Task.FromResult(typeof(void)));
         }
 
-        [Fact]
-        public async Task ProcessMessagesTest()
+        [Theory]
+        [AutoDomainData]
+        public async Task ProcessMessagesTest(
+            Mock<ILogger> logger)
         {
-            var sut = new ForwardMessageService(_forwardMessageRepositoryMock.Object, _postOfficeServiceMock.Object);
+            var sut = new ForwardMessageService(_forwardMessageRepositoryMock.Object);
+            if (logger == null)
+            {
+                throw new NullException(this);
+            }
 
-            await sut.ProcessMessagesAsync().ConfigureAwait(false);
+            await sut.ProcessMessagesAsync(logger.Object).ConfigureAwait(false);
 
             _forwardMessageRepositoryMock.Verify(m => m.GetUnprocessedForwardMessageAsync(), Times.Exactly(3));
             _forwardMessageRepositoryMock.Verify(m => m.MarkForwardedMessageAsProcessedAsync(It.IsAny<int>()), Times.Exactly(2));
-            _postOfficeServiceMock.Verify(m => m.SendMessageAsync(It.IsAny<byte[]>()), Times.Exactly(2));
         }
     }
 }

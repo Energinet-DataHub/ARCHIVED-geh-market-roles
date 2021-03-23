@@ -14,24 +14,25 @@ After the SQL server has been deployed this tool can be run and will then ensure
 
 The tool can be run manually on any SQL server database using the following command:
 
-`Energinet.DataHub.MarketData.ApplyDBMigrationsApp.exe <connection string>`
+Energinet.DataHub.MarketData.ApplyDBMigrationsApp.exe <connection string>
 
-`<connection string>` must be replaced with the correct connection string for the database, possibly encapsulated with `"`
-
-If seed data or test data should also be applied, add the relevant of these arguments: `includeSeedData`, `includeTestData`.
-
-It's possible to do a dry run with the parameter `dryRun`. All scripts will be run inside a transaction that will be rolled back afterwards.
+<connection string> must be replaced with the correct connection string for the database, possibly encapsulated with "
 
 ## Adding a new script to be synced to SQL servers on deploy
 
-When a new script should be added to the tracked updates, a new .sql file should be added to the Scripts\{Type} folder. Where type can be Model/Seed/Test. It should be named with date and time (yyyyMMddHHmm) as prefix and a descriptive file name, ie.: `202012312359 Add MeteringPoint model.sql`.
+When a new script should be added to the tracked updates, a new .sql file should be added to the Scripts folder using the next available number.
 
-## Script executing order
+So if the folder already contains the following scripts:
 
-Scripts are executed in order defined by the date and time prefix. If scripts with the same date and time prefix exists, those of type Model will be run before Seed and then Test.
+* Script0001 - Some subject.sql
+* Script0002 - Other subject.sql
+* Script0003 - Yet another subject.sql
+
+Then the new file should be prefixed "Script0004" and contain the TSQL to execute the update.
 
 ## Warning
 
-Don't modify scripts that might already have been deployed somewhere. They will not be executed again and the system will not be updated.
+Don't modify scripts that might already have been deployed somewhere. They will not be executed again
+and the system will not be updated.
 
 As a rule of thumb you should not modify a script after the branch in question has been made public.

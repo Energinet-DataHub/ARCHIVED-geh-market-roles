@@ -20,6 +20,7 @@ namespace Energinet.DataHub.MarketData.Infrastructure.Outbox
     {
         public static readonly OutboxState Pending = new OutboxState(0, nameof(Pending));
         public static readonly OutboxState Processed = new OutboxState(1, nameof(Processed));
+        public static readonly OutboxState Failed = new OutboxState(2, nameof(Failed));
 
         public OutboxState(int id, string name)
             : base(id, name)

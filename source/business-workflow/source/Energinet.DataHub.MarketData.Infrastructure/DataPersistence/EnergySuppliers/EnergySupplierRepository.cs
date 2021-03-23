@@ -23,12 +23,12 @@ namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence.EnergySupp
 {
     public class EnergySupplierRepository : IEnergySupplierRepository, ICanInsertDataModel
     {
-        private readonly IUnitOfWorkCallback _unitOfWorkCallback;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public EnergySupplierRepository(IUnitOfWorkCallback unitOfWorkCallback, IDbConnectionFactory connectionFactory)
+        public EnergySupplierRepository(IUnitOfWork unitOfWork, IDbConnectionFactory connectionFactory)
         {
-            _unitOfWorkCallback = unitOfWorkCallback ?? throw new ArgumentNullException(nameof(unitOfWorkCallback));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
@@ -61,7 +61,7 @@ namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence.EnergySupp
 
             var snapshot = energySupplier.GetSnapshot();
             var dataModel = GetDataModelFrom(snapshot);
-            _unitOfWorkCallback.RegisterNew(dataModel, this);
+            _unitOfWork.RegisterNew(dataModel, this);
         }
 
         public async Task PersistCreationOfAsync(IDataModel entity)

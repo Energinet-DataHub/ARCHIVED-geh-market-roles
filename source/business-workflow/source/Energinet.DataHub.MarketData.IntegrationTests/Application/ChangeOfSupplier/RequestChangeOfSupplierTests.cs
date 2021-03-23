@@ -22,6 +22,7 @@ using Dapper.NodaTime;
 using Energinet.DataHub.MarketData.Application.ChangeOfSupplier;
 using Energinet.DataHub.MarketData.Application.ChangeOfSupplier.ActorMessages;
 using Energinet.DataHub.MarketData.Application.Common;
+using Energinet.DataHub.MarketData.Domain.Customers;
 using Energinet.DataHub.MarketData.Domain.EnergySuppliers;
 using Energinet.DataHub.MarketData.Domain.MeteringPoints;
 using Energinet.DataHub.MarketData.Domain.SeedWork;
@@ -51,7 +52,7 @@ namespace Energinet.DataHub.MarketData.IntegrationTests.Application.ChangeOfSupp
         private readonly IMediator _mediator;
         private readonly IMeteringPointRepository _meteringPointRepository;
         private readonly IEnergySupplierRepository _energySupplierRepository;
-        private readonly IUnitOfWorkCallback _unitOfWorkCallback;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IActorMessagePublisher _actorMessagePublisher;
 
         public RequestChangeOfSupplierTests()
@@ -62,7 +63,7 @@ namespace Energinet.DataHub.MarketData.IntegrationTests.Application.ChangeOfSupp
                 Environment.GetEnvironmentVariable("MarketData_IntegrationTests_ConnectionString");
 
             services.AddScoped<IDbConnectionFactory>(sp => new SqlDbConnectionFactory(_connectionString));
-            services.AddScoped<IUnitOfWorkCallback, UnitOfWorkCallback>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ISystemDateTimeProvider, SystemDateTimeProviderStub>();
             services.AddScoped<IEventPublisher, EventPublisherStub>();
             services.AddScoped<IActorMessagePublisher, ActorMessagePublisher>();
@@ -76,7 +77,7 @@ namespace Energinet.DataHub.MarketData.IntegrationTests.Application.ChangeOfSupp
 
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkHandlerBehavior<,>));
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(PublishIntegrationEventsHandlerBehavior<,>));
-            services.AddScoped<IPipelineBehavior<RequestChangeOfSupplier, RequestChangeOfSupplierResult>, PublishActorMessageHandlerBehavior>();
+            services.AddScoped<IPipelineBehavior<RequestChangeOfSupplier, BusinessProcessResult>, PublishActorMessageHandlerBehavior>();
 
             services.AddGreenEnergyHub(typeof(RequestChangeOfSupplier).Assembly);
 
@@ -86,7 +87,7 @@ namespace Energinet.DataHub.MarketData.IntegrationTests.Application.ChangeOfSupp
             _mediator = _serviceProvider.GetRequiredService<IMediator>();
             _meteringPointRepository = _serviceProvider.GetRequiredService<IMeteringPointRepository>();
             _energySupplierRepository = _serviceProvider.GetRequiredService<IEnergySupplierRepository>();
-            _unitOfWorkCallback = _serviceProvider.GetRequiredService<IUnitOfWorkCallback>();
+            _unitOfWork = _serviceProvider.GetRequiredService<IUnitOfWork>();
             _actorMessagePublisher = _serviceProvider.GetRequiredService<IActorMessagePublisher>();
         }
 
@@ -187,7 +188,7 @@ namespace Energinet.DataHub.MarketData.IntegrationTests.Application.ChangeOfSupp
             using (var connection = new SqlConnection(_connectionString))
             {
                 var query = $"SELECT * FROM [dbo].[OutgoingActorMessages]";
-                var outboxmessage = await connection.QuerySingleAsync<OutgoingActorMessage>(query).ConfigureAwait(false);
+                var outboxmessage = await connection.QuerySingleAsync<OutboxMessage>(query).ConfigureAwait(false);
 
                 var serializer = new GreenEnergyHub.Json.JsonSerializer();
                 var @event = serializer.Deserialize<TMessage>(outboxmessage.Data);
@@ -219,17 +220,18 @@ namespace Energinet.DataHub.MarketData.IntegrationTests.Application.ChangeOfSupp
             var energySupplier = new EnergySupplier(energySupplierGln);
             _energySupplierRepository.Add(energySupplier);
 
-            await _unitOfWorkCallback.CommitAsync().ConfigureAwait(false);
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
 
             var meteringPoint =
                 MeteringPoint.CreateProduction(
                     GsrnNumber.Create(meteringPointGsrnNumber), true);
 
             var systemTimeProvider = _serviceProvider.GetRequiredService<ISystemDateTimeProvider>();
-            meteringPoint.RegisterMoveIn(new MarketParticipantMrid(customerId), new MarketParticipantMrid(energySupplierGlnNumber), systemTimeProvider.Now().Minus(Duration.FromDays(365)));
-            meteringPoint.ActivateMoveIn(new MarketParticipantMrid(customerId), new MarketParticipantMrid(energySupplierGlnNumber));
+            var registrationId = new ProcessId(Guid.NewGuid().ToString());
+            meteringPoint.RegisterMoveIn(registrationId, new CustomerId(customer.GlnNumber.Value), energySupplierGln, systemTimeProvider.Now().Minus(Duration.FromDays(365)));
+            meteringPoint.ActivateMoveIn(registrationId);
             _meteringPointRepository.Add(meteringPoint);
-            await _unitOfWorkCallback.CommitAsync().ConfigureAwait(false);
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }
 }

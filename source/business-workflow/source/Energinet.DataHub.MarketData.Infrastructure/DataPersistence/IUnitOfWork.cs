@@ -12,30 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence
 {
     /// <summary>
-    /// Interact with our datastore
+    /// Service for transaction management
     /// </summary>
     public interface IUnitOfWork
     {
-        /// <summary>
-        /// Execute a non query on the datastore
-        /// </summary>
-        /// <param name="command">Command to execute</param>
-        /// <param name="cancellationToken">Cancellation token for the operation</param>
-        Task ExecuteAsync(IAsyncCommand command, CancellationToken cancellationToken = default);
+        // /// <summary>
+        // /// Current transaction
+        // /// </summary>
+        // IDbTransaction Transaction { get; }
 
         /// <summary>
-        /// Executes a query on the datastore
+        /// Commits the transaction
         /// </summary>
-        /// <param name="query">Query to execute</param>
-        /// <param name="cancellationToken">Cancellation token for the operation</param>
-        /// <typeparam name="T">query return type</typeparam>
-        /// <returns>query result</returns>
-        Task<T> QueryAsync<T>(IAsyncQuery<T> query, CancellationToken cancellationToken = default);
+        /// <returns><see cref="Task"/></returns>
+        Task CommitAsync();
+
+        /// <summary>
+        /// Register updated or changed entity
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="repository"></param>
+        void RegisterAmended(IDataModel entity, ICanUpdateDataModel repository);
+
+        /// <summary>
+        /// Register new entity
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="repository"></param>
+        void RegisterNew(IDataModel entity, ICanInsertDataModel repository);
     }
 }

@@ -14,12 +14,10 @@
 
 using Energinet.DataHub.MarketData.Domain.Customers;
 using FluentAssertions;
-using GreenEnergyHub.TestHelpers.Traits;
 using Xunit;
 
 namespace Energinet.DataHub.MarketData.Tests.Domain.Customers
 {
-    [Trait(TraitNames.Category, TraitValues.UnitTest)]
     public class CustomerTests
     {
         [Fact]

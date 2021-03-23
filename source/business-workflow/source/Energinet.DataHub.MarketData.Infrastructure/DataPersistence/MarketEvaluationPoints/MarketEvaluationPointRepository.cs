@@ -25,13 +25,13 @@ namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence.MarketEval
 {
     public class MeteringPointRepository : IMeteringPointRepository, ICanUpdateDataModel, ICanInsertDataModel
     {
-        private readonly IUnitOfWorkCallback _unitOfWorkCallback;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public MeteringPointRepository(IDbConnectionFactory connectionFactory, IUnitOfWorkCallback unitOfWorkCallback)
+        public MeteringPointRepository(IDbConnectionFactory connectionFactory, IUnitOfWork unitOfWork)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-            _unitOfWorkCallback = unitOfWorkCallback ?? throw new ArgumentNullException(nameof(unitOfWorkCallback));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         private IDbConnection Connection => _connectionFactory.GetOpenConnection();
@@ -62,7 +62,7 @@ namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence.MarketEval
 
             var relationships = await GetRelationshipsDataModelAsync(meteringPoint.Id).ConfigureAwait(false);
 
-            return MeteringPoint.CreateFrom(CreateMarketEvaluationPointSnapshot(meteringPoint, relationships));
+            return MeteringPoint.CreateFrom(CreateMeteringPointSnapshot(meteringPoint, relationships));
         }
 
         public void Add(MeteringPoint meteringPoint)
@@ -73,7 +73,7 @@ namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence.MarketEval
             }
 
             var dataModel = CreateDataModelFrom(meteringPoint);
-            _unitOfWorkCallback.RegisterNew(dataModel, this);
+            _unitOfWork.RegisterNew(dataModel, this);
         }
 
         public void Save(MeteringPoint meteringPoint)
@@ -84,7 +84,7 @@ namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence.MarketEval
             }
 
             var dataModel = CreateDataModelFrom(meteringPoint);
-            _unitOfWorkCallback.RegisterAmended(dataModel, this);
+            _unitOfWork.RegisterAmended(dataModel, this);
         }
 
         public Task PersistCreationOfAsync(IDataModel entity)
@@ -115,9 +115,17 @@ namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence.MarketEval
         private static MarketEvaluationPointDataModel CreateDataModelFrom(MeteringPoint aggregate)
         {
             var snapshot = aggregate.GetSnapshot();
-            var relationships = snapshot.Relationships
-                .Select(r => new RelationshipDataModel(r.Id, snapshot.Id, r.MarketParticipantMrid, r.Type, r.EffectuationDate, r.State))
+
+            var consumers = snapshot.Consumers.Select(c =>
+                new RelationshipDataModel(c.Id, snapshot.Id, c.CustomerId, RelationshipType.Customer1.Id, c.MoveInOn, c.MoveOutOn));
+
+            var balanceSuppliers = snapshot.BalanceSuppliers.Select(c =>
+                new RelationshipDataModel(c.Id, snapshot.Id, c.BalanceSupplierId, RelationshipType.EnergySupplier.Id, c.StartOn, c.EndOn));
+
+            var relationships = consumers
+                .Concat(balanceSuppliers)
                 .ToList();
+
             return new MarketEvaluationPointDataModel(snapshot.Id, snapshot.GsrnNumber, snapshot.MeteringPointType, relationships, snapshot.IsProductionObligated, snapshot.PhysicalState, snapshot.Version);
         }
 
@@ -135,17 +143,24 @@ namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence.MarketEval
                 .ToList();
         }
 
-        private static MeteringPointSnapshot CreateMarketEvaluationPointSnapshot(MarketEvaluationPointDataModel marketEvaluationPointDataModel, List<RelationshipDataModel> relationshipDataModels)
+        private static MeteringPointSnapshot CreateMeteringPointSnapshot(MarketEvaluationPointDataModel marketEvaluationPointDataModel, List<RelationshipDataModel> relationshipDataModels)
         {
-            var relationshipsSnapshot = relationshipDataModels.Select(r =>
-                    new RelationshipSnapshot(r.Id, r.Mrid!, r.Type, r.EffectuationDate, r.State))
+            var consumersSnapshot = relationshipDataModels
+                .Where(x => x.Type.Equals(RelationshipType.Customer1))
+                .Select(x => new ConsumerSnapshot(x.Id, x.Mrid!, x.StartDate, x.EndDate))
+                .ToList();
+
+            var balanceSuppliersSnapshot = relationshipDataModels
+                .Where(x => x.Type.Equals(RelationshipType.EnergySupplier))
+                .Select(x => new BalanceSupplierSnapshot(x.Id, x.Mrid!, x.StartDate, x.EndDate))
                 .ToList();
 
             var meteringPointSnapshot = new MeteringPointSnapshot(
                 marketEvaluationPointDataModel.Id,
                 marketEvaluationPointDataModel.GsrnNumber,
                 marketEvaluationPointDataModel.Type,
-                relationshipsSnapshot,
+                consumersSnapshot,
+                balanceSuppliersSnapshot,
                 marketEvaluationPointDataModel.ProductionObligated,
                 marketEvaluationPointDataModel.PhysicalState,
                 marketEvaluationPointDataModel.RowVersion);
@@ -160,9 +175,9 @@ namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence.MarketEval
                 $"r.Id AS {nameof(RelationshipDataModel.Id)}, " +
                 $"r.MarketParticipant_Id AS {nameof(RelationshipDataModel.MarketParticipantId)}, " +
                 $"r.MarketEvaluationPoint_Id AS {nameof(RelationshipDataModel.MarketEvaluationPointId)}, " +
-                $"r.State AS {nameof(RelationshipDataModel.State)}, " +
+                //$"r.State AS {nameof(RelationshipDataModel.State)}, " +
                 $"r.Type AS {nameof(RelationshipDataModel.Type)}, " +
-                $"r.EffectuationDate AS {nameof(RelationshipDataModel.EffectuationDate)}, " +
+                $"r.EffectuationDate AS {nameof(RelationshipDataModel.StartDate)}, " +
                 $"m.Mrid AS {nameof(RelationshipDataModel.Mrid)} FROM [dbo].[Relationships] r " +
                 "JOIN [dbo].[MarketParticipants] m ON m.Id = r.MarketParticipant_Id " +
                 "WHERE MarketEvaluationPoint_Id = @MarketEvaluationPointId";
@@ -190,7 +205,7 @@ namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence.MarketEval
                 $"DECLARE @MarketParticipantId NVARCHAR(50) " +
                 $"SET @MarketParticipantId = (SELECT Id AS MarketParticipantId FROM [dbo].[MarketParticipants] WHERE Mrid = @Mrid)" +
                 $"INSERT INTO [dbo].[Relationships] (MarketEvaluationPoint_Id, MarketParticipant_Id, Type, EffectuationDate, State) " +
-                "VALUES (@MarketEvaluationPointId, @MarketParticipantId, @Type, @EffectuationDate, @State)";
+                "VALUES (@MarketEvaluationPointId, @MarketParticipantId, @Type, @EffectuationDate)";
 
             var parameters = new List<dynamic>();
             addedRelationships.ForEach(relationshipDataModel =>
@@ -200,8 +215,7 @@ namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence.MarketEval
                     Mrid = relationshipDataModel.Mrid,
                     MarketEvaluationPointId = marketEvaluationPointDataModel.Id,
                     Type = relationshipDataModel.Type,
-                    EffectuationDate = relationshipDataModel.EffectuationDate,
-                    State = relationshipDataModel.State,
+                    EffectuationDate = relationshipDataModel.StartDate,
                 });
             });
 
@@ -230,8 +244,7 @@ namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence.MarketEval
                 parameters.Add(new
                 {
                     Id = model.Id,
-                    EffectuationDate = model.EffectuationDate,
-                    State = model.State,
+                    EffectuationDate = model.StartDate,
                 });
             });
 

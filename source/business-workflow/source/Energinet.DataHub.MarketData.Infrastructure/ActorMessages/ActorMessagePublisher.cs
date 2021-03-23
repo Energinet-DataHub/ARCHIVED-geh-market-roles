@@ -20,8 +20,6 @@ using Energinet.DataHub.MarketData.Application.Common;
 using Energinet.DataHub.MarketData.Domain.SeedWork;
 using Energinet.DataHub.MarketData.Infrastructure.DataPersistence;
 using Energinet.DataHub.MarketData.Infrastructure.Outbox;
-using Newtonsoft.Json.Linq;
-using NodaTime;
 
 namespace Energinet.DataHub.MarketData.Infrastructure.ActorMessages
 {
@@ -29,16 +27,16 @@ namespace Energinet.DataHub.MarketData.Infrastructure.ActorMessages
     {
         private readonly IDbConnectionFactory _connectionFactory;
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
-        private readonly IUnitOfWorkCallback _unitOfWorkCallback;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ActorMessagePublisher(IDbConnectionFactory connectionFactory, ISystemDateTimeProvider systemDateTimeProvider, IUnitOfWorkCallback unitOfWorkCallback)
+        public ActorMessagePublisher(IDbConnectionFactory connectionFactory, ISystemDateTimeProvider systemDateTimeProvider, IUnitOfWork unitOfWork)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
             _systemDateTimeProvider = systemDateTimeProvider ?? throw new ArgumentNullException(nameof(systemDateTimeProvider));
-            _unitOfWorkCallback = unitOfWorkCallback ?? throw new ArgumentNullException(nameof(unitOfWorkCallback));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public Task PublishAsync<TMessage>(TMessage message, string recipient)
+        public Task PublishAsync<TMessage>(TMessage message)
         {
             if (message is null)
             {
@@ -48,30 +46,28 @@ namespace Energinet.DataHub.MarketData.Infrastructure.ActorMessages
             var messageType = message.GetType().Name;
             var payload = JsonSerializer.Serialize(message);
 
-            var outboxMessage = new OutgoingActorMessage(_systemDateTimeProvider.Now(), messageType, payload, recipient);
-            _unitOfWorkCallback.RegisterNew(outboxMessage, this);
+            var outboxMessage = new OutboxMessage(_systemDateTimeProvider.Now(), messageType, payload);
+            _unitOfWork.RegisterNew(outboxMessage, this);
 
             return Task.CompletedTask;
         }
 
         public async Task PersistCreationOfAsync(IDataModel entity)
         {
-            var dataModel = (OutgoingActorMessage)entity;
+            var dataModel = (OutboxMessage)entity;
 
             if (dataModel is null)
             {
                 throw new NullReferenceException(nameof(dataModel));
             }
 
-            var insertStatement = $"INSERT INTO [dbo].[OutgoingActorMessages] (OccurredOn, Type, Data, State, LastUpdatedOn, Recipient) VALUES (@OccurredOn, @Type, @Data, @State, @LastUpdatedOn, @Recipient)";
+            var insertStatement = $"INSERT INTO [dbo].[OutgoingActorMessages] (OccurredOn, Type, Data, State) VALUES (@OccurredOn, @Type, @Data, @State)";
             await _connectionFactory.GetOpenConnection().ExecuteAsync(insertStatement, new
             {
                 OccurredOn = dataModel.OccurredOn,
                 Type = dataModel.Type,
                 Data = dataModel.Data,
                 State = OutboxState.Pending.Id,
-                LastUpdatedOn = SystemClock.Instance.GetCurrentInstant(),
-                Recipient = dataModel.Recipient,
             }).ConfigureAwait(false);
         }
     }

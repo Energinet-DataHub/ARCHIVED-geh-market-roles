@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Energinet.DataHub.MarketData.Application.Common;
 using Energinet.DataHub.MarketData.Domain.EnergySuppliers;
 using Energinet.DataHub.MarketData.Domain.MeteringPoints;
 using Energinet.DataHub.MarketData.Domain.SeedWork;
@@ -25,7 +26,7 @@ using MediatR;
 
 namespace Energinet.DataHub.MarketData.Application.ChangeOfSupplier
 {
-    public class RequestChangeSupplierCommandHandler : IRequestHandler<RequestChangeOfSupplier, RequestChangeOfSupplierResult>
+    public class RequestChangeSupplierCommandHandler : IRequestHandler<RequestChangeOfSupplier, BusinessProcessResult>
     {
         private readonly IRuleEngine<RequestChangeOfSupplier> _ruleEngine;
         private readonly IMeteringPointRepository _meteringPointRepository;
@@ -44,7 +45,7 @@ namespace Energinet.DataHub.MarketData.Application.ChangeOfSupplier
             _energySupplierRepository = energySupplierRepository ?? throw new ArgumentNullException(nameof(energySupplierRepository));
         }
 
-        public async Task<RequestChangeOfSupplierResult> Handle(RequestChangeOfSupplier command, CancellationToken cancellationToken)
+        public async Task<BusinessProcessResult> Handle(RequestChangeOfSupplier command, CancellationToken cancellationToken)
         {
             if (command is null)
             {
@@ -66,7 +67,7 @@ namespace Energinet.DataHub.MarketData.Application.ChangeOfSupplier
             var meteringPoint = await GetMeteringPointAsync(command.MarketEvaluationPoint.MRid).ConfigureAwait(false);
             if (meteringPoint == null)
             {
-                return RequestChangeOfSupplierResult.Reject("MeteringPointNotFound");
+                return BusinessProcessResult.Reject("MeteringPointNotFound");
             }
 
             var rulesCheckResult = CheckBusinessRules(command, meteringPoint);
@@ -75,25 +76,25 @@ namespace Energinet.DataHub.MarketData.Application.ChangeOfSupplier
                 return rulesCheckResult;
             }
 
-            meteringPoint.RegisterChangeOfEnergySupplier(new MarketParticipantMrid(command.EnergySupplier.MRID!), command.StartDate, _systemTimeProvider);
+            meteringPoint.InitiateChangeOfSupplier(new ProcessId(command.Transaction.MRID), new GlnNumber(command.EnergySupplier.MRID!), command.StartDate, _systemTimeProvider);
             _meteringPointRepository.Save(meteringPoint);
 
-            return RequestChangeOfSupplierResult.Success();
+            return BusinessProcessResult.Success();
         }
 
-        private async Task<RequestChangeOfSupplierResult> RunInputValidationsAsync(RequestChangeOfSupplier command)
+        private async Task<BusinessProcessResult> RunInputValidationsAsync(RequestChangeOfSupplier command)
         {
             var result = await _ruleEngine.ValidateAsync(command).ConfigureAwait(false);
             if (result.Success)
             {
-                return RequestChangeOfSupplierResult.Success();
+                return BusinessProcessResult.Success();
             }
 
             var errors = result.Select(error => error.RuleNumber).ToList();
-            return RequestChangeOfSupplierResult.Reject(errors);
+            return BusinessProcessResult.Reject(errors);
         }
 
-        private async Task<RequestChangeOfSupplierResult> RunPreChecksAsync(RequestChangeOfSupplier request)
+        private async Task<BusinessProcessResult> RunPreChecksAsync(RequestChangeOfSupplier request)
         {
            var preCheckResults = new List<string>();
 
@@ -103,14 +104,14 @@ namespace Energinet.DataHub.MarketData.Application.ChangeOfSupplier
            }
 
            return preCheckResults.Count > 0
-               ? RequestChangeOfSupplierResult.Reject(preCheckResults)
-               : RequestChangeOfSupplierResult.Success();
+               ? BusinessProcessResult.Reject(preCheckResults)
+               : BusinessProcessResult.Success();
         }
 
-        private RequestChangeOfSupplierResult CheckBusinessRules(RequestChangeOfSupplier command, MeteringPoint meteringPoint)
+        private BusinessProcessResult CheckBusinessRules(RequestChangeOfSupplier command, MeteringPoint meteringPoint)
         {
             var businessOperationValidation =
-                meteringPoint.CanChangeSupplier(new MarketParticipantMrid(command.EnergySupplier.MRID!), command.StartDate, _systemTimeProvider);
+                meteringPoint.CanChangeSupplier(new GlnNumber(command.EnergySupplier.MRID!), command.StartDate, _systemTimeProvider);
 
             var brokenRuleErrors = businessOperationValidation.Rules
                 .Where(rule => rule.IsBroken)
@@ -118,8 +119,8 @@ namespace Energinet.DataHub.MarketData.Application.ChangeOfSupplier
                 .ToList();
 
             return brokenRuleErrors.Count > 0
-                ? RequestChangeOfSupplierResult.Reject(brokenRuleErrors)
-                : RequestChangeOfSupplierResult.Success();
+                ? BusinessProcessResult.Reject(brokenRuleErrors)
+                : BusinessProcessResult.Success();
         }
 
         private async Task<bool> EnergySupplierIsUnknownAsync(string energySupplierId)

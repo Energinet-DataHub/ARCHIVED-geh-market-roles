@@ -21,7 +21,6 @@ using Xunit;
 
 namespace Energinet.DataHub.MarketData.Tests.ApplyDBMigrationsApp.Helpers
 {
-    [Trait("Category", "Unit")]
     public class ResultReporterTests
     {
         private const int SuccessResult = 0;

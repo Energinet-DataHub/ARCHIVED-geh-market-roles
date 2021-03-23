@@ -12,8 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Linq;
+using Energinet.DataHub.MarketData.Domain.Customers;
+using Energinet.DataHub.MarketData.Domain.EnergySuppliers;
 using Energinet.DataHub.MarketData.Domain.MeteringPoints;
 using Energinet.DataHub.MarketData.Domain.MeteringPoints.Events;
+using Energinet.DataHub.MarketData.Domain.MeteringPoints.Processes;
+using Energinet.DataHub.MarketData.Domain.MeteringPoints.Processes.ChangeOfSupplier.Events;
 using Energinet.DataHub.MarketData.Domain.MeteringPoints.Rules.ChangeEnergySupplier;
 using Energinet.DataHub.MarketData.Domain.SeedWork;
 using GreenEnergyHub.TestHelpers.Traits;
@@ -30,6 +36,174 @@ namespace Energinet.DataHub.MarketData.Tests.Domain.MeteringPoints
         public ChangeSupplierTests()
         {
             _systemDateTimeProvider = new SystemDateTimeProviderStub();
+        }
+
+        [Fact]
+        public void Initiate_WhenNoInterferringProcessesExists_EventIsRaised()
+        {
+            var supplier = new BalanceSupplier(
+                new BalanceSupplierId(CreateBalanceSupplierId().Value),
+                _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)));
+
+            var meteringPoint = new MeteringPoint(
+                CreateGsrnNumber(),
+                MeteringPointType.Consumption,
+                supplier);
+
+            meteringPoint.InitiateChangeOfSupplier(
+                new ProcessId("FakeRegistrationId"),
+                new GlnNumber("FakeBalanceSupplierId"),
+                _systemDateTimeProvider.Now(),
+                _systemDateTimeProvider);
+
+            Assert.Contains(meteringPoint.GetDomainEvents(), e => e is ChangeOfSupplierInitiated);
+        }
+
+        [Fact]
+        public void Initiate_WhenEffectuationIsCurrentDate_NotificationDateCurrentDate()
+        {
+            var supplier = new BalanceSupplier(
+                new BalanceSupplierId(CreateBalanceSupplierId().Value),
+                _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)));
+
+            var meteringPoint = new MeteringPoint(
+                CreateGsrnNumber(),
+                MeteringPointType.Consumption,
+                supplier);
+
+            meteringPoint.InitiateChangeOfSupplier(
+                new ProcessId("FakeRegistrationId"),
+                new GlnNumber("FakeBalanceSupplierId"),
+                _systemDateTimeProvider.Now(),
+                _systemDateTimeProvider);
+
+            Assert.Contains(meteringPoint.GetDomainEvents(), e => e is StateChangedToAwaitingNotifySupplier);
+        }
+
+        [Fact]
+        public void Initiate_WhenEffectuationIsNotCurrentDate_NotificationDateIsThreeDaysFromEffectuationDate()
+        {
+            var supplier = new BalanceSupplier(
+                new BalanceSupplierId(CreateBalanceSupplierId().Value),
+                _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)));
+
+            var meteringPoint = new MeteringPoint(
+                CreateGsrnNumber(),
+                MeteringPointType.Consumption,
+                supplier);
+
+            var effectuationDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(30));
+            meteringPoint.InitiateChangeOfSupplier(
+                new ProcessId("FakeRegistrationId"),
+                new GlnNumber("FakeBalanceSupplierId"),
+                effectuationDate,
+                _systemDateTimeProvider);
+
+            var expectedNotificationDate = effectuationDate.Minus(Duration.FromDays(3));
+
+            var @event = meteringPoint.GetDomainEvents()
+                .First(e => e is StateChangedToAwaitingNotifySupplier) as StateChangedToAwaitingNotifySupplier;
+
+            Assert.Equal(expectedNotificationDate, @event!.NotifyOn);
+        }
+
+        [Fact]
+        public void SetSupplierNotifiedStatus_WhenStatusIsAwaitingNotifySupplier_AwaitingEffectuationDate()
+        {
+            var supplier = new BalanceSupplier(
+                new BalanceSupplierId(CreateBalanceSupplierId().Value),
+                _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)));
+
+            var meteringPoint = new MeteringPoint(
+                CreateGsrnNumber(),
+                MeteringPointType.Consumption,
+                supplier);
+
+            var effectuationDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(30));
+            var processId = new ProcessId("FakeProcessId");
+            meteringPoint.InitiateChangeOfSupplier(
+                processId,
+                new GlnNumber("FakeBalanceSupplierId"),
+                effectuationDate,
+                _systemDateTimeProvider);
+
+            meteringPoint.SetSupplierNotifiedStatus(processId);
+
+            Assert.Contains(meteringPoint.GetDomainEvents(), e => e is StateChangedToAwaitingEffectuationDate);
+        }
+
+        [Fact]
+        public void CompleteProcess_BeforeEffectuationDate_ThrowsException()
+        {
+            var supplier = new BalanceSupplier(
+                new BalanceSupplierId(CreateBalanceSupplierId().Value),
+                _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)));
+
+            var meteringPoint = new MeteringPoint(
+                CreateGsrnNumber(),
+                MeteringPointType.Consumption,
+                supplier);
+
+            var effectuationDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(30));
+            var processId = new ProcessId("FakeProcessId");
+            meteringPoint.InitiateChangeOfSupplier(
+                processId,
+                new GlnNumber("FakeBalanceSupplierId"),
+                effectuationDate,
+                _systemDateTimeProvider);
+
+            meteringPoint.SetSupplierNotifiedStatus(processId);
+
+            Assert.Throws<BusinessProcessException>(() => meteringPoint.CompleteProcess(processId, _systemDateTimeProvider));
+        }
+
+        [Fact]
+        public void CompleteProcess_WhileStatusIsNotPending_ThrowsException()
+        {
+            var supplier = new BalanceSupplier(
+                new BalanceSupplierId(CreateBalanceSupplierId().Value),
+                _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)));
+
+            var meteringPoint = new MeteringPoint(
+                CreateGsrnNumber(),
+                MeteringPointType.Consumption,
+                supplier);
+
+            var effectuationDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(30));
+            var processId = new ProcessId("FakeProcessId");
+            meteringPoint.InitiateChangeOfSupplier(
+                processId,
+                new GlnNumber("FakeBalanceSupplierId"),
+                effectuationDate,
+                _systemDateTimeProvider);
+
+            Assert.Throws<BusinessProcessException>(() => meteringPoint.CompleteProcess(processId, _systemDateTimeProvider));
+        }
+
+        [Fact]
+        public void CompleteProcess_OnEffectuationDate_SupplierIsChanged()
+        {
+            var supplier = new BalanceSupplier(
+                new BalanceSupplierId(CreateBalanceSupplierId().Value),
+                _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)));
+
+            var meteringPoint = new MeteringPoint(
+                CreateGsrnNumber(),
+                MeteringPointType.Consumption,
+                supplier);
+
+            var effectuationDate = _systemDateTimeProvider.Now();
+            var processId = new ProcessId("FakeProcessId");
+            meteringPoint.InitiateChangeOfSupplier(
+                processId,
+                new GlnNumber("FakeBalanceSupplierId"),
+                effectuationDate,
+                _systemDateTimeProvider);
+
+            meteringPoint.SetSupplierNotifiedStatus(processId);
+            meteringPoint.CompleteProcess(processId, _systemDateTimeProvider);
+
+            Assert.Contains(meteringPoint.GetDomainEvents(), e => e is BalanceSupplierChanged);
         }
 
         [Theory]
@@ -72,18 +246,19 @@ namespace Energinet.DataHub.MarketData.Tests.Domain.MeteringPoints
 
             var result = CanChangeSupplier(meteringPoint);
 
-            Assert.Contains(result.Rules, x => x is MustHaveEnergySupplierAssociatedRule && x.IsBroken);
+            Assert.Contains(result.Rules, x => x is MustHaveBalanceSupplierAssociatedRule && x.IsBroken);
         }
 
         [Fact]
         public void Register_WhenChangeOfSupplierIsRegisteredOnSameDate_IsNotPossible()
         {
             var customerId = CreateCustomerId();
-            var energySupplierId = CreateEnergySupplierId();
+            var balanceSupplierId = CreateBalanceSupplierId();
             var meteringPoint = CreateMeteringPoint(MeteringPointType.Consumption);
-            meteringPoint.RegisterMoveIn(customerId, energySupplierId, GetFakeEffectuationDate().Minus(Duration.FromDays(1)));
-            meteringPoint.ActivateMoveIn(customerId, energySupplierId);
-            meteringPoint.RegisterChangeOfEnergySupplier(CreateEnergySupplierId(), _systemDateTimeProvider.Now(), _systemDateTimeProvider);
+            var registrationId = new ProcessId(Guid.NewGuid().ToString());
+            meteringPoint.RegisterMoveIn(registrationId, customerId, balanceSupplierId, GetFakeEffectuationDate().Minus(Duration.FromDays(1)));
+            meteringPoint.ActivateMoveIn(registrationId);
+            meteringPoint.InitiateChangeOfSupplier(new ProcessId(Guid.NewGuid().ToString()), CreateBalanceSupplierId(), _systemDateTimeProvider.Now(), _systemDateTimeProvider);
 
             var result = CanChangeSupplier(meteringPoint);
 
@@ -94,7 +269,8 @@ namespace Energinet.DataHub.MarketData.Tests.Domain.MeteringPoints
         public void Register_WhenMoveInIsAlreadyRegisteredOnSameDate_IsNotPossible()
         {
             var meteringPoint = CreateMeteringPoint(MeteringPointType.Consumption);
-            meteringPoint.RegisterMoveIn(CreateCustomerId(), CreateEnergySupplierId(), _systemDateTimeProvider.Now());
+            var registrationId = new ProcessId(Guid.NewGuid().ToString());
+            meteringPoint.RegisterMoveIn(registrationId, CreateCustomerId(), CreateBalanceSupplierId(), _systemDateTimeProvider.Now());
 
             var result = CanChangeSupplier(meteringPoint);
 
@@ -105,7 +281,9 @@ namespace Energinet.DataHub.MarketData.Tests.Domain.MeteringPoints
         public void Register_WhenMoveOutIsAlreadyRegisteredOnSameDate_IsNotPossible()
         {
             var meteringPoint = CreateMeteringPoint(MeteringPointType.Consumption);
-            meteringPoint.RegisterMoveIn(CreateCustomerId(), CreateEnergySupplierId(), GetFakeEffectuationDate().Minus(Duration.FromDays(1)));
+            var registrationId = new ProcessId(Guid.NewGuid().ToString());
+            meteringPoint.RegisterMoveIn(registrationId, CreateCustomerId(), CreateBalanceSupplierId(), GetFakeEffectuationDate().Minus(Duration.FromDays(1)));
+            meteringPoint.ActivateMoveIn(registrationId);
             meteringPoint.RegisterMoveOut(CreateCustomerId(), _systemDateTimeProvider.Now());
 
             var result = CanChangeSupplier(meteringPoint);
@@ -129,23 +307,24 @@ namespace Energinet.DataHub.MarketData.Tests.Domain.MeteringPoints
         {
             var meteringPoint = CreateMeteringPoint(MeteringPointType.Consumption);
             var customerId = CreateCustomerId();
-            var energySupplierId = CreateEnergySupplierId();
-            meteringPoint.RegisterMoveIn(customerId, energySupplierId, GetFakeEffectuationDate().Minus(Duration.FromDays(1)));
-            meteringPoint.ActivateMoveIn(customerId, energySupplierId);
+            var balanceSupplierId = CreateBalanceSupplierId();
+            var registrationId = new ProcessId(Guid.NewGuid().ToString());
+            meteringPoint.RegisterMoveIn(registrationId, customerId, balanceSupplierId, GetFakeEffectuationDate().Minus(Duration.FromDays(1)));
+            meteringPoint.ActivateMoveIn(registrationId);
 
-            meteringPoint.RegisterChangeOfEnergySupplier(CreateEnergySupplierId(), _systemDateTimeProvider.Now(), _systemDateTimeProvider);
+            meteringPoint.InitiateChangeOfSupplier(new ProcessId("FakeRegistrationId"), new GlnNumber("FakeBalanceSupplierId"), _systemDateTimeProvider.Now(), _systemDateTimeProvider);
 
-            Assert.Contains(meteringPoint.DomainEvents!, e => e is EnergySupplierChangeRegistered);
+            Assert.Contains(meteringPoint.DomainEvents!, e => e is ChangeOfSupplierInitiated);
         }
 
-        private static MarketParticipantMrid CreateCustomerId()
+        private static CustomerId CreateCustomerId()
         {
-            return new MarketParticipantMrid("1");
+            return new CustomerId("1");
         }
 
-        private static MarketParticipantMrid CreateEnergySupplierId()
+        private static GlnNumber CreateBalanceSupplierId()
         {
-            return new MarketParticipantMrid("FakeId");
+            return new GlnNumber("FakeBalanceSupplierId");
         }
 
         private static MeteringPoint CreateMeteringPoint(MeteringPointType meteringPointType)
@@ -171,12 +350,12 @@ namespace Energinet.DataHub.MarketData.Tests.Domain.MeteringPoints
 
         private BusinessRulesValidationResult CanChangeSupplier(MeteringPoint meteringPoint)
         {
-            return meteringPoint.CanChangeSupplier(CreateEnergySupplierId(), _systemDateTimeProvider.Now(), _systemDateTimeProvider);
+            return meteringPoint.CanChangeSupplier(CreateBalanceSupplierId(), _systemDateTimeProvider.Now(), _systemDateTimeProvider);
         }
 
         private BusinessRulesValidationResult CanChangeSupplier(MeteringPoint meteringPoint, Instant effectuationDate)
         {
-            return meteringPoint.CanChangeSupplier(CreateEnergySupplierId(), effectuationDate, _systemDateTimeProvider);
+            return meteringPoint.CanChangeSupplier(CreateBalanceSupplierId(), effectuationDate, _systemDateTimeProvider);
         }
     }
 }

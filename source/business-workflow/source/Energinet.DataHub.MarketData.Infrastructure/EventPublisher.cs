@@ -24,14 +24,14 @@ namespace Energinet.DataHub.MarketData.Infrastructure
 {
     public class EventPublisher : IEventPublisher
     {
-        private readonly IOutgoingActorMessage _outgoingActorMessage;
+        private readonly IOutbox _outbox;
 
         public EventPublisher()
         {
-            _outgoingActorMessage = new OutgoingActorMessageStub();
+            _outbox = new OutboxStub();
         }
 
-        public IOutgoingActorMessage OutgoingActorMessage => _outgoingActorMessage;
+        public IOutbox Outbox => _outbox;
 
         public Task PublishAsync<TIntegrationEvent>(TIntegrationEvent integrationEvent)
             where TIntegrationEvent : IIntegrationEvent
@@ -43,7 +43,7 @@ namespace Energinet.DataHub.MarketData.Infrastructure
 
             var type = integrationEvent.GetType().FullName;
             var data = JsonSerializer.Serialize(integrationEvent);
-            _outgoingActorMessage.Add(new OutgoingActorMessage(SystemClock.Instance.GetCurrentInstant(), type!, data));
+            _outbox.Add(new OutboxMessage(SystemClock.Instance.GetCurrentInstant(), type!, data));
             return Task.CompletedTask;
         }
     }

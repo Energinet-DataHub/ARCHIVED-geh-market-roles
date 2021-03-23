@@ -17,6 +17,7 @@ using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 using Energinet.DataHub.MarketData.Application.Common;
+using Energinet.DataHub.MarketData.Application.Outbox;
 using Energinet.DataHub.MarketData.Infrastructure.DataPersistence;
 using Energinet.DataHub.MarketData.Infrastructure.Outbox;
 
@@ -24,10 +25,12 @@ namespace Energinet.DataHub.MarketData.Infrastructure.Outbox
 {
     public class ForwardMessageRepository : IForwardMessageRepository
     {
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public ForwardMessageRepository(IDbConnectionFactory connectionFactory)
+        public ForwardMessageRepository(IUnitOfWork unitOfWork, IDbConnectionFactory connectionFactory)
         {
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 

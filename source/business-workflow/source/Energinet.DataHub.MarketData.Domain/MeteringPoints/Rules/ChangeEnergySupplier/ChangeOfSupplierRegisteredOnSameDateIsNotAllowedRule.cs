@@ -21,12 +21,12 @@ namespace Energinet.DataHub.MarketData.Domain.MeteringPoints.Rules.ChangeEnergyS
 {
     public class ChangeOfSupplierRegisteredOnSameDateIsNotAllowedRule : IBusinessRule
     {
-        private readonly IReadOnlyList<Relationship> _businessProcesses;
+        private readonly IReadOnlyList<BalanceSupplier> _registrations;
         private readonly Instant _effectuationDate;
 
-        public ChangeOfSupplierRegisteredOnSameDateIsNotAllowedRule(IReadOnlyList<Relationship> businessProcesses, Instant effectuationDate)
+        public ChangeOfSupplierRegisteredOnSameDateIsNotAllowedRule(IReadOnlyList<BalanceSupplier> registrations, Instant effectuationDate)
         {
-            _businessProcesses = businessProcesses;
+            _registrations = registrations;
             _effectuationDate = effectuationDate;
         }
 
@@ -36,9 +36,8 @@ namespace Energinet.DataHub.MarketData.Domain.MeteringPoints.Rules.ChangeEnergyS
 
         private bool ProcessAlreadyRegistered()
         {
-            return _businessProcesses.Any(process =>
-                process.EffectuationDate.ToDateTimeUtc().Date.Equals(_effectuationDate.ToDateTimeUtc().Date)
-                && process.Type == RelationshipType.EnergySupplier);
+            return _registrations.Any(process =>
+                process.StartOn.ToDateTimeUtc().Date.Equals(_effectuationDate.ToDateTimeUtc().Date));
         }
     }
 }

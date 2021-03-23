@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using System;
-using Azure.Messaging.ServiceBus;
 using Dapper.NodaTime;
 using Energinet.DataHub.MarketData.Application.ChangeOfSupplier;
 using Energinet.DataHub.MarketData.Application.Common;
+using Energinet.DataHub.MarketData.Application.Outbox;
 using Energinet.DataHub.MarketData.Domain.EnergySuppliers;
 using Energinet.DataHub.MarketData.Domain.MeteringPoints;
 using Energinet.DataHub.MarketData.Domain.SeedWork;
@@ -33,7 +33,6 @@ using GreenEnergyHub.Json;
 using GreenEnergyHub.Messaging;
 using MediatR;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
-using Microsoft.Azure.WebJobs.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -51,7 +50,6 @@ namespace Energinet.DataHub.MarketData.EntryPoint
             }
 
             builder.Services.AddGreenEnergyHub(typeof(RequestChangeOfSupplier).Assembly, typeof(RequestChangeSupplierCommandHandler).Assembly);
-            builder.Services.AddUnitOfWork("MARKET_DATA_DB_CONNECTION_STRING");
             builder.Services.AddSingleton<IJsonSerializer, JsonSerializer>();
             builder.Services.AddScoped<IHubRehydrator, JsonMessageDeserializer>();
 
@@ -62,32 +60,20 @@ namespace Energinet.DataHub.MarketData.EntryPoint
                 return new SqlDbConnectionFactory(connectionString);
             });
 
-            builder.Services.AddScoped(serviceProvider =>
-            {
-                var configuration = serviceProvider.GetService<IConfiguration>();
-                var connectionString = configuration.GetValue<string>("POST_OFFICE_QUEUE_CONNECTION_STRING");
-                var topicName = configuration.GetValue<string>("POST_OFFICE_QUEUE_TOPIC_NAME");
-                var client = new ServiceBusClient(connectionString);
-                return client.CreateSender(topicName);
-            });
-
             DapperNodaTimeSetup.Register();
 
-            builder.Services.AddScoped<IUnitOfWorkCallback, UnitOfWorkCallback>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<ISystemDateTimeProvider, SystemDateTimeProvider>();
             builder.Services.AddScoped<IEventPublisher, EventPublisher>();
             builder.Services.AddScoped<IActorMessagePublisher, ActorMessagePublisher>();
             builder.Services.AddScoped<IMeteringPointRepository, MeteringPointRepository>();
             builder.Services.AddScoped<IEnergySupplierRepository, EnergySupplierRepository>();
             builder.Services.AddScoped<IForwardMessageRepository, ForwardMessageRepository>();
-            builder.Services.AddScoped<IForwardMessageService, ForwardMessageService>();
-            builder.Services.AddScoped<IPostOfficeService, PostOfficeService>();
-            builder.Services.AddScoped<DomainEventsContext>();
+            builder.Services.AddScoped<ForwardMessageService>();
 
-            builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(DomainEventPublisherBehavior<,>));
             builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkHandlerBehavior<,>));
             builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(PublishIntegrationEventsHandlerBehavior<,>));
-            builder.Services.AddScoped<IPipelineBehavior<RequestChangeOfSupplier, RequestChangeOfSupplierResult>, PublishActorMessageHandlerBehavior>();
+            builder.Services.AddScoped<IPipelineBehavior<RequestChangeOfSupplier, BusinessProcessResult>, PublishActorMessageHandlerBehavior>();
         }
     }
 }

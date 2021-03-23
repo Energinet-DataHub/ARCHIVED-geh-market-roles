@@ -21,12 +21,12 @@ namespace Energinet.DataHub.MarketData.Domain.MeteringPoints.Rules.ChangeEnergyS
 {
     public class MoveOutRegisteredOnSameDateIsNotAllowedRule : IBusinessRule
     {
-        private readonly IReadOnlyList<Relationship> _processes;
+        private readonly IReadOnlyList<Consumer> _consumers;
         private readonly Instant _effectuationDate;
 
-        public MoveOutRegisteredOnSameDateIsNotAllowedRule(IReadOnlyList<Relationship> processes, Instant effectuationDate)
+        public MoveOutRegisteredOnSameDateIsNotAllowedRule(IReadOnlyList<Consumer> consumers, Instant effectuationDate)
         {
-            _processes = processes;
+            _consumers = consumers;
             _effectuationDate = effectuationDate;
         }
 
@@ -36,8 +36,8 @@ namespace Energinet.DataHub.MarketData.Domain.MeteringPoints.Rules.ChangeEnergyS
 
         private bool HasMoveOutRegisteredOnDate()
         {
-            return _processes.Any(p => p.Type == RelationshipType.MoveOut &&
-                                       p.EffectuationDate.ToDateTimeUtc().Date
+            return _consumers.Any(p =>
+                                       p.MoveOutOn.ToDateTimeUtc().Date
                                            .Equals(_effectuationDate.ToDateTimeUtc().Date));
         }
     }

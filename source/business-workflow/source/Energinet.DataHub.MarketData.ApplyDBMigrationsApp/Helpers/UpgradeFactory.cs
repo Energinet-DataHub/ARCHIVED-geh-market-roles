@@ -20,7 +20,6 @@ namespace Energinet.DataHub.MarketData.ApplyDBMigrationsApp.Helpers
 {
     public static class UpgradeFactory
     {
-        // TODO: Delete this method once scripts have been ported to new format.
         public static UpgradeEngine GetUpgradeEngine(string connectionString)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
@@ -35,33 +34,6 @@ namespace Energinet.DataHub.MarketData.ApplyDBMigrationsApp.Helpers
                 .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
                 .LogToConsole()
                 .Build();
-        }
-
-        public static UpgradeEngine GetUpgradeEngine(string connectionString, Func<string, bool> scriptFilter, bool isDryRun = false)
-        {
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new ArgumentException("Connection string must have a value");
-            }
-
-            EnsureDatabase.For.SqlDatabase(connectionString);
-
-            var builder = DeployChanges.To
-                .SqlDatabase(connectionString)
-                .WithScriptNameComparer(new ScriptComparer())
-                .WithScripts(new CustomScriptProvider(Assembly.GetExecutingAssembly(), scriptFilter))
-                .LogToConsole();
-
-            if (isDryRun)
-            {
-                builder.WithTransactionAlwaysRollback();
-            }
-            else
-            {
-                builder.WithTransaction();
-            }
-
-            return builder.Build();
         }
     }
 }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Energinet.DataHub.MarketData.Domain.SeedWork;
 
 namespace Energinet.DataHub.MarketData.Domain.EnergySuppliers
@@ -23,6 +24,12 @@ namespace Energinet.DataHub.MarketData.Domain.EnergySuppliers
             Value = value;
         }
 
+        public static GlnNumber Empty => new GlnNumber(string.Empty);
+
         public string Value { get; }
+
+        public static bool IsEmpty(GlnNumber glnNumber) => string.IsNullOrEmpty(glnNumber.Value);
+
+        public bool IsEmpty() => IsEmpty(this);
     }
 }

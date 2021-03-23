@@ -15,7 +15,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Energinet.DataHub.MarketData.Domain.Customers;
+using Energinet.DataHub.MarketData.Domain.EnergySuppliers;
 using Energinet.DataHub.MarketData.Domain.MeteringPoints.Events;
+using Energinet.DataHub.MarketData.Domain.MeteringPoints.Processes;
+using Energinet.DataHub.MarketData.Domain.MeteringPoints.Processes.ChangeOfSupplier;
+using Energinet.DataHub.MarketData.Domain.MeteringPoints.Processes.ChangeOfSupplier.Events;
 using Energinet.DataHub.MarketData.Domain.MeteringPoints.Rules.ChangeEnergySupplier;
 using Energinet.DataHub.MarketData.Domain.SeedWork;
 using NodaTime;
@@ -25,9 +30,20 @@ namespace Energinet.DataHub.MarketData.Domain.MeteringPoints
     public sealed class MeteringPoint : AggregateRootBase
     {
         private readonly MeteringPointType _meteringPointType;
-        private readonly List<Relationship> _relationships = new List<Relationship>();
         private readonly bool _isProductionObligated;
+        private readonly List<BalanceSupplier> _balanceSuppliers = new List<BalanceSupplier>();
+        private readonly List<BusinessProcess> _businessProcesses = new List<BusinessProcess>();
         private PhysicalState _physicalState;
+        private List<Consumer> _consumers = new List<Consumer>();
+
+        public MeteringPoint(GsrnNumber gsrnNumber, MeteringPointType meteringPointType, BalanceSupplier balanceSupplier)
+        {
+            GsrnNumber = gsrnNumber;
+            _balanceSuppliers.Add(balanceSupplier);
+            _meteringPointType = meteringPointType;
+            _physicalState = PhysicalState.New;
+            AddDomainEvent(new MeteringPointCreated(GsrnNumber, _meteringPointType));
+        }
 
         public MeteringPoint(GsrnNumber gsrnNumber, MeteringPointType meteringPointType)
         {
@@ -43,13 +59,13 @@ namespace Energinet.DataHub.MarketData.Domain.MeteringPoints
             _isProductionObligated = isProductionObligated;
         }
 
-        private MeteringPoint(GsrnNumber gsrnNumber, MeteringPointType meteringPointType, bool isProductionObligated, List<Relationship> relationships, int id, int version, PhysicalState physicalState)
+        private MeteringPoint(GsrnNumber gsrnNumber, MeteringPointType meteringPointType, bool isProductionObligated, List<Consumer> consumers, List<BalanceSupplier> balanceSuppliers, int id, int version, PhysicalState physicalState)
         {
             GsrnNumber = gsrnNumber;
             _meteringPointType = meteringPointType;
             _physicalState = physicalState;
             _isProductionObligated = isProductionObligated;
-            _relationships = relationships;
+            _consumers = consumers;
             Id = id;
             Version = version;
         }
@@ -72,17 +88,18 @@ namespace Energinet.DataHub.MarketData.Domain.MeteringPoints
                 GsrnNumber.Create(snapshot.GsrnNumber),
                 MeteringPointType.FromValue<MeteringPointType>(snapshot.MeteringPointType),
                 snapshot.IsProductionObligated,
-                snapshot.Relationships.Select(r => Relationship.CreateFrom(r)).ToList(),
+                snapshot.Consumers.Select(r => Consumer.CreateFrom(r)).ToList(),
+                snapshot.BalanceSuppliers.Select(r => BalanceSupplier.CreateFrom(r)).ToList(),
                 snapshot.Id,
                 snapshot.Version,
                 PhysicalState.FromValue<PhysicalState>(snapshot.PhysicalState));
         }
 
-        public BusinessRulesValidationResult CanChangeSupplier(MarketParticipantMrid energySupplierMrid, Instant effectuationDate, ISystemDateTimeProvider systemDateTimeProvider)
+        public BusinessRulesValidationResult CanChangeSupplier(GlnNumber newBalanceSupplierId, Instant effectuationDate, ISystemDateTimeProvider systemDateTimeProvider)
         {
-            if (energySupplierMrid is null)
+            if (newBalanceSupplierId is null)
             {
-                throw new ArgumentNullException(nameof(energySupplierMrid));
+                throw new ArgumentNullException(nameof(newBalanceSupplierId));
             }
 
             if (systemDateTimeProvider == null)
@@ -95,25 +112,52 @@ namespace Energinet.DataHub.MarketData.Domain.MeteringPoints
                 new MeteringPointMustBeEnergySuppliableRule(_meteringPointType),
                 new ProductionMeteringPointMustBeObligatedRule(_meteringPointType, _isProductionObligated),
                 new CannotBeInStateOfClosedDownRule(_physicalState),
-                new MustHaveEnergySupplierAssociatedRule(_relationships.AsReadOnly()),
-                new ChangeOfSupplierRegisteredOnSameDateIsNotAllowedRule(_relationships.AsReadOnly(), effectuationDate),
-                new MoveInRegisteredOnSameDateIsNotAllowedRule(_relationships.AsReadOnly(), effectuationDate),
-                new MoveOutRegisteredOnSameDateIsNotAllowedRule(_relationships.AsReadOnly(), effectuationDate),
+                //new MustHaveBalanceSupplierAssociatedRule(BalanceSupplier),
+                new ChangeOfSupplierRegisteredOnSameDateIsNotAllowedRule(_balanceSuppliers.AsReadOnly(), effectuationDate),
+                new MoveInRegisteredOnSameDateIsNotAllowedRule(_consumers.AsReadOnly(), effectuationDate),
+                new MoveOutRegisteredOnSameDateIsNotAllowedRule(_consumers.AsReadOnly(), effectuationDate),
                 new EffectuationDateCannotBeInThePastRule(effectuationDate, systemDateTimeProvider.Now()),
             };
 
             return new BusinessRulesValidationResult(rules);
         }
 
-        public void RegisterChangeOfEnergySupplier(MarketParticipantMrid energySupplierMrid, Instant effectuationDate, ISystemDateTimeProvider systemDateTimeProvider)
+        public void InitiateChangeOfSupplier(ProcessId processId, GlnNumber newBalanceSupplierId, Instant effectuationDate, ISystemDateTimeProvider systemDateTimeProvider)
         {
-            if (CanChangeSupplier(energySupplierMrid, effectuationDate, systemDateTimeProvider).AreAnyBroken == true)
+            if (CanChangeSupplier(newBalanceSupplierId, effectuationDate, systemDateTimeProvider).AreAnyBroken == true)
             {
                 throw new InvalidOperationException();
             }
 
-            _relationships.Add(new Relationship(energySupplierMrid,  RelationshipType.EnergySupplier, effectuationDate));
-            AddDomainEvent(new EnergySupplierChangeRegistered(GsrnNumber, energySupplierMrid, effectuationDate));
+            var process = new ChangeOfSupplierProcess(
+                this,
+                processId,
+                new BalanceSupplierId(newBalanceSupplierId.Value),
+                effectuationDate,
+                systemDateTimeProvider);
+            _businessProcesses.Add(process);
+        }
+
+        public void SetSupplierNotifiedStatus(ProcessId processId)
+        {
+            if (!(_businessProcesses
+                .FirstOrDefault(p => p.ProcessId.Equals(processId)) is ChangeOfSupplierProcess process))
+            {
+                throw new BusinessProcessNotFoundException(processId);
+            }
+
+            process.SetAwaitingEffectuationDateStatus();
+        }
+
+        public void CompleteProcess(ProcessId processId, ISystemDateTimeProvider systemDateTimeProvider)
+        {
+            var process = GetProcessOrThrow<BusinessProcess>(processId);
+            process.EnsureCompletion(systemDateTimeProvider);
+
+            if (!(process.BalanceSupplierId is null !))
+            {
+                SetSupplier(process.BalanceSupplierId!, process.EffectuationDate);
+            }
         }
 
         public void CloseDown()
@@ -125,57 +169,111 @@ namespace Energinet.DataHub.MarketData.Domain.MeteringPoints
             }
         }
 
-        public void RegisterMoveIn(MarketParticipantMrid customerMrid, MarketParticipantMrid energySupplierMrid, Instant effectuationDate)
+        public void RegisterMoveIn(ProcessId processId, CustomerId customerId, GlnNumber balanceSupplierId, Instant effectuationDate)
         {
-            if (customerMrid is null)
+            if (customerId is null)
             {
-                throw new ArgumentNullException(nameof(customerMrid));
+                throw new ArgumentNullException(nameof(customerId));
             }
 
-            if (energySupplierMrid is null)
+            if (balanceSupplierId is null)
             {
-                throw new ArgumentNullException(nameof(energySupplierMrid));
+                throw new ArgumentNullException(nameof(balanceSupplierId));
             }
 
-            _relationships.Add(new Relationship(customerMrid, RelationshipType.Customer1, effectuationDate));
-            _relationships.Add(new Relationship(energySupplierMrid, RelationshipType.EnergySupplier, effectuationDate));
+            _consumers.Add(new Consumer(customerId, effectuationDate));
+            _balanceSuppliers.Add(new BalanceSupplier(new BalanceSupplierId(balanceSupplierId.Value),  effectuationDate));
         }
 
-        public void ActivateMoveIn(MarketParticipantMrid customerMrid, MarketParticipantMrid energySupplierMrid)
+        public void ActivateMoveIn(ProcessId processId)
         {
-            if (customerMrid is null)
-            {
-                throw new ArgumentNullException(nameof(customerMrid));
-            }
+            // _consumers.Where(c => c.ProcessId.Equals(processId))
+            //     .ToList()
+            //     .ForEach(c => c.Activate());
 
-            if (energySupplierMrid is null)
-            {
-                throw new ArgumentNullException(nameof(energySupplierMrid));
-            }
-
-            var customerRelation = _relationships.First(r =>
-                r.MarketParticipantMrid.Equals(customerMrid) && r.Type == RelationshipType.Customer1);
-            customerRelation.Activate();
-
-            var energySupplierRelation = _relationships.First(r =>
-                r.MarketParticipantMrid.Equals(energySupplierMrid) && r.Type == RelationshipType.EnergySupplier);
-            energySupplierRelation.Activate();
+            // _balanceSuppliers
+            //     .First(b => b.ProcessId.Equals(processId))
+            //     .Activate();
         }
 
-        public void RegisterMoveOut(MarketParticipantMrid customerMrid, Instant effectuationDate)
+        public void RegisterMoveOut(CustomerId customerId, Instant effectuationDate)
         {
-            if (customerMrid is null)
+            if (customerId is null)
             {
-                throw new ArgumentNullException(nameof(customerMrid));
+                throw new ArgumentNullException(nameof(customerId));
             }
 
-            _relationships.Add(new Relationship(customerMrid, RelationshipType.MoveOut, effectuationDate));
+            var consumers = _consumers
+                .Where(c => c.CustomerId.Equals(customerId))
+                .ToList();
+
+            consumers.ForEach(c => c.MoveOut(effectuationDate));
         }
 
         public MeteringPointSnapshot GetSnapshot()
         {
-            var relationShips = _relationships.Select(r => r.GetSnapshot()).ToList();
-            return new MeteringPointSnapshot(Id, GsrnNumber.Value, _meteringPointType.Id, relationShips, _isProductionObligated, _physicalState.Id, Version);
+            var customerRegistrations = _consumers.Select(r => r.GetSnapshot()).ToList();
+            var balanceSupplierRegistrations = _balanceSuppliers.Select(r => r.GetSnapshot()).ToList();
+            return new MeteringPointSnapshot(
+                Id,
+                GsrnNumber.Value,
+                _meteringPointType.Id,
+                customerRegistrations,
+                balanceSupplierRegistrations,
+                _isProductionObligated,
+                _physicalState.Id,
+                Version);
+        }
+
+        public void CancelProcess(ProcessId processId)
+        {
+            var process = GetProcessOrThrow<BusinessProcess>(processId);
+            process.Cancel();
+        }
+
+        public BusinessRulesValidationResult CanCancelSupplierPendingRegistration(string registrationId, GlnNumber energySupplierId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CancelSupplierPendingRegistration(string registrationId, GlnNumber energySupplierId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IReadOnlyList<IDomainEvent> GetDomainEvents()
+        {
+            var domainEventsFromProcesses = _businessProcesses.SelectMany(p => p.DomainEvents);
+            return DomainEvents.Concat(domainEventsFromProcesses).ToList();
+        }
+
+        internal BalanceSupplier GetCurrentSupplier()
+        {
+            // TODO: How to handle NULL dates
+            return _balanceSuppliers
+                .FirstOrDefault(s => s.EndOn == NodaConstants.UnixEpoch) !;
+        }
+
+        private TProcessType GetProcessOrThrow<TProcessType>(ProcessId processId)
+        {
+            if (!(_businessProcesses
+                .FirstOrDefault(p => p.ProcessId.Equals(processId)) is TProcessType process))
+            {
+                throw new BusinessProcessNotFoundException(processId);
+            }
+
+            return process;
+        }
+
+        private void SetSupplier(BalanceSupplierId balanceSupplierId, Instant effectuationDate)
+        {
+            var currentSupplier = GetCurrentSupplier();
+            currentSupplier.End(effectuationDate);
+
+            var newBalanceSupplier = new BalanceSupplier(balanceSupplierId, effectuationDate);
+            _balanceSuppliers.Add(newBalanceSupplier);
+
+            AddDomainEvent(new BalanceSupplierChanged(GsrnNumber, currentSupplier.BalanceSupplierId, newBalanceSupplier.BalanceSupplierId, effectuationDate));
         }
     }
 }

@@ -21,7 +21,7 @@ using MediatR;
 
 namespace Energinet.DataHub.MarketData.Application.ChangeOfSupplier
 {
-    public class PublishActorMessageHandlerBehavior : IPipelineBehavior<RequestChangeOfSupplier, RequestChangeOfSupplierResult>
+    public class PublishActorMessageHandlerBehavior : IPipelineBehavior<RequestChangeOfSupplier, BusinessProcessResult>
     {
         private readonly IActorMessagePublisher _messagePublisher;
 
@@ -30,7 +30,7 @@ namespace Energinet.DataHub.MarketData.Application.ChangeOfSupplier
             _messagePublisher = messagePublisher ?? throw new ArgumentNullException(nameof(messagePublisher));
         }
 
-        public async Task<RequestChangeOfSupplierResult> Handle(RequestChangeOfSupplier command, CancellationToken cancellationToken, RequestHandlerDelegate<RequestChangeOfSupplierResult> next)
+        public async Task<BusinessProcessResult> Handle(RequestChangeOfSupplier command, CancellationToken cancellationToken, RequestHandlerDelegate<BusinessProcessResult> next)
         {
             if (command is null)
             {
@@ -59,19 +59,19 @@ namespace Energinet.DataHub.MarketData.Application.ChangeOfSupplier
         {
             // TODO: <INSERT MESSAGE ID> will be replaced in another PR
             var message = new RequestChangeOfSupplierApproved("<INSERT MESSAGE ID>", command.Transaction.MRID, command.MarketEvaluationPoint.MRid, command.EnergySupplier.MRID!);
-            return SendMessageAsync(message, command.EnergySupplier.MRID!);
+            return SendMessageAsync(message);
         }
 
-        private Task PublishRejectionMessageAsync(RequestChangeOfSupplier command, RequestChangeOfSupplierResult result)
+        private Task PublishRejectionMessageAsync(RequestChangeOfSupplier command, BusinessProcessResult businessProcessResult)
         {
             // TODO: <INSERT MESSAGE ID> will be replaced in another PR
-            var message = new RequestChangeOfSupplierRejected("<INSERT MESSAGE ID>", command.Transaction.MRID, command.MarketEvaluationPoint.MRid, result.Errors!);
-            return SendMessageAsync(message, command.EnergySupplier.MRID!);
+            var message = new RequestChangeOfSupplierRejected("<INSERT MESSAGE ID>", command.Transaction.MRID, command.MarketEvaluationPoint.MRid, command.EnergySupplier.MRID!, businessProcessResult.Errors!);
+            return SendMessageAsync(message);
         }
 
-        private Task SendMessageAsync<TMessage>(TMessage message, string recipient)
+        private Task SendMessageAsync<TMessage>(TMessage message)
         {
-            return _messagePublisher.PublishAsync(message, recipient);
+            return _messagePublisher.PublishAsync(message);
         }
     }
 }

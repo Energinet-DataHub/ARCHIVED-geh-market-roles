@@ -25,11 +25,12 @@ namespace Energinet.DataHub.MarketData.Application.ChangeOfSupplier.ActorMessage
         {
         }
 
-        public RequestChangeOfSupplierRejected(string messageId, string transactionId, string meteringPointId, IReadOnlyList<string> reasonCodes)
+        public RequestChangeOfSupplierRejected(string messageId, string transactionId, string meteringPointId, string requestingEnergySupplierId, IReadOnlyList<string> reasonCodes)
         {
             MessageId = messageId;
             TransactionId = transactionId;
             MeteringPointId = meteringPointId;
+            RequestingEnergySupplierId = requestingEnergySupplierId;
             ReasonCodes = reasonCodes;
         }
 
@@ -38,6 +39,8 @@ namespace Energinet.DataHub.MarketData.Application.ChangeOfSupplier.ActorMessage
         public string TransactionId { get; set; }
 
         public string MeteringPointId { get; set; }
+
+        public string RequestingEnergySupplierId { get; set; }
 
         public IReadOnlyList<string> ReasonCodes { get; set; }
     }

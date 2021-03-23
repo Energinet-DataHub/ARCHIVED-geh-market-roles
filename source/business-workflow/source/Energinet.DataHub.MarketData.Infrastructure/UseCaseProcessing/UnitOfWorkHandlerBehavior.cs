@@ -24,11 +24,11 @@ namespace Energinet.DataHub.MarketData.Infrastructure.UseCaseProcessing
     public class UnitOfWorkHandlerBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
     {
-        private readonly IUnitOfWorkCallback _unitOfWorkCallback;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UnitOfWorkHandlerBehavior(IUnitOfWorkCallback unitOfWorkCallback)
+        public UnitOfWorkHandlerBehavior(IUnitOfWork unitOfWork)
         {
-            _unitOfWorkCallback = unitOfWorkCallback ?? throw new ArgumentNullException(nameof(unitOfWorkCallback));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
@@ -39,7 +39,7 @@ namespace Energinet.DataHub.MarketData.Infrastructure.UseCaseProcessing
             }
 
             var result = await next().ConfigureAwait(false);
-            await _unitOfWorkCallback.CommitAsync().ConfigureAwait(false);
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
             return result;
         }
     }

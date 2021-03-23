@@ -25,25 +25,25 @@ namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence.MarketEval
         }
 
 #pragma warning disable CA1707
-        public RelationshipDataModel(int id, int marketParticipantId, int marketEvaluationPoint_Id, int type, Instant effectuationDate, int state, string mrid)
+        public RelationshipDataModel(int id, int marketParticipantId, int marketEvaluationPoint_Id, int type, Instant startDate, Instant endDate, string mrid)
         {
             Id = id;
             MarketEvaluationPointId = marketEvaluationPoint_Id;
             Mrid = mrid;
             MarketParticipantId = marketParticipantId;
             Type = type;
-            EffectuationDate = effectuationDate;
-            State = state;
+            StartDate = startDate;
+            EndDate = endDate;
         }
 
-        public RelationshipDataModel(int id, int marketEvaluationPoint_Id, string mrid, int type, Instant effectuationDate, int state)
+        public RelationshipDataModel(int id, int marketEvaluationPoint_Id, string mrid, int type, Instant startDate, Instant endDate)
         {
             Id = id;
             MarketEvaluationPointId = marketEvaluationPoint_Id;
             Mrid = mrid;
             Type = type;
-            EffectuationDate = effectuationDate;
-            State = state;
+            StartDate = startDate;
+            EndDate = endDate;
         }
 #pragma warning restore CA1707
 
@@ -57,8 +57,8 @@ namespace Energinet.DataHub.MarketData.Infrastructure.DataPersistence.MarketEval
 
         public int Type { get; set; }
 
-        public Instant EffectuationDate { get; set; }
+        public Instant StartDate { get; set; }
 
-        public int State { get; set; }
+        public Instant EndDate { get; set; }
     }
 }

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketData.Infrastructure.Outbox;
+using Energinet.DataHub.MarketData.Application.Outbox;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
@@ -21,19 +21,19 @@ namespace Energinet.DataHub.MarketData.EntryPoint
 {
     public class ActorMessageDispatcher
     {
-        private readonly IForwardMessageService _forwardMessageService;
+        private readonly ForwardMessageService _forwardMessageService;
 
-        public ActorMessageDispatcher(IForwardMessageService forwardMessageService)
+        public ActorMessageDispatcher(ForwardMessageService forwardMessageService)
         {
             _forwardMessageService = forwardMessageService;
         }
 
         [FunctionName("MessageDispatcher")]
         public async Task RunAsync(
-            [TimerTrigger("%ACTOR_MESSAGE_DISPATCH_TRIGGER_TIMER%")] TimerInfo timer)
+            [TimerTrigger("%ACTOR_MESSAGE_DISPATCH_TRIGGER_TIMER%")] TimerInfo timer, ILogger logger)
         {
             _ = timer; // Fix for the unused parameter but the TimerTrigger attribute is still needed https://github.com/dotnet/roslyn-analyzers/issues/2589
-            await _forwardMessageService.ProcessMessagesAsync().ConfigureAwait(false);
+            await _forwardMessageService.ProcessMessagesAsync(logger).ConfigureAwait(false);
         }
     }
 }
