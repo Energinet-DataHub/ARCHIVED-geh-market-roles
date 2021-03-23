@@ -1,4 +1,5 @@
 ﻿agonistic
+agonistic
 ApiGateway
 ApplyDBMigrationsApp
 cacert
@@ -12,6 +13,7 @@ DTO
 eg
 Eg
 Energinet
+exe
 FluentValidation
 Fx
 github
@@ -25,6 +27,7 @@ ie
 IHubMessages
 ingestor
 json
+MarketData
 MarketRoles
 mergeable
 MeteringPointId
@@ -38,6 +41,7 @@ pem
 POCO
 PropertyRule
 proto
+README
 RuleCollection
 RuleCollection
 RuleCollections
@@ -45,7 +49,8 @@ runtime
 SendTimeSeries
 sql
 Terraform
+TODO
 TSO
+TSQL
 xml
 yyyyMMddHHmm
-agonistic
