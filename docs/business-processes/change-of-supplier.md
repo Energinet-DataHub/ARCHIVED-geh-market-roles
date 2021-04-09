@@ -35,4 +35,5 @@ The process manager that facilitates the entire flow has the following states:
 
 <br/>
 <br/>
-Whenever a message is generated it is stored in the Outbox table. A timer job then runs through the Outbox at a given interval and dispatches the message to the Post Office and marks the message as dispatched.
+
+Whenever a message is generated it is stored in the [Outbox](http://www.kamilgrzybek.com/design/the-outbox-pattern/) table. A timer job then runs through the [Outbox](http://www.kamilgrzybek.com/design/the-outbox-pattern/) at a given interval and dispatches the message to the Post Office and marks the message as dispatched.
