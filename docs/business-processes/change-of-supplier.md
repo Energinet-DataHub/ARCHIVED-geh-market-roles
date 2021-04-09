@@ -2,16 +2,16 @@
 
 ## Process overview
 
-A supplier can, if he has consent from a customer, request a change of supplier on a metering point (MP). This requires knowing either the social security number or the VAT number of the customer currently on the metering point.
+A energy supplier can, if he has consent from a consumer, request a change of energy supplier on a metering point (MP). This requires knowing either the social security number or the VAT number of the consumer currently on the metering point.
 
-Upon receival relevant [validation rules](..\validations\change-of-supplier-validations.md) are performed. If successful, the energy supplier is registered as the future supplier on the MP.
+Upon receival, relevant [validation rules](..\validations\change-of-supplier-validations.md) are checked. If successful, the energy supplier is registered as the future energy supplier on the MP.
 
 This is done according to configurable parameters delimiting legal time frames for the process according to local laws.
 
 ![design](..\images\CoS_Sequence_Diagram.PNG)
 
-Before the start date of the new supplier it is possible for the future supplier to send a cancellation cancelling the request.
-When a request is cancelled the request is marked as cancelled and the requesting energy supplier is removed as a future supplier.
+Before the start date of the new energy supplier it is possible for the future energy supplier to send a cancellation cancelling the request.
+When a request is cancelled the request is marked as cancelled and the requesting energy supplier is removed as a future energy supplier.
 
 ![design](..\images\Cancellation_Of_CoS_Sequence_Diagram.PNG)
 
@@ -23,15 +23,15 @@ If there is an end of supply the process changes slightly. This is described in 
 
 The process manager that facilitates the entire flow has the following states:
 
-| State                                       | Description                                                                                                                                                                                                                                                                                                                               |
-| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| NotStarted                                  | Flow not started                                                                                                                                                                                                                                                                                                                          |
-| AwaitingConfirmationMessageDispatch         | Upon request receival the flow is initiated and we change our state to this first state. If it goes through our [list of validations](..\validations\change-of-supplier-validations.md), this will trigger the next state and mark the supplier as future supplier. If rejected the flow stops here and a validation report is generated. |
-| AwaitingMeteringPointDetailsDispatch        | Awaiting Metering Point Master Data message to be generated and dispatched.                                                                                                                                                                                                                                                               |
-| AwaitingConsumerDetailsDispatch             | Awaiting Consumer Master Data message to be generated and dispatched.                                                                                                                                                                                                                                                                     |
-| AwaitingCurrentSupplierNotificationDispatch | Awaiting message to be generated and dispatched to notify current supplier of the supplier change.                                                                                                                                                                                                                                        |
-| AwaitingSupplierChange                      | Supplier change is pending.                                                                                                                                                                                                                                                                                                               |
-| Completed                                   | Future supplier is marked as current supplier and old supplier is stamped with an end date. Change of supplier process is completed and a supplier changed event is raised.                                                                                                                                                               |
+| State                                       | Description                                                                                                                                                                                                                                                                                                                                               |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| NotStarted                                  | Flow not started                                                                                                                                                                                                                                                                                                                                          |
+| AwaitingConfirmationMessageDispatch         | Upon request receival the flow is initiated and we change our state to this first state. If it goes through our [list of validations](..\validations\change-of-supplier-validations.md), this will trigger the next state and mark the energy supplier as a future energy supplier. If rejected the flow stops here and a validation report is generated. |
+| AwaitingMeteringPointDetailsDispatch        | Awaiting Metering Point Master Data message to be generated and dispatched.                                                                                                                                                                                                                                                                               |
+| AwaitingConsumerDetailsDispatch             | Awaiting Consumer Master Data message to be generated and dispatched.                                                                                                                                                                                                                                                                                     |
+| AwaitingCurrentSupplierNotificationDispatch | Awaiting message to be generated and dispatched to notify current energy supplier of the energy supplier change.                                                                                                                                                                                                                                          |
+| AwaitingSupplierChange                      | Energy supplier change is pending.                                                                                                                                                                                                                                                                                                                        |
+| Completed                                   | Future energy supplier is marked as current energy supplier and the old energy supplier is stamped with an end date. Change of energy supplier process is completed and a energy supplier changed event is raised.                                                                                                                                        |
 
 <br/>
 <br/>
