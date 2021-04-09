@@ -1,1 +1,0 @@
-# Change of supplier validations
