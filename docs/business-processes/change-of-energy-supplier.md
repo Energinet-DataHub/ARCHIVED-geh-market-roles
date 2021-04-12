@@ -2,7 +2,7 @@
 
 ## Process overview
 
-A energy supplier can, if he has consent from a consumer, request a change of energy supplier on a metering point (MP). This requires knowing either the social security number or the VAT number of the consumer currently on the metering point.
+An energy supplier can, if he has consent from a consumer, request a change of energy supplier on a metering point (MP). This requires knowing either the social security number or the VAT number of the consumer currently on the metering point.
 
 Upon receival, relevant [validation rules](..\validations\change-of-energy-supplier-validations.md) are checked. If successful, the energy supplier is registered as the future energy supplier on the MP.
 
