@@ -1,0 +1,11 @@
+sequenceDiagram
+    TimeTrigger->>Handler: Timed event
+    activate Handler
+    loop While messages are available in outbox
+        Handler->>+Repository: Fetch outbox message
+        Repository-->>-Handler: zero-to-one message
+        Handler-)Post office queue: Send message
+        Handler->>Repository: Mark message sent        
+    end
+    deactivate Handler
+    

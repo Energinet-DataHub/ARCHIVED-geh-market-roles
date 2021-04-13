@@ -1,0 +1,11 @@
+sequenceDiagram
+    System->>ProcessManagerRouter:Domain event
+    ProcessManagerRouter->>+Repository:Get ProcessManager
+    Repository-->>-ProcessManagerRouter:Specific ProcessManager
+    note left of Repository: for a given business process and AccountingPoint
+    ProcessManagerRouter->>+ProcessManager:Move to next process state according to domain event
+    ProcessManager-->>-ProcessManagerRouter: ...
+    ProcessManagerRouter->>+Repository:Save ProcessManager
+    Repository->>Repository: Persist ProcessManager
+    Repository->>Repository: Persist future commands
+    Repository-->>-ProcessManagerRouter: ...
