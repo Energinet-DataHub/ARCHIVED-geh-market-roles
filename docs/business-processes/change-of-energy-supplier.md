@@ -1,4 +1,4 @@
-# Change of supplier (CoS)
+# Change of energy supplier (CoS)
 
 ## Process overview
 
@@ -8,12 +8,12 @@ Upon receival, relevant [validation rules](..\validations\change-of-energy-suppl
 
 This is done according to configurable parameters delimiting legal time frames for the process according to local laws.
 
-![design](..\images\CoS_Sequence_Diagram.PNG)
+![design](docs/images/CoS_Sequence_Diagram.PNG)
 
 Before the change of energy supplier start date it is possible for the future energy supplier to send a cancellation cancelling the request.
 When a request is cancelled the request is marked as cancelled and the requesting energy supplier is removed as a future energy supplier.
 
-![design](..\images\Cancellation_Of_CoS_Sequence_Diagram.PNG)
+![design](docs/images/Cancellation_Of_CoS_Sequence_Diagram.PNG)
 
 If an end of supply process has been registered, the change of energy supplier process changes slightly. This is described in the [end of supply documentation](.\end-of-supply.md).
 
