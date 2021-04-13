@@ -15,7 +15,7 @@ When a request is cancelled the request is marked as cancelled and the requestin
 
 ![design](https://github.com/Energinet-DataHub/geh-market-roles/blob/main/docs/images/Cancellation_Of_CoS_Sequence_Diagram.PNG)
 
-If an end of supply process has been registered, the change of energy supplier process changes slightly. This is described in the [end of supply documentation](.\end-of-supply.md).
+If an end of supply process has been registered, the change of energy supplier process changes slightly. This is described in the [end of supply documentation](https://github.com/Energinet-DataHub/geh-market-roles/blob/main/docs/business-processes/end-of-supply.md).
 
 ## Implementation details
 
