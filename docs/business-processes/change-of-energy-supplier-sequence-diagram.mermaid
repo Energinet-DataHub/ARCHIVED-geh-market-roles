@@ -1,0 +1,28 @@
+sequenceDiagram
+    Note over Future Energy Supplier, DataHub: Consumer has signed a contract with a new Energy Supplier
+    participant Future Energy Supplier
+    participant DataHub
+    participant Grid Operator
+    participant Prior Energy Supplier
+    activate Future Energy Supplier
+    activate DataHub
+    Future Energy Supplier->>DataHub: Reqeust change of Energy Supplier
+    DataHub->>Future Energy Supplier: Approve change of Energy Supplier request
+    DataHub->>Future Energy Supplier: Reject change of Energy Supplier request
+    deactivate Future Energy Supplier
+    deactivate DataHub    
+    DataHub->>Future Energy Supplier:Information on Market Evaluationpoint master data
+    activate DataHub
+    activate Future Energy Supplier
+    DataHub->>Future Energy Supplier: Information on Consumer master data
+    DataHub->>Future Energy Supplier: Information on affiliations on Market Evaluationpoint
+    deactivate DataHub
+    deactivate Future Energy Supplier
+    Note over Future Energy Supplier,Prior Energy Supplier: if cancelled the process stops here and contenuie in another sequencediagram
+    Note over Future Energy Supplier,Prior Energy Supplier: When cancellation deadline expires
+    DataHub->>Prior Energy Supplier: Information on stop of supply
+    Note over Future Energy Supplier,Grid Operator: Only in relation to end of supply process
+    DataHub->>Future Energy Supplier: Information regarding actual start of supply
+    activate DataHub
+    DataHub->>Grid Operator: Information regarding experation proces
+    deactivate DataHub
