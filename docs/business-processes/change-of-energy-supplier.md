@@ -1,21 +1,21 @@
-# Change of supplier (CoS)
+# Change of energy supplier (CoS)
 
 ## Process overview
 
 An energy supplier can, if he has consent from a consumer, request a change of energy supplier on a metering point (MP). This requires knowing either the social security number or the VAT number of the consumer currently on the metering point.
 
-Upon receival, relevant [validation rules](..\validations\change-of-energy-supplier-validations.md) are checked. If successful, the energy supplier is registered as the future energy supplier on the MP.
+Upon receival, relevant [validation rules](https://github.com/Energinet-DataHub/geh-market-roles/blob/main/docs/validations/change-of-energy-supplier-validations.md) are checked. If successful, the energy supplier is registered as the future energy supplier on the MP.
 
 This is done according to configurable parameters delimiting legal time frames for the process according to local laws.
 
-![design](..\images\CoS_Sequence_Diagram.PNG)
+![design](https://github.com/Energinet-DataHub/geh-market-roles/blob/main/docs/images/CoS_Sequence_Diagram.PNG)
 
 Before the change of energy supplier start date it is possible for the future energy supplier to send a cancellation cancelling the request.
 When a request is cancelled the request is marked as cancelled and the requesting energy supplier is removed as a future energy supplier.
 
-![design](..\images\Cancellation_Of_CoS_Sequence_Diagram.PNG)
+![design](https://github.com/Energinet-DataHub/geh-market-roles/blob/main/docs/images/Cancellation_Of_CoS_Sequence_Diagram.PNG)
 
-If an end of supply process has been registered, the change of energy supplier process changes slightly. This is described in the [end of supply documentation](.\end-of-supply.md).
+If an end of supply process has been registered, the change of energy supplier process changes slightly. This is described in the [end of supply documentation](https://github.com/Energinet-DataHub/geh-market-roles/blob/main/docs/business-processes/end-of-supply.md).
 
 ## Implementation details
 
