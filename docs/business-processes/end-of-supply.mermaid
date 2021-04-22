@@ -1,0 +1,11 @@
+sequenceDiagram
+    Note over Future Supplier, DataHub: Cancellation initiated by future supplier
+    participant Future Supplier
+    participant DataHub
+    Future Supplier->>DataHub: Cancellation of request of change of suppplier
+    activate DataHub
+    activate Future Supplier
+    DataHub->>Future Supplier: Approve cancellation of request of change of suppplier
+    DataHub->>Future Supplier: Reject cancellation of request of change of suppplier
+    deactivate DataHub
+    deactivate Future Supplier

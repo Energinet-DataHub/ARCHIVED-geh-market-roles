@@ -1,0 +1,19 @@
+sequenceDiagram
+    Client->>+Ingestion: ChangeSupplier EDI message
+    Ingestion->>Shared library: Map to internal format
+    Shared library-->>Ingestion:Internal model
+    Ingestion->>Ingestion: Map to Command
+    Ingestion->>+ValidationHandler: Handle change of supplier
+    alt Valid request
+        ValidationHandler->>+AuthorizationHandler:Handle change of supplier
+    else
+        ValidationHandler-->>-Ingestion: Error
+    end
+    alt Authorized request
+        AuthorizationHandler->>+Handler:Handle change of supplier
+    else
+        AuthorizationHandler-->>-Ingestion: Error
+    end
+    Handler-)Queue:Send Command
+    Handler-->>-Ingestion:OK
+    Ingestion-->>-Client:OK

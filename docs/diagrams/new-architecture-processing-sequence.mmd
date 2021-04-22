@@ -1,0 +1,18 @@
+sequenceDiagram
+    participant QueueSubscriber
+    participant TimerTrigger
+    QueueSubscriber-)Handler: ChangeSupplierRequest command
+    Note right of TimerTrigger: Specify commands
+    Handler->>+Repository:Get AccountingPoint
+    Repository-->>-Handler:AccountingPoint
+    Handler->>+ProcessManagerRouter:AccountingPoint: AcceptChangeOfSupplierRequest
+    Note left of ProcessManagerRouter: See ProcessManagerRouter sequence diagram
+    ProcessManagerRouter-->>-Handler:Done processing
+    Handler->>IntegrationEventHandler: ChangeSupplierRequest command
+    activate IntegrationEventHandler
+    note over IntegrationEventHandler: To be implemented
+    IntegrationEventHandler->>+UnitOfWorkHandler: ChangeSupplierRequest command
+    deactivate IntegrationEventHandler
+    UnitOfWorkHandler->>-UnitOfWorkHandler:Commit transaction
+    TimerTrigger-)Handler: Internal commands
+    Note over TimerTrigger,UnitOfWorkHandler: Similar flow using ProcessManagerRouter, ProcessManager, IntegrationEventHandler and UnitOfWorkHandler but with different Handlers
