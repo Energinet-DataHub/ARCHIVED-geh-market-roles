@@ -30,22 +30,22 @@ variable "organisation" {
   description   = "Organisation that is running the infrastructure code"
 }
 
-variable "sharedresources_keyvault_name" {
+variable "sharedres_kv_name" {
   type          = string
   description   = "Name of the Core keyvault, that contains shared secrets"
 }
 
-variable "sharedresources_resource_group_name" {
+variable "sharedres_rg_name" {
   type          = string
   description   = "Resource group name of the Core keyvaults location"
 }
 
-variable "sharedresources_integrationevents_service_bus_namespace_name" {
+variable "sharedres_integrationevents_sbn_name" {
   type          = string
   description   = "Namespace of the shared integration event service bus"
 }  
   
-variable "sharedresources_sql_server_name" {
+variable "sharedres_sqlsrv_name" {
   type          = string
   description   = "Name of the SQL server"
 }

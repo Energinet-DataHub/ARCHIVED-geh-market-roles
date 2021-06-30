@@ -13,8 +13,8 @@
 # limitations under the License.
 
 data "azurerm_key_vault" "kv_sharedresources" {
-  name                = var.sharedresources_keyvault_name
-  resource_group_name = var.sharedresources_resource_group_name
+  name                = var.sharedres_kv_name
+  resource_group_name = var.sharedres_rg_name
 }
 
 data "azurerm_key_vault_secret" "POST_OFFICE_QUEUE_CONNECTION_STRING" {

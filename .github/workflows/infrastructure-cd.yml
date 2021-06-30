@@ -23,16 +23,15 @@ on:
       - .github/workflows/infrastructure-cd.yml
   workflow_dispatch: {}
 env:
-  ORGANISATION_NAME: endk
-  PROJECT_NAME: marketroles
   MIGRATION_PROJECT_CSPROJ_FILE_PATH: 'source/business-workflow/source/Energinet.DataHub.MarketData.ApplyDBMigrationsApp/Energinet.DataHub.MarketData.ApplyDBMigrationsApp.csproj'
+  TERRAFORM_BACKEND_FILE_PATH: './build/infrastructure/backend.tf'
 
 jobs:
   infra_deploy_development:
-    name: Deploy infrastructure to rg-DataHub-MarketRoles-U
+    name: Deploy infrastructure to Development
     runs-on: ubuntu-latest
     environment:
-      name: rg-DataHub-MarketRoles-U
+      name: Development
     steps:
       - name: Checkout code
         uses: actions/checkout@master
@@ -44,36 +43,37 @@ jobs:
 
       - name: Set Custom TF Vars
         run: |
-          echo "TF_VAR_sharedresources_keyvault_name=${{ secrets.SHAREDRESOURCES_KEYVAULT_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_sharedresources_resource_group_name=${{ secrets.SHAREDRESOURCES_RESOURCE_GROUP_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_sharedresources_integrationevents_service_bus_namespace_name=${{ secrets.SHAREDRESOURCES_INTEGRATIONEVENTS_SERVICE_BUS_NAMESPACE_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_sharedresources_sql_server_name=${{ secrets.SHAREDRESOURCES_SQL_SERVER_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_kv_name=${{ secrets.AZURE_SHAREDRES_KV_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_rg_name=${{ secrets.AZURE_SHAREDRES_RG_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_integrationevents_sbn_name=${{ secrets.AZURE_SHAREDRES_INTEGRATIONEVENTS_SBN_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_sqlsrv_name=${{ secrets.AZURE_SHAREDRES_SQLSRV_NAME }}" >> $GITHUB_ENV
 
       - name: Terraform CD
-        uses: Energinet-DataHub/geh-terraform-modules/.github/templates/actions/terraform-apply@renetnielsen/add-tf-template
+        uses: Energinet-DataHub/.github/.github/actions/terraform@main
         with:
-          SECRETS_SHARED_RESOURCES_KEYVAULT_NAME: ${{ secrets.SHARED_RESOURCES_KEYVAULT_NAME }}
-          SECRETS_SHARED_RESOURCES_RESOURCE_GROUP_NAME: ${{ secrets.SHARED_RESOURCES_RESOURCE_GROUP_NAME }}
-          SECRETS_SHARED_RESOURCES_SQL_SERVER_NAME: ${{ secrets.SHARED_RESOURCES_SQL_SERVER_NAME }}
-          SECRETS_PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-          SECRETS_TENANT_ID: ${{ secrets.TENANT_ID }}
-          SECRETS_SPN_ID: ${{ secrets.SPN_ID }}
-          SECRETS_SPN_OBJECT_ID: ${{ secrets.SPN_OBJECT_ID }}
-          SECRETS_SPN_SECRET: ${{ secrets.SPN_SECRET }}
-          SECRETS_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
           PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
           ORGANISATION_NAME: ${{ secrets.ORGANISATION_NAME }}
           ENVIRONMENT_SHORT: u
-          ENVIRONMENT_LONG: rg-DataHub-MarketRoles-U
-          ENVIRONMENT_NAME: Development
-          TERRAFORM_BACKEND_FILE_PATH: "./build/infrastructure/backend.tf"
+          TERRAFORM_BACKEND_FILE_PATH: ${{ env.TERRAFORM_BACKEND_FILE_PATH }}
+          GITHUB_PAT_TOKEN: ${{ secrets.GITHUB_PAT_TOKEN }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID }}
+          AZURE_SPN_OBJECT_ID: ${{ secrets.AZURE_SPN_OBJECT_ID }}
+          AZURE_SPN_SECRET: ${{ secrets.AZURE_SPN_SECRET }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_RG_NAME: ${{ secrets.AZURE_RG_NAME }}
+
+      - name: Applying market data migrations
+        uses: ./.github/actions/apply-database-migrations
+        with:
+          sql-server-connectionstring: ${{ steps.terraform-apply.outputs.sql-server-connectionstring }}
   
   infra_deploy_test:
-    name: Deploy infrastructure to rg-DataHub-MarketRoles-T
+    name: Deploy infrastructure to Test
     needs: infra_deploy_development
     runs-on: ubuntu-latest
     environment:
-      name: rg-DataHub-MarketRoles-T
+      name: Test
     steps:
       - name: Checkout code
         uses: actions/checkout@master
@@ -85,33 +85,37 @@ jobs:
 
       - name: Set Custom TF Vars
         run: |
-          echo "TF_VAR_sharedresources_keyvault_name=${{ secrets.SHAREDRESOURCES_KEYVAULT_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_sharedresources_resource_group_name=${{ secrets.SHAREDRESOURCES_RESOURCE_GROUP_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_sharedresources_integrationevents_service_bus_namespace_name=${{ secrets.SHAREDRESOURCES_INTEGRATIONEVENTS_SERVICE_BUS_NAMESPACE_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_sharedresources_sql_server_name=${{ secrets.SHAREDRESOURCES_SQL_SERVER_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_kv_name=${{ secrets.AZURE_SHAREDRES_KV_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_rg_name=${{ secrets.AZURE_SHAREDRES_RG_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_integrationevents_sbn_name=${{ secrets.AZURE_SHAREDRES_INTEGRATIONEVENTS_SBN_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_sqlsrv_name=${{ secrets.AZURE_SHAREDRES_SQLSRV_NAME }}" >> $GITHUB_ENV
 
       - name: Terraform CD
-        uses: Energinet-DataHub/geh-terraform-modules/.github/templates/actions/terraform-apply@renetnielsen/add-tf-template
+        uses: Energinet-DataHub/.github/.github/actions/terraform@main
         with:
-          SECRETS_PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-          SECRETS_TENANT_ID: ${{ secrets.TENANT_ID }}
-          SECRETS_SPN_ID: ${{ secrets.SPN_ID }}
-          SECRETS_SPN_OBJECT_ID: ${{ secrets.SPN_OBJECT_ID }}
-          SECRETS_SPN_SECRET: ${{ secrets.SPN_SECRET }}
-          SECRETS_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
           PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
           ORGANISATION_NAME: ${{ secrets.ORGANISATION_NAME }}
           ENVIRONMENT_SHORT: t
-          ENVIRONMENT_LONG: rg-DataHub-MarketRoles-T
-          ENVIRONMENT_NAME: Test
-          TERRAFORM_BACKEND_FILE_PATH: "./build/infrastructure/backend.tf"
+          TERRAFORM_BACKEND_FILE_PATH: ${{ env.TERRAFORM_BACKEND_FILE_PATH }}
+          GITHUB_PAT_TOKEN: ${{ secrets.GITHUB_PAT_TOKEN }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID }}
+          AZURE_SPN_OBJECT_ID: ${{ secrets.AZURE_SPN_OBJECT_ID }}
+          AZURE_SPN_SECRET: ${{ secrets.AZURE_SPN_SECRET }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_RG_NAME: ${{ secrets.AZURE_RG_NAME }}
+
+      - name: Applying market data migrations
+        uses: ./.github/actions/apply-database-migrations
+        with:
+          sql-server-connectionstring: ${{ steps.terraform-apply.outputs.sql-server-connectionstring }}
 
   infra_deploy_preprod:
-    name: Deploy infrastructure to rg-DataHub-MarketRoles-B
+    name: Deploy infrastructure to Preproduction
     needs: infra_deploy_test
     runs-on: ubuntu-latest
     environment:
-      name: rg-DataHub-MarketRoles-B
+      name: Preproduction
     steps:
       - name: Checkout code
         uses: actions/checkout@master
@@ -123,36 +127,37 @@ jobs:
 
       - name: Set Custom TF Vars
         run: |
-          echo "TF_VAR_sharedresources_keyvault_name=${{ secrets.SHAREDRESOURCES_KEYVAULT_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_sharedresources_resource_group_name=${{ secrets.SHAREDRESOURCES_RESOURCE_GROUP_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_sharedresources_integrationevents_service_bus_namespace_name=${{ secrets.SHAREDRESOURCES_INTEGRATIONEVENTS_SERVICE_BUS_NAMESPACE_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_sharedresources_sql_server_name=${{ secrets.SHAREDRESOURCES_SQL_SERVER_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_kv_name=${{ secrets.AZURE_SHAREDRES_KV_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_rg_name=${{ secrets.AZURE_SHAREDRES_RG_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_integrationevents_sbn_name=${{ secrets.AZURE_SHAREDRES_INTEGRATIONEVENTS_SBN_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_sqlsrv_name=${{ secrets.AZURE_SHAREDRES_SQLSRV_NAME }}" >> $GITHUB_ENV
 
       - name: Terraform CD
-        uses: Energinet-DataHub/geh-terraform-modules/.github/templates/actions/terraform-apply@renetnielsen/add-tf-template
+        uses: Energinet-DataHub/.github/.github/actions/terraform@main
         with:
-          SECRETS_SHARED_RESOURCES_KEYVAULT_NAME: ${{ secrets.SHARED_RESOURCES_KEYVAULT_NAME }}
-          SECRETS_SHARED_RESOURCES_RESOURCE_GROUP_NAME: ${{ secrets.SHARED_RESOURCES_RESOURCE_GROUP_NAME }}
-          SECRETS_SHARED_RESOURCES_SQL_SERVER_NAME: ${{ secrets.SHARED_RESOURCES_SQL_SERVER_NAME }}
-          SECRETS_PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-          SECRETS_TENANT_ID: ${{ secrets.TENANT_ID }}
-          SECRETS_SPN_ID: ${{ secrets.SPN_ID }}
-          SECRETS_SPN_OBJECT_ID: ${{ secrets.SPN_OBJECT_ID }}
-          SECRETS_SPN_SECRET: ${{ secrets.SPN_SECRET }}
-          SECRETS_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
           PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
           ORGANISATION_NAME: ${{ secrets.ORGANISATION_NAME }}
           ENVIRONMENT_SHORT: b
-          ENVIRONMENT_LONG: rg-DataHub-MarketRoles-B
-          ENVIRONMENT_NAME: Preprod
-          TERRAFORM_BACKEND_FILE_PATH: "./build/infrastructure/backend.tf"
+          TERRAFORM_BACKEND_FILE_PATH: ${{ env.TERRAFORM_BACKEND_FILE_PATH }}
+          GITHUB_PAT_TOKEN: ${{ secrets.GITHUB_PAT_TOKEN }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID }}
+          AZURE_SPN_OBJECT_ID: ${{ secrets.AZURE_SPN_OBJECT_ID }}
+          AZURE_SPN_SECRET: ${{ secrets.AZURE_SPN_SECRET }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_RG_NAME: ${{ secrets.AZURE_RG_NAME }}
+
+      - name: Applying market data migrations
+        uses: ./.github/actions/apply-database-migrations
+        with:
+          sql-server-connectionstring: ${{ steps.terraform-apply.outputs.sql-server-connectionstring }}
 
   infra_deploy_prod:
-    name: Deploy infrastructure to rg-DataHub-MarketRoles-P
+    name: Deploy infrastructure to Production
     needs: infra_deploy_preprod
     runs-on: ubuntu-latest
     environment:
-      name: rg-DataHub-MarketRoles-P
+      name: Production
     steps:
       - name: Checkout code
         uses: actions/checkout@master
@@ -164,26 +169,27 @@ jobs:
 
       - name: Set Custom TF Vars
         run: |
-          echo "TF_VAR_sharedresources_keyvault_name=${{ secrets.SHAREDRESOURCES_KEYVAULT_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_sharedresources_resource_group_name=${{ secrets.SHAREDRESOURCES_RESOURCE_GROUP_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_sharedresources_integrationevents_service_bus_namespace_name=${{ secrets.SHAREDRESOURCES_INTEGRATIONEVENTS_SERVICE_BUS_NAMESPACE_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_sharedresources_sql_server_name=${{ secrets.SHAREDRESOURCES_SQL_SERVER_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_kv_name=${{ secrets.AZURE_SHAREDRES_KV_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_rg_name=${{ secrets.AZURE_SHAREDRES_RG_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_integrationevents_sbn_name=${{ secrets.AZURE_SHAREDRES_INTEGRATIONEVENTS_SBN_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedres_sqlsrv_name=${{ secrets.AZURE_SHAREDRES_SQLSRV_NAME }}" >> $GITHUB_ENV
       
       - name: Terraform CD
-        uses: Energinet-DataHub/geh-terraform-modules/.github/templates/actions/terraform-apply@renetnielsen/add-tf-template
+        uses: Energinet-DataHub/.github/.github/actions/terraform@main
         with:
-          SECRETS_SHARED_RESOURCES_KEYVAULT_NAME: ${{ secrets.SHARED_RESOURCES_KEYVAULT_NAME }}
-          SECRETS_SHARED_RESOURCES_RESOURCE_GROUP_NAME: ${{ secrets.SHARED_RESOURCES_RESOURCE_GROUP_NAME }}
-          SECRETS_SHARED_RESOURCES_SQL_SERVER_NAME: ${{ secrets.SHARED_RESOURCES_SQL_SERVER_NAME }}
-          SECRETS_PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-          SECRETS_TENANT_ID: ${{ secrets.TENANT_ID }}
-          SECRETS_SPN_ID: ${{ secrets.SPN_ID }}
-          SECRETS_SPN_OBJECT_ID: ${{ secrets.SPN_OBJECT_ID }}
-          SECRETS_SPN_SECRET: ${{ secrets.SPN_SECRET }}
-          SECRETS_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
           PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
           ORGANISATION_NAME: ${{ secrets.ORGANISATION_NAME }}
           ENVIRONMENT_SHORT: p
-          ENVIRONMENT_LONG: rg-DataHub-MarketRoles-P
-          ENVIRONMENT_NAME: Prod
-          TERRAFORM_BACKEND_FILE_PATH: "./build/infrastructure/backend.tf"
+          TERRAFORM_BACKEND_FILE_PATH: ${{ env.TERRAFORM_BACKEND_FILE_PATH }}
+          GITHUB_PAT_TOKEN: ${{ secrets.GITHUB_PAT_TOKEN }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID }}
+          AZURE_SPN_OBJECT_ID: ${{ secrets.AZURE_SPN_OBJECT_ID }}
+          AZURE_SPN_SECRET: ${{ secrets.AZURE_SPN_SECRET }}
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_RG_NAME: ${{ secrets.AZURE_RG_NAME }}
+
+      - name: Applying market data migrations
+        uses: ./.github/actions/apply-database-migrations
+        with:
+          sql-server-connectionstring: ${{ steps.terraform-apply.outputs.sql-server-connectionstring }}

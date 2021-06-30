@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 data "azurerm_servicebus_namespace" "integrationevents" {
-  name                = var.sharedresources_integrationevents_service_bus_namespace_name
+  name                = var.sharedres_integrationevents_sbn_name
   resource_group_name = data.azurerm_resource_group.shared_resources.name
 }
 
