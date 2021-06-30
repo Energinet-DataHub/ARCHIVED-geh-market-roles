@@ -46,6 +46,8 @@ jobs:
         run: |
           echo "TF_VAR_sharedresources_keyvault_name=${{ secrets.SHAREDRESOURCES_KEYVAULT_NAME }}" >> $GITHUB_ENV
           echo "TF_VAR_sharedresources_resource_group_name=${{ secrets.SHAREDRESOURCES_RESOURCE_GROUP_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedresources_integrationevents_service_bus_namespace_name=${{ secrets.SHAREDRESOURCES_INTEGRATIONEVENTS_SERVICE_BUS_NAMESPACE_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedresources_sql_server_name=${{ secrets.SHAREDRESOURCES_SQL_SERVER_NAME }}" >> $GITHUB_ENV
 
       - name: Terraform CD
         uses: Energinet-DataHub/geh-terraform-modules/.github/templates/actions/terraform-apply@renetnielsen/add-tf-template
@@ -83,12 +85,10 @@ jobs:
 
       - name: Set Custom TF Vars
         run: |
-          echo "TF_VAR_environment=${{ matrix.environment.short }}" >> $GITHUB_ENV
-          echo "TF_VAR_organisation=${{ env.ORGANISATION_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_project=${{ env.PROJECT_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_resource_group_name=${{ matrix.environment.long }}" >> $GITHUB_ENV
           echo "TF_VAR_sharedresources_keyvault_name=${{ secrets.SHAREDRESOURCES_KEYVAULT_NAME }}" >> $GITHUB_ENV
           echo "TF_VAR_sharedresources_resource_group_name=${{ secrets.SHAREDRESOURCES_RESOURCE_GROUP_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedresources_integrationevents_service_bus_namespace_name=${{ secrets.SHAREDRESOURCES_INTEGRATIONEVENTS_SERVICE_BUS_NAMESPACE_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedresources_sql_server_name=${{ secrets.SHAREDRESOURCES_SQL_SERVER_NAME }}" >> $GITHUB_ENV
 
       - name: Terraform CD
         uses: Energinet-DataHub/geh-terraform-modules/.github/templates/actions/terraform-apply@renetnielsen/add-tf-template
@@ -123,12 +123,10 @@ jobs:
 
       - name: Set Custom TF Vars
         run: |
-          echo "TF_VAR_environment=${{ matrix.environment.short }}" >> $GITHUB_ENV
-          echo "TF_VAR_organisation=${{ env.ORGANISATION_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_project=${{ env.PROJECT_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_resource_group_name=${{ matrix.environment.long }}" >> $GITHUB_ENV
           echo "TF_VAR_sharedresources_keyvault_name=${{ secrets.SHAREDRESOURCES_KEYVAULT_NAME }}" >> $GITHUB_ENV
           echo "TF_VAR_sharedresources_resource_group_name=${{ secrets.SHAREDRESOURCES_RESOURCE_GROUP_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedresources_integrationevents_service_bus_namespace_name=${{ secrets.SHAREDRESOURCES_INTEGRATIONEVENTS_SERVICE_BUS_NAMESPACE_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedresources_sql_server_name=${{ secrets.SHAREDRESOURCES_SQL_SERVER_NAME }}" >> $GITHUB_ENV
 
       - name: Terraform CD
         uses: Energinet-DataHub/geh-terraform-modules/.github/templates/actions/terraform-apply@renetnielsen/add-tf-template
@@ -166,12 +164,10 @@ jobs:
 
       - name: Set Custom TF Vars
         run: |
-          echo "TF_VAR_environment=${{ matrix.environment.short }}" >> $GITHUB_ENV
-          echo "TF_VAR_organisation=${{ env.ORGANISATION_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_project=${{ env.PROJECT_NAME }}" >> $GITHUB_ENV
-          echo "TF_VAR_resource_group_name=${{ matrix.environment.long }}" >> $GITHUB_ENV
           echo "TF_VAR_sharedresources_keyvault_name=${{ secrets.SHAREDRESOURCES_KEYVAULT_NAME }}" >> $GITHUB_ENV
           echo "TF_VAR_sharedresources_resource_group_name=${{ secrets.SHAREDRESOURCES_RESOURCE_GROUP_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedresources_integrationevents_service_bus_namespace_name=${{ secrets.SHAREDRESOURCES_INTEGRATIONEVENTS_SERVICE_BUS_NAMESPACE_NAME }}" >> $GITHUB_ENV
+          echo "TF_VAR_sharedresources_sql_server_name=${{ secrets.SHAREDRESOURCES_SQL_SERVER_NAME }}" >> $GITHUB_ENV
       
       - name: Terraform CD
         uses: Energinet-DataHub/geh-terraform-modules/.github/templates/actions/terraform-apply@renetnielsen/add-tf-template
