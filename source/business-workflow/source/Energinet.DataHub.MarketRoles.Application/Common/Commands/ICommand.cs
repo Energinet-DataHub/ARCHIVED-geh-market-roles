@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Energinet.DataHub.MarketRoles.Application.Common.Transport;
 using MediatR;
 
 namespace Energinet.DataHub.MarketRoles.Application.Common.Commands
@@ -20,7 +21,7 @@ namespace Energinet.DataHub.MarketRoles.Application.Common.Commands
     /// <summary>
     /// CQRS command object
     /// </summary>
-    public interface ICommand : IRequest
+    public interface ICommand : IRequest, IOutboundMessage, IInboundMessage
     {
     }
 
@@ -28,7 +29,7 @@ namespace Energinet.DataHub.MarketRoles.Application.Common.Commands
     /// CQRS command with result
     /// </summary>
     /// <typeparam name="TResult"><see cref="IRequest"/></typeparam>
-    public interface ICommand<out TResult> : IRequest<TResult>
+    public interface ICommand<out TResult> : IRequest<TResult>, IOutboundMessage, IInboundMessage
     {
     }
     #pragma warning restore
