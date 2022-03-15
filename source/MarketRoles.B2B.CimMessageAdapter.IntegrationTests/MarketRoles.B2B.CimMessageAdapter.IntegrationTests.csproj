@@ -19,4 +19,19 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="ValidMessage.xml" />
+      <Content Include="ValidMessage.xml">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Schema.xsd" />
+      <Content Include="Schema.xsd">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <None Remove="InvalidMessageContainingTwoErrors.xml" />
+      <Content Include="InvalidMessageContainingTwoErrors.xml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

@@ -23,6 +23,18 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             Assert.Single(result.Errors);
         }
 
+        [Fact]
+        public async Task Message_must_conform_to_xml_schema()
+        {
+            var message = CreateMessageFrom("InvalidMessageContainingTwoErrors.xml");
+            var messageReceiver = CreateMessageReceiver();
+
+            var result = await messageReceiver.ReceiveAsync(message).ConfigureAwait(false);
+
+            Assert.False(result.Success);
+            Assert.Equal(2, result.Errors.Count);
+        }
+
         private static MessageReceiver CreateMessageReceiver()
         {
             var messageStore = new MessageStore();
@@ -36,6 +48,15 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             var writer = new StreamWriter(messageStream);
             writer.Write(xml);
             writer.Flush();
+            messageStream.Position = 0;
+            return messageStream;
+        }
+
+        private Stream CreateMessageFrom(string xmlFile)
+        {
+            var messageStream = new MemoryStream();
+            var fileReader = new FileStream(xmlFile, FileMode.Open);
+            fileReader.CopyTo(messageStream);
             messageStream.Position = 0;
             return messageStream;
         }
@@ -53,6 +74,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
     public class MessageReceiver
     {
         private readonly MessageStore _storage;
+        private readonly List<Error> _errors = new();
 
         public MessageReceiver(MessageStore storage)
         {
@@ -67,8 +89,13 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             var settings = new XmlReaderSettings
             {
                 Async = true,
-                ValidationType = ValidationType.Schema
+                ValidationType = ValidationType.Schema,
             };
+
+            var schemaReader = new XmlTextReader("Schema.xsd");
+            var schema = XmlSchema.Read(schemaReader, OnValidationError);
+            settings.Schemas.Add(schema);
+
             settings.ValidationEventHandler += OnValidationError;
             using (var reader = XmlReader.Create(message, settings))
             {
@@ -85,11 +112,14 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                 }
             }
 
-            return Result.Succeeded();
+            return _errors.Count == 0 ? Result.Succeeded() : Result.Failure(_errors.ToArray());
         }
 
         private void OnValidationError(object? sender, ValidationEventArgs arguments)
         {
+            var message =
+                $"XML schema validation error at line {arguments.Exception.LineNumber}, position {arguments.Exception.LinePosition}: {arguments.Message}.";
+            _errors.Add(new Error(message));
         }
     }
 
