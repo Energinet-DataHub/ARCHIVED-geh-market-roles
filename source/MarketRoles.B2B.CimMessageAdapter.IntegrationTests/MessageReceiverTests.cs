@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
@@ -19,6 +20,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             var result = await messageReceiver.ReceiveAsync(message).ConfigureAwait(false);
 
             Assert.False(result.Success);
+            Assert.Single(result.Errors);
         }
 
         private static MessageReceiver CreateMessageReceiver()
@@ -77,7 +79,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                 }
                 catch (XmlException exception)
                 {
-                    return Result.Failure();
+                    return Result.Failure(new Error(exception.ToString()));
                 }
             }
 
@@ -91,20 +93,37 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
 
     public class Result
     {
-        private Result(bool success)
+        private Result()
         {
-            Success = success;
-        }
-        public bool Success { get; } = true;
 
-        public static Result Failure()
+        }
+
+        private Result(IReadOnlyCollection<Error> errors)
         {
-            return new Result(false);
+            Errors = errors;
+        }
+        public bool Success => Errors.Count == 0;
+
+        public IReadOnlyCollection<Error> Errors { get; } = new List<Error>();
+
+        public static Result Failure(params Error[] errors)
+        {
+            return new Result(errors);
         }
 
         public static Result Succeeded()
         {
-            return new Result(true);
+            return new Result();
         }
+    }
+
+    public class Error
+    {
+        public Error(string message)
+        {
+            Message = message;
+        }
+
+        public string Message { get; }
     }
 }
