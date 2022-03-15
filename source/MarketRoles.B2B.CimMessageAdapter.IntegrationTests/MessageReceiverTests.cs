@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Schema;
 using Xunit;
 
 namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
@@ -9,35 +11,33 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
     public class MessageReceiverTests
     {
         [Fact]
-        public async Task Message_must_be_stored()
+        public async Task Message_must_be_valid_xml()
         {
-            var message = new RawMessage("xml");
+            var message = CreateMessage();
             var messageStore = new MessageStore();
             var messageReceiver = new MessageReceiver(messageStore);
-            await messageReceiver.Receive(message).ConfigureAwait(false);
 
-            Assert.Contains(message, messageStore.Messages);
+            var result = await messageReceiver.ReceiveAsync(message).ConfigureAwait(false);
+
+            Assert.False(result.Success);
         }
-    }
 
-    public class RawMessage
-    {
-        private readonly string _xml;
-
-        public RawMessage(string xml)
+        private Stream CreateMessage()
         {
-            _xml = xml;
+            var messageStream = new MemoryStream();
+            var writer = new StreamWriter(messageStream);
+            writer.Write("xml");
+            writer.Flush();
+            messageStream.Position = 0;
+            return messageStream;
         }
     }
 
     public class MessageStore
     {
-        public List<RawMessage> Messages { get; } = new();
-
-        public Task SaveAsync(RawMessage message)
+        public Task SaveAsync(Stream message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
-            Messages.Add(message);
             return Task.CompletedTask;
         }
     }
@@ -51,10 +51,54 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             _storage = storage;
         }
 
-        public Task Receive(RawMessage message)
+        public async Task<Result> ReceiveAsync(Stream message)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
-            return _storage.SaveAsync(message);
+            await _storage.SaveAsync(message);
+
+            var settings = new XmlReaderSettings();
+            settings.Async = true;
+            settings.ValidationType = ValidationType.Schema;
+            settings.ValidationEventHandler += OnValidationError;
+            using (var reader = XmlReader.Create(message, settings))
+            {
+                try
+                {
+                    await reader.MoveToContentAsync();
+                    while (await reader.ReadAsync())
+                    {
+                    }
+                }
+                catch (XmlException exception)
+                {
+                    return Result.Failure();
+                }
+            }
+
+            return Result.Succeeded();
+        }
+
+        private void OnValidationError(object? sender, ValidationEventArgs arguments)
+        {
+        }
+    }
+
+    public class Result
+    {
+        private Result(bool success)
+        {
+            Success = success;
+        }
+        public bool Success { get; } = true;
+
+        public static Result Failure()
+        {
+            return new Result(false);
+        }
+
+        public static Result Succeeded()
+        {
+            return new Result(true);
         }
     }
 }
