@@ -13,20 +13,26 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         [Fact]
         public async Task Message_must_be_valid_xml()
         {
-            var message = CreateMessage();
-            var messageStore = new MessageStore();
-            var messageReceiver = new MessageReceiver(messageStore);
+            var message = CreateMessage("this is not valid XML");
+            var messageReceiver = CreateMessageReceiver();
 
             var result = await messageReceiver.ReceiveAsync(message).ConfigureAwait(false);
 
             Assert.False(result.Success);
         }
 
-        private Stream CreateMessage()
+        private static MessageReceiver CreateMessageReceiver()
+        {
+            var messageStore = new MessageStore();
+            var messageReceiver = new MessageReceiver(messageStore);
+            return messageReceiver;
+        }
+
+        private Stream CreateMessage(string xml)
         {
             var messageStream = new MemoryStream();
             var writer = new StreamWriter(messageStream);
-            writer.Write("xml");
+            writer.Write(xml);
             writer.Flush();
             messageStream.Position = 0;
             return messageStream;
