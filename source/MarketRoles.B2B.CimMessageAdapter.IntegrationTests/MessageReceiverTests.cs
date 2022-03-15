@@ -17,7 +17,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             var message = CreateMessage("this is not valid XML");
             var messageReceiver = CreateMessageReceiver();
 
-            var result = await messageReceiver.ReceiveAsync(message).ConfigureAwait(false);
+            var result = await messageReceiver.ReceiveAsync(message, "requestchangeofsupplier", "1.0").ConfigureAwait(false);
 
             Assert.False(result.Success);
             Assert.Single(result.Errors);
@@ -29,10 +29,22 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             var message = CreateMessageFrom("InvalidMessageContainingTwoErrors.xml");
             var messageReceiver = CreateMessageReceiver();
 
-            var result = await messageReceiver.ReceiveAsync(message).ConfigureAwait(false);
+            var result = await messageReceiver.ReceiveAsync(message, "requestchangeofsupplier", "1.0").ConfigureAwait(false);
 
             Assert.False(result.Success);
             Assert.Equal(2, result.Errors.Count);
+        }
+
+        [Fact]
+        public async Task Return_failure_if_xml_schema_does_not_exist()
+        {
+            var message = CreateMessage("this is not valid XML");
+            var messageReceiver = CreateMessageReceiver();
+
+            var result = await messageReceiver.ReceiveAsync(message, "requestchangeofsupplier", "non_existing_version").ConfigureAwait(false);
+
+            Assert.False(result.Success);
+            Assert.Single(result.Errors);
         }
 
         private static MessageReceiver CreateMessageReceiver()
@@ -81,23 +93,18 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             _storage = storage;
         }
 
-        public async Task<Result> ReceiveAsync(Stream message)
+        public async Task<Result> ReceiveAsync(Stream message, string businessProcessType, string version)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
             await _storage.SaveAsync(message);
 
-            var settings = new XmlReaderSettings
+            var xmlSchema = GetSchema(businessProcessType, version);
+            if (xmlSchema is null)
             {
-                Async = true,
-                ValidationType = ValidationType.Schema,
-            };
-
-            var schemaReader = new XmlTextReader("Schema.xsd");
-            var schema = XmlSchema.Read(schemaReader, OnValidationError);
-            settings.Schemas.Add(schema);
-
-            settings.ValidationEventHandler += OnValidationError;
-            using (var reader = XmlReader.Create(message, settings))
+                return Result.Failure(new Error(
+                    $"Schema version {version} for business process type {businessProcessType} does not exist."));
+            }
+            using (var reader = XmlReader.Create(message, CreateXmlReaderSettings(xmlSchema)))
             {
                 try
                 {
@@ -113,6 +120,35 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             }
 
             return _errors.Count == 0 ? Result.Succeeded() : Result.Failure(_errors.ToArray());
+        }
+
+        private XmlReaderSettings CreateXmlReaderSettings(XmlSchema xmlSchema)
+        {
+            var settings = new XmlReaderSettings
+            {
+                Async = true,
+                ValidationType = ValidationType.Schema,
+            };
+            settings.Schemas.Add(xmlSchema);
+            settings.ValidationEventHandler += OnValidationError;
+
+            return settings;
+        }
+
+        private static XmlSchema? GetSchema(string businessProcessType, string version)
+        {
+            var schemas = new Dictionary<KeyValuePair<string, string>, string>()
+                {
+                    {new KeyValuePair<string, string>("requestchangeofsupplier", "1.0"), "schema.xsd"}
+                };
+
+            if (schemas.TryGetValue(new KeyValuePair<string, string>(businessProcessType, version), out var schemaName) == false)
+            {
+                return null;
+            }
+
+            using var schemaReader = new XmlTextReader(schemaName);
+            return XmlSchema.Read(schemaReader, (sender, args) => throw new XmlSchemaException("Invalid XML schema"));
         }
 
         private void OnValidationError(object? sender, ValidationEventArgs arguments)
