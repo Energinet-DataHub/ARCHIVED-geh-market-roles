@@ -49,8 +49,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
 
         private static MessageReceiver CreateMessageReceiver()
         {
-            var messageStore = new MessageStore();
-            var messageReceiver = new MessageReceiver(messageStore);
+            var messageReceiver = new MessageReceiver();
             return messageReceiver;
         }
 
@@ -74,29 +73,17 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         }
     }
 
-    public class MessageStore
-    {
-        public Task SaveAsync(Stream message)
-        {
-            if (message == null) throw new ArgumentNullException(nameof(message));
-            return Task.CompletedTask;
-        }
-    }
-
     public class MessageReceiver
     {
-        private readonly MessageStore _storage;
         private readonly List<Error> _errors = new();
 
-        public MessageReceiver(MessageStore storage)
+        public MessageReceiver()
         {
-            _storage = storage;
         }
 
         public async Task<Result> ReceiveAsync(Stream message, string businessProcessType, string version)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
-            await _storage.SaveAsync(message);
 
             var xmlSchema = GetSchema(businessProcessType, version);
             if (xmlSchema is null)
@@ -139,7 +126,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         {
             var schemas = new Dictionary<KeyValuePair<string, string>, string>()
                 {
-                    {new KeyValuePair<string, string>("requestchangeofsupplier", "1.0"), "schema.xsd"}
+                    { new KeyValuePair<string, string>("requestchangeofsupplier", "1.0"), "schema.xsd" }
                 };
 
             if (schemas.TryGetValue(new KeyValuePair<string, string>(businessProcessType, version), out var schemaName) == false)
