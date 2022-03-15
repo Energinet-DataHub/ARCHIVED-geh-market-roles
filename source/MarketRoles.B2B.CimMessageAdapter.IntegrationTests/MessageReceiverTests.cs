@@ -64,9 +64,11 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             if (message == null) throw new ArgumentNullException(nameof(message));
             await _storage.SaveAsync(message);
 
-            var settings = new XmlReaderSettings();
-            settings.Async = true;
-            settings.ValidationType = ValidationType.Schema;
+            var settings = new XmlReaderSettings
+            {
+                Async = true,
+                ValidationType = ValidationType.Schema
+            };
             settings.ValidationEventHandler += OnValidationError;
             using (var reader = XmlReader.Create(message, settings))
             {
@@ -79,7 +81,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                 }
                 catch (XmlException exception)
                 {
-                    return Result.Failure(new Error(exception.ToString()));
+                    return Result.Failure(new Error(exception.Message));
                 }
             }
 
