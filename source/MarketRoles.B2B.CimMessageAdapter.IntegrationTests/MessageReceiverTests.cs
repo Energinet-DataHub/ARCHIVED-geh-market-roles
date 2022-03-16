@@ -183,10 +183,10 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                 return Task.FromResult(default(XmlSchema));
             }
 
-            return LoadSchemaRecursivelyAsync(schemaName);
+            return LoadSchemaWithDependentSchemasAsync(schemaName);
         }
 
-        private static async Task<XmlSchema> LoadSchemaRecursivelyAsync(string location)
+        private static async Task<XmlSchema> LoadSchemaWithDependentSchemasAsync(string location)
         {
             using var reader = new XmlTextReader(location);
             var xmlSchema = XmlSchema.Read(reader, null);
@@ -198,7 +198,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                     continue;
                 }
 
-                external.Schema = await LoadSchemaRecursivelyAsync(external.SchemaLocation).ConfigureAwait(false);
+                external.Schema = await LoadSchemaWithDependentSchemasAsync(external.SchemaLocation).ConfigureAwait(false);
             }
 
             return xmlSchema;
