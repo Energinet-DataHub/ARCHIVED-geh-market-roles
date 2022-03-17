@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Schema;
 using Xunit;
 
@@ -12,6 +14,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
     public class MessageReceiverTests
     {
         private readonly MessageIdStore _messageIdStore = new();
+        private readonly ActivityRecords _activityRecords = new();
 
         [Fact]
         public async Task Message_must_be_valid_xml()
@@ -19,7 +22,8 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             var message = CreateMessageWithInvalidXmlStructure();
             var messageReceiver = CreateMessageReceiver();
 
-            var result = await messageReceiver.ReceiveAsync(message, "requestchangeofsupplier", "1.0").ConfigureAwait(false);
+            var result = await messageReceiver.ReceiveAsync(message, "requestchangeofsupplier", "1.0")
+                .ConfigureAwait(false);
 
             Assert.False(result.Success);
             Assert.Single(result.Errors);
@@ -31,7 +35,8 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             var message = CreateMessageNotConformingToXmlSchema();
             var messageReceiver = CreateMessageReceiver();
 
-            var result = await messageReceiver.ReceiveAsync(message, "requestchangeofsupplier", "1.0").ConfigureAwait(false);
+            var result = await messageReceiver.ReceiveAsync(message, "requestchangeofsupplier", "1.0")
+                .ConfigureAwait(false);
 
             Assert.False(result.Success);
             Assert.Equal(2, result.Errors.Count);
@@ -43,7 +48,8 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             var message = CreateMessage();
             var messageReceiver = CreateMessageReceiver();
 
-            var result = await messageReceiver.ReceiveAsync(message, "requestchangeofsupplier", "non_existing_version").ConfigureAwait(false);
+            var result = await messageReceiver.ReceiveAsync(message, "requestchangeofsupplier", "non_existing_version")
+                .ConfigureAwait(false);
 
             Assert.False(result.Success);
             Assert.Single(result.Errors);
@@ -52,18 +58,29 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         [Fact]
         public async Task Return_failure_if_message_id_is_not_unique()
         {
-            await CreateMessageReceiver().ReceiveAsync(CreateMessage(), "requestchangeofsupplier", "1.0").ConfigureAwait(false);
+            await CreateMessageReceiver().ReceiveAsync(CreateMessage(), "requestchangeofsupplier", "1.0")
+                .ConfigureAwait(false);
 
             var messageReceiver = CreateMessageReceiver();
-            var result = await messageReceiver.ReceiveAsync(CreateMessage(), "requestchangeofsupplier", "1.0").ConfigureAwait(false);
+            var result = await messageReceiver.ReceiveAsync(CreateMessage(), "requestchangeofsupplier", "1.0")
+                .ConfigureAwait(false);
 
             Assert.False(result.Success);
             Assert.Single(result.Errors);
         }
 
+        [Fact]
+        public async Task Valid_activity_records_are_extracted_and_committed_to_queue()
+        {
+            var messageReceiver = CreateMessageReceiver();
+            await messageReceiver.ReceiveAsync(CreateMessageNotConformingToXmlSchema(), "requestchangeofsupplier", "1.0").ConfigureAwait(false);
+
+            Assert.Single(_activityRecords.CommittedItems);
+        }
+
         private MessageReceiver CreateMessageReceiver()
         {
-            var messageReceiver = new MessageReceiver(_messageIdStore);
+            var messageReceiver = new MessageReceiver(_messageIdStore, _activityRecords);
             return messageReceiver;
         }
 
@@ -97,14 +114,39 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         }
     }
 
+    public class ActivityRecords
+    {
+        private readonly List<ActivityRecord> _uncommittedItems = new();
+        private readonly List<ActivityRecord> _committedItems = new();
+        public IReadOnlyCollection<ActivityRecord> CommittedItems => _committedItems.AsReadOnly();
+
+        public async Task AddAsync(ActivityRecord activityRecord)
+        {
+            _uncommittedItems.Add(activityRecord);
+        }
+
+        public Task CommitAsync()
+        {
+            _committedItems.AddRange(_uncommittedItems);
+            return Task.CompletedTask;
+        }
+    }
+
+    public class ActivityRecord
+    {
+        public string mRid { get; set; }
+    }
+
     public class MessageReceiver
     {
         private readonly List<Error> _errors = new();
         private readonly MessageIdStore _messageIds;
+        private readonly ActivityRecords _activityRecords;
 
-        public MessageReceiver(MessageIdStore messageIds)
+        public MessageReceiver(MessageIdStore messageIds, ActivityRecords activityRecords)
         {
             _messageIds = messageIds ?? throw new ArgumentNullException(nameof(messageIds));
+            _activityRecords = activityRecords ?? throw new ArgumentNullException(nameof(activityRecords));
         }
 
         public async Task<Result> ReceiveAsync(Stream message, string businessProcessType, string version)
@@ -117,6 +159,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                 return Result.Failure(new Error(
                     $"Schema version {version} for business process type {businessProcessType} does not exist."));
             }
+
             using (var reader = XmlReader.Create(message, CreateXmlReaderSettings(xmlSchema)))
             {
                 try
@@ -136,7 +179,84 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                                     {
                                         _errors.Add(new Error($"Message id '{messageId}' is not unique"));
                                     }
+
                                     break;
+                                }
+                            }
+                        }
+
+                        if (reader.NodeType == XmlNodeType.Element &&
+                            reader.LocalName.Equals("MktActivityRecord"))
+                        {
+                            string mRID = string.Empty;
+                            string marketEvaluationPointmRID = string.Empty;
+                            string energySupplierMarketParticipantmRID = string.Empty;
+                            string balanceResponsiblePartyMarketParticipantmRID = string.Empty;
+                            string customerMarketParticipantmRID = string.Empty;
+                            string customerMarketParticipantname = string.Empty;
+                            string startDateAndOrTimedateTime = string.Empty;
+
+                            bool hasError = false;
+                            while (await reader.ReadAsync())
+                            {
+                                if (reader.NodeType == XmlNodeType.EndElement &&
+                                    reader.LocalName.Equals("MktActivityRecord"))
+                                {
+                                    if (hasError == false)
+                                    {
+                                        var activityRecord = new ActivityRecord() { mRid = mRID, };
+                                        await StoreActivityRecordAsync(activityRecord).ConfigureAwait(false);
+                                    }
+                                    break;
+                                }
+
+                                if (reader.SchemaInfo.Validity == XmlSchemaValidity.Invalid)
+                                {
+                                    hasError = true;
+                                }
+                                else
+                                {
+                                    if (reader.NodeType == XmlNodeType.Element)
+                                    {
+                                        if (reader.LocalName.Equals("mRID"))
+                                        {
+                                            mRID = reader.ReadElementString();
+                                        }
+
+                                        if (reader.LocalName.Equals("marketEvaluationPoint.mRID"))
+                                        {
+                                            marketEvaluationPointmRID = reader.ReadElementString();
+                                        }
+
+                                        if (reader.LocalName.Equals(
+                                                "marketEvaluationPoint.energySupplier_MarketParticipant.mRID"))
+                                        {
+                                            energySupplierMarketParticipantmRID = reader.ReadElementString();
+                                        }
+
+                                        if (reader.LocalName.Equals(
+                                                "marketEvaluationPoint.balanceResponsibleParty_MarketParticipant.mRID"))
+                                        {
+                                            balanceResponsiblePartyMarketParticipantmRID = reader.ReadElementString();
+                                        }
+
+                                        if (reader.LocalName.Equals(
+                                                "marketEvaluationPoint.customer_MarketParticipant.mRID"))
+                                        {
+                                            customerMarketParticipantmRID = reader.ReadElementString();
+                                        }
+
+                                        if (reader.LocalName.Equals(
+                                                "marketEvaluationPoint.customer_MarketParticipant.name"))
+                                        {
+                                            customerMarketParticipantname = reader.ReadElementString();
+                                        }
+
+                                        if (reader.LocalName.Equals("start_DateAndOrTime.dateTime"))
+                                        {
+                                            startDateAndOrTimedateTime = reader.ReadElementString();
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -148,7 +268,13 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                 }
             }
 
+            await _activityRecords.CommitAsync().ConfigureAwait(false);
             return _errors.Count == 0 ? Result.Succeeded() : Result.Failure(_errors.ToArray());
+        }
+
+        private Task StoreActivityRecordAsync(ActivityRecord activityRecord)
+        {
+            return _activityRecords.AddAsync(activityRecord);
         }
 
         private Task<bool> CheckMessageIdAsync(string messageId)
@@ -163,7 +289,8 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             {
                 Async = true,
                 ValidationType = ValidationType.Schema,
-                ValidationFlags = XmlSchemaValidationFlags.ProcessInlineSchema | XmlSchemaValidationFlags.ReportValidationWarnings,
+                ValidationFlags = XmlSchemaValidationFlags.ProcessInlineSchema |
+                                  XmlSchemaValidationFlags.ReportValidationWarnings,
             };
 
             settings.Schemas.Add(xmlSchema);
@@ -174,11 +301,15 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         private static Task<XmlSchema?> GetSchemaAsync(string businessProcessType, string version)
         {
             var schemas = new Dictionary<KeyValuePair<string, string>, string>()
+            {
                 {
-                    { new KeyValuePair<string, string>("requestchangeofsupplier", "1.0"), "urn-ediel-org-structure-requestchangeofsupplier-0-1.xsd" }
-                };
+                    new KeyValuePair<string, string>("requestchangeofsupplier", "1.0"),
+                    "urn-ediel-org-structure-requestchangeofsupplier-0-1.xsd"
+                }
+            };
 
-            if (schemas.TryGetValue(new KeyValuePair<string, string>(businessProcessType, version), out var schemaName) == false)
+            if (schemas.TryGetValue(new KeyValuePair<string, string>(businessProcessType, version),
+                    out var schemaName) == false)
             {
                 return Task.FromResult(default(XmlSchema));
             }
@@ -198,7 +329,8 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                     continue;
                 }
 
-                external.Schema = await LoadSchemaWithDependentSchemasAsync(external.SchemaLocation).ConfigureAwait(false);
+                external.Schema =
+                    await LoadSchemaWithDependentSchemasAsync(external.SchemaLocation).ConfigureAwait(false);
             }
 
             return xmlSchema;
@@ -215,6 +347,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
     public class MessageIdStore
     {
         private readonly HashSet<string> _messageIds = new();
+
         public Task<bool> TryStoreAsync(string messageId)
         {
             return Task.FromResult(_messageIds.Add(messageId));
@@ -225,13 +358,13 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
     {
         private Result()
         {
-
         }
 
         private Result(IReadOnlyCollection<Error> errors)
         {
             Errors = errors;
         }
+
         public bool Success => Errors.Count == 0;
 
         public IReadOnlyCollection<Error> Errors { get; } = new List<Error>();
