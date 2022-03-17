@@ -14,7 +14,12 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
     public class MessageReceiverTests
     {
         private readonly MessageIdStore _messageIdStore = new();
-        private readonly ActivityRecords _activityRecords = new();
+        private readonly ActivityRecords _activityRecords;
+
+        public MessageReceiverTests()
+        {
+            _activityRecords = new();
+        }
 
         [Fact]
         public async Task Message_must_be_valid_xml()
@@ -73,9 +78,24 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         public async Task Valid_activity_records_are_extracted_and_committed_to_queue()
         {
             var messageReceiver = CreateMessageReceiver();
-            await messageReceiver.ReceiveAsync(CreateMessageNotConformingToXmlSchema(), "requestchangeofsupplier", "1.0").ConfigureAwait(false);
+            await messageReceiver
+                .ReceiveAsync(CreateMessageNotConformingToXmlSchema(), "requestchangeofsupplier", "1.0")
+                .ConfigureAwait(false);
 
             Assert.Single(_activityRecords.CommittedItems);
+        }
+
+        [Fact]
+        public async Task Activity_records_are_not_committed_to_if_message_id_is_invalid()
+        {
+            await CreateMessageReceiver().ReceiveAsync(CreateMessage(), "requestchangeofsupplier", "1.0")
+                .ConfigureAwait(false);
+
+            var messageReceiver = CreateMessageReceiver();
+            await messageReceiver.ReceiveAsync(CreateMessage(), "requestchangeofsupplier", "1.0")
+                .ConfigureAwait(false);
+
+            Assert.Empty(_activityRecords.CommittedItems);
         }
 
         private MessageReceiver CreateMessageReceiver()
@@ -122,12 +142,15 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
 
         public async Task AddAsync(ActivityRecord activityRecord)
         {
+            _committedItems.Clear();
             _uncommittedItems.Add(activityRecord);
         }
 
         public Task CommitAsync()
         {
+            _committedItems.Clear();
             _committedItems.AddRange(_uncommittedItems);
+            _uncommittedItems.Clear();
             return Task.CompletedTask;
         }
     }
@@ -160,6 +183,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                     $"Schema version {version} for business process type {businessProcessType} does not exist."));
             }
 
+            bool hasInvalidHeaderValues = false;
             using (var reader = XmlReader.Create(message, CreateXmlReaderSettings(xmlSchema)))
             {
                 try
@@ -178,6 +202,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                                     if (messageIdIsUnique == false)
                                     {
                                         _errors.Add(new Error($"Message id '{messageId}' is not unique"));
+                                        hasInvalidHeaderValues = true;
                                     }
 
                                     break;
@@ -207,6 +232,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                                         var activityRecord = new ActivityRecord() { mRid = mRID, };
                                         await StoreActivityRecordAsync(activityRecord).ConfigureAwait(false);
                                     }
+
                                     break;
                                 }
 
@@ -268,7 +294,10 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                 }
             }
 
-            await _activityRecords.CommitAsync().ConfigureAwait(false);
+            if (hasInvalidHeaderValues == false)
+            {
+                await _activityRecords.CommitAsync().ConfigureAwait(false);
+            }
             return _errors.Count == 0 ? Result.Succeeded() : Result.Failure(_errors.ToArray());
         }
 
