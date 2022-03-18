@@ -14,7 +14,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
     {
         private readonly MessageIdStore _messageIdStore = new();
         private ActivityRecords _activityRecords;
-        private readonly TransactionIds _transactionIds = new();
+        private readonly TransactionIdsStub _transactionIdsStub = new();
 
         public MessageReceiverTests()
         {
@@ -110,7 +110,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         private MessageReceiver CreateMessageReceiver()
         {
             _activityRecords = new ActivityRecords();
-            var messageReceiver = new MessageReceiver(_messageIdStore, _activityRecords, _transactionIds);
+            var messageReceiver = new MessageReceiver(_messageIdStore, _activityRecords, _transactionIdsStub);
             return messageReceiver;
         }
 
@@ -146,16 +146,6 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             fileReader.CopyTo(messageStream);
             messageStream.Position = 0;
             return messageStream;
-        }
-    }
-
-    public class TransactionIds
-    {
-        private readonly HashSet<string> _transactionIds = new();
-
-        public Task<bool> TryStoreAsync(string transactionId)
-        {
-            return Task.FromResult(_transactionIds.Add(transactionId));
         }
     }
 
@@ -202,13 +192,13 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         private readonly List<Error> _errors = new();
         private readonly MessageIdStore _messageIds;
         private readonly ActivityRecords _activityRecords;
-        private readonly TransactionIds _transactionIds;
+        private readonly TransactionIdsStub _transactionIdsStub;
 
-        public MessageReceiver(MessageIdStore messageIds, ActivityRecords activityRecords, TransactionIds transactionIds)
+        public MessageReceiver(MessageIdStore messageIds, ActivityRecords activityRecords, TransactionIdsStub transactionIdsStub)
         {
             _messageIds = messageIds ?? throw new ArgumentNullException(nameof(messageIds));
             _activityRecords = activityRecords ?? throw new ArgumentNullException(nameof(activityRecords));
-            _transactionIds = transactionIds;
+            _transactionIdsStub = transactionIdsStub;
         }
 
         public async Task<Result> ReceiveAsync(Stream message, string businessProcessType, string version)
@@ -361,7 +351,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         private Task<bool> CheckTransactionIdAsync(string transactionId)
         {
             if (transactionId == null) throw new ArgumentNullException(nameof(transactionId));
-            return _transactionIds.TryStoreAsync(transactionId);
+            return _transactionIdsStub.TryStoreAsync(transactionId);
         }
 
         private Task StoreActivityRecordAsync(ActivityRecord activityRecord)

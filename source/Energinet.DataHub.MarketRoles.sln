@@ -46,6 +46,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Energinet.DataHub.MarketRol
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketRoles.B2B.CimMessageAdapter.IntegrationTests", "MarketRoles.B2B.CimMessageAdapter.IntegrationTests\MarketRoles.B2B.CimMessageAdapter.IntegrationTests.csproj", "{0B8E940E-A2CE-458B-BB51-C12050D91360}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2B.CimMessageAdapter", "B2B.CimMessageAdapter\B2B.CimMessageAdapter.csproj", "{27395443-B503-4A4A-B9F1-01C3F9C75222}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -108,6 +110,10 @@ Global
 		{0B8E940E-A2CE-458B-BB51-C12050D91360}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B8E940E-A2CE-458B-BB51-C12050D91360}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B8E940E-A2CE-458B-BB51-C12050D91360}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27395443-B503-4A4A-B9F1-01C3F9C75222}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27395443-B503-4A4A-B9F1-01C3F9C75222}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27395443-B503-4A4A-B9F1-01C3F9C75222}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27395443-B503-4A4A-B9F1-01C3F9C75222}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{654DA496-60D8-47D8-923E-F24F71A31F84} = {FD29AEE1-CB22-41FD-A875-1E99C4D5D81C}

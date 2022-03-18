@@ -50,4 +50,8 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\B2B.CimMessageAdapter\B2B.CimMessageAdapter.csproj" />
+    </ItemGroup>
+
 </Project>
