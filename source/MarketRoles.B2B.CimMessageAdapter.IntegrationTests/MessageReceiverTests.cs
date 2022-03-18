@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
 using System.Xml.Schema;
 using Xunit;
 
@@ -14,11 +12,11 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
     public class MessageReceiverTests
     {
         private readonly MessageIdStore _messageIdStore = new();
-        private readonly ActivityRecords _activityRecords;
+        private ActivityRecords _activityRecords;
+        private readonly TransactionIds _transactionIds = new();
 
         public MessageReceiverTests()
         {
-            _activityRecords = new();
         }
 
         [Fact]
@@ -71,7 +69,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                 .ConfigureAwait(false);
 
             Assert.False(result.Success);
-            Assert.Single(result.Errors);
+            Assert.Contains(result.Errors, error => error is DuplicateMessageId);
         }
 
         [Fact]
@@ -86,7 +84,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         }
 
         [Fact]
-        public async Task Activity_records_are_not_committed_to_if_any_message_header_values_are_invalid()
+        public async Task Activity_records_are_not_committed_to_queue_if_any_message_header_values_are_invalid()
         {
             await CreateMessageReceiver().ReceiveAsync(CreateMessage(), "requestchangeofsupplier", "1.0")
                 .ConfigureAwait(false);
@@ -98,11 +96,21 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             Assert.Empty(_activityRecords.CommittedItems);
         }
 
+        [Fact]
+        public async Task Activity_records_must_have_unique_transaction_ids()
+        {
+            await CreateMessageReceiver().ReceiveAsync(CreateMessageWithDuplicateTransactionIds(), "requestchangeofsupplier", "1.0")
+                .ConfigureAwait(false);
+
+            Assert.Single(_activityRecords.CommittedItems);
+        }
+
 
 
         private MessageReceiver CreateMessageReceiver()
         {
-            var messageReceiver = new MessageReceiver(_messageIdStore, _activityRecords);
+            _activityRecords = new ActivityRecords();
+            var messageReceiver = new MessageReceiver(_messageIdStore, _activityRecords, _transactionIds);
             return messageReceiver;
         }
 
@@ -126,6 +134,11 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             return CreateMessageFrom("ValidRequestChangeOfSupplier.xml");
         }
 
+        private Stream CreateMessageWithDuplicateTransactionIds()
+        {
+            return CreateMessageFrom("RequestChangeOfSupplierWithDuplicateTransactionIds.xml");
+        }
+
         private Stream CreateMessageFrom(string xmlFile)
         {
             var messageStream = new MemoryStream();
@@ -133,6 +146,16 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             fileReader.CopyTo(messageStream);
             messageStream.Position = 0;
             return messageStream;
+        }
+    }
+
+    public class TransactionIds
+    {
+        private readonly HashSet<string> _transactionIds = new();
+
+        public Task<bool> TryStoreAsync(string transactionId)
+        {
+            return Task.FromResult(_transactionIds.Add(transactionId));
         }
     }
 
@@ -167,11 +190,13 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         private readonly List<Error> _errors = new();
         private readonly MessageIdStore _messageIds;
         private readonly ActivityRecords _activityRecords;
+        private readonly TransactionIds _transactionIds;
 
-        public MessageReceiver(MessageIdStore messageIds, ActivityRecords activityRecords)
+        public MessageReceiver(MessageIdStore messageIds, ActivityRecords activityRecords, TransactionIds transactionIds)
         {
             _messageIds = messageIds ?? throw new ArgumentNullException(nameof(messageIds));
             _activityRecords = activityRecords ?? throw new ArgumentNullException(nameof(activityRecords));
+            _transactionIds = transactionIds;
         }
 
         public async Task<Result> ReceiveAsync(Stream message, string businessProcessType, string version)
@@ -203,7 +228,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                                     var messageIdIsUnique = await CheckMessageIdAsync(messageId);
                                     if (messageIdIsUnique == false)
                                     {
-                                        _errors.Add(new Error($"Message id '{messageId}' is not unique"));
+                                        _errors.Add(new DuplicateMessageId($"Message id '{messageId}' is not unique"));
                                         hasInvalidHeaderValues = true;
                                     }
 
@@ -231,8 +256,17 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                                 {
                                     if (hasError == false)
                                     {
-                                        var activityRecord = new ActivityRecord() { mRid = mRID, };
-                                        await StoreActivityRecordAsync(activityRecord).ConfigureAwait(false);
+                                        var transactionId = mRID;
+                                        var transactionIdIsUnique = await CheckTransactionIdAsync(transactionId);
+                                        if (transactionIdIsUnique == false)
+                                        {
+                                            _errors.Add(new Error($"Transaction id '{ transactionId }' is not unique and will not be processed."));
+                                        }
+                                        else
+                                        {
+                                            var activityRecord = new ActivityRecord() { mRid = mRID, };
+                                            await StoreActivityRecordAsync(activityRecord).ConfigureAwait(false);
+                                        }
                                     }
 
                                     break;
@@ -301,6 +335,12 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                 await _activityRecords.CommitAsync().ConfigureAwait(false);
             }
             return _errors.Count == 0 ? Result.Succeeded() : Result.Failure(_errors.ToArray());
+        }
+
+        private Task<bool> CheckTransactionIdAsync(string transactionId)
+        {
+            if (transactionId == null) throw new ArgumentNullException(nameof(transactionId));
+            return _transactionIds.TryStoreAsync(transactionId);
         }
 
         private Task StoreActivityRecordAsync(ActivityRecord activityRecord)
@@ -419,5 +459,13 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         }
 
         public string Message { get; }
+    }
+
+    public class DuplicateMessageId : Error
+    {
+        public DuplicateMessageId(string message)
+            : base(message)
+        {
+        }
     }
 }
