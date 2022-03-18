@@ -86,7 +86,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         }
 
         [Fact]
-        public async Task Activity_records_are_not_committed_to_if_message_id_is_invalid()
+        public async Task Activity_records_are_not_committed_to_if_any_message_header_values_are_invalid()
         {
             await CreateMessageReceiver().ReceiveAsync(CreateMessage(), "requestchangeofsupplier", "1.0")
                 .ConfigureAwait(false);
@@ -97,6 +97,8 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
 
             Assert.Empty(_activityRecords.CommittedItems);
         }
+
+
 
         private MessageReceiver CreateMessageReceiver()
         {
