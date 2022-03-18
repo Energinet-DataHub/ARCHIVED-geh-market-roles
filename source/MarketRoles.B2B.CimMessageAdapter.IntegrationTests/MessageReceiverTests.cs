@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
+using B2B.CimMessageAdapter;
 using Xunit;
 
 namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
@@ -13,7 +14,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
     public class MessageReceiverTests
     {
         private readonly MessageIdStore _messageIdStore = new();
-        private ActivityRecords _activityRecords;
+        private ActivityRecordForwarder _activityRecordForwarder;
         private readonly TransactionIdsStub _transactionIdsStub = new();
 
         public MessageReceiverTests()
@@ -68,9 +69,9 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             await ReceiveRequestChangeOfSupplierMessage(CreateMessageNotConformingToXmlSchema())
                 .ConfigureAwait(false);
 
-            var activityRecord = _activityRecords.CommittedItems.FirstOrDefault();
+            var activityRecord = _activityRecordForwarder.CommittedItems.FirstOrDefault();
             Assert.NotNull(activityRecord);
-            Assert.Equal("12345699", activityRecord.mRid);
+            Assert.Equal("12345699", activityRecord.MRid);
             Assert.Equal("579999993331812345", activityRecord.MarketEvaluationPointmRID);
             Assert.Equal("5799999933318", activityRecord.EnergySupplierMarketParticipantmRID);
             Assert.Equal("5799999933340", activityRecord.BalanceResponsiblePartyMarketParticipantmRID);
@@ -88,7 +89,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             await ReceiveRequestChangeOfSupplierMessage(CreateMessage())
                 .ConfigureAwait(false);
 
-            Assert.Empty(_activityRecords.CommittedItems);
+            Assert.Empty(_activityRecordForwarder.CommittedItems);
         }
 
         [Fact]
@@ -97,7 +98,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             await ReceiveRequestChangeOfSupplierMessage(CreateMessageWithDuplicateTransactionIds())
                 .ConfigureAwait(false);
 
-            Assert.Single(_activityRecords.CommittedItems);
+            Assert.Single(_activityRecordForwarder.CommittedItems);
         }
 
 
@@ -109,8 +110,8 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
 
         private MessageReceiver CreateMessageReceiver()
         {
-            _activityRecords = new ActivityRecords();
-            var messageReceiver = new MessageReceiver(_messageIdStore, _activityRecords, _transactionIdsStub);
+            _activityRecordForwarder = new ActivityRecordForwarder();
+            var messageReceiver = new MessageReceiver(_messageIdStore, _activityRecordForwarder, _transactionIdsStub);
             return messageReceiver;
         }
 
@@ -149,16 +150,16 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         }
     }
 
-    public class ActivityRecords
+    public class ActivityRecordForwarder : IActivityRecordForwarder
     {
-        private readonly List<ActivityRecord> _uncommittedItems = new();
-        private readonly List<ActivityRecord> _committedItems = new();
-        public IReadOnlyCollection<ActivityRecord> CommittedItems => _committedItems.AsReadOnly();
+        private readonly List<MarketActivityRecord> _uncommittedItems = new();
+        private readonly List<MarketActivityRecord> _committedItems = new();
+        public IReadOnlyCollection<MarketActivityRecord> CommittedItems => _committedItems.AsReadOnly();
 
-        public async Task AddAsync(ActivityRecord activityRecord)
+        public async Task AddAsync(MarketActivityRecord marketActivityRecord)
         {
             _committedItems.Clear();
-            _uncommittedItems.Add(activityRecord);
+            _uncommittedItems.Add(marketActivityRecord);
         }
 
         public Task CommitAsync()
@@ -170,34 +171,17 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         }
     }
 
-    public class ActivityRecord
-    {
-        public string CustomerMarketParticipantmRID { get; init; }
-
-        public string BalanceResponsiblePartyMarketParticipantmRID { get; init; }
-
-        public string EnergySupplierMarketParticipantmRID { get; init; }
-
-        public string MarketEvaluationPointmRID { get; init; }
-
-        public string mRid { get; init; }
-
-        public string CustomerMarketParticipantName { get; init; }
-
-        public string StartDateAndOrTimeDateTime { get; init; }
-    }
-
     public class MessageReceiver
     {
         private readonly List<Error> _errors = new();
         private readonly MessageIdStore _messageIds;
-        private readonly ActivityRecords _activityRecords;
+        private readonly ActivityRecordForwarder _activityRecordForwarder;
         private readonly TransactionIdsStub _transactionIdsStub;
 
-        public MessageReceiver(MessageIdStore messageIds, ActivityRecords activityRecords, TransactionIdsStub transactionIdsStub)
+        public MessageReceiver(MessageIdStore messageIds, ActivityRecordForwarder activityRecordForwarder, TransactionIdsStub transactionIdsStub)
         {
             _messageIds = messageIds ?? throw new ArgumentNullException(nameof(messageIds));
-            _activityRecords = activityRecords ?? throw new ArgumentNullException(nameof(activityRecords));
+            _activityRecordForwarder = activityRecordForwarder ?? throw new ArgumentNullException(nameof(activityRecordForwarder));
             _transactionIdsStub = transactionIdsStub;
         }
 
@@ -266,9 +250,9 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                                         }
                                         else
                                         {
-                                            var activityRecord = new ActivityRecord()
+                                            var activityRecord = new MarketActivityRecord()
                                             {
-                                                mRid = mRID,
+                                                MRid = mRID,
                                                 CustomerMarketParticipantName = customerMarketParticipantname,
                                                 CustomerMarketParticipantmRID = customerMarketParticipantmRID,
                                                 MarketEvaluationPointmRID = marketEvaluationPointmRID,
@@ -343,7 +327,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
 
             if (hasInvalidHeaderValues == false)
             {
-                await _activityRecords.CommitAsync().ConfigureAwait(false);
+                await _activityRecordForwarder.CommitAsync().ConfigureAwait(false);
             }
             return _errors.Count == 0 ? Result.Succeeded() : Result.Failure(_errors.ToArray());
         }
@@ -354,9 +338,9 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             return _transactionIdsStub.TryStoreAsync(transactionId);
         }
 
-        private Task StoreActivityRecordAsync(ActivityRecord activityRecord)
+        private Task StoreActivityRecordAsync(MarketActivityRecord marketActivityRecord)
         {
-            return _activityRecords.AddAsync(activityRecord);
+            return _activityRecordForwarder.AddAsync(marketActivityRecord);
         }
 
         private Task<bool> CheckMessageIdAsync(string messageId)
