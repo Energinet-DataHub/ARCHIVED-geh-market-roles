@@ -201,70 +201,64 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         {
             while (await reader.ReadAsync())
             {
-                if (reader.NodeType == XmlNodeType.Element &&
+                if (reader.NodeType != XmlNodeType.Element || !reader.LocalName.Equals("MktActivityRecord")) continue;
+                await foreach (var marketActivityRecord in ExtractFromAsync(reader))
+                {
+                    if (await CheckTransactionIdAsync(marketActivityRecord.MRid).ConfigureAwait(false) == false)
+                    {
+                        _errors.Add(new ValidationError(
+                            $"Transaction id '{marketActivityRecord.MRid}' is not unique and will not be processed."));
+                    }
+                    else
+                    {
+                        await StoreActivityRecordAsync(marketActivityRecord).ConfigureAwait(false);
+                    }
+                }
+            }
+        }
+
+        private async IAsyncEnumerable<MarketActivityRecord> ExtractFromAsync(XmlReader reader)
+        {
+            var mRID = string.Empty;
+            var marketEvaluationPointmRID = string.Empty;
+            var energySupplierMarketParticipantmRID = string.Empty;
+            var balanceResponsiblePartyMarketParticipantmRID = string.Empty;
+            var customerMarketParticipantmRID = string.Empty;
+            var customerMarketParticipantname = string.Empty;
+            var startDateAndOrTimedateTime = string.Empty;
+
+            while (await reader.ReadAsync())
+            {
+                if (reader.NodeType == XmlNodeType.EndElement &&
                     reader.LocalName.Equals("MktActivityRecord"))
                 {
-                    string mRID = string.Empty;
-                    string marketEvaluationPointmRID = string.Empty;
-                    string energySupplierMarketParticipantmRID = string.Empty;
-                    string balanceResponsiblePartyMarketParticipantmRID = string.Empty;
-                    string customerMarketParticipantmRID = string.Empty;
-                    string customerMarketParticipantname = string.Empty;
-                    string startDateAndOrTimedateTime = string.Empty;
-
-                    bool hasError = false;
-                    while (await reader.ReadAsync())
+                    if (reader.SchemaInfo.Validity == XmlSchemaValidity.Invalid)
                     {
-                        if (reader.NodeType == XmlNodeType.EndElement &&
-                            reader.LocalName.Equals("MktActivityRecord"))
-                        {
-                            if (hasError == false)
-                            {
-                                var transactionId = mRID;
-                                var transactionIdIsUnique = await CheckTransactionIdAsync(transactionId);
-                                if (transactionIdIsUnique == false)
-                                {
-                                    _errors.Add(new ValidationError(
-                                        $"Transaction id '{transactionId}' is not unique and will not be processed."));
-                                }
-                                else
-                                {
-                                    var activityRecord = new MarketActivityRecord()
-                                    {
-                                        MRid = mRID,
-                                        CustomerMarketParticipantName = customerMarketParticipantname,
-                                        CustomerMarketParticipantmRID = customerMarketParticipantmRID,
-                                        MarketEvaluationPointmRID = marketEvaluationPointmRID,
-                                        EnergySupplierMarketParticipantmRID = energySupplierMarketParticipantmRID,
-                                        StartDateAndOrTimeDateTime = startDateAndOrTimedateTime,
-                                        BalanceResponsiblePartyMarketParticipantmRID =
-                                            balanceResponsiblePartyMarketParticipantmRID,
-                                    };
-                                    await StoreActivityRecordAsync(activityRecord).ConfigureAwait(false);
-                                }
-                            }
-
-                            break;
-                        }
-
-                        if (reader.SchemaInfo.Validity == XmlSchemaValidity.Invalid)
-                        {
-                            hasError = true;
-                        }
-                        else
-                        {
-                            if (reader.NodeType == XmlNodeType.Element)
-                            {
-                                TryExtractValueFrom("mRID", reader, ref mRID);
-                                TryExtractValueFrom("marketEvaluationPoint.mRID", reader, ref marketEvaluationPointmRID);
-                                TryExtractValueFrom("marketEvaluationPoint.energySupplier_MarketParticipant.mRID", reader, ref energySupplierMarketParticipantmRID);
-                                TryExtractValueFrom("marketEvaluationPoint.balanceResponsibleParty_MarketParticipant.mRID", reader, ref balanceResponsiblePartyMarketParticipantmRID);
-                                TryExtractValueFrom("marketEvaluationPoint.customer_MarketParticipant.mRID", reader, ref customerMarketParticipantmRID);
-                                TryExtractValueFrom("marketEvaluationPoint.customer_MarketParticipant.name", reader, ref customerMarketParticipantname);
-                                TryExtractValueFrom("start_DateAndOrTime.dateTime", reader, ref startDateAndOrTimedateTime);
-                            }
-                        }
+                        continue;
                     }
+
+                    yield return new MarketActivityRecord()
+                    {
+                        MRid = mRID,
+                        CustomerMarketParticipantName = customerMarketParticipantname,
+                        CustomerMarketParticipantmRID = customerMarketParticipantmRID,
+                        MarketEvaluationPointmRID = marketEvaluationPointmRID,
+                        EnergySupplierMarketParticipantmRID = energySupplierMarketParticipantmRID,
+                        StartDateAndOrTimeDateTime = startDateAndOrTimedateTime,
+                        BalanceResponsiblePartyMarketParticipantmRID =
+                            balanceResponsiblePartyMarketParticipantmRID,
+                    };
+                }
+
+                if (reader.NodeType == XmlNodeType.Element)
+                {
+                    TryExtractValueFrom("mRID", reader, ref mRID);
+                    TryExtractValueFrom("marketEvaluationPoint.mRID", reader, ref marketEvaluationPointmRID);
+                    TryExtractValueFrom("marketEvaluationPoint.energySupplier_MarketParticipant.mRID", reader, ref energySupplierMarketParticipantmRID);
+                    TryExtractValueFrom("marketEvaluationPoint.balanceResponsibleParty_MarketParticipant.mRID", reader, ref balanceResponsiblePartyMarketParticipantmRID);
+                    TryExtractValueFrom("marketEvaluationPoint.customer_MarketParticipant.mRID", reader, ref customerMarketParticipantmRID);
+                    TryExtractValueFrom("marketEvaluationPoint.customer_MarketParticipant.name", reader, ref customerMarketParticipantname);
+                    TryExtractValueFrom("start_DateAndOrTime.dateTime", reader, ref startDateAndOrTimedateTime);
                 }
             }
         }
