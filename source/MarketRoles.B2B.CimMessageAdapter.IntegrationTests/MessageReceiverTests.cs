@@ -153,16 +153,16 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
     public class MessageReceiver
     {
         private readonly List<ValidationError> _errors = new();
-        private readonly MessageIdsStub _messageIdsStub;
-        private readonly ActivityRecordForwarderStub _activityRecordForwarderStub;
-        private readonly TransactionIdsStub _transactionIdsStub;
+        private readonly IMessageIds _messageIds;
+        private readonly IActivityRecordForwarder _activityRecordForwarder;
+        private readonly ITransactionIds _transactionIds;
         private bool _hasInvalidHeaderValues;
 
-        public MessageReceiver(MessageIdsStub messageIdsStub, ActivityRecordForwarderStub activityRecordForwarderStub, TransactionIdsStub transactionIdsStub)
+        public MessageReceiver(IMessageIds messageIds, IActivityRecordForwarder activityRecordForwarder, ITransactionIds transactionIds)
         {
-            _messageIdsStub = messageIdsStub ?? throw new ArgumentNullException(nameof(messageIdsStub));
-            _activityRecordForwarderStub = activityRecordForwarderStub ?? throw new ArgumentNullException(nameof(activityRecordForwarderStub));
-            _transactionIdsStub = transactionIdsStub;
+            _messageIds = messageIds ?? throw new ArgumentNullException(nameof(messageIds));
+            _activityRecordForwarder = activityRecordForwarder ?? throw new ArgumentNullException(nameof(activityRecordForwarder));
+            _transactionIds = transactionIds;
         }
 
         public async Task<Result> ReceiveAsync(Stream message, string businessProcessType, string version)
@@ -192,7 +192,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
 
             if (_hasInvalidHeaderValues == false)
             {
-                await _activityRecordForwarderStub.CommitAsync().ConfigureAwait(false);
+                await _activityRecordForwarder.CommitAsync().ConfigureAwait(false);
             }
             return _errors.Count == 0 ? Result.Succeeded() : Result.Failure(_errors.ToArray());
         }
@@ -302,18 +302,18 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         private Task<bool> CheckTransactionIdAsync(string transactionId)
         {
             if (transactionId == null) throw new ArgumentNullException(nameof(transactionId));
-            return _transactionIdsStub.TryStoreAsync(transactionId);
+            return _transactionIds.TryStoreAsync(transactionId);
         }
 
         private Task StoreActivityRecordAsync(MarketActivityRecord marketActivityRecord)
         {
-            return _activityRecordForwarderStub.AddAsync(marketActivityRecord);
+            return _activityRecordForwarder.AddAsync(marketActivityRecord);
         }
 
         private Task<bool> CheckMessageIdAsync(string messageId)
         {
             if (messageId == null) throw new ArgumentNullException(nameof(messageId));
-            return _messageIdsStub.TryStoreAsync(messageId);
+            return _messageIds.TryStoreAsync(messageId);
         }
 
         private XmlReaderSettings CreateXmlReaderSettings(XmlSchema xmlSchema)
