@@ -255,44 +255,13 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                         {
                             if (reader.NodeType == XmlNodeType.Element)
                             {
-                                if (reader.LocalName.Equals("mRID"))
-                                {
-                                    mRID = reader.ReadElementString();
-                                }
-
-                                if (reader.LocalName.Equals("marketEvaluationPoint.mRID"))
-                                {
-                                    marketEvaluationPointmRID = reader.ReadElementString();
-                                }
-
-                                if (reader.LocalName.Equals(
-                                        "marketEvaluationPoint.energySupplier_MarketParticipant.mRID"))
-                                {
-                                    energySupplierMarketParticipantmRID = reader.ReadElementString();
-                                }
-
-                                if (reader.LocalName.Equals(
-                                        "marketEvaluationPoint.balanceResponsibleParty_MarketParticipant.mRID"))
-                                {
-                                    balanceResponsiblePartyMarketParticipantmRID = reader.ReadElementString();
-                                }
-
-                                if (reader.LocalName.Equals(
-                                        "marketEvaluationPoint.customer_MarketParticipant.mRID"))
-                                {
-                                    customerMarketParticipantmRID = reader.ReadElementString();
-                                }
-
-                                if (reader.LocalName.Equals(
-                                        "marketEvaluationPoint.customer_MarketParticipant.name"))
-                                {
-                                    customerMarketParticipantname = reader.ReadElementString();
-                                }
-
-                                if (reader.LocalName.Equals("start_DateAndOrTime.dateTime"))
-                                {
-                                    startDateAndOrTimedateTime = reader.ReadElementString();
-                                }
+                                TryExtractValueFrom("mRID", reader, ref mRID);
+                                TryExtractValueFrom("marketEvaluationPoint.mRID", reader, ref marketEvaluationPointmRID);
+                                TryExtractValueFrom("marketEvaluationPoint.energySupplier_MarketParticipant.mRID", reader, ref energySupplierMarketParticipantmRID);
+                                TryExtractValueFrom("marketEvaluationPoint.balanceResponsibleParty_MarketParticipant.mRID", reader, ref balanceResponsiblePartyMarketParticipantmRID);
+                                TryExtractValueFrom("marketEvaluationPoint.customer_MarketParticipant.mRID", reader, ref customerMarketParticipantmRID);
+                                TryExtractValueFrom("marketEvaluationPoint.customer_MarketParticipant.name", reader, ref customerMarketParticipantname);
+                                TryExtractValueFrom("start_DateAndOrTime.dateTime", reader, ref startDateAndOrTimedateTime);
                             }
                         }
                     }
@@ -300,9 +269,16 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             }
         }
 
+        private void TryExtractValueFrom(string elementName, XmlReader reader, ref string variable)
+        {
+            if (reader.LocalName.Equals(elementName))
+            {
+                variable = reader.ReadElementString();
+            }
+        }
+
         private async Task HandlerMessageHeaderValues(XmlReader reader)
         {
-            // Handle header values
             while (await reader.ReadAsync())
             {
                 if (reader.NodeType == XmlNodeType.Element &&
