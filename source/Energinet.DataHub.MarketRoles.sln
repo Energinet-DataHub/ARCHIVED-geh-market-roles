@@ -44,7 +44,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Energinet.DataHub.MarketRol
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Energinet.DataHub.MarketRoles.Messaging", "Energinet.DataHub.MarketRoles.Messaging\Energinet.DataHub.MarketRoles.Messaging.csproj", "{2AC3F815-7722-42F8-9348-72CFEDCB81EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketRoles.B2B.CimMessageAdapter.IntegrationTests", "MarketRoles.B2B.CimMessageAdapter.IntegrationTests\MarketRoles.B2B.CimMessageAdapter.IntegrationTests.csproj", "{0B8E940E-A2CE-458B-BB51-C12050D91360}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2B.CimMessageAdapter.Tests", "B2B.CimMessageAdapter.Tests\B2B.CimMessageAdapter.Tests.csproj", "{0B8E940E-A2CE-458B-BB51-C12050D91360}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2B.CimMessageAdapter", "B2B.CimMessageAdapter\B2B.CimMessageAdapter.csproj", "{27395443-B503-4A4A-B9F1-01C3F9C75222}"
 EndProject

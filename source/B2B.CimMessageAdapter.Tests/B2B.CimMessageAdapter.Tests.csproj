@@ -4,6 +4,8 @@
         <TargetFramework>net5.0</TargetFramework>
 
         <IsPackable>false</IsPackable>
+
+        <RootNamespace>MarketRoles.B2B.CimMessageAdapter.IntegrationTests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
