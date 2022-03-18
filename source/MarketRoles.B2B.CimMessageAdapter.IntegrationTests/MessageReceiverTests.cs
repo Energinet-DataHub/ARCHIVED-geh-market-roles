@@ -23,11 +23,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         [Fact]
         public async Task Message_must_be_valid_xml()
         {
-            var message = CreateMessageWithInvalidXmlStructure();
-            var messageReceiver = CreateMessageReceiver();
-
-            var result = await messageReceiver.ReceiveAsync(message, "requestchangeofsupplier", "1.0")
-                .ConfigureAwait(false);
+            var result = await ReceiveRequestChangeOfSupplierMessage(CreateMessageWithInvalidXmlStructure()).ConfigureAwait(false);
 
             Assert.False(result.Success);
             Assert.Single(result.Errors);
@@ -37,10 +33,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         public async Task Message_must_conform_to_xml_schema()
         {
             var message = CreateMessageNotConformingToXmlSchema();
-            var messageReceiver = CreateMessageReceiver();
-
-            var result = await messageReceiver.ReceiveAsync(message, "requestchangeofsupplier", "1.0")
-                .ConfigureAwait(false);
+            var result = await ReceiveRequestChangeOfSupplierMessage(message).ConfigureAwait(false);
 
             Assert.False(result.Success);
             Assert.Equal(2, result.Errors.Count);
@@ -50,9 +43,8 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         public async Task Return_failure_if_xml_schema_does_not_exist()
         {
             var message = CreateMessage();
-            var messageReceiver = CreateMessageReceiver();
 
-            var result = await messageReceiver.ReceiveAsync(message, "requestchangeofsupplier", "non_existing_version")
+            var result = await ReceiveRequestChangeOfSupplierMessage(message, "non_existing_version")
                 .ConfigureAwait(false);
 
             Assert.False(result.Success);
@@ -62,12 +54,9 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         [Fact]
         public async Task Return_failure_if_message_id_is_not_unique()
         {
-            await CreateMessageReceiver().ReceiveAsync(CreateMessage(), "requestchangeofsupplier", "1.0")
-                .ConfigureAwait(false);
+            await ReceiveRequestChangeOfSupplierMessage(CreateMessage()).ConfigureAwait(false);
 
-            var messageReceiver = CreateMessageReceiver();
-            var result = await messageReceiver.ReceiveAsync(CreateMessage(), "requestchangeofsupplier", "1.0")
-                .ConfigureAwait(false);
+            var result = await ReceiveRequestChangeOfSupplierMessage(CreateMessage()).ConfigureAwait(false);
 
             Assert.False(result.Success);
             Assert.Contains(result.Errors, error => error is DuplicateMessageId);
@@ -76,9 +65,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         [Fact]
         public async Task Valid_activity_records_are_extracted_and_committed_to_queue()
         {
-            var messageReceiver = CreateMessageReceiver();
-            await messageReceiver
-                .ReceiveAsync(CreateMessageNotConformingToXmlSchema(), "requestchangeofsupplier", "1.0")
+            await ReceiveRequestChangeOfSupplierMessage(CreateMessageNotConformingToXmlSchema())
                 .ConfigureAwait(false);
 
             var activityRecord = _activityRecords.CommittedItems.FirstOrDefault();
@@ -95,11 +82,10 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         [Fact]
         public async Task Activity_records_are_not_committed_to_queue_if_any_message_header_values_are_invalid()
         {
-            await CreateMessageReceiver().ReceiveAsync(CreateMessage(), "requestchangeofsupplier", "1.0")
+            await ReceiveRequestChangeOfSupplierMessage(CreateMessage())
                 .ConfigureAwait(false);
 
-            var messageReceiver = CreateMessageReceiver();
-            await messageReceiver.ReceiveAsync(CreateMessage(), "requestchangeofsupplier", "1.0")
+            await ReceiveRequestChangeOfSupplierMessage(CreateMessage())
                 .ConfigureAwait(false);
 
             Assert.Empty(_activityRecords.CommittedItems);
@@ -108,12 +94,17 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         [Fact]
         public async Task Activity_records_must_have_unique_transaction_ids()
         {
-            await CreateMessageReceiver().ReceiveAsync(CreateMessageWithDuplicateTransactionIds(), "requestchangeofsupplier", "1.0")
+            await ReceiveRequestChangeOfSupplierMessage(CreateMessageWithDuplicateTransactionIds())
                 .ConfigureAwait(false);
 
             Assert.Single(_activityRecords.CommittedItems);
         }
 
+
+        private Task<Result> ReceiveRequestChangeOfSupplierMessage(Stream message, string version = "1.0")
+        {
+            return CreateMessageReceiver().ReceiveAsync(message, "requestchangeofsupplier", version);
+        }
 
 
         private MessageReceiver CreateMessageReceiver()
