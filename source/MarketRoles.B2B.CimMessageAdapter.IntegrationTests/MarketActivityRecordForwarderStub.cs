@@ -18,7 +18,7 @@ using B2B.CimMessageAdapter;
 
 namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
 {
-    public class ActivityRecordForwarderStub : IActivityRecordForwarder
+    public class MarketActivityRecordForwarderStub : IMarketActivityRecordForwarder
     {
         private readonly List<MarketActivityRecord> _uncommittedItems = new();
         private readonly List<MarketActivityRecord> _committedItems = new();

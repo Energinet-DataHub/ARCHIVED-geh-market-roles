@@ -19,7 +19,7 @@ namespace B2B.CimMessageAdapter
     /// <summary>
     /// Service for forwarding extracted market activity records to external sources
     /// </summary>
-    public interface IActivityRecordForwarder
+    public interface IMarketActivityRecordForwarder
     {
         /// <summary>
         /// Adds a market activity record to collection
