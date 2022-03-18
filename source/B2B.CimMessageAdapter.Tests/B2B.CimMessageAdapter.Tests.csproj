@@ -32,22 +32,22 @@
       <None Update="RequestChangeOfSupplier_postman.xml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="urn-ediel-org-structure-requestchangeofsupplier-0-1.xsd">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="urn-entsoe-eu-wgedi-codelists.xsd">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="urn-entsoe-eu-local-extension-types.xsd">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ValidRequestChangeOfSupplier.xml">
+      <None Update="Messages\InvalidRequestChangeOfSupplier.xml">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="InvalidRequestChangeOfSupplier.xml">
+      <None Update="Messages\RequestChangeOfSupplierWithDuplicateTransactionIds.xml">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="RequestChangeOfSupplierWithDuplicateTransactionIds.xml">
+      <None Update="Messages\urn-ediel-org-structure-requestchangeofsupplier-0-1.xsd">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Messages\urn-entsoe-eu-local-extension-types.xsd">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Messages\urn-entsoe-eu-wgedi-codelists.xsd">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="Messages\ValidRequestChangeOfSupplier.xml">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
