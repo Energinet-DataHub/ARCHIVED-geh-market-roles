@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
@@ -80,7 +81,15 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                 .ReceiveAsync(CreateMessageNotConformingToXmlSchema(), "requestchangeofsupplier", "1.0")
                 .ConfigureAwait(false);
 
-            Assert.Single(_activityRecords.CommittedItems);
+            var activityRecord = _activityRecords.CommittedItems.FirstOrDefault();
+            Assert.NotNull(activityRecord);
+            Assert.Equal("12345699", activityRecord.mRid);
+            Assert.Equal("579999993331812345", activityRecord.MarketEvaluationPointmRID);
+            Assert.Equal("5799999933318", activityRecord.EnergySupplierMarketParticipantmRID);
+            Assert.Equal("5799999933340", activityRecord.BalanceResponsiblePartyMarketParticipantmRID);
+            Assert.Equal("0801741527", activityRecord.CustomerMarketParticipantmRID);
+            Assert.Equal("Jan Hansen", activityRecord.CustomerMarketParticipantName);
+            Assert.Equal("2022-09-07T22:00:00Z", activityRecord.StartDateAndOrTimeDateTime);
         }
 
         [Fact]
@@ -182,7 +191,19 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
 
     public class ActivityRecord
     {
-        public string mRid { get; set; }
+        public string CustomerMarketParticipantmRID { get; init; }
+
+        public string BalanceResponsiblePartyMarketParticipantmRID { get; init; }
+
+        public string EnergySupplierMarketParticipantmRID { get; init; }
+
+        public string MarketEvaluationPointmRID { get; init; }
+
+        public string mRid { get; init; }
+
+        public string CustomerMarketParticipantName { get; init; }
+
+        public string StartDateAndOrTimeDateTime { get; init; }
     }
 
     public class MessageReceiver
@@ -264,7 +285,16 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                                         }
                                         else
                                         {
-                                            var activityRecord = new ActivityRecord() { mRid = mRID, };
+                                            var activityRecord = new ActivityRecord()
+                                            {
+                                                mRid = mRID,
+                                                CustomerMarketParticipantName = customerMarketParticipantname,
+                                                CustomerMarketParticipantmRID = customerMarketParticipantmRID,
+                                                MarketEvaluationPointmRID = marketEvaluationPointmRID,
+                                                EnergySupplierMarketParticipantmRID = energySupplierMarketParticipantmRID,
+                                                StartDateAndOrTimeDateTime = startDateAndOrTimedateTime,
+                                                BalanceResponsiblePartyMarketParticipantmRID = balanceResponsiblePartyMarketParticipantmRID,
+                                            };
                                             await StoreActivityRecordAsync(activityRecord).ConfigureAwait(false);
                                         }
                                     }
