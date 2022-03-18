@@ -181,7 +181,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             {
                 try
                 {
-                    await HandlerMessageHeaderValues(reader).ConfigureAwait(false);
+                    await HandleMessageHeaderValues(reader).ConfigureAwait(false);
                     await HandleMarketActivityRecordsAsync(reader).ConfigureAwait(false);
                 }
                 catch (XmlException exception)
@@ -271,7 +271,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             }
         }
 
-        private async Task HandlerMessageHeaderValues(XmlReader reader)
+        private async Task HandleMessageHeaderValues(XmlReader reader)
         {
             while (await reader.ReadAsync())
             {
