@@ -13,7 +13,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
 #pragma warning disable
     public class MessageReceiverTests
     {
-        private readonly MessageIdStore _messageIdStore = new();
+        private readonly MessageIdsStub _messageIdsStub = new();
         private ActivityRecordForwarderStub _activityRecordForwarderStub;
         private readonly TransactionIdsStub _transactionIdsStub = new();
 
@@ -111,7 +111,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         private MessageReceiver CreateMessageReceiver()
         {
             _activityRecordForwarderStub = new ActivityRecordForwarderStub();
-            var messageReceiver = new MessageReceiver(_messageIdStore, _activityRecordForwarderStub, _transactionIdsStub);
+            var messageReceiver = new MessageReceiver(_messageIdsStub, _activityRecordForwarderStub, _transactionIdsStub);
             return messageReceiver;
         }
 
@@ -153,13 +153,13 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
     public class MessageReceiver
     {
         private readonly List<Error> _errors = new();
-        private readonly MessageIdStore _messageIds;
+        private readonly MessageIdsStub _messageIdsStub;
         private readonly ActivityRecordForwarderStub _activityRecordForwarderStub;
         private readonly TransactionIdsStub _transactionIdsStub;
 
-        public MessageReceiver(MessageIdStore messageIds, ActivityRecordForwarderStub activityRecordForwarderStub, TransactionIdsStub transactionIdsStub)
+        public MessageReceiver(MessageIdsStub messageIdsStub, ActivityRecordForwarderStub activityRecordForwarderStub, TransactionIdsStub transactionIdsStub)
         {
-            _messageIds = messageIds ?? throw new ArgumentNullException(nameof(messageIds));
+            _messageIdsStub = messageIdsStub ?? throw new ArgumentNullException(nameof(messageIdsStub));
             _activityRecordForwarderStub = activityRecordForwarderStub ?? throw new ArgumentNullException(nameof(activityRecordForwarderStub));
             _transactionIdsStub = transactionIdsStub;
         }
@@ -325,7 +325,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         private Task<bool> CheckMessageIdAsync(string messageId)
         {
             if (messageId == null) throw new ArgumentNullException(nameof(messageId));
-            return _messageIds.TryStoreAsync(messageId);
+            return _messageIdsStub.TryStoreAsync(messageId);
         }
 
         private XmlReaderSettings CreateXmlReaderSettings(XmlSchema xmlSchema)
@@ -386,16 +386,6 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             var message =
                 $"XML schema validation error at line {arguments.Exception.LineNumber}, position {arguments.Exception.LinePosition}: {arguments.Message}.";
             _errors.Add(new Error(message));
-        }
-    }
-
-    public class MessageIdStore
-    {
-        private readonly HashSet<string> _messageIds = new();
-
-        public Task<bool> TryStoreAsync(string messageId)
-        {
-            return Task.FromResult(_messageIds.Add(messageId));
         }
     }
 
