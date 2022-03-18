@@ -60,7 +60,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             var result = await ReceiveRequestChangeOfSupplierMessage(CreateMessage()).ConfigureAwait(false);
 
             Assert.False(result.Success);
-            Assert.Contains(result.Errors, error => error is DuplicateMessageId);
+            Assert.Contains(result.Errors, error => error is DuplicateId);
         }
 
         [Fact]
@@ -152,7 +152,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
 
     public class MessageReceiver
     {
-        private readonly List<Error> _errors = new();
+        private readonly List<ValidationError> _errors = new();
         private readonly MessageIdsStub _messageIdsStub;
         private readonly ActivityRecordForwarderStub _activityRecordForwarderStub;
         private readonly TransactionIdsStub _transactionIdsStub;
@@ -171,7 +171,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             var xmlSchema = await GetSchemaAsync(businessProcessType, version).ConfigureAwait(true);
             if (xmlSchema is null)
             {
-                return Result.Failure(new Error(
+                return Result.Failure(new ValidationError(
                     $"Schema version {version} for business process type {businessProcessType} does not exist."));
             }
 
@@ -193,7 +193,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                                     var messageIdIsUnique = await CheckMessageIdAsync(messageId);
                                     if (messageIdIsUnique == false)
                                     {
-                                        _errors.Add(new DuplicateMessageId($"Message id '{messageId}' is not unique"));
+                                        _errors.Add(new DuplicateId($"Message id '{messageId}' is not unique"));
                                         hasInvalidHeaderValues = true;
                                     }
 
@@ -225,7 +225,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                                         var transactionIdIsUnique = await CheckTransactionIdAsync(transactionId);
                                         if (transactionIdIsUnique == false)
                                         {
-                                            _errors.Add(new Error($"Transaction id '{ transactionId }' is not unique and will not be processed."));
+                                            _errors.Add(new ValidationError($"Transaction id '{ transactionId }' is not unique and will not be processed."));
                                         }
                                         else
                                         {
@@ -300,7 +300,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
                 }
                 catch (XmlException exception)
                 {
-                    return Result.Failure(new Error(exception.Message));
+                    return Result.Failure(new ValidationError(exception.Message));
                 }
             }
 
@@ -385,51 +385,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         {
             var message =
                 $"XML schema validation error at line {arguments.Exception.LineNumber}, position {arguments.Exception.LinePosition}: {arguments.Message}.";
-            _errors.Add(new Error(message));
-        }
-    }
-
-    public class Result
-    {
-        private Result()
-        {
-        }
-
-        private Result(IReadOnlyCollection<Error> errors)
-        {
-            Errors = errors;
-        }
-
-        public bool Success => Errors.Count == 0;
-
-        public IReadOnlyCollection<Error> Errors { get; } = new List<Error>();
-
-        public static Result Failure(params Error[] errors)
-        {
-            return new Result(errors);
-        }
-
-        public static Result Succeeded()
-        {
-            return new Result();
-        }
-    }
-
-    public class Error
-    {
-        public Error(string message)
-        {
-            Message = message;
-        }
-
-        public string Message { get; }
-    }
-
-    public class DuplicateMessageId : Error
-    {
-        public DuplicateMessageId(string message)
-            : base(message)
-        {
+            _errors.Add(new ValidationError(message));
         }
     }
 }
