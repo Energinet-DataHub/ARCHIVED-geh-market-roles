@@ -24,7 +24,7 @@ namespace B2B.CimMessageAdapter
 
         public string? MarketEvaluationPointmRID { get; init; }
 
-        public string? MRid { get; init; }
+        public string MrId { get; init; } = string.Empty;
 
         public string? CustomerMarketParticipantName { get; init; }
 
