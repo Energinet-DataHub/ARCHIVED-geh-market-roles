@@ -23,6 +23,7 @@ namespace B2B.CimMessageAdapter
 {
     public class MessageReceiver
     {
+        private const string MarketActivityRecordElementName = "MktActivityRecord";
         private readonly List<ValidationError> _errors = new();
         private readonly IMessageIds _messageIds;
         private readonly IMarketActivityRecordForwarder _marketActivityRecordForwarder;
@@ -122,8 +123,7 @@ namespace B2B.CimMessageAdapter
 
             while (await reader.ReadAsync().ConfigureAwait(false))
             {
-                if (reader.NodeType == XmlNodeType.EndElement &&
-                    reader.LocalName.Equals("MktActivityRecord", StringComparison.OrdinalIgnoreCase))
+                if (StartOfMarketActivityRecord(reader))
                 {
                     if (reader.SchemaInfo?.Validity == XmlSchemaValidity.Invalid)
                     {
@@ -156,6 +156,12 @@ namespace B2B.CimMessageAdapter
             }
         }
 
+        private static bool StartOfMarketActivityRecord(XmlReader reader)
+        {
+            return reader.NodeType == XmlNodeType.EndElement &&
+                   reader.LocalName.Equals(MarketActivityRecordElementName, StringComparison.OrdinalIgnoreCase);
+        }
+
         private static void TryExtractValueFrom(string elementName, XmlReader reader, Func<string, string> variable)
         {
             if (reader.LocalName.Equals(elementName, StringComparison.OrdinalIgnoreCase))
@@ -168,7 +174,7 @@ namespace B2B.CimMessageAdapter
         {
             while (await reader.ReadAsync().ConfigureAwait(false))
             {
-                if (reader.NodeType != XmlNodeType.Element || !reader.LocalName.Equals("MktActivityRecord", StringComparison.OrdinalIgnoreCase)) continue;
+                if (!StartOfMarketActivityRecord(reader)) continue;
                 await foreach (var marketActivityRecord in ExtractFromAsync(reader))
                 {
                     if (await CheckTransactionIdAsync(marketActivityRecord.MrId).ConfigureAwait(false) == false)
