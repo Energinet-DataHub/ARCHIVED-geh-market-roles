@@ -24,6 +24,7 @@ namespace B2B.CimMessageAdapter
     public class MessageReceiver
     {
         private const string MarketActivityRecordElementName = "MktActivityRecord";
+        private const string HeaderElementName = "RequestChangeOfSupplier_MarketDocument";
         private readonly List<ValidationError> _errors = new();
         private readonly IMessageIds _messageIds;
         private readonly IMarketActivityRecordForwarder _marketActivityRecordForwarder;
@@ -156,6 +157,12 @@ namespace B2B.CimMessageAdapter
             }
         }
 
+        private static bool StartOfMessageHeader(XmlReader reader)
+        {
+            return reader.NodeType == XmlNodeType.Element &&
+                   reader.LocalName.Equals(HeaderElementName, StringComparison.OrdinalIgnoreCase);
+        }
+
         private static bool StartOfMarketActivityRecord(XmlReader reader)
         {
             return reader.NodeType == XmlNodeType.EndElement &&
@@ -194,8 +201,7 @@ namespace B2B.CimMessageAdapter
         {
             while (await reader.ReadAsync().ConfigureAwait(false))
             {
-                if (reader.NodeType == XmlNodeType.Element &&
-                    reader.LocalName.Equals("RequestChangeOfSupplier_MarketDocument", StringComparison.OrdinalIgnoreCase))
+                if (StartOfMessageHeader(reader))
                 {
                     while (await reader.ReadAsync().ConfigureAwait(false))
                     {
