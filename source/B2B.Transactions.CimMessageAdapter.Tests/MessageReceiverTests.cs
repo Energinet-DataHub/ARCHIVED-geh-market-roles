@@ -57,7 +57,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             var result = await ReceiveRequestChangeOfSupplierMessage(CreateMessage()).ConfigureAwait(false);
 
             Assert.False(result.Success);
-            Assert.Contains(result.Errors, error => error is DuplicateId);
+            Assert.Contains(result.Errors, error => error is DuplicateMessageIdDetected);
         }
 
         [Fact]

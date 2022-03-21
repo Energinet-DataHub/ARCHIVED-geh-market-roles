@@ -172,7 +172,7 @@ namespace B2B.CimMessageAdapter
                             var messageIdIsUnique = await CheckMessageIdAsync(messageId).ConfigureAwait(false);
                             if (messageIdIsUnique == false)
                             {
-                                _errors.Add(new DuplicateId($"Message id '{messageId}' is not unique"));
+                                _errors.Add(new DuplicateMessageIdDetected($"Message id '{messageId}' is not unique"));
                                 _hasInvalidHeaderValues = true;
                             }
 

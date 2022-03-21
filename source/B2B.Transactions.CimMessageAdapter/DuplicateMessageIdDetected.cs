@@ -14,9 +14,9 @@
 
 namespace B2B.CimMessageAdapter
 {
-    public class DuplicateId : ValidationError
+    public class DuplicateMessageIdDetected : ValidationError
     {
-        public DuplicateId(string message)
+        public DuplicateMessageIdDetected(string message)
             : base(message)
         {
         }
