@@ -18,7 +18,7 @@ using System.Xml;
 using System.Xml.Schema;
 using B2B.CimMessageAdapter;
 
-namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
+namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests.Stubs
 {
     public class SchemaProviderStub : ISchemaProvider
     {
