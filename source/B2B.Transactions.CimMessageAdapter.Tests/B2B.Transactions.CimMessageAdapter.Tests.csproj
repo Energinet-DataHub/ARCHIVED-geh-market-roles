@@ -32,28 +32,37 @@
       <None Update="RequestChangeOfSupplier_postman.xml">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="InvalidRequestChangeOfSupplier.xml">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="RequestChangeOfSupplierWithDuplicateTransactionIds.xml">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="urn-ediel-org-structure-requestchangeofsupplier-0-1.xsd">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="urn-entsoe-eu-local-extension-types.xsd">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="urn-entsoe-eu-wgedi-codelists.xsd">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="ValidRequestChangeOfSupplier.xml">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\B2B.Transactions.CimMessageAdapter\B2B.Transactions.CimMessageAdapter.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="InvalidRequestChangeOfSupplier.xml" />
+      <EmbeddedResource Include="InvalidRequestChangeOfSupplier.xml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="RequestChangeOfSupplierWithDuplicateTransactionIds.xml" />
+      <EmbeddedResource Include="RequestChangeOfSupplierWithDuplicateTransactionIds.xml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="urn-ediel-org-structure-requestchangeofsupplier-0-1.xsd" />
+      <EmbeddedResource Include="urn-ediel-org-structure-requestchangeofsupplier-0-1.xsd">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="urn-entsoe-eu-local-extension-types.xsd" />
+      <EmbeddedResource Include="urn-entsoe-eu-local-extension-types.xsd">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="urn-entsoe-eu-wgedi-codelists.xsd" />
+      <EmbeddedResource Include="urn-entsoe-eu-wgedi-codelists.xsd">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="ValidRequestChangeOfSupplier.xml" />
+      <EmbeddedResource Include="ValidRequestChangeOfSupplier.xml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>
