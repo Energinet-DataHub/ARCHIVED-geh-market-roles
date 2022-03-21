@@ -52,6 +52,7 @@ namespace B2B.CimMessageAdapter
             }
 
             _hasInvalidHeaderValues = false;
+
             using (var reader = XmlReader.Create(message, CreateXmlReaderSettings(xmlSchema)))
             {
                 try
@@ -61,7 +62,11 @@ namespace B2B.CimMessageAdapter
                 }
                 catch (XmlException exception)
                 {
-                    return Result.Failure(new ValidationError(exception.Message));
+                    return InvalidXmlFailure(exception);
+                }
+                catch (ObjectDisposedException generalException)
+                {
+                    return InvalidXmlFailure(generalException);
                 }
             }
 
@@ -71,6 +76,11 @@ namespace B2B.CimMessageAdapter
             }
 
             return _errors.Count == 0 ? Result.Succeeded() : Result.Failure(_errors.ToArray());
+        }
+
+        private static Result InvalidXmlFailure(Exception exception)
+        {
+            return Result.Failure(new ValidationError(exception.Message));
         }
 
         private static async IAsyncEnumerable<MarketActivityRecord> ExtractFromAsync(XmlReader reader)

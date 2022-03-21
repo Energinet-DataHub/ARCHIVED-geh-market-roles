@@ -1,4 +1,18 @@
-﻿using System.IO;
+﻿// Copyright 2020 Energinet DataHub A/S
+//
+// Licensed under the Apache License, Version 2.0 (the "License2");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using B2B.CimMessageAdapter;
@@ -7,30 +21,28 @@ using Xunit;
 
 namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
 {
-#pragma warning disable
     public class MessageReceiverTests
     {
-        private readonly MessageIdsStub _messageIdsStub = new();
-        private MarketActivityRecordForwarderStub _marketActivityRecordForwarderSpy;
         private readonly TransactionIdsStub _transactionIdsStub = new();
-
-        public MessageReceiverTests()
-        {
-        }
+        private readonly MessageIdsStub _messageIdsStub = new();
+        private readonly MarketActivityRecordForwarderStub _marketActivityRecordForwarderSpy = new();
 
         [Fact]
         public async Task Message_must_be_valid_xml()
         {
-            var result = await ReceiveRequestChangeOfSupplierMessage(CreateMessageWithInvalidXmlStructure()).ConfigureAwait(false);
+            await using var message = CreateMessageWithInvalidXmlStructure();
+            {
+                var result = await ReceiveRequestChangeOfSupplierMessage(message).ConfigureAwait(false);
 
-            Assert.False(result.Success);
-            Assert.Single(result.Errors);
+                Assert.False(result.Success);
+                Assert.Single(result.Errors);
+            }
         }
 
         [Fact]
         public async Task Message_must_conform_to_xml_schema()
         {
-            var message = CreateMessageNotConformingToXmlSchema();
+            await using var message = CreateMessageNotConformingToXmlSchema();
             var result = await ReceiveRequestChangeOfSupplierMessage(message).ConfigureAwait(false);
 
             Assert.False(result.Success);
@@ -40,7 +52,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         [Fact]
         public async Task Return_failure_if_xml_schema_does_not_exist()
         {
-            var message = CreateMessage();
+            await using var message = CreateMessage();
 
             var result = await ReceiveRequestChangeOfSupplierMessage(message, "non_existing_version")
                 .ConfigureAwait(false);
@@ -52,39 +64,52 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         [Fact]
         public async Task Return_failure_if_message_id_is_not_unique()
         {
-            await ReceiveRequestChangeOfSupplierMessage(CreateMessage()).ConfigureAwait(false);
+            await using (var message = CreateMessage())
+            {
+                await ReceiveRequestChangeOfSupplierMessage(message).ConfigureAwait(false);
+            }
 
-            var result = await ReceiveRequestChangeOfSupplierMessage(CreateMessage()).ConfigureAwait(false);
+            await using (var message = CreateMessage())
+            {
+                var result = await ReceiveRequestChangeOfSupplierMessage(message).ConfigureAwait(false);
 
-            Assert.False(result.Success);
-            Assert.Contains(result.Errors, error => error is DuplicateMessageIdDetected);
+                Assert.False(result.Success);
+                Assert.Contains(result.Errors, error => error is DuplicateMessageIdDetected);
+            }
         }
 
         [Fact]
         public async Task Valid_activity_records_are_extracted_and_committed_to_queue()
         {
-            await ReceiveRequestChangeOfSupplierMessage(CreateMessageNotConformingToXmlSchema())
+            await using var message = CreateMessageNotConformingToXmlSchema();
+            await ReceiveRequestChangeOfSupplierMessage(message)
                 .ConfigureAwait(false);
 
             var activityRecord = _marketActivityRecordForwarderSpy.CommittedItems.FirstOrDefault();
             Assert.NotNull(activityRecord);
-            Assert.Equal("12345699", activityRecord.MrId);
-            Assert.Equal("579999993331812345", activityRecord.MarketEvaluationPointmRID);
-            Assert.Equal("5799999933318", activityRecord.EnergySupplierMarketParticipantmRID);
-            Assert.Equal("5799999933340", activityRecord.BalanceResponsiblePartyMarketParticipantmRID);
-            Assert.Equal("0801741527", activityRecord.CustomerMarketParticipantmRID);
-            Assert.Equal("Jan Hansen", activityRecord.CustomerMarketParticipantName);
-            Assert.Equal("2022-09-07T22:00:00Z", activityRecord.StartDateAndOrTimeDateTime);
+            Assert.Equal("12345699", activityRecord?.MrId);
+            Assert.Equal("579999993331812345", activityRecord?.MarketEvaluationPointmRID);
+            Assert.Equal("5799999933318", activityRecord?.EnergySupplierMarketParticipantmRID);
+            Assert.Equal("5799999933340", activityRecord?.BalanceResponsiblePartyMarketParticipantmRID);
+            Assert.Equal("0801741527", activityRecord?.CustomerMarketParticipantmRID);
+            Assert.Equal("Jan Hansen", activityRecord?.CustomerMarketParticipantName);
+            Assert.Equal("2022-09-07T22:00:00Z", activityRecord?.StartDateAndOrTimeDateTime);
         }
 
         [Fact]
         public async Task Activity_records_are_not_committed_to_queue_if_any_message_header_values_are_invalid()
         {
-            await ReceiveRequestChangeOfSupplierMessage(CreateMessage())
-                .ConfigureAwait(false);
+            await using (var message = CreateMessage())
+            {
+                await ReceiveRequestChangeOfSupplierMessage(message)
+                    .ConfigureAwait(false);
+            }
 
-            await ReceiveRequestChangeOfSupplierMessage(CreateMessage())
-                .ConfigureAwait(false);
+            await using (var message = CreateMessage())
+            {
+                await ReceiveRequestChangeOfSupplierMessage(message)
+                    .ConfigureAwait(false);
+            }
 
             Assert.Empty(_marketActivityRecordForwarderSpy.CommittedItems);
         }
@@ -92,58 +117,56 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         [Fact]
         public async Task Activity_records_must_have_unique_transaction_ids()
         {
-            await ReceiveRequestChangeOfSupplierMessage(CreateMessageWithDuplicateTransactionIds())
+            await using var message = CreateMessageWithDuplicateTransactionIds();
+            await ReceiveRequestChangeOfSupplierMessage(message)
                 .ConfigureAwait(false);
 
             Assert.Single(_marketActivityRecordForwarderSpy.CommittedItems);
         }
 
-
-        private Task<Result> ReceiveRequestChangeOfSupplierMessage(Stream message, string version = "1.0")
-        {
-            return CreateMessageReceiver().ReceiveAsync(message, "requestchangeofsupplier", version);
-        }
-
-
-        private MessageReceiver CreateMessageReceiver()
-        {
-            _marketActivityRecordForwarderSpy = new MarketActivityRecordForwarderStub();
-            var messageReceiver = new MessageReceiver(_messageIdsStub, _marketActivityRecordForwarderSpy, _transactionIdsStub, new SchemaProviderStub());
-            return messageReceiver;
-        }
-
-        private Stream CreateMessageWithInvalidXmlStructure()
+        private static Stream CreateMessageWithInvalidXmlStructure()
         {
             var messageStream = new MemoryStream();
-            var writer = new StreamWriter(messageStream);
+            using var writer = new StreamWriter(messageStream);
             writer.Write("This is not XML");
             writer.Flush();
             messageStream.Position = 0;
             return messageStream;
         }
 
-        private Stream CreateMessageNotConformingToXmlSchema()
+        private static Stream CreateMessageNotConformingToXmlSchema()
         {
             return CreateMessageFrom("InvalidRequestChangeOfSupplier.xml");
         }
 
-        private Stream CreateMessage()
+        private static Stream CreateMessage()
         {
             return CreateMessageFrom("ValidRequestChangeOfSupplier.xml");
         }
 
-        private Stream CreateMessageWithDuplicateTransactionIds()
+        private static Stream CreateMessageWithDuplicateTransactionIds()
         {
             return CreateMessageFrom("RequestChangeOfSupplierWithDuplicateTransactionIds.xml");
         }
 
-        private Stream CreateMessageFrom(string xmlFile)
+        private static Stream CreateMessageFrom(string xmlFile)
         {
-            var messageStream = new MemoryStream();
             using var fileReader = new FileStream(xmlFile, FileMode.Open, FileAccess.Read);
+            var messageStream = new MemoryStream();
             fileReader.CopyTo(messageStream);
             messageStream.Position = 0;
             return messageStream;
+        }
+
+        private Task<Result> ReceiveRequestChangeOfSupplierMessage(Stream message, string version = "1.0")
+        {
+            return CreateMessageReceiver().ReceiveAsync(message, "requestchangeofsupplier", version);
+        }
+
+        private MessageReceiver CreateMessageReceiver()
+        {
+            var messageReceiver = new MessageReceiver(_messageIdsStub, _marketActivityRecordForwarderSpy, _transactionIdsStub, new SchemaProviderStub());
+            return messageReceiver;
         }
     }
 }
