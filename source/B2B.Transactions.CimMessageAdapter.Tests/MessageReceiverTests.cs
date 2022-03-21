@@ -11,7 +11,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
     public class MessageReceiverTests
     {
         private readonly MessageIdsStub _messageIdsStub = new();
-        private MarketActivityRecordForwarderStub _marketActivityRecordForwarderStub;
+        private MarketActivityRecordForwarderStub _marketActivityRecordForwarderSpy;
         private readonly TransactionIdsStub _transactionIdsStub = new();
 
         public MessageReceiverTests()
@@ -66,7 +66,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             await ReceiveRequestChangeOfSupplierMessage(CreateMessageNotConformingToXmlSchema())
                 .ConfigureAwait(false);
 
-            var activityRecord = _marketActivityRecordForwarderStub.CommittedItems.FirstOrDefault();
+            var activityRecord = _marketActivityRecordForwarderSpy.CommittedItems.FirstOrDefault();
             Assert.NotNull(activityRecord);
             Assert.Equal("12345699", activityRecord.MrId);
             Assert.Equal("579999993331812345", activityRecord.MarketEvaluationPointmRID);
@@ -86,7 +86,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             await ReceiveRequestChangeOfSupplierMessage(CreateMessage())
                 .ConfigureAwait(false);
 
-            Assert.Empty(_marketActivityRecordForwarderStub.CommittedItems);
+            Assert.Empty(_marketActivityRecordForwarderSpy.CommittedItems);
         }
 
         [Fact]
@@ -95,7 +95,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
             await ReceiveRequestChangeOfSupplierMessage(CreateMessageWithDuplicateTransactionIds())
                 .ConfigureAwait(false);
 
-            Assert.Single(_marketActivityRecordForwarderStub.CommittedItems);
+            Assert.Single(_marketActivityRecordForwarderSpy.CommittedItems);
         }
 
 
@@ -107,8 +107,8 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
 
         private MessageReceiver CreateMessageReceiver()
         {
-            _marketActivityRecordForwarderStub = new MarketActivityRecordForwarderStub();
-            var messageReceiver = new MessageReceiver(_messageIdsStub, _marketActivityRecordForwarderStub, _transactionIdsStub, new SchemaProviderStub());
+            _marketActivityRecordForwarderSpy = new MarketActivityRecordForwarderStub();
+            var messageReceiver = new MessageReceiver(_messageIdsStub, _marketActivityRecordForwarderSpy, _transactionIdsStub, new SchemaProviderStub());
             return messageReceiver;
         }
 
