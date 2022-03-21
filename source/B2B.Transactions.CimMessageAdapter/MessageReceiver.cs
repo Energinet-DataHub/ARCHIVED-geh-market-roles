@@ -29,20 +29,22 @@ namespace B2B.CimMessageAdapter
         private readonly IMessageIds _messageIds;
         private readonly IMarketActivityRecordForwarder _marketActivityRecordForwarder;
         private readonly ITransactionIds _transactionIds;
+        private readonly ISchemaProvider _schemaProvider;
         private bool _hasInvalidHeaderValues;
 
-        public MessageReceiver(IMessageIds messageIds, IMarketActivityRecordForwarder marketActivityRecordForwarder, ITransactionIds transactionIds)
+        public MessageReceiver(IMessageIds messageIds, IMarketActivityRecordForwarder marketActivityRecordForwarder, ITransactionIds transactionIds, ISchemaProvider schemaProvider)
         {
             _messageIds = messageIds ?? throw new ArgumentNullException(nameof(messageIds));
             _marketActivityRecordForwarder = marketActivityRecordForwarder ?? throw new ArgumentNullException(nameof(marketActivityRecordForwarder));
             _transactionIds = transactionIds;
+            _schemaProvider = schemaProvider ?? throw new ArgumentNullException(nameof(schemaProvider));
         }
 
         public async Task<Result> ReceiveAsync(Stream message, string businessProcessType, string version)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
-            var xmlSchema = await GetSchemaAsync(businessProcessType, version).ConfigureAwait(true);
+            var xmlSchema = await _schemaProvider.GetSchemaAsync(businessProcessType, version).ConfigureAwait(true);
             if (xmlSchema is null)
             {
                 return Result.Failure(new ValidationError(
@@ -69,47 +71,6 @@ namespace B2B.CimMessageAdapter
             }
 
             return _errors.Count == 0 ? Result.Succeeded() : Result.Failure(_errors.ToArray());
-        }
-
-        private static Task<XmlSchema?> GetSchemaAsync(string businessProcessType, string version)
-        {
-            var schemas = new Dictionary<KeyValuePair<string, string>, string>()
-            {
-                {
-                    new KeyValuePair<string, string>("requestchangeofsupplier", "1.0"),
-                    "urn-ediel-org-structure-requestchangeofsupplier-0-1.xsd"
-                },
-            };
-
-            if (schemas.TryGetValue(new KeyValuePair<string, string>(businessProcessType, version), out var schemaName) == false)
-            {
-                return Task.FromResult(default(XmlSchema));
-            }
-
-            return LoadSchemaWithDependentSchemasAsync(schemaName);
-        }
-
-        private static async Task<XmlSchema?> LoadSchemaWithDependentSchemasAsync(string location)
-        {
-            using var reader = new XmlTextReader(location);
-            var xmlSchema = XmlSchema.Read(reader, null);
-            if (xmlSchema is null)
-            {
-                throw new XmlSchemaException($"Could not read schema at {location}");
-            }
-
-            foreach (XmlSchemaExternal external in xmlSchema.Includes)
-            {
-                if (external.SchemaLocation == null)
-                {
-                    continue;
-                }
-
-                external.Schema =
-                    await LoadSchemaWithDependentSchemasAsync(external.SchemaLocation).ConfigureAwait(false);
-            }
-
-            return xmlSchema;
         }
 
         private static async IAsyncEnumerable<MarketActivityRecord> ExtractFromAsync(XmlReader reader)

@@ -16,15 +16,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using B2B.CimMessageAdapter;
 
-namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
+namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests.Stubs
 {
-    public class TransactionIdsStub : ITransactionIds
+    public class MessageIdsStub : IMessageIds
     {
-        private readonly HashSet<string> _transactionIds = new();
+        private readonly HashSet<string> _messageIds = new();
 
-        public Task<bool> TryStoreAsync(string transactionId)
+        public Task<bool> TryStoreAsync(string messageId)
         {
-            return Task.FromResult(_transactionIds.Add(transactionId));
+            return Task.FromResult(_messageIds.Add(messageId));
         }
     }
 }

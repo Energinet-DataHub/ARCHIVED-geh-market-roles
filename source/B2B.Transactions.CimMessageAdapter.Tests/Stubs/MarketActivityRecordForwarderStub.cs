@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using B2B.CimMessageAdapter;
 
-namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
+namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests.Stubs
 {
     public class MarketActivityRecordForwarderStub : IMarketActivityRecordForwarder
     {

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using B2B.CimMessageAdapter;
+using MarketRoles.B2B.CimMessageAdapter.IntegrationTests.Stubs;
 using Xunit;
 
 namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
@@ -107,7 +108,7 @@ namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests
         private MessageReceiver CreateMessageReceiver()
         {
             _marketActivityRecordForwarderStub = new MarketActivityRecordForwarderStub();
-            var messageReceiver = new MessageReceiver(_messageIdsStub, _marketActivityRecordForwarderStub, _transactionIdsStub);
+            var messageReceiver = new MessageReceiver(_messageIdsStub, _marketActivityRecordForwarderStub, _transactionIdsStub, new SchemaProviderStub());
             return messageReceiver;
         }
 
