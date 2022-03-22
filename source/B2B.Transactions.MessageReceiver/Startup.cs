@@ -14,6 +14,7 @@
 
 using System;
 using Energinet.DataHub.MarketRoles.Infrastructure.Correlation;
+using MarketRoles.B2B.CimMessageAdapter.IntegrationTests.Stubs;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -30,6 +31,9 @@ namespace B2B.Transactions.MessageReceiver
             builder.Services.AddHttpClient();
 
             builder.Services.AddScoped<ICorrelationContext>((s) => new CorrelationContext());
+            builder.Services.AddScoped<TransactionIdsStub>(s => new TransactionIdsStub());
+            builder.Services.AddScoped<MessageIdsStub>(s => new MessageIdsStub());
+            builder.Services.AddScoped<MarketActivityRecordForwarderStub>(s => new MarketActivityRecordForwarderStub());
         }
     }
 }

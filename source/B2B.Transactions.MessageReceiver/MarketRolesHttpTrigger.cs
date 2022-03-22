@@ -29,15 +29,17 @@ namespace B2B.Transactions.MessageReceiver
 {
     public class MarketRolesHttpTrigger
     {
-        private readonly TransactionIdsStub _transactionIdsStub = new();
-        private readonly MessageIdsStub _messageIdsStub = new();
-        private readonly MarketActivityRecordForwarderStub _marketActivityRecordForwarderSpy = new();
-
+        private readonly TransactionIdsStub _transactionIdsStub;
+        private readonly MessageIdsStub _messageIdsStub;
+        private readonly MarketActivityRecordForwarderStub _marketActivityRecordForwarderSpy;
         private readonly ICorrelationContext _correlationContext;
 
-        public MarketRolesHttpTrigger(ICorrelationContext correlationContext)
+        public MarketRolesHttpTrigger(ICorrelationContext correlationContext, TransactionIdsStub transactionIdsStub, MessageIdsStub messageIdsStub, MarketActivityRecordForwarderStub marketActivityRecordForwarderStub)
         {
             _correlationContext = correlationContext;
+            _transactionIdsStub = transactionIdsStub;
+            _messageIdsStub = messageIdsStub;
+            _marketActivityRecordForwarderSpy = marketActivityRecordForwarderStub;
         }
 
         [Function("MarketRoles")]
