@@ -29,13 +29,15 @@ namespace B2B.Transactions.MessageReceiver
 {
     public class MarketRolesHttpTrigger
     {
+        private readonly ILogger _logger;
         private readonly TransactionIdsStub _transactionIdsStub;
         private readonly MessageIdsStub _messageIdsStub;
         private readonly MarketActivityRecordForwarderStub _marketActivityRecordForwarderSpy;
         private readonly ICorrelationContext _correlationContext;
 
-        public MarketRolesHttpTrigger(ICorrelationContext correlationContext, TransactionIdsStub transactionIdsStub, MessageIdsStub messageIdsStub, MarketActivityRecordForwarderStub marketActivityRecordForwarderStub)
+        public MarketRolesHttpTrigger(ILogger logger, ICorrelationContext correlationContext, TransactionIdsStub transactionIdsStub, MessageIdsStub messageIdsStub, MarketActivityRecordForwarderStub marketActivityRecordForwarderStub)
         {
+            _logger = logger;
             _correlationContext = correlationContext;
             _transactionIdsStub = transactionIdsStub;
             _messageIdsStub = messageIdsStub;
@@ -44,9 +46,9 @@ namespace B2B.Transactions.MessageReceiver
 
         [Function("MarketRoles")]
         public async Task<HttpResponseData> RunAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData request, ILogger logger)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequestData request)
         {
-            logger.LogInformation("Received MarketRoles request");
+            _logger.LogInformation("Received MarketRoles request");
 
             if (request == null) throw new ArgumentNullException(nameof(request));
 
