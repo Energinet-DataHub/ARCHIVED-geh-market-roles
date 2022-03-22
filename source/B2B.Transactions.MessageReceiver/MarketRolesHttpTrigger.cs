@@ -63,11 +63,11 @@ namespace B2B.Transactions.MessageReceiver
             return CreateResponse(request, HttpStatusCode.BadRequest,  ResponseFactory.From(result));
         }
 
-        private static HttpResponseData CreateResponse(HttpRequestData request, HttpStatusCode statusCode, ResponseMessage responseMessage)
+        private HttpResponseData CreateResponse(HttpRequestData request, HttpStatusCode statusCode, ResponseMessage responseMessage)
         {
             var response = request.CreateResponse(statusCode);
             response.WriteString(responseMessage.MessageBody, Encoding.UTF8);
-
+            response.Headers.Add("CorrelationId", _correlationContext.Id);
             return response;
         }
     }
