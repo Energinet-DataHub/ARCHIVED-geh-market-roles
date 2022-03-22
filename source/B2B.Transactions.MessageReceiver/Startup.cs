@@ -12,15 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.EntryPoints.Common;
+using System;
+using Energinet.DataHub.MarketRoles.Infrastructure.Correlation;
+using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
+[assembly: FunctionsStartup(typeof(B2B.Transactions.MessageReceiver.Startup))]
 
 namespace B2B.Transactions.MessageReceiver
 {
-    public class Program : EntryPoint
+    public class Startup : FunctionsStartup
     {
-        public static void Main()
+        public override void Configure(IFunctionsHostBuilder builder)
         {
+            if (builder is null) throw new ArgumentNullException(nameof(builder));
+
+            builder.Services.AddHttpClient();
+
+            builder.Services.AddSingleton<ICorrelationContext>((s) => { return new CorrelationContext(); });
         }
     }
 }
