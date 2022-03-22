@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Threading.Tasks;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Messaging.Idempotency
+namespace B2B.CimMessageAdapter.Message.MessageIds
 {
-    public class IncomingMessageEntityConfiguration : IEntityTypeConfiguration<IncomingMessage>
+    /// <summary>
+    /// Store containing message id for all received market documents
+    /// </summary>
+    public interface IMessageIds
     {
-        public void Configure(EntityTypeBuilder<IncomingMessage> builder)
-        {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
-
-            builder.ToTable("IncomingMessages", "dbo");
-            builder.HasKey(x => new { x.MessageId, x.MessageType });
-        }
+        /// <summary>
+        /// Store message id
+        /// </summary>
+        /// <param name="messageId"></param>
+        Task<bool> TryStoreAsync(string messageId);
     }
 }

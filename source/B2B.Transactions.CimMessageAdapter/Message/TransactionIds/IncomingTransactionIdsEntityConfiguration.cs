@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using B2B.CimMessageAdapter;
-using B2B.CimMessageAdapter.Message.MessageIds;
+using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests.Stubs
+namespace B2B.CimMessageAdapter.Message.TransactionIds
 {
-    public class MessageIdsStub : IMessageIds
+    public class IncomingTransactionIdsEntityConfiguration : IEntityTypeConfiguration<IncomingTransactionId>
     {
-        private readonly HashSet<string> _messageIds = new();
-
-        public Task<bool> TryStoreAsync(string messageId)
+        public void Configure(EntityTypeBuilder<IncomingTransactionId> builder)
         {
-            return Task.FromResult(_messageIds.Add(messageId));
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+
+            builder.ToTable("TransactionIds", "dbo");
+            builder.HasKey(x => new { x.TransactionId });
         }
     }
 }

@@ -12,18 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Messaging.Idempotency
+using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace B2B.CimMessageAdapter.Message.MessageIds
 {
-    public class IncomingMessage
+    public class IncomingMessageEntityConfiguration : IEntityTypeConfiguration<IncomingMessageId>
     {
-        public IncomingMessage(string messageId, string messageType)
+        public void Configure(EntityTypeBuilder<IncomingMessageId> builder)
         {
-            MessageId = messageId;
-            MessageType = messageType;
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
+
+            builder.ToTable("MessageIds", "dbo");
+            builder.HasKey(x => new { x.MessageId });
         }
-
-        public string MessageId { get; }
-
-        public string MessageType { get; }
     }
 }

@@ -12,20 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using B2B.CimMessageAdapter;
-using B2B.CimMessageAdapter.Message.MessageIds;
-
-namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests.Stubs
+namespace B2B.CimMessageAdapter.Message.MessageIds
 {
-    public class MessageIdsStub : IMessageIds
+    public class IncomingMessageId
     {
-        private readonly HashSet<string> _messageIds = new();
-
-        public Task<bool> TryStoreAsync(string messageId)
+        public IncomingMessageId(string messageId)
         {
-            return Task.FromResult(_messageIds.Add(messageId));
+            MessageId = messageId;
         }
+
+        public string MessageId { get; }
     }
 }

@@ -12,19 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
-
-namespace B2B.CimMessageAdapter
+namespace B2B.CimMessageAdapter.Message.TransactionIds
 {
-    /// <summary>
-    /// Store containing transaction id for all received market activity records
-    /// </summary>
-    public interface ITransactionIds
+    public class IncomingTransactionId
     {
-        /// <summary>
-        /// Store transaction id
-        /// </summary>
-        /// <param name="transactionId"></param>
-        Task<bool> TryStoreAsync(string transactionId);
+        public IncomingTransactionId(string transactionId)
+        {
+            TransactionId = transactionId;
+        }
+
+        public string TransactionId { get; }
     }
 }

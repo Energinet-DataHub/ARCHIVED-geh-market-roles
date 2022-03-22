@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using B2B.CimMessageAdapter;
-using B2B.CimMessageAdapter.Message.MessageIds;
+using System.Data;
 
-namespace MarketRoles.B2B.CimMessageAdapter.IntegrationTests.Stubs
+namespace B2B.CimMessageAdapter.DataAccess
 {
-    public class MessageIdsStub : IMessageIds
+    /// <summary>
+    /// Factory for creating database connections
+    /// </summary>
+    public interface IDbConnectionFactory
     {
-        private readonly HashSet<string> _messageIds = new();
-
-        public Task<bool> TryStoreAsync(string messageId)
-        {
-            return Task.FromResult(_messageIds.Add(messageId));
-        }
+        /// <summary>
+        /// Returns and existing open connection if any, or creates a new open connection
+        /// </summary>
+        /// <returns><see cref="IDbConnection"/></returns>
+        IDbConnection GetOpenConnection();
     }
 }
