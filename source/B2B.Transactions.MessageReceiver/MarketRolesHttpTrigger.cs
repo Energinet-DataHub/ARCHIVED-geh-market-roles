@@ -13,20 +13,15 @@
 // limitations under the License.
 
 using System;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using B2B.CimMessageAdapter;
+using B2B.CimMessageAdapter.Schema;
 using Energinet.DataHub.MarketRoles.Infrastructure.Correlation;
 using MarketRoles.B2B.CimMessageAdapter.IntegrationTests.Stubs;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace B2B.Transactions.MessageReceiver
 {
@@ -51,7 +46,7 @@ namespace B2B.Transactions.MessageReceiver
 
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            var messageReceiver = new CimMessageAdapter.MessageReceiver(_messageIdsStub, _marketActivityRecordForwarderSpy, _transactionIdsStub, new SchemaProviderStub());
+            var messageReceiver = new CimMessageAdapter.MessageReceiver(_messageIdsStub, _marketActivityRecordForwarderSpy, _transactionIdsStub, new SchemaProvider(new SchemaStore()));
             var result = await messageReceiver.ReceiveAsync(request.Body, "requestchangeofsupplier", "1.0").ConfigureAwait(false);
 
             if (result == Result.Succeeded())

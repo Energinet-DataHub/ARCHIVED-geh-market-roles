@@ -16,7 +16,6 @@ using System;
 using Energinet.DataHub.MarketRoles.Infrastructure.Correlation;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 [assembly: FunctionsStartup(typeof(B2B.Transactions.MessageReceiver.Startup))]
 
@@ -30,7 +29,7 @@ namespace B2B.Transactions.MessageReceiver
 
             builder.Services.AddHttpClient();
 
-            builder.Services.AddSingleton<ICorrelationContext>((s) => { return new CorrelationContext(); });
+            builder.Services.AddScoped<ICorrelationContext>((s) => new CorrelationContext());
         }
     }
 }
