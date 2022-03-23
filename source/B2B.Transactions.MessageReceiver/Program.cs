@@ -39,10 +39,6 @@ namespace B2B.Transactions.MessageReceiver
                     worker.UseMiddleware<CorrelationIdMiddleware>();
                     worker.UseMiddleware<RequestResponseLoggingMiddleware>();
                 })
-                .ConfigureAppConfiguration(config => config
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("local.settings.json")
-                    .AddEnvironmentVariables())
                 .ConfigureServices(services =>
                 {
                     services.AddHttpClient<MarketRolesHttpTrigger>();
