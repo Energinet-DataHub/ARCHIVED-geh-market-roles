@@ -5,6 +5,8 @@
         <OutputType>Exe</OutputType>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Energinet.DataHub.Core.App.Common.Security" Version="2.0.0" />
+        <PackageReference Include="Energinet.DataHub.Core.App.FunctionApp" Version="2.0.0" />
         <PackageReference Include="Energinet.DataHub.Core.Logging" Version="1.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
