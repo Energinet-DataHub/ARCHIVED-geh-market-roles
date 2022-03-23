@@ -2,8 +2,10 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <AzureFunctionsVersion>V4</AzureFunctionsVersion>
+        <OutputType>Exe</OutputType>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="Energinet.DataHub.Core.Logging" Version="1.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
         <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.6.0" />
@@ -22,6 +24,7 @@
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\B2B.Transactions.CimMessageAdapter.Tests\B2B.Transactions.CimMessageAdapter.Tests.csproj" />
+      <ProjectReference Include="..\Energinet.DataHub.MarketRoles.EntryPoints.Common\Energinet.DataHub.MarketRoles.EntryPoints.Common.csproj" />
       <ProjectReference Include="..\Energinet.DataHub.MarketRoles.Infrastructure\Energinet.DataHub.MarketRoles.Infrastructure.csproj" />
     </ItemGroup>
 </Project>

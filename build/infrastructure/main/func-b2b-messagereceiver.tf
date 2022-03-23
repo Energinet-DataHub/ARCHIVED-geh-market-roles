@@ -30,6 +30,9 @@ module "func_outbox" {
     WEBSITES_ENABLE_APP_SERVICE_STORAGE                           = true
     FUNCTIONS_WORKER_RUNTIME                                      = "dotnet-isolated"
     # Endregion: Default Values
+    # Shared resources logging
+    REQUEST_RESPONSE_LOGGING_CONNECTION_STRING   = data.azurerm_key_vault_secret.st_market_operator_logs_primary_connection_string.value
+    REQUEST_RESPONSE_LOGGING_CONTAINER_NAME      = data.azurerm_key_vault_secret.st_market_operator_logs_container_name.value
   }
   
   tags                                      = azurerm_resource_group.this.tags

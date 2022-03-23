@@ -33,15 +33,17 @@ namespace B2B.Transactions.MessageReceiver
         private readonly TransactionIdsStub _transactionIdsStub;
         private readonly MessageIdsStub _messageIdsStub;
         private readonly MarketActivityRecordForwarderStub _marketActivityRecordForwarderSpy;
+        private readonly SchemaProvider _schemaProvider;
         private readonly ICorrelationContext _correlationContext;
 
-        public MarketRolesHttpTrigger(ILogger logger, ICorrelationContext correlationContext, TransactionIdsStub transactionIdsStub, MessageIdsStub messageIdsStub, MarketActivityRecordForwarderStub marketActivityRecordForwarderStub)
+        public MarketRolesHttpTrigger(ILogger logger, ICorrelationContext correlationContext, TransactionIdsStub transactionIdsStub, MessageIdsStub messageIdsStub, MarketActivityRecordForwarderStub marketActivityRecordForwarderStub, SchemaProvider schemaprovider)
         {
             _logger = logger;
             _correlationContext = correlationContext;
             _transactionIdsStub = transactionIdsStub;
             _messageIdsStub = messageIdsStub;
             _marketActivityRecordForwarderSpy = marketActivityRecordForwarderStub;
+            _schemaProvider = schemaprovider;
         }
 
         [Function("MarketRoles")]
@@ -52,15 +54,11 @@ namespace B2B.Transactions.MessageReceiver
 
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            var messageReceiver = new CimMessageAdapter.MessageReceiver(_messageIdsStub, _marketActivityRecordForwarderSpy, _transactionIdsStub, new SchemaProvider(new SchemaStore()));
+            var messageReceiver = new CimMessageAdapter.MessageReceiver(_messageIdsStub, _marketActivityRecordForwarderSpy, _transactionIdsStub, _schemaProvider);
             var result = await messageReceiver.ReceiveAsync(request.Body, "requestchangeofsupplier", "1.0").ConfigureAwait(false);
 
-            if (result.Success)
-            {
-                return CreateResponse(request, HttpStatusCode.Accepted, ResponseFactory.From(result));
-            }
-
-            return CreateResponse(request, HttpStatusCode.BadRequest,  ResponseFactory.From(result));
+            var httpStatusCode = result.Success ? HttpStatusCode.Accepted : HttpStatusCode.BadRequest;
+            return CreateResponse(request, httpStatusCode,  ResponseFactory.From(result));
         }
 
         private HttpResponseData CreateResponse(HttpRequestData request, HttpStatusCode statusCode, ResponseMessage responseMessage)
