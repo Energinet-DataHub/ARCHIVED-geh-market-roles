@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace B2B.CimMessageAdapter
+using Energinet.DataHub.MarketRoles.Application.Common.Transport;
+
+namespace B2B.CimMessageAdapter.MarketActivity
 {
     public class MarketActivityRecord
     {

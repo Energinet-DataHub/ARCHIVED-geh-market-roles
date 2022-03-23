@@ -14,17 +14,17 @@
 
 using System.Threading.Tasks;
 
-namespace B2B.CimMessageAdapter
+namespace B2B.CimMessageAdapter.Message.MessageIds
 {
     /// <summary>
-    /// Store containing transaction id for all received market activity records
+    /// Store containing message id for all received market documents
     /// </summary>
-    public interface ITransactionIds
+    public interface IMessageIds
     {
         /// <summary>
-        /// Store transaction id
+        /// Store message id
         /// </summary>
-        /// <param name="transactionId"></param>
-        Task<bool> TryStoreAsync(string transactionId);
+        /// <param name="messageId"></param>
+        Task<bool> TryStoreAsync(string messageId);
     }
 }

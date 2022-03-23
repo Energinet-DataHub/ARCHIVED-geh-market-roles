@@ -15,9 +15,8 @@
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Schema;
-using B2B.CimMessageAdapter.Schema;
 
-namespace B2B.CimMessageAdapter
+namespace B2B.CimMessageAdapter.Schema
 {
     public class SchemaProvider : ISchemaProvider
     {
@@ -40,7 +39,7 @@ namespace B2B.CimMessageAdapter
             return LoadSchemaWithDependentSchemasAsync(schemaName);
         }
 
-        private static async Task<XmlSchema?> LoadSchemaWithDependentSchemasAsync(string location)
+        private async Task<XmlSchema?> LoadSchemaWithDependentSchemasAsync(string location)
         {
             using var reader = new XmlTextReader(location);
             var xmlSchema = XmlSchema.Read(reader, null);
@@ -57,7 +56,7 @@ namespace B2B.CimMessageAdapter
                 }
 
                 external.Schema =
-                    await LoadSchemaWithDependentSchemasAsync(external.SchemaLocation).ConfigureAwait(false);
+                    await LoadSchemaWithDependentSchemasAsync(SchemaStore.SchemaPath + external.SchemaLocation).ConfigureAwait(false);
             }
 
             return xmlSchema;
