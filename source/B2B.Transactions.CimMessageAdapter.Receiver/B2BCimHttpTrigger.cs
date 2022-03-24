@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using B2B.CimMessageAdapter;
 using B2B.CimMessageAdapter.Response;
 using B2B.CimMessageAdapter.Schema;
 using B2B.Transactions.CimMessageAdapter;
@@ -62,7 +63,7 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
 
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            var messageReceiver = new CimMessageAdapter.MessageReceiver(_messageIdsStub, _marketActivityRecordForwarderSpy, _transactionIdsStub, _schemaProvider);
+            var messageReceiver = new MessageReceiver(_messageIdsStub, _marketActivityRecordForwarderSpy, _transactionIdsStub, _schemaProvider);
 
             // TODO extract version and business process type from request
             var result = await messageReceiver.ReceiveAsync(request.Body, "requestchangeofsupplier", "1.0")
