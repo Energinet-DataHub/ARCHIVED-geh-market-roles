@@ -35,7 +35,7 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
         private readonly TransactionIdsStub _transactionIdsStub;
         private readonly MessageIdsStub _messageIdsStub;
         private readonly MarketActivityRecordForwarderStub _marketActivityRecordForwarderSpy;
-        private readonly SchemaProvider _schemaProvider;
+        private readonly ISchemaProvider _schemaProvider;
         private readonly ICorrelationContext _correlationContext;
 
         public B2BCimHttpTrigger(
@@ -44,7 +44,7 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
             TransactionIdsStub transactionIdsStub,
             MessageIdsStub messageIdsStub,
             MarketActivityRecordForwarderStub marketActivityRecordForwarderStub,
-            SchemaProvider schemaProvider)
+            ISchemaProvider schemaProvider)
         {
             _logger = logger;
             _correlationContext = correlationContext;

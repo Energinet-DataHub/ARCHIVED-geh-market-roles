@@ -41,12 +41,12 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
                 .ConfigureServices(services =>
                 {
                     services.AddHttpClient<B2BCimHttpTrigger>();
+                    services.AddScoped<SchemaStore>();
+                    services.AddScoped<ISchemaProvider, SchemaProvider>();
                     services.AddScoped<ICorrelationContext, CorrelationContext>();
                     services.AddScoped<TransactionIdsStub>();
                     services.AddScoped<MessageIdsStub>();
                     services.AddScoped<MarketActivityRecordForwarderStub>();
-                    services.AddScoped<SchemaStore>();
-                    services.AddScoped<ISchemaProvider, SchemaProvider>();
                     services.AddLogging();
                     services.AddSingleton(typeof(ILogger), typeof(Logger<B2BCimHttpTrigger>));
 /*
