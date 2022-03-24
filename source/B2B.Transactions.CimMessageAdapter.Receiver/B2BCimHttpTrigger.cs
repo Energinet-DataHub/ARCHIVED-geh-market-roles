@@ -44,19 +44,19 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
             TransactionIdsStub transactionIdsStub,
             MessageIdsStub messageIdsStub,
             MarketActivityRecordForwarderStub marketActivityRecordForwarderStub,
-            SchemaProvider schemaprovider)
+            SchemaProvider schemaProvider)
         {
             _logger = logger;
             _correlationContext = correlationContext;
             _transactionIdsStub = transactionIdsStub;
             _messageIdsStub = messageIdsStub;
             _marketActivityRecordForwarderSpy = marketActivityRecordForwarderStub;
-            _schemaProvider = schemaprovider;
+            _schemaProvider = schemaProvider;
         }
 
         [Function("B2BCimHttpTrigger")]
         public async Task<HttpResponseData> RunAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post")]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post")]
             HttpRequestData request)
         {
             _logger.LogInformation("Received MarketRoles request");

@@ -34,18 +34,22 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
                 .ConfigureFunctionsWorkerDefaults(worker =>
                 {
                     worker.UseMiddleware<CorrelationIdMiddleware>();
-                    worker.UseMiddleware<RequestResponseLoggingMiddleware>();
-                    worker.UseMiddleware<JwtTokenMiddleware>();
-                    worker.UseMiddleware<ActorMiddleware>();
+                    //worker.UseMiddleware<RequestResponseLoggingMiddleware>();
+                    //worker.UseMiddleware<JwtTokenMiddleware>();
+                    //worker.UseMiddleware<ActorMiddleware>();
                 })
                 .ConfigureServices(services =>
                 {
                     services.AddHttpClient<B2BCimHttpTrigger>();
-                    services.AddScoped<ICorrelationContext>();
+                    services.AddScoped<ICorrelationContext, CorrelationContext>();
                     services.AddScoped<TransactionIdsStub>();
                     services.AddScoped<MessageIdsStub>();
                     services.AddScoped<MarketActivityRecordForwarderStub>();
-                    services.AddScoped<SchemaProvider>();
+                    services.AddScoped<SchemaStore>();
+                    services.AddScoped<ISchemaProvider, SchemaProvider>();
+                    services.AddLogging();
+                    services.AddSingleton(typeof(ILogger), typeof(Logger<B2BCimHttpTrigger>));
+/*
                     services.AddSingleton<IRequestResponseLogging>(s =>
                         {
                             var logger = services.BuildServiceProvider().GetService<ILogger<RequestResponseLoggingBlobStorage>>();
@@ -56,14 +60,17 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
                             return storage;
                         });
                     services.AddScoped<RequestResponseLoggingMiddleware>();
+
                     services.AddScoped<JwtTokenMiddleware>();
                     services.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
                     services.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
                     services.AddScoped<ClaimsPrincipalContext>();
                     services.AddScoped(s => new OpenIdSettings(metaDataAddress, audience));
+
                     services.AddScoped<ActorMiddleware>();
                     services.AddScoped<IActorContext, ActorContext>();
                     services.AddScoped<IActorProvider, ActorProvider>();
+                    */
                 })
                 .Build();
 
