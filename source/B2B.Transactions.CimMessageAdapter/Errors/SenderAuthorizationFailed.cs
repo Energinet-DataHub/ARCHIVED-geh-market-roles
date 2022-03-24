@@ -12,19 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
-
-namespace B2B.CimMessageAdapter.Message.TransactionIds
+namespace B2B.CimMessageAdapter.Errors
 {
-    /// <summary>
-    /// Store containing transaction id for all received market activity records
-    /// </summary>
-    public interface ITransactionIds
+    public class SenderAuthorizationFailed : ValidationError
     {
-        /// <summary>
-        /// Store transaction id
-        /// </summary>
-        /// <param name="transactionId"></param>
-        Task<bool> TryStoreAsync(string transactionId);
+        public SenderAuthorizationFailed()
+            : base("Sender is not authorization", "B2B-008")
+        {
+        }
     }
 }

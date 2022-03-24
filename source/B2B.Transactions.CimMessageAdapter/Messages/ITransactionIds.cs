@@ -14,22 +14,17 @@
 
 using System.Threading.Tasks;
 
-namespace B2B.CimMessageAdapter.MarketActivity
+namespace B2B.CimMessageAdapter.Messages
 {
     /// <summary>
-    /// Service for forwarding extracted market activity records to external sources
+    /// Store containing transaction id for all received market activity records
     /// </summary>
-    public interface IMarketActivityRecordForwarder
+    public interface ITransactionIds
     {
         /// <summary>
-        /// Adds a market activity record to collection
+        /// Store transaction id
         /// </summary>
-        /// <param name="marketActivityRecord"></param>
-        Task AddAsync(MarketActivityRecord marketActivityRecord);
-
-        /// <summary>
-        /// Commits added market activities to external source
-        /// </summary>
-        Task CommitAsync();
+        /// <param name="transactionId"></param>
+        Task<bool> TryStoreAsync(string transactionId);
     }
 }

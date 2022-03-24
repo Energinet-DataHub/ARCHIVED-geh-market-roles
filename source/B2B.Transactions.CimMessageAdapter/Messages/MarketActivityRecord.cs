@@ -12,24 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.MarketRoles.Application.Common.Transport;
-
-namespace B2B.CimMessageAdapter.MarketActivity
+namespace B2B.CimMessageAdapter.Messages
 {
     public class MarketActivityRecord
     {
-        public string? CustomerMarketParticipantmRID { get; init; }
+        public string Id { get; init; } = string.Empty;
 
-        public string? BalanceResponsiblePartyMarketParticipantmRID { get; init; }
+        public string? ConsumerId { get; init; }
 
-        public string? EnergySupplierMarketParticipantmRID { get; init; }
+        public string? BalanceResponsibleId { get; init; }
 
-        public string? MarketEvaluationPointmRID { get; init; }
+        public string? EnergySupplierId { get; init; }
 
-        public string MrId { get; init; } = string.Empty;
+        public string MarketEvaluationPointId { get; init; } = string.Empty;
 
-        public string? CustomerMarketParticipantName { get; init; }
+        public string? ConsumerName { get; init; }
 
-        public string? StartDateAndOrTimeDateTime { get; init; }
+        public string EffectiveDate { get; init; } = string.Empty;
     }
 }

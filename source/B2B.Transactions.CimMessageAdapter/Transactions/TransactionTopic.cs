@@ -12,19 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
+using Energinet.DataHub.MarketRoles.Infrastructure.Integration;
 
-namespace B2B.CimMessageAdapter.Message.MessageIds
+namespace B2B.CimMessageAdapter.Transactions
 {
-    /// <summary>
-    /// Store containing message id for all received market documents
-    /// </summary>
-    public interface IMessageIds
-    {
-        /// <summary>
-        /// Store message id
-        /// </summary>
-        /// <param name="messageId"></param>
-        Task<bool> TryStoreAsync(string messageId);
-    }
+    public record TransactionTopic(string Name) : Topic;
 }

@@ -12,19 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using B2B.CimMessageAdapter.Messages;
+using System;
+using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 
 namespace B2B.CimMessageAdapter.Tests.Stubs
 {
-    public class MessageIdsStub : IMessageIds
+    public class ActorContextStub : IActorContext
     {
-        private readonly HashSet<string> _messageIds = new();
+        private readonly Actor _validActor = new Actor(Guid.NewGuid(), "GLN", "5799999933318", string.Empty);
 
-        public Task<bool> TryStoreAsync(string messageId)
+        public ActorContextStub()
         {
-            return Task.FromResult(_messageIds.Add(messageId));
+            SetValidActor();
+        }
+
+        public Actor? CurrentActor { get; set; }
+
+        public Actor DataHub { get; } = new Actor(Guid.Empty, "GLN", "Fake", string.Empty);
+
+        public void SetValidActor()
+        {
+            CurrentActor = _validActor;
+        }
+
+        public void UseInvalidActor()
+        {
+            CurrentActor = new Actor(Guid.Empty, "GLN", "Fake", string.Empty);
         }
     }
 }
