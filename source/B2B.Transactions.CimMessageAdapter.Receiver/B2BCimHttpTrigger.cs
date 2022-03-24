@@ -20,9 +20,7 @@ using System.Threading.Tasks;
 using B2B.CimMessageAdapter;
 using B2B.CimMessageAdapter.Response;
 using B2B.CimMessageAdapter.Schema;
-using B2B.Transactions.CimMessageAdapter;
 using Energinet.DataHub.MarketRoles.Infrastructure.Correlation;
-using MarketRoles.B2B.CimMessageAdapter.IntegrationTests.Stubs;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -32,26 +30,17 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
     public class B2BCimHttpTrigger
     {
         private readonly ILogger _logger;
-        private readonly TransactionIdsStub _transactionIdsStub;
-        private readonly MessageIdsStub _messageIdsStub;
-        private readonly MarketActivityRecordForwarderStub _marketActivityRecordForwarderSpy;
-        private readonly ISchemaProvider _schemaProvider;
         private readonly ICorrelationContext _correlationContext;
+        private readonly MessageReceiver _messageReceiver;
 
         public B2BCimHttpTrigger(
             ILogger logger,
             ICorrelationContext correlationContext,
-            TransactionIdsStub transactionIdsStub,
-            MessageIdsStub messageIdsStub,
-            MarketActivityRecordForwarderStub marketActivityRecordForwarderStub,
-            ISchemaProvider schemaProvider)
+            MessageReceiver messageReceiver)
         {
             _logger = logger;
             _correlationContext = correlationContext;
-            _transactionIdsStub = transactionIdsStub;
-            _messageIdsStub = messageIdsStub;
-            _marketActivityRecordForwarderSpy = marketActivityRecordForwarderStub;
-            _schemaProvider = schemaProvider;
+            _messageReceiver = messageReceiver ?? throw new ArgumentNullException(nameof(messageReceiver));
         }
 
         [Function("B2BCimHttpTrigger")]
@@ -63,10 +52,8 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
 
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            var messageReceiver = new MessageReceiver(_messageIdsStub, _marketActivityRecordForwarderSpy, _transactionIdsStub, _schemaProvider);
-
             // TODO extract version and business process type from request
-            var result = await messageReceiver.ReceiveAsync(request.Body, "requestchangeofsupplier", "1.0")
+            var result = await _messageReceiver.ReceiveAsync(request.Body, "requestchangeofsupplier", "1.0")
                 .ConfigureAwait(false);
 
             var httpStatusCode = result.Success ? HttpStatusCode.Accepted : HttpStatusCode.BadRequest;

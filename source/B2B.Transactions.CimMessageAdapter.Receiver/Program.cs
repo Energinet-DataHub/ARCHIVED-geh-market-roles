@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Azure.Messaging.ServiceBus;
+using B2B.CimMessageAdapter;
+using B2B.CimMessageAdapter.Messages;
 using B2B.CimMessageAdapter.Schema;
+using B2B.CimMessageAdapter.Transactions;
 using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
@@ -13,7 +17,7 @@ using Energinet.DataHub.MarketRoles.EntryPoints.Common;
 using Energinet.DataHub.MarketRoles.Infrastructure;
 using Energinet.DataHub.MarketRoles.Infrastructure.Correlation;
 using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
-using MarketRoles.B2B.CimMessageAdapter.IntegrationTests.Stubs;
+using Energinet.DataHub.MarketRoles.Infrastructure.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -40,8 +44,11 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
                 })
                 .ConfigureServices(services =>
                 {
+                    services.AddSingleton<IJsonSerializer, JsonSerializer>();
                     services.AddScoped<SchemaStore>();
                     services.AddScoped<ISchemaProvider, SchemaProvider>();
+                    services.AddScoped<MessageReceiver>();
+
                     services.AddScoped<ICorrelationContext>(_ =>
                     {
                         var context = new CorrelationContext();
@@ -49,9 +56,15 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
                         context.SetParentId(Guid.NewGuid().ToString());
                         return context;
                     });
-                    services.AddScoped<TransactionIdsStub>();
-                    services.AddScoped<MessageIdsStub>();
-                    services.AddScoped<MarketActivityRecordForwarderStub>();
+                    services.AddScoped<ITransactionIds, TransactionIdRegistry>();
+                    services.AddScoped<IMessageIds, MessageIdRegistry>();
+                    services.AddSingleton<ServiceBusSender>(serviceProvider =>
+                    {
+                        var connectionString = Environment.GetEnvironmentVariable("TRANSACTION_QUEUE_CONNECTION_STRING");
+                        var topicName = Environment.GetEnvironmentVariable("TRANSACTION_QUEUE_NAME");
+                        return new ServiceBusClient(connectionString).CreateSender(topicName);
+                    });
+                    services.AddScoped<ITransactionQueueDispatcher, TransactionQueueDispatcher>();
                     services.AddLogging();
                     services.AddSingleton(typeof(ILogger), typeof(Logger<B2BCimHttpTrigger>));
 
@@ -70,7 +83,13 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
                     services.AddScoped<ClaimsPrincipalContext>();
                     services.AddScoped(s => new OpenIdSettings(metaDataAddress, audience));
                     services.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
-                    services.AddScoped<IActorContext, ActorContext>();
+                    //services.AddScoped<IActorContext, ActorContext>();
+                    services.AddScoped<IActorContext>(sp =>
+                    {
+                        var context = new ActorContext();
+                        context.CurrentActor = new Actor(Guid.NewGuid(), "GLN", "5799999933318", string.Empty);
+                        return context;
+                    });
                     services.AddScoped<IActorProvider, ActorProvider>();
                     services.AddScoped<IDbConnectionFactory>(_ =>
                     {
