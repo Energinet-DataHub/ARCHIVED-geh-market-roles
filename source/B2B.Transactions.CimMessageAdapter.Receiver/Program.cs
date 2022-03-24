@@ -7,12 +7,12 @@ using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
 using Energinet.DataHub.Core.App.Common.Abstractions.Security;
 using Energinet.DataHub.Core.App.Common.Identity;
 using Energinet.DataHub.Core.App.Common.Security;
-using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage;
 using Energinet.DataHub.MarketRoles.EntryPoints.Common;
 using Energinet.DataHub.MarketRoles.Infrastructure;
 using Energinet.DataHub.MarketRoles.Infrastructure.Correlation;
+using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
 using MarketRoles.B2B.CimMessageAdapter.IntegrationTests.Stubs;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,22 +34,27 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
                 .ConfigureFunctionsWorkerDefaults(worker =>
                 {
                     worker.UseMiddleware<CorrelationIdMiddleware>();
-                    //worker.UseMiddleware<RequestResponseLoggingMiddleware>();
+                    worker.UseMiddleware<RequestResponseLoggingMiddleware>();
                     //worker.UseMiddleware<JwtTokenMiddleware>();
                     //worker.UseMiddleware<ActorMiddleware>();
                 })
                 .ConfigureServices(services =>
                 {
-                    services.AddHttpClient<B2BCimHttpTrigger>();
                     services.AddScoped<SchemaStore>();
                     services.AddScoped<ISchemaProvider, SchemaProvider>();
-                    services.AddScoped<ICorrelationContext, CorrelationContext>();
+                    services.AddScoped<ICorrelationContext>(_ =>
+                    {
+                        var context = new CorrelationContext();
+                        context.SetId(Guid.NewGuid().ToString());
+                        context.SetParentId(Guid.NewGuid().ToString());
+                        return context;
+                    });
                     services.AddScoped<TransactionIdsStub>();
                     services.AddScoped<MessageIdsStub>();
                     services.AddScoped<MarketActivityRecordForwarderStub>();
                     services.AddLogging();
                     services.AddSingleton(typeof(ILogger), typeof(Logger<B2BCimHttpTrigger>));
-/*
+
                     services.AddSingleton<IRequestResponseLogging>(s =>
                         {
                             var logger = services.BuildServiceProvider().GetService<ILogger<RequestResponseLoggingBlobStorage>>();
@@ -61,16 +66,22 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
                         });
                     services.AddScoped<RequestResponseLoggingMiddleware>();
 
-                    services.AddScoped<JwtTokenMiddleware>();
-                    services.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
                     services.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
                     services.AddScoped<ClaimsPrincipalContext>();
                     services.AddScoped(s => new OpenIdSettings(metaDataAddress, audience));
-
-                    services.AddScoped<ActorMiddleware>();
+                    services.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
                     services.AddScoped<IActorContext, ActorContext>();
                     services.AddScoped<IActorProvider, ActorProvider>();
-                    */
+                    services.AddScoped<IDbConnectionFactory>(_ =>
+                    {
+                        var connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
+                        if (connectionString is null)
+                        {
+                            throw new ArgumentNullException(nameof(connectionString));
+                        }
+
+                        return new SqlDbConnectionFactory(connectionString);
+                    });
                 })
                 .Build();
 
