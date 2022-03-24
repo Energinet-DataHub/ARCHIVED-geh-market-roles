@@ -15,6 +15,7 @@
 using System;
 using System.Threading.Tasks;
 using B2B.CimMessageAdapter;
+using B2B.CimMessageAdapter.Schema;
 using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
