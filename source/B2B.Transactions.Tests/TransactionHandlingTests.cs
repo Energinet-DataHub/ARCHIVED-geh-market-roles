@@ -52,6 +52,15 @@ namespace B2B.Transactions.Tests
             Assert.NotNull(GetValue(acceptMessage, "mRID"));
             AssertHasValue(acceptMessage, "type", "414");
 
+            AssertHasValue(acceptMessage, "process.processType", transaction.Message.ProcessType);
+            AssertHasValue(acceptMessage, "businessSector.type", "23");
+            AssertHasValue(acceptMessage, "sender_MarketParticipant.mRID", transaction.Message.SenderId);
+            AssertHasValue(acceptMessage, "sender_MarketParticipant.marketRole.type", transaction.Message.SenderRole);
+            AssertHasValue(acceptMessage, "receiver_MarketParticipant.mRID", transaction.Message.ReceiverId);
+            AssertHasValue(acceptMessage, "receiver_MarketParticipant.marketRole.type", transaction.Message.ReceiverRole);
+            AssertHasValue(acceptMessage, "createdDateTime", "2022-09-07T09:30:47Z");
+            AssertHasValue(acceptMessage, "reason.code", "A01");
+
             Assert.NotNull(acceptMessage);
         }
 
@@ -72,21 +81,16 @@ namespace B2B.Transactions.Tests
             writer.WriteAttributeString("xsi", "schemaLocation", null, "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1 urn-ediel-org-structure-confirmrequestchangeofsupplier-0-1.xsd");
             writer.WriteElementString("mRID", null, Guid.NewGuid().ToString());
             writer.WriteElementString("type", null, "414");
+            writer.WriteElementString("process.processType", null, transaction.Message.ProcessType);
+            writer.WriteElementString("businessSector.type", null, "23");
+            writer.WriteElementString("sender_MarketParticipant.mRID", null, transaction.Message.SenderId);
+            writer.WriteElementString("sender_MarketParticipant.marketRole.type", null, transaction.Message.SenderRole);
+            writer.WriteElementString("receiver_MarketParticipant.mRID", null, transaction.Message.ReceiverId);
+            writer.WriteElementString("receiver_MarketParticipant.marketRole.type", null, transaction.Message.ReceiverRole);
+            writer.WriteElementString("createdDateTime", null, "2022-09-07T09:30:47Z");
+            writer.WriteElementString("reason.code", null, "A01");
             writer.WriteEndElement();
             writer.Close();
-
-
-
-                // <cim:type>414</cim:type>
-                // <cim:process.processType>E03</cim:process.processType>
-                // <cim:businessSector.type>23</cim:businessSector.type>
-                // <cim:sender_MarketParticipant.mRID codingScheme="A10">5799999933318</cim:sender_MarketParticipant.mRID>
-                // <cim:sender_MarketParticipant.marketRole.type>DDZ</cim:sender_MarketParticipant.marketRole.type>
-                // <cim:receiver_MarketParticipant.mRID codingScheme="A10">5790001330552</cim:receiver_MarketParticipant.mRID>
-                // <cim:receiver_MarketParticipant.marketRole.type>DDQ</cim:receiver_MarketParticipant.marketRole.type>
-                // <cim:createdDateTime>2022-09-07T09:30:47Z</cim:createdDateTime>
-                // <cim:reason.code>A01</cim:reason.code>
-
 
             _outgoingMessages.Add(new AcceptMessage()
             {
@@ -120,7 +124,7 @@ namespace B2B.Transactions.Tests
             var document = XDocument.Parse(message.MessagePayload);
             XNamespace ns = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
 
-            return document?.Element(ns + "ConfirmRequestChangeOfSupplier_MarketDocument").Element(elementName).Value;
+            return document?.Element(ns + "ConfirmRequestChangeOfSupplier_MarketDocument")?.Element(elementName)?.Value;
         }
     }
 
