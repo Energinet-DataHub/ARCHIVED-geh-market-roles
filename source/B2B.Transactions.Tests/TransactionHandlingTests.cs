@@ -27,7 +27,9 @@ namespace B2B.Transactions.Tests
 #pragma warning disable
     public class TransactionHandlingTests
     {
+        private readonly XNamespace _namespace = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
         private MessageQueue _outgoingMessages = new();
+
 
         [Fact]
         public void Transaction_is_registered()
@@ -49,19 +51,22 @@ namespace B2B.Transactions.Tests
             RegisterTransaction(transaction);
 
             var acceptMessage = _outgoingMessages.Messages.FirstOrDefault();
-            Assert.NotNull(GetValue(acceptMessage, "mRID"));
-            AssertHasValue(acceptMessage, "type", "414");
-
-            AssertHasValue(acceptMessage, "process.processType", transaction.Message.ProcessType);
-            AssertHasValue(acceptMessage, "businessSector.type", "23");
-            AssertHasValue(acceptMessage, "sender_MarketParticipant.mRID", transaction.Message.SenderId);
-            AssertHasValue(acceptMessage, "sender_MarketParticipant.marketRole.type", transaction.Message.SenderRole);
-            AssertHasValue(acceptMessage, "receiver_MarketParticipant.mRID", transaction.Message.ReceiverId);
-            AssertHasValue(acceptMessage, "receiver_MarketParticipant.marketRole.type", transaction.Message.ReceiverRole);
-            AssertHasValue(acceptMessage, "createdDateTime", "2022-09-07T09:30:47Z");
-            AssertHasValue(acceptMessage, "reason.code", "A01");
-
             Assert.NotNull(acceptMessage);
+            Assert.NotNull(GetMessageHeaderValue(acceptMessage, "mRID"));
+            AssertHasHeaderValue(acceptMessage, "type", "414");
+
+            AssertHasHeaderValue(acceptMessage, "process.processType", transaction.Message.ProcessType);
+            AssertHasHeaderValue(acceptMessage, "businessSector.type", "23");
+            AssertHasHeaderValue(acceptMessage, "sender_MarketParticipant.mRID", transaction.Message.SenderId);
+            AssertHasHeaderValue(acceptMessage, "sender_MarketParticipant.marketRole.type", transaction.Message.SenderRole);
+            AssertHasHeaderValue(acceptMessage, "receiver_MarketParticipant.mRID", transaction.Message.ReceiverId);
+            AssertHasHeaderValue(acceptMessage, "receiver_MarketParticipant.marketRole.type", transaction.Message.ReceiverRole);
+            AssertHasHeaderValue(acceptMessage, "createdDateTime", "2022-09-07T09:30:47Z");
+            AssertHasHeaderValue(acceptMessage, "reason.code", "A01");
+
+            Assert.NotNull(GetMarketActivityRecordValue(acceptMessage, "mRID"));
+            AssertMarketActivityRecordValue(acceptMessage, "originalTransactionIDReference_MktActivityRecord.mRID", transaction.MarketActivityRecord.Id);
+            AssertMarketActivityRecordValue(acceptMessage, "marketEvaluationPoint.mRID", transaction.MarketActivityRecord.MarketEvaluationPointId);
         }
 
         private void RegisterTransaction(B2BTransaction transaction)
@@ -89,6 +94,13 @@ namespace B2B.Transactions.Tests
             writer.WriteElementString("receiver_MarketParticipant.marketRole.type", null, transaction.Message.ReceiverRole);
             writer.WriteElementString("createdDateTime", null, "2022-09-07T09:30:47Z");
             writer.WriteElementString("reason.code", null, "A01");
+
+            writer.WriteStartElement("cim", "MktActivityRecord", null);
+            writer.WriteElementString("mRID", null, Guid.NewGuid().ToString());
+            writer.WriteElementString("originalTransactionIDReference_MktActivityRecord.mRID", null, transaction.MarketActivityRecord.Id);
+            writer.WriteElementString("marketEvaluationPoint.mRID", null, transaction.MarketActivityRecord.MarketEvaluationPointId);
+            writer.WriteEndElement();
+
             writer.WriteEndElement();
             writer.Close();
 
@@ -114,17 +126,30 @@ namespace B2B.Transactions.Tests
                 });
         }
 
-        private static void AssertHasValue(AcceptMessage message, string elementName, string expectedValue)
+        private void AssertHasHeaderValue(AcceptMessage message, string elementName, string expectedValue)
         {
-            Assert.Equal(expectedValue, GetValue(message, elementName));
+            Assert.Equal(expectedValue, GetMessageHeaderValue(message, elementName));
         }
 
-        private static string? GetValue(AcceptMessage message, string elementName)
+        private void AssertMarketActivityRecordValue(AcceptMessage message, string elementName, string expectedValue)
+        {
+            Assert.Equal(expectedValue, GetMarketActivityRecordValue(message, elementName));
+        }
+
+        private string GetMarketActivityRecordValue(AcceptMessage message, string elementName)
+        {
+            return GetHeaderElement(message)?.Element(_namespace + "MktActivityRecord")?.Element(elementName)?.Value;
+        }
+
+        private string? GetMessageHeaderValue(AcceptMessage message, string elementName)
+        {
+            return GetHeaderElement(message)?.Element(elementName)?.Value;
+        }
+
+        private XElement GetHeaderElement(AcceptMessage message)
         {
             var document = XDocument.Parse(message.MessagePayload);
-            XNamespace ns = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
-
-            return document?.Element(ns + "ConfirmRequestChangeOfSupplier_MarketDocument")?.Element(elementName)?.Value;
+            return document?.Element(_namespace + "ConfirmRequestChangeOfSupplier_MarketDocument");
         }
     }
 
