@@ -45,6 +45,7 @@ namespace B2B.Transactions.Tests
             RegisterTransaction(CreateTransaction());
 
             var acceptMessage = _outgoingMessages.Messages.FirstOrDefault();
+            Assert.Equal("ConfirmRequestChangeOfSupplier_MarketDocument", acceptMessage.DocumentType);
             Assert.NotNull(acceptMessage);
         }
 
@@ -55,7 +56,10 @@ namespace B2B.Transactions.Tests
             var acceptedTransaction = new AcceptedTransaction(transaction.MarketActivityRecord.Id);
             repository.Add(acceptedTransaction);
 
-            _outgoingMessages.Add(new AcceptMessage());
+            _outgoingMessages.Add(new AcceptMessage()
+            {
+                DocumentType = "ConfirmRequestChangeOfSupplier_MarketDocument",
+            });
         }
 
         private B2BTransaction CreateTransaction()
@@ -87,6 +91,7 @@ namespace B2B.Transactions.Tests
 
     public class AcceptMessage
     {
+        public string DocumentType { get; init; }
     }
 
     public class TransactionRepository
