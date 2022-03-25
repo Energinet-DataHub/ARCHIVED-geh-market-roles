@@ -24,11 +24,43 @@ namespace B2B.Transactions.Tests
 #pragma warning disable
     public class TransactionHandlingTests
     {
+        private MessageQueue _outgoingMessages = new();
+
         [Fact]
         public void Transaction_is_registered()
         {
             var repository = new TransactionRepository();
-            var transaction = B2BTransaction.Create(
+            var transaction = CreateTransaction();
+
+            var acceptedTransaction = new AcceptedTransaction(transaction.MarketActivityRecord.Id);
+            repository.Add(acceptedTransaction);
+
+            var savedTransaction = repository.Get(acceptedTransaction.TransactionId);
+            Assert.NotNull(savedTransaction);
+        }
+
+        [Fact]
+        public void Accept_message_is_sent_to_sender_when_transaction_is_accepted()
+        {
+            RegisterTransaction(CreateTransaction());
+
+            var acceptMessage = _outgoingMessages.Messages.FirstOrDefault();
+            Assert.NotNull(acceptMessage);
+        }
+
+        private void RegisterTransaction(B2BTransaction transaction)
+        {
+            var repository = new TransactionRepository();
+
+            var acceptedTransaction = new AcceptedTransaction(transaction.MarketActivityRecord.Id);
+            repository.Add(acceptedTransaction);
+
+            _outgoingMessages.Add(new AcceptMessage());
+        }
+
+        private B2BTransaction CreateTransaction()
+        {
+            return B2BTransaction.Create(
                 new MessageHeader("fake", "fake", "fake", "fake", "fake", "somedate", "fake"),
                 new MarketActivityRecord()
                 {
@@ -40,13 +72,21 @@ namespace B2B.Transactions.Tests
                     EnergySupplierId = "fake",
                     MarketEvaluationPointId = "fake",
                 });
-
-            var acceptedTransaction = new AcceptedTransaction(transaction.MarketActivityRecord.Id);
-            repository.Add(acceptedTransaction);
-
-            var savedTransaction = repository.Get(acceptedTransaction.TransactionId);
-            Assert.NotNull(savedTransaction);
         }
+    }
+
+    public class MessageQueue
+    {
+        public List<AcceptMessage> Messages { get; } = new();
+
+        public void Add(AcceptMessage acceptMessage)
+        {
+            Messages.Add(acceptMessage);
+        }
+    }
+
+    public class AcceptMessage
+    {
     }
 
     public class TransactionRepository
