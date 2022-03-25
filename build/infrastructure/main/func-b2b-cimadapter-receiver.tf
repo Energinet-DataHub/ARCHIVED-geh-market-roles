@@ -11,10 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-module "func_outbox" {
+module "func_receiver" {
   source                                    = "git::https://github.com/Energinet-DataHub/geh-terraform-modules.git//azure/function-app?ref=5.1.0"
 
-  name                                      = "messagereceiver"
+  name                                      = "cimmessagereceiver"
   project_name                              = var.domain_name_short
   environment_short                         = var.environment_short
   environment_instance                      = var.environment_instance
@@ -35,6 +35,10 @@ module "func_outbox" {
     REQUEST_RESPONSE_LOGGING_CONTAINER_NAME      = data.azurerm_key_vault_secret.st_market_operator_logs_container_name.value
     B2C_TENANT_ID                         = data.azurerm_key_vault_secret.b2c_tenant_id.value
     BACKEND_SERVICE_APP_ID                = data.azurerm_key_vault_secret.backend_service_app_id.value
+    # Endregion: Default Values
+    MARKET_DATA_QUEUE_URL                   = "${module.sb_marketroles.name}.servicebus.windows.net:9093"
+    MARKET_DATA_QUEUE_CONNECTION_STRING     = module.sb_marketroles.primary_connection_strings["send"]
+    MARKET_DATA_QUEUE_TOPIC_NAME            = module.sbq_marketroles.name
   }
   
   tags                                      = azurerm_resource_group.this.tags

@@ -40,7 +40,7 @@ jobs:
     needs: [ci_base, dotnet_solution_ci, terraform_validate]
     uses: Energinet-DataHub/.github/.github/workflows/dotnet-create-function-artifact.yml@2.1.0
     with:
-      CSPROJ_FILE_PATH: 'source/B2B.Transactions.MessageReceiver/B2B.Transactions.MessageReceiver.csproj'
+      CSPROJ_FILE_PATH: 'source/B2B.Transactions.CimMessageAdapter.Receiver/B2B.Transactions.CimMessageAdapter.Receiver.csproj'
       DOTNET_VERSION: '5.0'
       ARTIFACT_NAME: ingestion
 
