@@ -88,9 +88,18 @@ namespace B2B.Transactions.Tests
             writer.WriteElementString("type", null, "414");
             writer.WriteElementString("process.processType", null, transaction.Message.ProcessType);
             writer.WriteElementString("businessSector.type", null, "23");
-            writer.WriteElementString("sender_MarketParticipant.mRID", null, transaction.Message.SenderId);
+
+            writer.WriteStartElement("sender_MarketParticipant.mRID");
+            writer.WriteAttributeString(null, "codingScheme", null, "A10");
+            writer.WriteValue(transaction.Message.SenderId);
+            writer.WriteEndElement();
+
             writer.WriteElementString("sender_MarketParticipant.marketRole.type", null, transaction.Message.SenderRole);
-            writer.WriteElementString("receiver_MarketParticipant.mRID", null, transaction.Message.ReceiverId);
+
+            writer.WriteStartElement("receiver_MarketParticipant.mRID");
+            writer.WriteAttributeString(null, "codingScheme", null, "A10");
+            writer.WriteValue(transaction.Message.ReceiverId);
+            writer.WriteEndElement();
             writer.WriteElementString("receiver_MarketParticipant.marketRole.type", null, transaction.Message.ReceiverRole);
             writer.WriteElementString("createdDateTime", null, "2022-09-07T09:30:47Z");
             writer.WriteElementString("reason.code", null, "A01");
@@ -98,7 +107,11 @@ namespace B2B.Transactions.Tests
             writer.WriteStartElement("cim", "MktActivityRecord", null);
             writer.WriteElementString("mRID", null, Guid.NewGuid().ToString());
             writer.WriteElementString("originalTransactionIDReference_MktActivityRecord.mRID", null, transaction.MarketActivityRecord.Id);
-            writer.WriteElementString("marketEvaluationPoint.mRID", null, transaction.MarketActivityRecord.MarketEvaluationPointId);
+
+            writer.WriteStartElement("marketEvaluationPoint.mRID");
+            writer.WriteAttributeString(null, "codingScheme", null, "A10");
+            writer.WriteValue(transaction.MarketActivityRecord.EnergySupplierId);
+            writer.WriteEndElement();
             writer.WriteEndElement();
 
             writer.WriteEndElement();
