@@ -60,8 +60,8 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
                     services.AddScoped<IMessageIds, MessageIdRegistry>();
                     services.AddSingleton<ServiceBusSender>(serviceProvider =>
                     {
-                        var connectionString = Environment.GetEnvironmentVariable("TRANSACTION_QUEUE_CONNECTION_STRING");
-                        var topicName = Environment.GetEnvironmentVariable("TRANSACTION_QUEUE_NAME");
+                        var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_QUEUE_CONNECTION_STRING");
+                        var topicName = Environment.GetEnvironmentVariable("MARKET_DATA_QUEUE_TOPIC_NAME");
                         return new ServiceBusClient(connectionString).CreateSender(topicName);
                     });
                     services.AddScoped<ITransactionQueueDispatcher, TransactionQueueDispatcher>();
@@ -93,7 +93,7 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
                     services.AddScoped<IActorProvider, ActorProvider>();
                     services.AddScoped<IDbConnectionFactory>(_ =>
                     {
-                        var connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
+                        var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING");
                         if (connectionString is null)
                         {
                             throw new ArgumentNullException(nameof(connectionString));

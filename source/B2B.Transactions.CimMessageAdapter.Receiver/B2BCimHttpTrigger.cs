@@ -43,7 +43,7 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
             _messageReceiver = messageReceiver ?? throw new ArgumentNullException(nameof(messageReceiver));
         }
 
-        [Function("B2BCimHttpTrigger")]
+        [Function("MarketRoles")]
         public async Task<HttpResponseData> RunAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")]
             HttpRequestData request)
