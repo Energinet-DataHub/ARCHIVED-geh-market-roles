@@ -11,6 +11,7 @@ using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
 using Energinet.DataHub.Core.App.Common.Abstractions.Security;
 using Energinet.DataHub.Core.App.Common.Identity;
 using Energinet.DataHub.Core.App.Common.Security;
+using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage;
 using Energinet.DataHub.MarketRoles.EntryPoints.Common;
@@ -39,10 +40,8 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
                 {
                     worker.UseMiddleware<CorrelationIdMiddleware>();
                     worker.UseMiddleware<RequestResponseLoggingMiddleware>();
-#if !DEBUG
                     worker.UseMiddleware<JwtTokenMiddleware>();
                     worker.UseMiddleware<ActorMiddleware>();
-#endif
                 })
                 .ConfigureServices(services =>
                 {
@@ -50,18 +49,7 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
                     services.AddScoped<SchemaStore>();
                     services.AddScoped<ISchemaProvider, SchemaProvider>();
                     services.AddScoped<MessageReceiver>();
-
-#if DEBUG
-                    services.AddScoped<ICorrelationContext>(_ =>
-                    {
-                        var context = new CorrelationContext();
-                        context.SetId(Guid.NewGuid().ToString());
-                        context.SetParentId(Guid.NewGuid().ToString());
-                        return context;
-                    });
-#else
                     services.AddScoped<ICorrelationContext, CorrelationContext>();
-#endif
                     services.AddScoped<ITransactionIds, TransactionIdRegistry>();
                     services.AddScoped<IMessageIds, MessageIdRegistry>();
                     services.AddSingleton<ServiceBusSender>(serviceProvider =>
@@ -89,16 +77,7 @@ namespace B2B.Transactions.CimMessageAdapter.Receiver
                     services.AddScoped<ClaimsPrincipalContext>();
                     services.AddScoped(s => new OpenIdSettings(metaDataAddress, audience));
                     services.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
-#if DEBUG
-                    services.AddScoped<IActorContext>(sp =>
-                    {
-                        var context = new ActorContext();
-                        context.CurrentActor = new Actor(Guid.NewGuid(), "GLN", "5799999933318", string.Empty);
-                        return context;
-                    });
-#else
                     services.AddScoped<IActorContext, ActorContext>();
-#endif
                     services.AddScoped<IActorProvider, ActorProvider>();
                     services.AddScoped<IDbConnectionFactory>(_ =>
                     {
