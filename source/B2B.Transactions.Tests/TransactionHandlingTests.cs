@@ -17,10 +17,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using B2B.CimMessageAdapter.Messages;
 using B2B.CimMessageAdapter.Transactions;
+using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Xunit;
 
 namespace B2B.Transactions.Tests
@@ -28,20 +30,18 @@ namespace B2B.Transactions.Tests
 #pragma warning disable
     public class TransactionHandlingTests
     {
+        private readonly TransactionRepository _transactionRepository = new();
         private readonly SystemDateTimeProviderStub _dateTimeProvider = new();
         private readonly XNamespace _namespace = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
         private MessageQueue _outgoingMessages = new();
 
         [Fact]
-        public void Transaction_is_registered()
+        public async Task Transaction_is_registered()
         {
-            var repository = new TransactionRepository();
             var transaction = CreateTransaction();
+            await RegisterTransaction(transaction).ConfigureAwait(false);
 
-            var acceptedTransaction = new AcceptedTransaction(transaction.MarketActivityRecord.Id);
-            repository.Add(acceptedTransaction);
-
-            var savedTransaction = repository.Get(acceptedTransaction.TransactionId);
+            var savedTransaction = _transactionRepository.Get(transaction.Message.MessageId);
             Assert.NotNull(savedTransaction);
         }
 
@@ -72,12 +72,77 @@ namespace B2B.Transactions.Tests
             AssertMarketActivityRecordValue(acceptMessage, "marketEvaluationPoint.mRID", transaction.MarketActivityRecord.MarketEvaluationPointId);
         }
 
-        private void RegisterTransaction(B2BTransaction transaction)
+        private Task RegisterTransaction(B2BTransaction transaction)
         {
-            var repository = new TransactionRepository();
+            var useCase = new RegisterTransaction(_outgoingMessages, new MessageIdGenerator(),
+                new TransactionIdGenerator(), _dateTimeProvider, _transactionRepository);
+            return useCase.HandleAsync(transaction);
+        }
 
+        private B2BTransaction CreateTransaction()
+        {
+            return B2BTransaction.Create(
+                new MessageHeader("fake", "fake", "fake", "fake", "fake", "somedate", "fake"),
+                new MarketActivityRecord()
+                {
+                    BalanceResponsibleId = "fake",
+                    Id = "fake",
+                    ConsumerId = "fake",
+                    ConsumerName = "fake",
+                    EffectiveDate = "fake",
+                    EnergySupplierId = "fake",
+                    MarketEvaluationPointId = "fake",
+                });
+        }
+
+        private void AssertHasHeaderValue(AcceptMessage message, string elementName, string expectedValue)
+        {
+            Assert.Equal(expectedValue, GetMessageHeaderValue(message, elementName));
+        }
+
+        private void AssertMarketActivityRecordValue(AcceptMessage message, string elementName, string expectedValue)
+        {
+            Assert.Equal(expectedValue, GetMarketActivityRecordValue(message, elementName));
+        }
+
+        private string GetMarketActivityRecordValue(AcceptMessage message, string elementName)
+        {
+            return GetHeaderElement(message)?.Element(_namespace + "MktActivityRecord")?.Element(elementName)?.Value;
+        }
+
+        private string? GetMessageHeaderValue(AcceptMessage message, string elementName)
+        {
+            return GetHeaderElement(message)?.Element(elementName)?.Value;
+        }
+
+        private XElement GetHeaderElement(AcceptMessage message)
+        {
+            var document = XDocument.Parse(message.MessagePayload);
+            return document?.Element(_namespace + "ConfirmRequestChangeOfSupplier_MarketDocument");
+        }
+    }
+
+    public class RegisterTransaction
+    {
+        private readonly MessageQueue _messageQueue;
+        private readonly MessageIdGenerator _messageIdGenerator;
+        private readonly TransactionIdGenerator _transactionIdGenerator;
+        private readonly ISystemDateTimeProvider _systemDateTimeProvider;
+        private readonly TransactionRepository _transactionRepository;
+
+        public RegisterTransaction(MessageQueue messageQueue, MessageIdGenerator messageIdGenerator, TransactionIdGenerator transactionIdGenerator, ISystemDateTimeProvider systemDateTimeProvider, TransactionRepository transactionRepository)
+        {
+            _messageQueue = messageQueue ?? throw new ArgumentNullException(nameof(messageQueue));
+            _messageIdGenerator = messageIdGenerator ?? throw new ArgumentNullException(nameof(messageIdGenerator));
+            _transactionIdGenerator = transactionIdGenerator ?? throw new ArgumentNullException(nameof(transactionIdGenerator));
+            _systemDateTimeProvider = systemDateTimeProvider ?? throw new ArgumentNullException(nameof(systemDateTimeProvider));
+            _transactionRepository = transactionRepository ?? throw new ArgumentNullException(nameof(transactionRepository));
+        }
+
+        public Task HandleAsync(B2BTransaction transaction)
+        {
             var acceptedTransaction = new AcceptedTransaction(transaction.MarketActivityRecord.Id);
-            repository.Add(acceptedTransaction);
+            _transactionRepository.Add(acceptedTransaction);
 
             var settings = new XmlWriterSettings() { OmitXmlDeclaration = false, Encoding = Encoding.UTF8};
 
@@ -121,69 +186,27 @@ namespace B2B.Transactions.Tests
             writer.Close();
             output.Flush();
 
-            _outgoingMessages.Add(new AcceptMessage()
+            _messageQueue.Add(new AcceptMessage()
             {
                 MessagePayload = output.ToString(),
             });
+
+            return Task.CompletedTask;
         }
 
         private string GetCurrentDateTime()
         {
-            return _dateTimeProvider.Now().ToString();
+            return _systemDateTimeProvider.Now().ToString();
         }
 
-        private static string GenerateTransactionId()
+        private string GenerateTransactionId()
         {
-            var transactionIdGenerator = new TransactionIdGenerator();
-            return transactionIdGenerator.Generate();
+            return _transactionIdGenerator.Generate();
         }
 
-        private static string GenerateMessageId()
+        private string GenerateMessageId()
         {
-            var messageIdGenerator = new MessageIdGenerator();
-            return messageIdGenerator.Generate();
-        }
-
-        private B2BTransaction CreateTransaction()
-        {
-            return B2BTransaction.Create(
-                new MessageHeader("fake", "fake", "fake", "fake", "fake", "somedate", "fake"),
-                new MarketActivityRecord()
-                {
-                    BalanceResponsibleId = "fake",
-                    Id = "fake",
-                    ConsumerId = "fake",
-                    ConsumerName = "fake",
-                    EffectiveDate = "fake",
-                    EnergySupplierId = "fake",
-                    MarketEvaluationPointId = "fake",
-                });
-        }
-
-        private void AssertHasHeaderValue(AcceptMessage message, string elementName, string expectedValue)
-        {
-            Assert.Equal(expectedValue, GetMessageHeaderValue(message, elementName));
-        }
-
-        private void AssertMarketActivityRecordValue(AcceptMessage message, string elementName, string expectedValue)
-        {
-            Assert.Equal(expectedValue, GetMarketActivityRecordValue(message, elementName));
-        }
-
-        private string GetMarketActivityRecordValue(AcceptMessage message, string elementName)
-        {
-            return GetHeaderElement(message)?.Element(_namespace + "MktActivityRecord")?.Element(elementName)?.Value;
-        }
-
-        private string? GetMessageHeaderValue(AcceptMessage message, string elementName)
-        {
-            return GetHeaderElement(message)?.Element(elementName)?.Value;
-        }
-
-        private XElement GetHeaderElement(AcceptMessage message)
-        {
-            var document = XDocument.Parse(message.MessagePayload);
-            return document?.Element(_namespace + "ConfirmRequestChangeOfSupplier_MarketDocument");
+            return _messageIdGenerator.Generate();
         }
     }
 
