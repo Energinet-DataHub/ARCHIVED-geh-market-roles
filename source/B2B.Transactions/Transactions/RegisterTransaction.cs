@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -41,10 +40,26 @@ namespace B2B.Transactions.Transactions
             var acceptedTransaction = new AcceptedTransaction(transaction.MarketActivityRecord.Id);
             _transactionRepository.Add(acceptedTransaction);
 
+            _outgoingMessageStore.Add(CreateAcceptMessage(transaction));
+            return Task.CompletedTask;
+        }
+
+        private static string GenerateTransactionId()
+        {
+            return TransactionIdGenerator.Generate();
+        }
+
+        private static string GenerateMessageId()
+        {
+            return MessageIdGenerator.Generate();
+        }
+
+        private AcceptMessage CreateAcceptMessage(B2BTransaction transaction)
+        {
             var settings = new XmlWriterSettings() { OmitXmlDeclaration = false, Encoding = Encoding.UTF8 };
             using var output = new Utf8StringWriter();
-            using var writer = XmlWriter.Create((TextWriter)output, settings);
-            #pragma warning disable
+            using var writer = XmlWriter.Create(output, settings);
+
             writer.WriteStartDocument();
             writer.WriteStartElement("cim", "ConfirmRequestChangeOfSupplier_MarketDocument", "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1");
             writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
@@ -83,24 +98,12 @@ namespace B2B.Transactions.Transactions
             writer.Close();
             output.Flush();
 
-            _outgoingMessageStore.Add(new AcceptMessage(output.ToString()));
-
-            return Task.CompletedTask;
+            return new AcceptMessage(output.ToString());
         }
 
         private string GetCurrentDateTime()
         {
             return _systemDateTimeProvider.Now().ToString();
-        }
-
-        private string GenerateTransactionId()
-        {
-            return TransactionIdGenerator.Generate();
-        }
-
-        private string GenerateMessageId()
-        {
-            return MessageIdGenerator.Generate();
         }
     }
 }
