@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace B2B.Transactions.Transactions
 {
-    public class TransactionRepository : ITransactionRepository
+    /// <summary>
+    /// Storage for transactions
+    /// </summary>
+    public interface ITransactionRepository
     {
-        private readonly List<AcceptedTransaction> _transactions = new();
+        /// <summary>
+        /// Adds a transaction to store
+        /// </summary>
+        /// <param name="acceptedTransaction"></param>
+        void Add(AcceptedTransaction acceptedTransaction);
 
-        public void Add(AcceptedTransaction acceptedTransaction)
-        {
-            _transactions.Add(acceptedTransaction);
-        }
-
-        public AcceptedTransaction? GetById(string transactionId)
-        {
-            return _transactions.FirstOrDefault(transaction => transaction.TransactionId.Equals(transactionId, StringComparison.OrdinalIgnoreCase));
-        }
+        /// <summary>
+        /// Find a transaction by transaction id
+        /// </summary>
+        /// <param name="transactionId"></param>
+        /// <returns><see cref="AcceptedTransaction"/></returns>
+        AcceptedTransaction? GetById(string transactionId);
     }
 }

@@ -35,7 +35,7 @@ namespace B2B.Transactions.Tests
             var transaction = CreateTransaction();
             await RegisterTransaction(transaction).ConfigureAwait(false);
 
-            var savedTransaction = _transactionRepository.Get(transaction.Message.MessageId);
+            var savedTransaction = _transactionRepository.GetById(transaction.Message.MessageId);
             Assert.NotNull(savedTransaction);
         }
 
