@@ -28,9 +28,9 @@ namespace B2B.Transactions.Tests
 #pragma warning disable
     public class TransactionHandlingTests
     {
+        private readonly SystemDateTimeProviderStub _dateTimeProvider = new();
         private readonly XNamespace _namespace = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
         private MessageQueue _outgoingMessages = new();
-
 
         [Fact]
         public void Transaction_is_registered()
@@ -48,6 +48,8 @@ namespace B2B.Transactions.Tests
         [Fact]
         public void Accept_message_is_sent_to_sender_when_transaction_is_accepted()
         {
+            var now = _dateTimeProvider.Now();
+            _dateTimeProvider.SetNow(now);
             var transaction = CreateTransaction();
             RegisterTransaction(transaction);
 
@@ -62,7 +64,7 @@ namespace B2B.Transactions.Tests
             AssertHasHeaderValue(acceptMessage, "sender_MarketParticipant.marketRole.type", transaction.Message.SenderRole);
             AssertHasHeaderValue(acceptMessage, "receiver_MarketParticipant.mRID", transaction.Message.ReceiverId);
             AssertHasHeaderValue(acceptMessage, "receiver_MarketParticipant.marketRole.type", transaction.Message.ReceiverRole);
-            AssertHasHeaderValue(acceptMessage, "createdDateTime", "2022-09-07T09:30:47Z");
+            AssertHasHeaderValue(acceptMessage, "createdDateTime", now.ToString());
             AssertHasHeaderValue(acceptMessage, "reason.code", "A01");
 
             Assert.NotNull(GetMarketActivityRecordValue(acceptMessage, "mRID"));
@@ -102,7 +104,7 @@ namespace B2B.Transactions.Tests
             writer.WriteValue(transaction.Message.ReceiverId);
             writer.WriteEndElement();
             writer.WriteElementString("receiver_MarketParticipant.marketRole.type", null, transaction.Message.ReceiverRole);
-            writer.WriteElementString("createdDateTime", null, "2022-09-07T09:30:47Z");
+            writer.WriteElementString("createdDateTime", null, GetCurrentDateTime());
             writer.WriteElementString("reason.code", null, "A01");
 
             writer.WriteStartElement("cim", "MktActivityRecord", null);
@@ -123,6 +125,11 @@ namespace B2B.Transactions.Tests
             {
                 MessagePayload = output.ToString(),
             });
+        }
+
+        private string GetCurrentDateTime()
+        {
+            return _dateTimeProvider.Now().ToString();
         }
 
         private static string GenerateTransactionId()
