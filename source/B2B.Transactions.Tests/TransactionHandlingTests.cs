@@ -46,12 +46,12 @@ namespace B2B.Transactions.Tests
         }
 
         [Fact]
-        public void Accept_message_is_sent_to_sender_when_transaction_is_accepted()
+        public async Task Accept_message_is_sent_to_sender_when_transaction_is_accepted()
         {
             var now = _dateTimeProvider.Now();
             _dateTimeProvider.SetNow(now);
             var transaction = CreateTransaction();
-            RegisterTransaction(transaction);
+            await RegisterTransaction(transaction).ConfigureAwait(false);
 
             var acceptMessage = _outgoingMessages.Messages.FirstOrDefault();
             Assert.NotNull(acceptMessage);
