@@ -62,8 +62,8 @@ namespace B2B.Transactions.Tests
             AssertHasHeaderValue(acceptMessage, "businessSector.type", "23");
             AssertHasHeaderValue(acceptMessage, "sender_MarketParticipant.mRID", transaction.Message.SenderId);
             AssertHasHeaderValue(acceptMessage, "sender_MarketParticipant.marketRole.type", transaction.Message.SenderRole);
-            AssertHasHeaderValue(acceptMessage, "receiver_MarketParticipant.mRID", transaction.Message.ReceiverId);
-            AssertHasHeaderValue(acceptMessage, "receiver_MarketParticipant.marketRole.type", transaction.Message.ReceiverRole);
+            AssertHasHeaderValue(acceptMessage, "receiver_MarketParticipant.mRID", transaction.Message.SenderId);
+            AssertHasHeaderValue(acceptMessage, "receiver_MarketParticipant.marketRole.type", transaction.Message.SenderRole);
             AssertHasHeaderValue(acceptMessage, "createdDateTime", now.ToString());
             AssertHasHeaderValue(acceptMessage, "reason.code", "A01");
 
@@ -101,9 +101,9 @@ namespace B2B.Transactions.Tests
 
             writer.WriteStartElement("receiver_MarketParticipant.mRID");
             writer.WriteAttributeString(null, "codingScheme", null, "A10");
-            writer.WriteValue(transaction.Message.ReceiverId);
+            writer.WriteValue(transaction.Message.SenderId);
             writer.WriteEndElement();
-            writer.WriteElementString("receiver_MarketParticipant.marketRole.type", null, transaction.Message.ReceiverRole);
+            writer.WriteElementString("receiver_MarketParticipant.marketRole.type", null, transaction.Message.SenderRole);
             writer.WriteElementString("createdDateTime", null, GetCurrentDateTime());
             writer.WriteElementString("reason.code", null, "A01");
 
