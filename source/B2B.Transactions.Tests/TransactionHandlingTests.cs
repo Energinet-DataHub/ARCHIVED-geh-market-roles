@@ -27,7 +27,7 @@ namespace B2B.Transactions.Tests
         private readonly TransactionRepository _transactionRepository = new();
         private readonly SystemDateTimeProviderStub _dateTimeProvider = new();
         private readonly XNamespace _namespace = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
-        private OutgoingMessageStore _outgoingMessageStore = new();
+        private OutgoingMessageStoreSpy _outgoingMessageStoreSpy = new();
 
         [Fact]
         public async Task Transaction_is_registered()
@@ -47,7 +47,7 @@ namespace B2B.Transactions.Tests
             var transaction = CreateTransaction();
             await RegisterTransaction(transaction).ConfigureAwait(false);
 
-            var acceptMessage = _outgoingMessageStore.Messages.FirstOrDefault();
+            var acceptMessage = _outgoingMessageStoreSpy.Messages.FirstOrDefault();
             Assert.NotNull(acceptMessage);
             var document = CreateDocument(acceptMessage!.MessagePayload);
             Assert.NotNull(GetMessageHeaderValue(document, "mRID"));
@@ -89,7 +89,7 @@ namespace B2B.Transactions.Tests
 
         private Task RegisterTransaction(B2BTransaction transaction)
         {
-            var useCase = new RegisterTransaction(_outgoingMessageStore, _dateTimeProvider, _transactionRepository);
+            var useCase = new RegisterTransaction(_outgoingMessageStoreSpy, _dateTimeProvider, _transactionRepository);
             return useCase.HandleAsync(transaction);
         }
 

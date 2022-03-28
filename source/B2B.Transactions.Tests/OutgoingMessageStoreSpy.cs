@@ -13,10 +13,11 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using B2B.Transactions.OutgoingMessages;
 
-namespace B2B.Transactions.OutgoingMessages
+namespace B2B.Transactions.Tests
 {
-    public class OutgoingMessageStore
+    public class OutgoingMessageStoreSpy : IOutgoingMessageStore
     {
         private readonly List<AcceptMessage> _messages = new();
 

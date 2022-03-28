@@ -23,11 +23,11 @@ namespace B2B.Transactions.Transactions
 {
     public class RegisterTransaction
     {
-        private readonly OutgoingMessageStore _outgoingMessageStore;
+        private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
         private readonly TransactionRepository _transactionRepository;
 
-        public RegisterTransaction(OutgoingMessageStore outgoingMessageStore, ISystemDateTimeProvider systemDateTimeProvider, TransactionRepository transactionRepository)
+        public RegisterTransaction(IOutgoingMessageStore outgoingMessageStore, ISystemDateTimeProvider systemDateTimeProvider, TransactionRepository transactionRepository)
         {
             _outgoingMessageStore = outgoingMessageStore ?? throw new ArgumentNullException(nameof(outgoingMessageStore));
             _systemDateTimeProvider = systemDateTimeProvider ?? throw new ArgumentNullException(nameof(systemDateTimeProvider));
