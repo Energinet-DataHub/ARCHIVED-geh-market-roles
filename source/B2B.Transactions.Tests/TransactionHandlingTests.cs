@@ -82,6 +82,11 @@ namespace B2B.Transactions.Tests
                 });
         }
 
+        private static XDocument CreateDocument(string payload)
+        {
+            return XDocument.Parse(payload);
+        }
+
         private Task RegisterTransaction(B2BTransaction transaction)
         {
             var useCase = new RegisterTransaction(_outgoingMessageStore, _dateTimeProvider, _transactionRepository);
@@ -112,12 +117,6 @@ namespace B2B.Transactions.Tests
         private XElement? GetHeaderElement(XDocument document)
         {
             return document?.Element(_namespace + "ConfirmRequestChangeOfSupplier_MarketDocument");
-        }
-
-        #pragma warning disable
-        private static XDocument CreateDocument(string payload)
-        {
-            return XDocument.Parse(payload);
         }
     }
 }
