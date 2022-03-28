@@ -85,7 +85,7 @@ namespace B2B.Transactions.Tests
             writer.WriteStartElement("cim", "ConfirmRequestChangeOfSupplier_MarketDocument", "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1");
             writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
             writer.WriteAttributeString("xsi", "schemaLocation", null, "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1 urn-ediel-org-structure-confirmrequestchangeofsupplier-0-1.xsd");
-            writer.WriteElementString("mRID", null, Guid.NewGuid().ToString());
+            writer.WriteElementString("mRID", null, GenerateMessageId());
             writer.WriteElementString("type", null, "414");
             writer.WriteElementString("process.processType", null, transaction.Message.ProcessType);
             writer.WriteElementString("businessSector.type", null, "23");
@@ -123,6 +123,12 @@ namespace B2B.Transactions.Tests
             {
                 MessagePayload = output.ToString(),
             });
+        }
+
+        private static string GenerateMessageId()
+        {
+            var messageIdGenerator = new MessageIdGenerator();
+            return messageIdGenerator.Generate();
         }
 
         private B2BTransaction CreateTransaction()
@@ -165,6 +171,14 @@ namespace B2B.Transactions.Tests
         {
             var document = XDocument.Parse(message.MessagePayload);
             return document?.Element(_namespace + "ConfirmRequestChangeOfSupplier_MarketDocument");
+        }
+    }
+
+    public class MessageIdGenerator
+    {
+        public string Generate()
+        {
+            return Guid.NewGuid().ToString();
         }
     }
 
