@@ -22,13 +22,12 @@ using Xunit;
 
 namespace B2B.Transactions.Tests
 {
-#pragma warning disable
     public class TransactionHandlingTests
     {
         private readonly TransactionRepository _transactionRepository = new();
         private readonly SystemDateTimeProviderStub _dateTimeProvider = new();
         private readonly XNamespace _namespace = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
-        private OutgoingMessages.OutgoingMessageStore _outgoingMessageStore = new();
+        private OutgoingMessageStore _outgoingMessageStore = new();
 
         [Fact]
         public async Task Transaction_is_registered()
@@ -50,31 +49,24 @@ namespace B2B.Transactions.Tests
 
             var acceptMessage = _outgoingMessageStore.Messages.FirstOrDefault();
             Assert.NotNull(acceptMessage);
-            Assert.NotNull(GetMessageHeaderValue(acceptMessage, "mRID"));
-            AssertHasHeaderValue(acceptMessage, "type", "414");
+            var document = CreateDocument(acceptMessage!.MessagePayload);
+            Assert.NotNull(GetMessageHeaderValue(document, "mRID"));
+            AssertHasHeaderValue(document, "type", "414");
+            AssertHasHeaderValue(document, "process.processType", transaction.Message.ProcessType);
+            AssertHasHeaderValue(document, "businessSector.type", "23");
+            AssertHasHeaderValue(document, "sender_MarketParticipant.mRID", "5790001330552");
+            AssertHasHeaderValue(document, "sender_MarketParticipant.marketRole.type", "DDZ");
+            AssertHasHeaderValue(document, "receiver_MarketParticipant.mRID", transaction.Message.SenderId);
+            AssertHasHeaderValue(document, "receiver_MarketParticipant.marketRole.type", transaction.Message.SenderRole);
+            AssertHasHeaderValue(document, "createdDateTime", now.ToString());
+            AssertHasHeaderValue(document, "reason.code", "A01");
 
-            AssertHasHeaderValue(acceptMessage, "process.processType", transaction.Message.ProcessType);
-            AssertHasHeaderValue(acceptMessage, "businessSector.type", "23");
-            AssertHasHeaderValue(acceptMessage, "sender_MarketParticipant.mRID", "5790001330552");
-            AssertHasHeaderValue(acceptMessage, "sender_MarketParticipant.marketRole.type", "DDZ");
-            AssertHasHeaderValue(acceptMessage, "receiver_MarketParticipant.mRID", transaction.Message.SenderId);
-            AssertHasHeaderValue(acceptMessage, "receiver_MarketParticipant.marketRole.type", transaction.Message.SenderRole);
-            AssertHasHeaderValue(acceptMessage, "createdDateTime", now.ToString());
-            AssertHasHeaderValue(acceptMessage, "reason.code", "A01");
-
-            Assert.NotNull(GetMarketActivityRecordValue(acceptMessage, "mRID"));
-            AssertMarketActivityRecordValue(acceptMessage, "originalTransactionIDReference_MktActivityRecord.mRID", transaction.MarketActivityRecord.Id);
-            AssertMarketActivityRecordValue(acceptMessage, "marketEvaluationPoint.mRID", transaction.MarketActivityRecord.MarketEvaluationPointId);
+            Assert.NotNull(GetMarketActivityRecordValue(document, "mRID"));
+            AssertMarketActivityRecordValue(document, "originalTransactionIDReference_MktActivityRecord.mRID", transaction.MarketActivityRecord.Id);
+            AssertMarketActivityRecordValue(document, "marketEvaluationPoint.mRID", transaction.MarketActivityRecord.MarketEvaluationPointId);
         }
 
-        private Task RegisterTransaction(B2BTransaction transaction)
-        {
-            var useCase = new RegisterTransaction(_outgoingMessageStore,
-                _dateTimeProvider, _transactionRepository);
-            return useCase.HandleAsync(transaction);
-        }
-
-        private B2BTransaction CreateTransaction()
+        private static B2BTransaction CreateTransaction()
         {
             return B2BTransaction.Create(
                 new MessageHeader("fake", "fake", "fake", "fake", "fake", "somedate", "fake"),
@@ -90,30 +82,42 @@ namespace B2B.Transactions.Tests
                 });
         }
 
-        private void AssertHasHeaderValue(AcceptMessage message, string elementName, string expectedValue)
+        private Task RegisterTransaction(B2BTransaction transaction)
         {
-            Assert.Equal(expectedValue, GetMessageHeaderValue(message, elementName));
+            var useCase = new RegisterTransaction(_outgoingMessageStore, _dateTimeProvider, _transactionRepository);
+            return useCase.HandleAsync(transaction);
         }
 
-        private void AssertMarketActivityRecordValue(AcceptMessage message, string elementName, string expectedValue)
+        private void AssertHasHeaderValue(XDocument document, string elementName, string expectedValue)
         {
-            Assert.Equal(expectedValue, GetMarketActivityRecordValue(message, elementName));
+            Assert.Equal(expectedValue, GetMessageHeaderValue(document, elementName));
         }
 
-        private string GetMarketActivityRecordValue(AcceptMessage message, string elementName)
+        private void AssertMarketActivityRecordValue(XDocument document, string elementName, string expectedValue)
         {
-            return GetHeaderElement(message)?.Element(_namespace + "MktActivityRecord")?.Element(elementName)?.Value;
+            Assert.Equal(expectedValue, GetMarketActivityRecordValue(document, elementName));
         }
 
-        private string? GetMessageHeaderValue(AcceptMessage message, string elementName)
+        private string GetMarketActivityRecordValue(XDocument document, string elementName)
         {
-            return GetHeaderElement(message)?.Element(elementName)?.Value;
+            var element = GetHeaderElement(document)?.Element(_namespace + "MktActivityRecord")?.Element(elementName);
+            return element?.Value ?? string.Empty;
         }
 
-        private XElement GetHeaderElement(AcceptMessage message)
+        private string? GetMessageHeaderValue(XDocument document, string elementName)
         {
-            var document = XDocument.Parse(message.MessagePayload);
+            return GetHeaderElement(document)?.Element(elementName)?.Value;
+        }
+
+        private XElement? GetHeaderElement(XDocument document)
+        {
             return document?.Element(_namespace + "ConfirmRequestChangeOfSupplier_MarketDocument");
+        }
+
+        #pragma warning disable
+        private static XDocument CreateDocument(string payload)
+        {
+            return XDocument.Parse(payload);
         }
     }
 }
