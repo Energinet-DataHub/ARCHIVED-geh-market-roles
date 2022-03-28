@@ -83,10 +83,7 @@ namespace B2B.Transactions.Transactions
             writer.Close();
             output.Flush();
 
-            _outgoingMessageStore.Add(new AcceptMessage()
-            {
-                MessagePayload = output.ToString(),
-            });
+            _outgoingMessageStore.Add(new AcceptMessage(output.ToString()));
 
             return Task.CompletedTask;
         }

@@ -15,7 +15,11 @@ namespace B2B.Transactions.OutgoingMessages
 {
     public class AcceptMessage
     {
-        #pragma warning disable
+        public AcceptMessage(string messagePayload)
+        {
+            MessagePayload = messagePayload;
+        }
+
         public string MessagePayload { get; init; }
     }
 }
