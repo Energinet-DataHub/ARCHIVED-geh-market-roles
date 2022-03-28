@@ -72,7 +72,7 @@ namespace B2B.Transactions.Tests
 
         private Task RegisterTransaction(B2BTransaction transaction)
         {
-            var useCase = new RegisterTransaction(_outgoingMessages, new MessageIdGenerator(),
+            var useCase = new RegisterTransaction(_outgoingMessages,
                 _dateTimeProvider, _transactionRepository);
             return useCase.HandleAsync(transaction);
         }
@@ -117,14 +117,6 @@ namespace B2B.Transactions.Tests
         {
             var document = XDocument.Parse(message.MessagePayload);
             return document?.Element(_namespace + "ConfirmRequestChangeOfSupplier_MarketDocument");
-        }
-    }
-
-    public class MessageIdGenerator
-    {
-        public string Generate()
-        {
-            return Guid.NewGuid().ToString();
         }
     }
 
