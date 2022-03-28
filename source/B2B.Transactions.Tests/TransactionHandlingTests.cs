@@ -106,7 +106,7 @@ namespace B2B.Transactions.Tests
             writer.WriteElementString("reason.code", null, "A01");
 
             writer.WriteStartElement("cim", "MktActivityRecord", null);
-            writer.WriteElementString("mRID", null, Guid.NewGuid().ToString());
+            writer.WriteElementString("mRID", null, GenerateTransactionId());
             writer.WriteElementString("originalTransactionIDReference_MktActivityRecord.mRID", null, transaction.MarketActivityRecord.Id);
 
             writer.WriteStartElement("marketEvaluationPoint.mRID");
@@ -123,6 +123,12 @@ namespace B2B.Transactions.Tests
             {
                 MessagePayload = output.ToString(),
             });
+        }
+
+        private static string GenerateTransactionId()
+        {
+            var transactionIdGenerator = new TransactionIdGenerator();
+            return transactionIdGenerator.Generate();
         }
 
         private static string GenerateMessageId()
@@ -171,6 +177,14 @@ namespace B2B.Transactions.Tests
         {
             var document = XDocument.Parse(message.MessagePayload);
             return document?.Element(_namespace + "ConfirmRequestChangeOfSupplier_MarketDocument");
+        }
+    }
+
+    public class TransactionIdGenerator
+    {
+        public string Generate()
+        {
+            return Guid.NewGuid().ToString();
         }
     }
 
