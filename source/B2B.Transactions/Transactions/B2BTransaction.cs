@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using B2B.CimMessageAdapter.Messages;
+using B2B.Transactions.Messages;
 
-namespace B2B.CimMessageAdapter.Transactions
+namespace B2B.Transactions.Transactions
 {
     public class B2BTransaction
     {

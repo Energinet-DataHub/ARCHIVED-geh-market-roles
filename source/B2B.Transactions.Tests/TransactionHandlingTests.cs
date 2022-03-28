@@ -18,11 +18,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Linq;
-using B2B.CimMessageAdapter.Messages;
-using B2B.CimMessageAdapter.Transactions;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
+using B2B.Transactions.Messages;
+using B2B.Transactions.Transactions;
 using Xunit;
 
 namespace B2B.Transactions.Tests
@@ -119,94 +117,6 @@ namespace B2B.Transactions.Tests
         {
             var document = XDocument.Parse(message.MessagePayload);
             return document?.Element(_namespace + "ConfirmRequestChangeOfSupplier_MarketDocument");
-        }
-    }
-
-    public class RegisterTransaction
-    {
-        private readonly MessageQueue _messageQueue;
-        private readonly MessageIdGenerator _messageIdGenerator;
-        private readonly TransactionIdGenerator _transactionIdGenerator;
-        private readonly ISystemDateTimeProvider _systemDateTimeProvider;
-        private readonly TransactionRepository _transactionRepository;
-
-        public RegisterTransaction(MessageQueue messageQueue, MessageIdGenerator messageIdGenerator, TransactionIdGenerator transactionIdGenerator, ISystemDateTimeProvider systemDateTimeProvider, TransactionRepository transactionRepository)
-        {
-            _messageQueue = messageQueue ?? throw new ArgumentNullException(nameof(messageQueue));
-            _messageIdGenerator = messageIdGenerator ?? throw new ArgumentNullException(nameof(messageIdGenerator));
-            _transactionIdGenerator = transactionIdGenerator ?? throw new ArgumentNullException(nameof(transactionIdGenerator));
-            _systemDateTimeProvider = systemDateTimeProvider ?? throw new ArgumentNullException(nameof(systemDateTimeProvider));
-            _transactionRepository = transactionRepository ?? throw new ArgumentNullException(nameof(transactionRepository));
-        }
-
-        public Task HandleAsync(B2BTransaction transaction)
-        {
-            var acceptedTransaction = new AcceptedTransaction(transaction.MarketActivityRecord.Id);
-            _transactionRepository.Add(acceptedTransaction);
-
-            var settings = new XmlWriterSettings() { OmitXmlDeclaration = false, Encoding = Encoding.UTF8};
-
-            using var output = new Utf8StringWriter();
-            using var writer = XmlWriter.Create(output, settings);
-            writer.WriteStartDocument();
-            writer.WriteStartElement("cim", "ConfirmRequestChangeOfSupplier_MarketDocument", "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1");
-            writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
-            writer.WriteAttributeString("xsi", "schemaLocation", null, "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1 urn-ediel-org-structure-confirmrequestchangeofsupplier-0-1.xsd");
-            writer.WriteElementString("mRID", null, GenerateMessageId());
-            writer.WriteElementString("type", null, "414");
-            writer.WriteElementString("process.processType", null, transaction.Message.ProcessType);
-            writer.WriteElementString("businessSector.type", null, "23");
-
-            writer.WriteStartElement("sender_MarketParticipant.mRID");
-            writer.WriteAttributeString(null, "codingScheme", null, "A10");
-            writer.WriteValue("5790001330552");
-            writer.WriteEndElement();
-
-            writer.WriteElementString("sender_MarketParticipant.marketRole.type", null, "DDZ");
-
-            writer.WriteStartElement("receiver_MarketParticipant.mRID");
-            writer.WriteAttributeString(null, "codingScheme", null, "A10");
-            writer.WriteValue(transaction.Message.SenderId);
-            writer.WriteEndElement();
-            writer.WriteElementString("receiver_MarketParticipant.marketRole.type", null, transaction.Message.SenderRole);
-            writer.WriteElementString("createdDateTime", null, GetCurrentDateTime());
-            writer.WriteElementString("reason.code", null, "A01");
-
-            writer.WriteStartElement("cim", "MktActivityRecord", null);
-            writer.WriteElementString("mRID", null, GenerateTransactionId());
-            writer.WriteElementString("originalTransactionIDReference_MktActivityRecord.mRID", null, transaction.MarketActivityRecord.Id);
-
-            writer.WriteStartElement("marketEvaluationPoint.mRID");
-            writer.WriteAttributeString(null, "codingScheme", null, "A10");
-            writer.WriteValue(transaction.MarketActivityRecord.EnergySupplierId);
-            writer.WriteEndElement();
-            writer.WriteEndElement();
-
-            writer.WriteEndElement();
-            writer.Close();
-            output.Flush();
-
-            _messageQueue.Add(new AcceptMessage()
-            {
-                MessagePayload = output.ToString(),
-            });
-
-            return Task.CompletedTask;
-        }
-
-        private string GetCurrentDateTime()
-        {
-            return _systemDateTimeProvider.Now().ToString();
-        }
-
-        private string GenerateTransactionId()
-        {
-            return _transactionIdGenerator.Generate();
-        }
-
-        private string GenerateMessageId()
-        {
-            return _messageIdGenerator.Generate();
         }
     }
 
