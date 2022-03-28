@@ -13,14 +13,23 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace B2B.Transactions.Tests
+namespace B2B.Transactions.Transactions
 {
-    public static class TransactionIdGenerator
+    public class TransactionRepository
     {
-        public static string Generate()
+        private readonly List<AcceptedTransaction> _transactions = new();
+
+        public void Add(AcceptedTransaction acceptedTransaction)
         {
-            return Guid.NewGuid().ToString();
+            _transactions.Add(acceptedTransaction);
+        }
+
+        public AcceptedTransaction? Get(string transactionId)
+        {
+            return _transactions.FirstOrDefault(transaction => transaction.TransactionId.Equals(transactionId, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using B2B.Transactions.Messages;
+using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Transactions;
 using Xunit;
 
@@ -31,7 +30,7 @@ namespace B2B.Transactions.Tests
         private readonly TransactionRepository _transactionRepository = new();
         private readonly SystemDateTimeProviderStub _dateTimeProvider = new();
         private readonly XNamespace _namespace = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
-        private MessageQueue _outgoingMessages = new();
+        private OutgoingMessages.OutgoingMessageStore _outgoingMessageStore = new();
 
         [Fact]
         public async Task Transaction_is_registered()
@@ -51,7 +50,7 @@ namespace B2B.Transactions.Tests
             var transaction = CreateTransaction();
             await RegisterTransaction(transaction).ConfigureAwait(false);
 
-            var acceptMessage = _outgoingMessages.Messages.FirstOrDefault();
+            var acceptMessage = _outgoingMessageStore.Messages.FirstOrDefault();
             Assert.NotNull(acceptMessage);
             Assert.NotNull(GetMessageHeaderValue(acceptMessage, "mRID"));
             AssertHasHeaderValue(acceptMessage, "type", "414");
@@ -72,7 +71,7 @@ namespace B2B.Transactions.Tests
 
         private Task RegisterTransaction(B2BTransaction transaction)
         {
-            var useCase = new RegisterTransaction(_outgoingMessages,
+            var useCase = new RegisterTransaction(_outgoingMessageStore,
                 _dateTimeProvider, _transactionRepository);
             return useCase.HandleAsync(transaction);
         }
@@ -126,46 +125,5 @@ namespace B2B.Transactions.Tests
         {
             get { return Encoding.UTF8; }
         }
-    }
-
-    public class MessageQueue
-    {
-        public List<AcceptMessage> Messages { get; } = new();
-
-        public void Add(AcceptMessage acceptMessage)
-        {
-            Messages.Add(acceptMessage);
-        }
-    }
-
-    public class AcceptMessage
-    {
-        public string MessagePayload { get; init; }
-    }
-
-    public class TransactionRepository
-    {
-        private readonly List<AcceptedTransaction> _transactions = new();
-
-        public void Add(AcceptedTransaction acceptedTransaction)
-        {
-            _transactions.Add(acceptedTransaction);
-        }
-
-        public AcceptedTransaction Get(string transactionId)
-        {
-            return _transactions.FirstOrDefault(transaction =>
-                transaction.TransactionId.Equals(transactionId, StringComparison.OrdinalIgnoreCase));
-        }
-    }
-
-    public class AcceptedTransaction
-    {
-        public AcceptedTransaction(string transactionId)
-        {
-            TransactionId = transactionId;
-        }
-
-        public string TransactionId { get; }
     }
 }
