@@ -15,8 +15,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using B2B.Transactions.Transactions;
 
-namespace B2B.Transactions.Transactions
+namespace B2B.Transactions.Tests
 {
     public class TransactionRepository : ITransactionRepository
     {
