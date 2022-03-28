@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using B2B.Transactions.Messages;
@@ -116,14 +114,6 @@ namespace B2B.Transactions.Tests
         {
             var document = XDocument.Parse(message.MessagePayload);
             return document?.Element(_namespace + "ConfirmRequestChangeOfSupplier_MarketDocument");
-        }
-    }
-
-    public class Utf8StringWriter : StringWriter
-    {
-        public override Encoding Encoding
-        {
-            get { return Encoding.UTF8; }
         }
     }
 }
