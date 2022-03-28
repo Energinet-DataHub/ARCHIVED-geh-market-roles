@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -76,10 +77,10 @@ namespace B2B.Transactions.Tests
             var acceptedTransaction = new AcceptedTransaction(transaction.MarketActivityRecord.Id);
             repository.Add(acceptedTransaction);
 
-            var messageBody = new StringBuilder();
-            var settings = new XmlWriterSettings() { OmitXmlDeclaration = true };
+            var settings = new XmlWriterSettings() { OmitXmlDeclaration = false, Encoding = Encoding.UTF8};
 
-            using var writer = XmlWriter.Create(messageBody, settings);
+            using var output = new Utf8StringWriter();
+            using var writer = XmlWriter.Create(output, settings);
             writer.WriteStartDocument();
             writer.WriteStartElement("cim", "ConfirmRequestChangeOfSupplier_MarketDocument", "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1");
             writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
@@ -116,10 +117,11 @@ namespace B2B.Transactions.Tests
 
             writer.WriteEndElement();
             writer.Close();
+            output.Flush();
 
             _outgoingMessages.Add(new AcceptMessage()
             {
-                MessagePayload = messageBody.ToString(),
+                MessagePayload = output.ToString(),
             });
         }
 
@@ -163,6 +165,14 @@ namespace B2B.Transactions.Tests
         {
             var document = XDocument.Parse(message.MessagePayload);
             return document?.Element(_namespace + "ConfirmRequestChangeOfSupplier_MarketDocument");
+        }
+    }
+
+    public class Utf8StringWriter : StringWriter
+    {
+        public override Encoding Encoding
+        {
+            get { return Encoding.UTF8; }
         }
     }
 
