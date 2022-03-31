@@ -72,7 +72,7 @@ namespace B2B.Transactions.Tests.Infrastructure
             if (requestHeaders.TryGetValues("authorization", out var authorizationHeaderValues))
             {
                 var authorizationHeaderValue = authorizationHeaderValues.FirstOrDefault();
-                if (authorizationHeaderValue.StartsWith("bearer", StringComparison.OrdinalIgnoreCase) == false)
+                if (IsBearer(authorizationHeaderValue) == false)
                 {
                     return new Result();
                 }
@@ -89,6 +89,11 @@ namespace B2B.Transactions.Tests.Infrastructure
                 return new Result(principal);
             }
             return new Result();
+        }
+
+        private static bool IsBearer(string? authorizationHeaderValue)
+        {
+            return authorizationHeaderValue.StartsWith("bearer", StringComparison.OrdinalIgnoreCase);
         }
     }
 
