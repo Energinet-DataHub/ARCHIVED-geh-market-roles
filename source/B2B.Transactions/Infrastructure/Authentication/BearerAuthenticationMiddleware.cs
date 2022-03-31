@@ -23,13 +23,13 @@ using Microsoft.Extensions.Logging;
 
 namespace B2B.Transactions.Infrastructure.Authentication
 {
-    public class AuthenticationMiddleware : IFunctionsWorkerMiddleware
+    public class BearerAuthenticationMiddleware : IFunctionsWorkerMiddleware
     {
         private readonly JwtTokenParser _jwtTokenParser;
-        private readonly ILogger<AuthenticationMiddleware> _logger;
+        private readonly ILogger<BearerAuthenticationMiddleware> _logger;
         private readonly CurrentAuthenticatedUser _currentAuthenticatedUser;
 
-        public AuthenticationMiddleware(JwtTokenParser jwtTokenParser, ILogger<AuthenticationMiddleware> logger, CurrentAuthenticatedUser currentAuthenticatedUser)
+        public BearerAuthenticationMiddleware(JwtTokenParser jwtTokenParser, ILogger<BearerAuthenticationMiddleware> logger, CurrentAuthenticatedUser currentAuthenticatedUser)
         {
             _jwtTokenParser = jwtTokenParser ?? throw new ArgumentNullException(nameof(jwtTokenParser));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

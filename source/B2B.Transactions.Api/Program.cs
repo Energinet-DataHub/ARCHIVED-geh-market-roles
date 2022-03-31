@@ -60,7 +60,7 @@ namespace B2B.Transactions.Api
                     worker.UseMiddleware<CorrelationIdMiddleware>();
                     worker.UseMiddleware<RequestResponseLoggingMiddleware>();
                     //worker.UseMiddleware<JwtTokenMiddleware>();
-                    worker.UseMiddleware<AuthenticationMiddleware>();
+                    worker.UseMiddleware<BearerAuthenticationMiddleware>();
                     worker.UseMiddleware<ClaimsEnrichmentMiddleware>();
                     //worker.UseMiddleware<ActorMiddleware>();
                 })
