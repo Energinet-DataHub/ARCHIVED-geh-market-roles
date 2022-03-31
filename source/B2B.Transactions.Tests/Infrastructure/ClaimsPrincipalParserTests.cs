@@ -22,7 +22,7 @@ using Xunit;
 
 namespace B2B.Transactions.Tests.Infrastructure
 {
-    public class AuthenticationTests
+    public class ClaimsPrincipalParserTests
     {
         private static TokenValidationParameters DisableAllTokenValidations => new()
         {
