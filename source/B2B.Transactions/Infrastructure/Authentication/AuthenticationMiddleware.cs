@@ -14,6 +14,7 @@
 
 using System;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -46,13 +47,23 @@ namespace B2B.Transactions.Infrastructure.Authentication
             var result = _claimsPrincipalParser.ParseFrom(httpRequestData.Headers);
             if (result.Success == false)
             {
-                _logger.LogError(result.Error?.Message);
+                LogParseResult(result);
                 var httpResponseData = httpRequestData.CreateResponse(HttpStatusCode.Unauthorized);
                 context.SetHttpResponseData(httpResponseData);
                 return;
             }
 
             await next(context).ConfigureAwait(false);
+        }
+
+        private void LogParseResult(Result result)
+        {
+            var message = new StringBuilder();
+            message.AppendLine("Failed to parse claims principal from JWT:");
+            message.AppendLine(result.Error?.Message);
+            message.AppendLine("Token from HTTP request header:");
+            message.AppendLine(result.Token);
+            _logger.LogError(message.ToString());
         }
     }
 }
