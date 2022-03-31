@@ -20,6 +20,7 @@ using B2B.CimMessageAdapter;
 using B2B.CimMessageAdapter.Messages;
 using B2B.CimMessageAdapter.Transactions;
 using B2B.Transactions.Infrastructure.Authentication;
+using B2B.Transactions.Infrastructure.Authentication.MarketActors;
 using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Xml.Incoming;
 using B2B.Transactions.Xml.Outgoing;
@@ -62,6 +63,7 @@ namespace B2B.Transactions.Api
                     //worker.UseMiddleware<JwtTokenMiddleware>();
                     worker.UseMiddleware<BearerAuthenticationMiddleware>();
                     worker.UseMiddleware<ClaimsEnrichmentMiddleware>();
+                    worker.UseMiddleware<MarketActorAuthenticatorMiddleware>();
                     //worker.UseMiddleware<ActorMiddleware>();
                 })
                 .ConfigureServices(services =>
@@ -78,6 +80,8 @@ namespace B2B.Transactions.Api
                     });
                     services.AddScoped<CurrentClaimsPrincipal>();
                     services.AddScoped<JwtTokenParser>();
+                    services.AddScoped<MarketActorAuthenticator>();
+
                     services.AddScoped<ActorProvider>();
 
                     services.AddScoped<ISystemDateTimeProvider, SystemDateTimeProvider>();
