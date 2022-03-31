@@ -16,7 +16,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using B2B.Transactions.Infrastructure.Authentication;
-using B2B.Transactions.Infrastructure.Authentication.Errors;
+using B2B.Transactions.Infrastructure.Authentication.Bearer;
+using B2B.Transactions.Infrastructure.Authentication.Bearer.Errors;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
 

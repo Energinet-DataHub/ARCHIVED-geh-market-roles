@@ -12,13 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace B2B.Transactions.Infrastructure.Authentication.Errors
+using System.Security.Claims;
+
+namespace B2B.Transactions.Infrastructure.Authentication.Bearer
 {
-    public class AuthenticationHeaderIsNotBearerToken : AuthenticationError
+    public class CurrentClaimsPrincipal
     {
-        public AuthenticationHeaderIsNotBearerToken()
-        : base("The value defined in authorization header is not start with 'bearer'.")
+        private ClaimsPrincipal? _currentUser;
+
+        public ClaimsPrincipal? ClaimsPrincipal => _currentUser;
+
+        public void SetCurrentUser(ClaimsPrincipal currentUser)
         {
+            _currentUser = currentUser;
         }
     }
 }

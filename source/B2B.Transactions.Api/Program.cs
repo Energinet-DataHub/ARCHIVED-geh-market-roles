@@ -20,6 +20,7 @@ using B2B.CimMessageAdapter;
 using B2B.CimMessageAdapter.Messages;
 using B2B.CimMessageAdapter.Transactions;
 using B2B.Transactions.Infrastructure.Authentication;
+using B2B.Transactions.Infrastructure.Authentication.Bearer;
 using B2B.Transactions.Infrastructure.Authentication.MarketActors;
 using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Xml.Incoming;

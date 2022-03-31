@@ -14,9 +14,9 @@
 
 using System;
 using System.Security.Claims;
-using B2B.Transactions.Infrastructure.Authentication.Errors;
+using B2B.Transactions.Infrastructure.Authentication.Bearer.Errors;
 
-namespace B2B.Transactions.Infrastructure.Authentication
+namespace B2B.Transactions.Infrastructure.Authentication.Bearer
 {
     public class Result
     {

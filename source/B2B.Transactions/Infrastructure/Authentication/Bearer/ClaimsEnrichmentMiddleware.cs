@@ -19,14 +19,13 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Dapper;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
-using Energinet.DataHub.MarketRoles.Infrastructure;
 using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
 
-namespace B2B.Transactions.Infrastructure.Authentication
+namespace B2B.Transactions.Infrastructure.Authentication.Bearer
 {
     public class ClaimsEnrichmentMiddleware : IFunctionsWorkerMiddleware
     {

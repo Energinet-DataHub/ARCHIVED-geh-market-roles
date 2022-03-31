@@ -15,6 +15,7 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using B2B.Transactions.Infrastructure.Authentication.Bearer;
 using Energinet.DataHub.Core.App.Common;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;

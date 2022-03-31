@@ -20,7 +20,7 @@ using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure
 {
-    public class ActorProvider
+    public class ActorProvider : IActorProvider
     {
         private readonly IDbConnectionFactory _connectionFactory;
 
@@ -29,7 +29,7 @@ namespace Energinet.DataHub.MarketRoles.Infrastructure
             _connectionFactory = connectionFactory;
         }
 
-        public async Task<Actor?> GetActorAsync(Guid actorId)
+        public async Task<Actor> GetActorAsync(Guid actorId)
         {
             var sql = "SELECT TOP 1 [Id] AS ActorId,[IdentificationType],[IdentificationNumber] AS Identifier,[Roles] FROM [dbo].[Actor] WHERE Id = @ActorId";
 

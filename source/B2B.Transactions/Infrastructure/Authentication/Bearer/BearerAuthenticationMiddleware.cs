@@ -21,7 +21,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
 
-namespace B2B.Transactions.Infrastructure.Authentication
+namespace B2B.Transactions.Infrastructure.Authentication.Bearer
 {
     public class BearerAuthenticationMiddleware : IFunctionsWorkerMiddleware
     {
@@ -56,7 +56,7 @@ namespace B2B.Transactions.Infrastructure.Authentication
             }
 
             _currentClaimsPrincipal.SetCurrentUser(result.ClaimsPrincipal!);
-            _logger.LogInformation("Authentication succeeded.");
+            _logger.LogInformation("Bearer token authentication succeeded.");
             await next(context).ConfigureAwait(false);
         }
 
