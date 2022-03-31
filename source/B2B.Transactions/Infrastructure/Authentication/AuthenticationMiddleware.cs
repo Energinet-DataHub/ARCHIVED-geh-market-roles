@@ -14,8 +14,10 @@
 
 using System;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Energinet.DataHub.MarketRoles.Infrastructure;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
@@ -27,11 +29,13 @@ namespace B2B.Transactions.Infrastructure.Authentication
     {
         private readonly ClaimsPrincipalParser _claimsPrincipalParser;
         private readonly ILogger<AuthenticationMiddleware> _logger;
+        private readonly ActorProvider _actorProvider;
 
-        public AuthenticationMiddleware(ClaimsPrincipalParser claimsPrincipalParser, ILogger<AuthenticationMiddleware> logger)
+        public AuthenticationMiddleware(ClaimsPrincipalParser claimsPrincipalParser, ILogger<AuthenticationMiddleware> logger, ActorProvider actorProvider)
         {
             _claimsPrincipalParser = claimsPrincipalParser ?? throw new ArgumentNullException(nameof(claimsPrincipalParser));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _actorProvider = actorProvider ?? throw new ArgumentNullException(nameof(actorProvider));
         }
 
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
@@ -53,8 +57,29 @@ namespace B2B.Transactions.Infrastructure.Authentication
                 return;
             }
 
+            var marketActorId = GetMarketActorId(result.ClaimsPrincipal!);
+            if (string.IsNullOrEmpty(marketActorId))
+            {
+                _logger.LogError("Could not read market actor id from claims principal.");
+                SetUnauthorized(context, httpRequestData);
+                return;
+            }
+
+            var actor = await _actorProvider.GetActorAsync(Guid.Parse(marketActorId)).ConfigureAwait(false);
+            if (actor is null)
+            {
+                _logger.LogError($"Could not find an actor in the database with id {marketActorId}");
+                SetUnauthorized(context, httpRequestData);
+                return;
+            }
+
             _logger.LogInformation("Authentication succeeded.");
             await next(context).ConfigureAwait(false);
+        }
+
+        private static string? GetMarketActorId(ClaimsPrincipal claimsPrincipal)
+        {
+            return claimsPrincipal.FindFirst(claim => claim.Type.Equals("azp", StringComparison.OrdinalIgnoreCase))?.Value;
         }
 
         private static void SetUnauthorized(FunctionContext context, HttpRequestData httpRequestData)

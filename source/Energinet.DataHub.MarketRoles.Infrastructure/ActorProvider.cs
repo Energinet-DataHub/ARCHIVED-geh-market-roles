@@ -21,31 +21,26 @@ using Microsoft.Extensions.Logging;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure
 {
-    public class ActorProvider : IActorProvider
+    public class ActorProvider
     {
         private readonly IDbConnectionFactory _connectionFactory;
         private readonly ILogger _logger;
 
-        public ActorProvider(IDbConnectionFactory connectionFactory, ILogger logger)
+        public ActorProvider(IDbConnectionFactory connectionFactory, ILogger<ActorProvider> logger)
         {
             _connectionFactory = connectionFactory;
             _logger = logger;
         }
 
-        public async Task<Actor> GetActorAsync(Guid actorId)
+        public async Task<Actor?> GetActorAsync(Guid actorId)
         {
-            var sql = @"SELECT TOP 1 [Id] AS ActorId
-                                    ,[IdentificationType]
-                                    ,[IdentificationNumber] AS Identifier
-                                    ,[Roles]
-                        FROM  [dbo].[Actor]
-                        WHERE Id = @ActorId";
+            var sql = "SELECT TOP 1 [Id] AS ActorId,[IdentificationType],[IdentificationNumber] AS Identifier,[Roles] FROM [dbo].[Actor] WHERE Id = @ActorId";
 
             try
             {
                 var result = await _connectionFactory
                     .GetOpenConnection()
-                    .QuerySingleAsync<Actor>(sql, new { ActorId = actorId })
+                    .QuerySingleOrDefaultAsync<Actor>(sql, new { ActorId = actorId })
                     .ConfigureAwait(false);
 
                 return result;
