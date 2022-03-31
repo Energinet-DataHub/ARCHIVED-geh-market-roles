@@ -30,13 +30,13 @@ namespace B2B.Transactions.Infrastructure.Authentication
 {
     public class ClaimsEnrichmentMiddleware : IFunctionsWorkerMiddleware
     {
-        private readonly CurrentAuthenticatedUser _currentAuthenticatedUser;
+        private readonly CurrentClaimsPrincipal _currentClaimsPrincipal;
         private readonly ILogger<ClaimsEnrichmentMiddleware> _logger;
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public ClaimsEnrichmentMiddleware(CurrentAuthenticatedUser currentAuthenticatedUser, ILogger<ClaimsEnrichmentMiddleware> logger, IDbConnectionFactory connectionFactory)
+        public ClaimsEnrichmentMiddleware(CurrentClaimsPrincipal currentClaimsPrincipal, ILogger<ClaimsEnrichmentMiddleware> logger, IDbConnectionFactory connectionFactory)
         {
-            _currentAuthenticatedUser = currentAuthenticatedUser ?? throw new ArgumentNullException(nameof(currentAuthenticatedUser));
+            _currentClaimsPrincipal = currentClaimsPrincipal ?? throw new ArgumentNullException(nameof(currentClaimsPrincipal));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _connectionFactory = connectionFactory;
         }
@@ -52,14 +52,14 @@ namespace B2B.Transactions.Infrastructure.Authentication
                 return;
             }
 
-            if (_currentAuthenticatedUser.ClaimsPrincipal is null)
+            if (_currentClaimsPrincipal.ClaimsPrincipal is null)
             {
                 _logger.LogError("No current authenticated user");
                 SetUnauthorized(context, httpRequestData);
                 return;
             }
 
-            var marketActorId = GetMarketActorId(_currentAuthenticatedUser.ClaimsPrincipal);
+            var marketActorId = GetMarketActorId(_currentClaimsPrincipal.ClaimsPrincipal);
             if (string.IsNullOrEmpty(marketActorId))
             {
                 _logger.LogError("Could not read market actor id from claims principal.");
@@ -76,7 +76,7 @@ namespace B2B.Transactions.Infrastructure.Authentication
             }
 
             var identity = CreateClaimsIdentityFrom(actor);
-            _currentAuthenticatedUser.SetCurrentUser(new ClaimsPrincipal(identity));
+            _currentClaimsPrincipal.SetCurrentUser(new ClaimsPrincipal(identity));
 
             await next(context).ConfigureAwait(false);
         }
@@ -94,11 +94,11 @@ namespace B2B.Transactions.Infrastructure.Authentication
 
         private ClaimsIdentity CreateClaimsIdentityFrom(Actor actor)
         {
-            var claims = _currentAuthenticatedUser.ClaimsPrincipal!.Claims.ToList();
+            var claims = _currentClaimsPrincipal.ClaimsPrincipal!.Claims.ToList();
             claims.Add(new Claim("actorid", actor.Identifier));
             claims.Add(new Claim("actoridtype", actor.IdentificationType));
 
-            var currentIdentity = _currentAuthenticatedUser.ClaimsPrincipal?.Identity as ClaimsIdentity;
+            var currentIdentity = _currentClaimsPrincipal.ClaimsPrincipal?.Identity as ClaimsIdentity;
             var identity = new ClaimsIdentity(
                 claims,
                 currentIdentity!.AuthenticationType,

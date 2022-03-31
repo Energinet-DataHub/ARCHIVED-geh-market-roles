@@ -76,7 +76,7 @@ namespace B2B.Transactions.Api
                             SignatureValidator = (token, parameters) => new JwtSecurityToken(token),
                         };
                     });
-                    services.AddScoped<CurrentAuthenticatedUser>();
+                    services.AddScoped<CurrentClaimsPrincipal>();
                     services.AddScoped<JwtTokenParser>();
                     services.AddScoped<ActorProvider>();
 

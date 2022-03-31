@@ -27,13 +27,13 @@ namespace B2B.Transactions.Infrastructure.Authentication
     {
         private readonly JwtTokenParser _jwtTokenParser;
         private readonly ILogger<BearerAuthenticationMiddleware> _logger;
-        private readonly CurrentAuthenticatedUser _currentAuthenticatedUser;
+        private readonly CurrentClaimsPrincipal _currentClaimsPrincipal;
 
-        public BearerAuthenticationMiddleware(JwtTokenParser jwtTokenParser, ILogger<BearerAuthenticationMiddleware> logger, CurrentAuthenticatedUser currentAuthenticatedUser)
+        public BearerAuthenticationMiddleware(JwtTokenParser jwtTokenParser, ILogger<BearerAuthenticationMiddleware> logger, CurrentClaimsPrincipal currentClaimsPrincipal)
         {
             _jwtTokenParser = jwtTokenParser ?? throw new ArgumentNullException(nameof(jwtTokenParser));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _currentAuthenticatedUser = currentAuthenticatedUser ?? throw new ArgumentNullException(nameof(currentAuthenticatedUser));
+            _currentClaimsPrincipal = currentClaimsPrincipal ?? throw new ArgumentNullException(nameof(currentClaimsPrincipal));
         }
 
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
@@ -55,7 +55,7 @@ namespace B2B.Transactions.Infrastructure.Authentication
                 return;
             }
 
-            _currentAuthenticatedUser.SetCurrentUser(result.ClaimsPrincipal!);
+            _currentClaimsPrincipal.SetCurrentUser(result.ClaimsPrincipal!);
             _logger.LogInformation("Authentication succeeded.");
             await next(context).ConfigureAwait(false);
         }

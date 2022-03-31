@@ -16,7 +16,7 @@ using System.Security.Claims;
 
 namespace B2B.Transactions.Infrastructure.Authentication
 {
-    public class CurrentAuthenticatedUser
+    public class CurrentClaimsPrincipal
     {
         private ClaimsPrincipal? _currentUser;
 
