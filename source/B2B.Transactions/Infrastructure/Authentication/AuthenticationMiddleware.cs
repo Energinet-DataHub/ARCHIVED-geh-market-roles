@@ -30,12 +30,14 @@ namespace B2B.Transactions.Infrastructure.Authentication
         private readonly ClaimsPrincipalParser _claimsPrincipalParser;
         private readonly ILogger<AuthenticationMiddleware> _logger;
         private readonly ActorProvider _actorProvider;
+        private readonly CurrentAuthenticatedUser _currentAuthenticatedUser;
 
-        public AuthenticationMiddleware(ClaimsPrincipalParser claimsPrincipalParser, ILogger<AuthenticationMiddleware> logger, ActorProvider actorProvider)
+        public AuthenticationMiddleware(ClaimsPrincipalParser claimsPrincipalParser, ILogger<AuthenticationMiddleware> logger, ActorProvider actorProvider, CurrentAuthenticatedUser currentAuthenticatedUser)
         {
             _claimsPrincipalParser = claimsPrincipalParser ?? throw new ArgumentNullException(nameof(claimsPrincipalParser));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _actorProvider = actorProvider ?? throw new ArgumentNullException(nameof(actorProvider));
+            _currentAuthenticatedUser = currentAuthenticatedUser ?? throw new ArgumentNullException(nameof(currentAuthenticatedUser));
         }
 
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
@@ -73,6 +75,7 @@ namespace B2B.Transactions.Infrastructure.Authentication
                 return;
             }
 
+            _currentAuthenticatedUser.SetCurrentUser(result.ClaimsPrincipal!);
             _logger.LogInformation("Authentication succeeded.");
             await next(context).ConfigureAwait(false);
         }
