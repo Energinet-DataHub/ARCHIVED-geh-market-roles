@@ -100,7 +100,7 @@ namespace B2B.Transactions.Tests.Infrastructure
         private Result Parse(HttpRequestMessage httpRequest, TokenValidationParameters? validationParameters = null)
         {
             var principalParser = new ClaimsPrincipalParser(validationParameters ?? DisableAllValidations);
-            return principalParser.TryParse(httpRequest.Headers);
+            return principalParser.ParseFrom(httpRequest.Headers);
         }
 
         private HttpRequestMessage CreateRequest()
@@ -125,7 +125,7 @@ namespace B2B.Transactions.Tests.Infrastructure
             _validationParameters = validationParameters ?? throw new ArgumentNullException(nameof(validationParameters));
         }
 
-        public Result TryParse(HttpHeaders requestHeaders)
+        public Result ParseFrom(HttpHeaders requestHeaders)
         {
             if (requestHeaders.TryGetValues("authorization", out var authorizationHeaderValues) == false)
             {
