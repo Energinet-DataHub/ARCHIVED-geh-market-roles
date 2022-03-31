@@ -37,6 +37,18 @@ namespace B2B.Transactions.Tests.Infrastructure
             Assert.True(result.Success);
             Assert.NotNull(result.ClaimsPrincipal);
         }
+
+        [Fact]
+        public void Returns_failure_when_no_authorization_header_is_set()
+        {
+            var httpRequest = new HttpRequestMessage();
+
+            var principalParser = new ClaimsPrincipalParser();
+            var result = principalParser.TryParse(httpRequest.Headers);
+
+            Assert.False(result.Success);
+            Assert.Null(result.ClaimsPrincipal);
+        }
     }
 
     public class ClaimsPrincipalParser
