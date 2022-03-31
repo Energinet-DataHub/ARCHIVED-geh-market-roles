@@ -21,11 +21,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace B2B.Transactions.Infrastructure.Authentication
 {
-    public class ClaimsPrincipalParser
+    public class JwtTokenParser
     {
         private readonly TokenValidationParameters _validationParameters;
 
-        public ClaimsPrincipalParser(TokenValidationParameters validationParameters)
+        public JwtTokenParser(TokenValidationParameters validationParameters)
         {
             _validationParameters = validationParameters ?? throw new ArgumentNullException(nameof(validationParameters));
         }

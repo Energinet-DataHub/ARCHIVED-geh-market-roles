@@ -98,7 +98,7 @@ namespace B2B.Transactions.Tests.Infrastructure
 
         private static Result Parse(HttpRequestMessage httpRequest, TokenValidationParameters? validationParameters = null)
         {
-            var principalParser = new ClaimsPrincipalParser(validationParameters ?? DisableAllTokenValidations);
+            var principalParser = new JwtTokenParser(validationParameters ?? DisableAllTokenValidations);
             return principalParser.ParseFrom(httpRequest.Headers);
         }
 

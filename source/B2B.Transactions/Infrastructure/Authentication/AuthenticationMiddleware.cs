@@ -25,13 +25,13 @@ namespace B2B.Transactions.Infrastructure.Authentication
 {
     public class AuthenticationMiddleware : IFunctionsWorkerMiddleware
     {
-        private readonly ClaimsPrincipalParser _claimsPrincipalParser;
+        private readonly JwtTokenParser _jwtTokenParser;
         private readonly ILogger<AuthenticationMiddleware> _logger;
         private readonly CurrentAuthenticatedUser _currentAuthenticatedUser;
 
-        public AuthenticationMiddleware(ClaimsPrincipalParser claimsPrincipalParser, ILogger<AuthenticationMiddleware> logger, CurrentAuthenticatedUser currentAuthenticatedUser)
+        public AuthenticationMiddleware(JwtTokenParser jwtTokenParser, ILogger<AuthenticationMiddleware> logger, CurrentAuthenticatedUser currentAuthenticatedUser)
         {
-            _claimsPrincipalParser = claimsPrincipalParser ?? throw new ArgumentNullException(nameof(claimsPrincipalParser));
+            _jwtTokenParser = jwtTokenParser ?? throw new ArgumentNullException(nameof(jwtTokenParser));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _currentAuthenticatedUser = currentAuthenticatedUser ?? throw new ArgumentNullException(nameof(currentAuthenticatedUser));
         }
@@ -47,7 +47,7 @@ namespace B2B.Transactions.Infrastructure.Authentication
                 return;
             }
 
-            var result = _claimsPrincipalParser.ParseFrom(httpRequestData.Headers);
+            var result = _jwtTokenParser.ParseFrom(httpRequestData.Headers);
             if (result.Success == false)
             {
                 LogParseResult(result);

@@ -77,7 +77,7 @@ namespace B2B.Transactions.Api
                         };
                     });
                     services.AddScoped<CurrentAuthenticatedUser>();
-                    services.AddScoped<ClaimsPrincipalParser>();
+                    services.AddScoped<JwtTokenParser>();
                     services.AddScoped<ActorProvider>();
 
                     services.AddScoped<ISystemDateTimeProvider, SystemDateTimeProvider>();
