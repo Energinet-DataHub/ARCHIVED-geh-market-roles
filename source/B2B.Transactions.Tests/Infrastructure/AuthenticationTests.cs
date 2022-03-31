@@ -18,6 +18,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using B2B.CimMessageAdapter.Errors;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
@@ -45,6 +46,7 @@ namespace B2B.Transactions.Tests.Infrastructure
             var result = Parse(httpRequest);
 
             Assert.False(result.Success);
+            Assert.IsType(typeof(NoAuthenticationHeaderSet), result.Error);
             Assert.Null(result.ClaimsPrincipal);
         }
 
@@ -78,30 +80,44 @@ namespace B2B.Transactions.Tests.Infrastructure
         }
     }
 
+    public class NoAuthenticationHeaderSet : AuthenticationError
+    {
+        public NoAuthenticationHeaderSet()
+        {
+            Message = "No authorization header is set.";
+        }
+    }
+
+    public abstract class AuthenticationError
+    {
+        public string Message { get; protected set; }
+    }
+
     public class ClaimsPrincipalParser
     {
         public Result TryParse(HttpHeaders requestHeaders)
         {
-            if (requestHeaders.TryGetValues("authorization", out var authorizationHeaderValues))
+            if (requestHeaders.TryGetValues("authorization", out var authorizationHeaderValues) == false)
             {
-                var authorizationHeaderValue = authorizationHeaderValues.FirstOrDefault();
-                if (IsBearer(authorizationHeaderValue) == false)
-                {
-                    return new Result();
-                }
-                var token = authorizationHeaderValue.Substring(7);
-                var tokenReader = new JwtSecurityTokenHandler();
-                var validationParameters = new TokenValidationParameters()
-                {
-                    ValidateAudience = false,
-                    ValidateLifetime = false,
-                    ValidateIssuer = false,
-                    SignatureValidator = (token, parameters) => new JwtSecurityToken(token)
-                };
-                var principal = tokenReader.ValidateToken(token, validationParameters, out _);
-                return new Result(principal);
+                return Result.Failed(new NoAuthenticationHeaderSet());
             }
-            return new Result();
+
+            var authorizationHeaderValue = authorizationHeaderValues.FirstOrDefault();
+            if (IsBearer(authorizationHeaderValue) == false)
+            {
+                return Result.Failed(new NoAuthenticationHeaderSet());
+            }
+            var token = authorizationHeaderValue.Substring(7);
+            var tokenReader = new JwtSecurityTokenHandler();
+            var validationParameters = new TokenValidationParameters()
+            {
+                ValidateAudience = false,
+                ValidateLifetime = false,
+                ValidateIssuer = false,
+                SignatureValidator = (token, parameters) => new JwtSecurityToken(token)
+            };
+            var principal = tokenReader.ValidateToken(token, validationParameters, out _);
+            return new Result(principal);
         }
 
         private static bool IsBearer(string? authorizationHeaderValue)
@@ -116,6 +132,13 @@ namespace B2B.Transactions.Tests.Infrastructure
         {
             Success = false;
         }
+
+        private Result(AuthenticationError error)
+        {
+            Success = false;
+            Error = error ?? throw new ArgumentNullException(nameof(error));
+        }
+
         public Result(ClaimsPrincipal claimsPrincipal)
         {
             Success = true;
@@ -124,7 +147,12 @@ namespace B2B.Transactions.Tests.Infrastructure
 
         public bool Success { get; }
         public ClaimsPrincipal ClaimsPrincipal { get; }
+        public AuthenticationError Error { get; init; }
 
+        public static Result Failed(AuthenticationError error)
+        {
+            return new Result(error);
+        }
     }
     // public class Middleware : IFunctionsWorkerMiddleware
     // {
