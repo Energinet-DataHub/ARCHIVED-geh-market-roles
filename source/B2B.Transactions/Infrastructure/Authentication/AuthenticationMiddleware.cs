@@ -40,6 +40,7 @@ namespace B2B.Transactions.Infrastructure.Authentication
             var httpRequestData = context.GetHttpRequestData();
             if (httpRequestData == null)
             {
+                _logger.LogTrace("No HTTP request data was available.");
                 await next(context).ConfigureAwait(false);
                 return;
             }
