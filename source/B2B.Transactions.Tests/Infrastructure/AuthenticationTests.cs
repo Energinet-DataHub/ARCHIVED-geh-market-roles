@@ -28,6 +28,21 @@ namespace B2B.Transactions.Tests.Infrastructure
     public class AuthenticationTests
     {
         [Fact]
+        public void Returns_failure_when_token_validation_fails()
+        {
+            var httpRequest = CreateRequestWithAuthorizationHeader("bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyJ9.eyJhdWQiOiJjN2U1ZGM1Yy0yZWUwLTQyMGMtYjVkMi01ODZlNzUyNzMwMmMiLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vNGE3NDExZWEtYWM3MS00YjYzLTk2NDctYjhiZDRjNWEyMGUwL3YyLjAiLCJpYXQiOjE2NDY5MTU5MTUsIm5iZiI6MTY0NjkxNTkxNSwiZXhwIjoxNjQ2OTE5ODE1LCJhaW8iOiJFMlpnWUVpTEtqSGFNMldOMUxiSmUxdzhNazV4QVFBPSIsImF6cCI6ImE5ODJkZTFmLTM3MDMtNGUzYy1iZTU2LTRlNTQ0MThhMmE1OSIsImF6cGFjciI6IjEiLCJvaWQiOiI5OGZmOGMyMS0xZGMzLTQwYTctYmNmZS02N2UwOTBlN2ZlOTMiLCJyaCI6IjAuQVNJQTZoRjBTbkdzWTB1V1I3aTlURm9nNEZ6YzVjZmdMZ3hDdGRKWWJuVW5NQ3drQUFBLiIsInJvbGVzIjpbImJhbGFuY2VyZXNwb25zaWJsZXBhcnR5IiwiZWxlY3RyaWNhbHN1cHBsaWVyIiwiZ3JpZG9wZXJhdG9yIiwibWV0ZXJkYXRhcmVzcG9uc2libGUiXSwic3ViIjoiOThmZjhjMjEtMWRjMy00MGE3LWJjZmUtNjdlMDkwZTdmZTkzIiwidGlkIjoiNGE3NDExZWEtYWM3MS00YjYzLTk2NDctYjhiZDRjNWEyMGUwIiwidXRpIjoiVEx1UVVKZG43RWU0aFBUQWZiZXdBQSIsInZlciI6IjIuMCJ9.hy8RxBV_LKl7-bt_9cUr9hlVoQ7gicA04I8AXYO02kvdfw0ugBGnimFGZ4rin1PmjKMceigPzN7H49S80z42YI3WUWNEsYX2D0lRWHHhFOd53Yjcu0nL9xQtCZ8Cy4NpD86jxGQvD1pw227TyKL0cpB04tQ1X9CRwlty7qDTZK1Aqa3QYcbR7BKn_gU4N01sX2SZpi-MYOQqeiHpwmHWfwesiVfpumYw6x5g45zObCjyFEGbNIPDOwo3YlBBdGoRSQeaqYwoQMd2lrxOAhGBve_6uCJa8SuFAz36AUewIsQi2EIGpbKmmddwGTWE62owBVtYeEvljovjaBisJK4ZEQ");
+
+            var result = Parse(httpRequest, new TokenValidationParameters()
+            {
+                ValidateLifetime = true,
+            });
+
+            Assert.False(result.Success);
+            Assert.IsType(typeof(TokenValdationFailed), result.Error);
+            Assert.Null(result.ClaimsPrincipal);
+        }
+
+        [Fact]
         public void Returns_claims_principal()
         {
             var httpRequest = CreateRequestWithAuthorizationHeader("bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyJ9.eyJhdWQiOiJjN2U1ZGM1Yy0yZWUwLTQyMGMtYjVkMi01ODZlNzUyNzMwMmMiLCJpc3MiOiJodHRwczovL2xvZ2luLm1pY3Jvc29mdG9ubGluZS5jb20vNGE3NDExZWEtYWM3MS00YjYzLTk2NDctYjhiZDRjNWEyMGUwL3YyLjAiLCJpYXQiOjE2NDY5MTU5MTUsIm5iZiI6MTY0NjkxNTkxNSwiZXhwIjoxNjQ2OTE5ODE1LCJhaW8iOiJFMlpnWUVpTEtqSGFNMldOMUxiSmUxdzhNazV4QVFBPSIsImF6cCI6ImE5ODJkZTFmLTM3MDMtNGUzYy1iZTU2LTRlNTQ0MThhMmE1OSIsImF6cGFjciI6IjEiLCJvaWQiOiI5OGZmOGMyMS0xZGMzLTQwYTctYmNmZS02N2UwOTBlN2ZlOTMiLCJyaCI6IjAuQVNJQTZoRjBTbkdzWTB1V1I3aTlURm9nNEZ6YzVjZmdMZ3hDdGRKWWJuVW5NQ3drQUFBLiIsInJvbGVzIjpbImJhbGFuY2VyZXNwb25zaWJsZXBhcnR5IiwiZWxlY3RyaWNhbHN1cHBsaWVyIiwiZ3JpZG9wZXJhdG9yIiwibWV0ZXJkYXRhcmVzcG9uc2libGUiXSwic3ViIjoiOThmZjhjMjEtMWRjMy00MGE3LWJjZmUtNjdlMDkwZTdmZTkzIiwidGlkIjoiNGE3NDExZWEtYWM3MS00YjYzLTk2NDctYjhiZDRjNWEyMGUwIiwidXRpIjoiVEx1UVVKZG43RWU0aFBUQWZiZXdBQSIsInZlciI6IjIuMCJ9.hy8RxBV_LKl7-bt_9cUr9hlVoQ7gicA04I8AXYO02kvdfw0ugBGnimFGZ4rin1PmjKMceigPzN7H49S80z42YI3WUWNEsYX2D0lRWHHhFOd53Yjcu0nL9xQtCZ8Cy4NpD86jxGQvD1pw227TyKL0cpB04tQ1X9CRwlty7qDTZK1Aqa3QYcbR7BKn_gU4N01sX2SZpi-MYOQqeiHpwmHWfwesiVfpumYw6x5g45zObCjyFEGbNIPDOwo3YlBBdGoRSQeaqYwoQMd2lrxOAhGBve_6uCJa8SuFAz36AUewIsQi2EIGpbKmmddwGTWE62owBVtYeEvljovjaBisJK4ZEQ");
@@ -74,9 +89,17 @@ namespace B2B.Transactions.Tests.Infrastructure
             Assert.Null(result.ClaimsPrincipal);
         }
 
-        private Result Parse(HttpRequestMessage httpRequest)
+        private TokenValidationParameters DisableAllValidations => new TokenValidationParameters()
         {
-            var principalParser = new ClaimsPrincipalParser();
+            ValidateAudience = false,
+            ValidateLifetime = false,
+            ValidateIssuer = false,
+            SignatureValidator = (token, parameters) => new JwtSecurityToken(token)
+        };
+
+        private Result Parse(HttpRequestMessage httpRequest, TokenValidationParameters? validationParameters = null)
+        {
+            var principalParser = new ClaimsPrincipalParser(validationParameters ?? DisableAllValidations);
             return principalParser.TryParse(httpRequest.Headers);
         }
 
@@ -90,6 +113,14 @@ namespace B2B.Transactions.Tests.Infrastructure
             var httpRequest = CreateRequest();
             httpRequest.Headers.Authorization = AuthenticationHeaderValue.Parse(value);
             return httpRequest;
+        }
+    }
+
+    public class TokenValdationFailed : AuthenticationError
+    {
+        public TokenValdationFailed(string message)
+        {
+            Message = message;
         }
     }
 
@@ -116,6 +147,13 @@ namespace B2B.Transactions.Tests.Infrastructure
 
     public class ClaimsPrincipalParser
     {
+        private readonly TokenValidationParameters _validationParameters;
+
+        public ClaimsPrincipalParser(TokenValidationParameters validationParameters)
+        {
+            _validationParameters = validationParameters ?? throw new ArgumentNullException(nameof(validationParameters));
+        }
+
         public Result TryParse(HttpHeaders requestHeaders)
         {
             if (requestHeaders.TryGetValues("authorization", out var authorizationHeaderValues) == false)
@@ -129,17 +167,19 @@ namespace B2B.Transactions.Tests.Infrastructure
             {
                 return Result.Failed(new AuthenticationHeaderIsNotBearerToken());
             }
+
             var token = ParseBearerToken(authorizationHeaderValue);
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var validationParameters = new TokenValidationParameters()
+
+            try
             {
-                ValidateAudience = false,
-                ValidateLifetime = false,
-                ValidateIssuer = false,
-                SignatureValidator = (token, parameters) => new JwtSecurityToken(token)
-            };
-            var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
-            return new Result(principal);
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var principal = tokenHandler.ValidateToken(token, _validationParameters, out _);
+                return new Result(principal);
+            }
+            catch (SecurityTokenException e)
+            {
+                return Result.Failed(new TokenValdationFailed(e.Message));
+            }
         }
 
         private static string ParseBearerToken(string? authorizationHeaderValue)
