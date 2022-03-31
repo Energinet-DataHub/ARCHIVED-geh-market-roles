@@ -58,6 +58,7 @@ namespace B2B.Transactions.Tests.Infrastructure
             var result = Parse(httpRequest);
 
             Assert.False(result.Success);
+            Assert.IsType(typeof(AuthenticationHeaderIsNotBearerToken), result.Error);
             Assert.Null(result.ClaimsPrincipal);
         }
 
@@ -77,6 +78,14 @@ namespace B2B.Transactions.Tests.Infrastructure
             var httpRequest = CreateRequest();
             httpRequest.Headers.Authorization = AuthenticationHeaderValue.Parse(value);
             return httpRequest;
+        }
+    }
+
+    public class AuthenticationHeaderIsNotBearerToken : AuthenticationError
+    {
+        public AuthenticationHeaderIsNotBearerToken()
+        {
+            Message = "The value defined in authorization header is not start with 'bearer'.";
         }
     }
 
@@ -105,7 +114,7 @@ namespace B2B.Transactions.Tests.Infrastructure
             var authorizationHeaderValue = authorizationHeaderValues.FirstOrDefault();
             if (IsBearer(authorizationHeaderValue) == false)
             {
-                return Result.Failed(new NoAuthenticationHeaderSet());
+                return Result.Failed(new AuthenticationHeaderIsNotBearerToken());
             }
             var token = authorizationHeaderValue.Substring(7);
             var tokenReader = new JwtSecurityTokenHandler();
