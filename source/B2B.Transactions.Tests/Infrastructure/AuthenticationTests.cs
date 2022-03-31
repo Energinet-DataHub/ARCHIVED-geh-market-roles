@@ -168,8 +168,11 @@ namespace B2B.Transactions.Tests.Infrastructure
                 return Result.Failed(new AuthenticationHeaderIsNotBearerToken());
             }
 
-            var token = ParseBearerToken(authorizationHeaderValue);
+            return ExtractPrincipalFrom(ParseBearerToken(authorizationHeaderValue));
+        }
 
+        private Result ExtractPrincipalFrom(string token)
+        {
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
