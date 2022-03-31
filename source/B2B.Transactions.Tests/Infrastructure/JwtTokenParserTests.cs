@@ -22,7 +22,7 @@ using Xunit;
 
 namespace B2B.Transactions.Tests.Infrastructure
 {
-    public class ClaimsPrincipalParserTests
+    public class JwtTokenParserTests
     {
         private static TokenValidationParameters DisableAllTokenValidations => new()
         {
