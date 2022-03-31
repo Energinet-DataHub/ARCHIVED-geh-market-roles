@@ -51,7 +51,7 @@ namespace B2B.Transactions.Infrastructure.Authentication
             if (result.Success == false)
             {
                 LogParseResult(result);
-                SetUnauthorized(context, httpRequestData);
+                UserIsNotUnauthorized(context, httpRequestData);
                 return;
             }
 
@@ -60,7 +60,7 @@ namespace B2B.Transactions.Infrastructure.Authentication
             await next(context).ConfigureAwait(false);
         }
 
-        private static void SetUnauthorized(FunctionContext context, HttpRequestData httpRequestData)
+        private static void UserIsNotUnauthorized(FunctionContext context, HttpRequestData httpRequestData)
         {
             var httpResponseData = httpRequestData.CreateResponse(HttpStatusCode.Unauthorized);
             context.SetHttpResponseData(httpResponseData);
