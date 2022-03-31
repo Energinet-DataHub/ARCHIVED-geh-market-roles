@@ -174,7 +174,7 @@ namespace B2B.Transactions.Tests.Infrastructure
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var principal = tokenHandler.ValidateToken(token, _validationParameters, out _);
-                return new Result(principal);
+                return Result.Succeeded(principal);
             }
             catch (SecurityTokenException e)
             {
@@ -195,18 +195,13 @@ namespace B2B.Transactions.Tests.Infrastructure
 
     public class Result
     {
-        public Result()
-        {
-            Success = false;
-        }
-
         private Result(AuthenticationError error)
         {
             Success = false;
             Error = error ?? throw new ArgumentNullException(nameof(error));
         }
 
-        public Result(ClaimsPrincipal claimsPrincipal)
+        private Result(ClaimsPrincipal claimsPrincipal)
         {
             Success = true;
             ClaimsPrincipal = claimsPrincipal;
@@ -214,11 +209,16 @@ namespace B2B.Transactions.Tests.Infrastructure
 
         public bool Success { get; }
         public ClaimsPrincipal ClaimsPrincipal { get; }
-        public AuthenticationError Error { get; init; }
+        public AuthenticationError Error { get; }
 
         public static Result Failed(AuthenticationError error)
         {
             return new Result(error);
+        }
+
+        public static Result Succeeded(ClaimsPrincipal principal)
+        {
+            return new Result(principal);
         }
     }
     // public class Middleware : IFunctionsWorkerMiddleware
