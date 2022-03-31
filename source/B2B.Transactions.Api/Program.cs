@@ -61,6 +61,7 @@ namespace B2B.Transactions.Api
                     worker.UseMiddleware<RequestResponseLoggingMiddleware>();
                     //worker.UseMiddleware<JwtTokenMiddleware>();
                     worker.UseMiddleware<AuthenticationMiddleware>();
+                    worker.UseMiddleware<ClaimsEnrichmentMiddleware>();
                     //worker.UseMiddleware<ActorMiddleware>();
                 })
                 .ConfigureServices(services =>

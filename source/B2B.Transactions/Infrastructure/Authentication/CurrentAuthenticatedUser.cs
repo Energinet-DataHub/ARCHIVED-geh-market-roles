@@ -20,6 +20,8 @@ namespace B2B.Transactions.Infrastructure.Authentication
     {
         private ClaimsPrincipal? _currentUser;
 
+        public ClaimsPrincipal? ClaimsPrincipal => _currentUser;
+
         public void SetCurrentUser(ClaimsPrincipal currentUser)
         {
             _currentUser = currentUser;
