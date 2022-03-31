@@ -70,7 +70,7 @@ namespace B2B.Transactions.Api
                         return new()
                         {
                             ValidateAudience = false,
-                            ValidateLifetime = true,
+                            ValidateLifetime = false,
                             ValidateIssuer = false,
                             SignatureValidator = (token, parameters) => new JwtSecurityToken(token),
                         };

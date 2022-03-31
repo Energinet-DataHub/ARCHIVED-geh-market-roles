@@ -52,6 +52,7 @@ namespace B2B.Transactions.Infrastructure.Authentication
                 return;
             }
 
+            _logger.LogInformation("Authentication succeeded.");
             await next(context).ConfigureAwait(false);
         }
 
