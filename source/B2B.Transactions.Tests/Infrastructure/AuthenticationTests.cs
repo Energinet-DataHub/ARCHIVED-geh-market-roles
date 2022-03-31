@@ -17,8 +17,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Security.Claims;
-using B2B.CimMessageAdapter.Errors;
+using B2B.Transactions.Infrastructure.Authentication;
+using B2B.Transactions.Infrastructure.Authentication.Errors;
 using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
@@ -38,7 +38,7 @@ namespace B2B.Transactions.Tests.Infrastructure
             });
 
             Assert.False(result.Success);
-            Assert.IsType(typeof(TokenValdationFailed), result.Error);
+            Assert.IsType(typeof(TokenValidationFailed), result.Error);
             Assert.Null(result.ClaimsPrincipal);
         }
 
@@ -116,35 +116,6 @@ namespace B2B.Transactions.Tests.Infrastructure
         }
     }
 
-    public class TokenValdationFailed : AuthenticationError
-    {
-        public TokenValdationFailed(string message)
-        {
-            Message = message;
-        }
-    }
-
-    public class AuthenticationHeaderIsNotBearerToken : AuthenticationError
-    {
-        public AuthenticationHeaderIsNotBearerToken()
-        {
-            Message = "The value defined in authorization header is not start with 'bearer'.";
-        }
-    }
-
-    public class NoAuthenticationHeaderSet : AuthenticationError
-    {
-        public NoAuthenticationHeaderSet()
-        {
-            Message = "No authorization header is set.";
-        }
-    }
-
-    public abstract class AuthenticationError
-    {
-        public string Message { get; protected set; }
-    }
-
     public class ClaimsPrincipalParser
     {
         private readonly TokenValidationParameters _validationParameters;
@@ -181,7 +152,7 @@ namespace B2B.Transactions.Tests.Infrastructure
             }
             catch (SecurityTokenException e)
             {
-                return Result.Failed(new TokenValdationFailed(e.Message));
+                return Result.Failed(new TokenValidationFailed(e.Message));
             }
         }
 
@@ -195,62 +166,4 @@ namespace B2B.Transactions.Tests.Infrastructure
             return authorizationHeaderValue.StartsWith("bearer", StringComparison.OrdinalIgnoreCase) && authorizationHeaderValue.Length > 7;
         }
     }
-
-    public class Result
-    {
-        private Result(AuthenticationError error)
-        {
-            Success = false;
-            Error = error ?? throw new ArgumentNullException(nameof(error));
-        }
-
-        private Result(ClaimsPrincipal claimsPrincipal)
-        {
-            Success = true;
-            ClaimsPrincipal = claimsPrincipal;
-        }
-
-        public bool Success { get; }
-        public ClaimsPrincipal ClaimsPrincipal { get; }
-        public AuthenticationError Error { get; }
-
-        public static Result Failed(AuthenticationError error)
-        {
-            return new Result(error);
-        }
-
-        public static Result Succeeded(ClaimsPrincipal principal)
-        {
-            return new Result(principal);
-        }
-    }
-    // public class Middleware : IFunctionsWorkerMiddleware
-    // {
-    //     public Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
-    //     {
-    //         var httpRequestData = context.GetHttpRequestData();
-    //         var parser = new ClaimsPrincipalParser();
-    //         var result = parser.TryParse(httpRequestData.Headers);
-    //         return next;
-    //     }
-    // }
-    //
-    // public static class Extentions
-    // {
-    //     public static HttpRequestData? GetHttpRequestData(this FunctionContext functionContext)
-    //     {
-    //         if (functionContext == null) throw new ArgumentNullException(nameof(functionContext));
-    //
-    //         var functionBindingsFeature = functionContext.GetIFunctionBindingsFeature();
-    //         var type = functionBindingsFeature.GetType();
-    //         var inputData = type.GetProperties().Single(p => p.Name == "InputData").GetValue(functionBindingsFeature) as IReadOnlyDictionary<string, object>;
-    //         return inputData?.Values.SingleOrDefault(o => o is HttpRequestData) as HttpRequestData;
-    //     }
-    //
-    //     private static object GetIFunctionBindingsFeature(this FunctionContext functionContext)
-    //     {
-    //         var keyValuePair = functionContext.Features.SingleOrDefault(f => f.Key.Name is "IFunctionBindingsFeature");
-    //         return keyValuePair.Value;
-    //     }
-    // }
 }
