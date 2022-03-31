@@ -48,12 +48,17 @@ namespace B2B.Transactions.Infrastructure.Authentication
             if (result.Success == false)
             {
                 LogParseResult(result);
-                var httpResponseData = httpRequestData.CreateResponse(HttpStatusCode.Unauthorized);
-                context.SetHttpResponseData(httpResponseData);
+                SetUnauthorized(context, httpRequestData);
                 return;
             }
 
             await next(context).ConfigureAwait(false);
+        }
+
+        private static void SetUnauthorized(FunctionContext context, HttpRequestData httpRequestData)
+        {
+            var httpResponseData = httpRequestData.CreateResponse(HttpStatusCode.Unauthorized);
+            context.SetHttpResponseData(httpResponseData);
         }
 
         private void LogParseResult(Result result)
