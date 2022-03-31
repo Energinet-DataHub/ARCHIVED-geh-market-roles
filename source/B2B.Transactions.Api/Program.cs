@@ -13,11 +13,13 @@
 // limitations under the License.using System;
 
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using B2B.CimMessageAdapter;
 using B2B.CimMessageAdapter.Messages;
 using B2B.CimMessageAdapter.Transactions;
+using B2B.Transactions.Infrastructure.Authentication;
 using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Xml.Incoming;
 using B2B.Transactions.Xml.Outgoing;
@@ -39,6 +41,7 @@ using Energinet.DataHub.MarketRoles.Infrastructure.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace B2B.Transactions.Api
 {
@@ -46,22 +49,34 @@ namespace B2B.Transactions.Api
     {
         public static Task Main()
         {
-            var tenantId = Environment.GetEnvironmentVariable("B2C_TENANT_ID") ?? throw new InvalidOperationException(
-                "B2C tenant id not found.");
-            var audience = Environment.GetEnvironmentVariable("BACKEND_SERVICE_APP_ID") ?? throw new InvalidOperationException(
-                "Backend service app id not found.");
-            var metaDataAddress = $"https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration";
-
+            // var tenantId = Environment.GetEnvironmentVariable("B2C_TENANT_ID") ?? throw new InvalidOperationException(
+            //     "B2C tenant id not found.");
+            // var audience = Environment.GetEnvironmentVariable("BACKEND_SERVICE_APP_ID") ?? throw new InvalidOperationException(
+            //     "Backend service app id not found.");
+            // var metaDataAddress = $"https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration";
             var host = new HostBuilder()
                 .ConfigureFunctionsWorkerDefaults(worker =>
                 {
                     worker.UseMiddleware<CorrelationIdMiddleware>();
                     worker.UseMiddleware<RequestResponseLoggingMiddleware>();
-                    worker.UseMiddleware<JwtTokenMiddleware>();
-                    worker.UseMiddleware<ActorMiddleware>();
+                    //worker.UseMiddleware<JwtTokenMiddleware>();
+                    worker.UseMiddleware<AuthenticationMiddleware>();
+                    //worker.UseMiddleware<ActorMiddleware>();
                 })
                 .ConfigureServices(services =>
                 {
+                    services.AddScoped<TokenValidationParameters>(sp =>
+                    {
+                        return new()
+                        {
+                            ValidateAudience = false,
+                            ValidateLifetime = true,
+                            ValidateIssuer = false,
+                            SignatureValidator = (token, parameters) => new JwtSecurityToken(token),
+                        };
+                    });
+                    services.AddScoped<ClaimsPrincipalParser>();
+
                     services.AddScoped<ISystemDateTimeProvider, SystemDateTimeProvider>();
                     services.AddSingleton<IJsonSerializer, JsonSerializer>();
                     services.AddScoped<SchemaStore>();
@@ -90,13 +105,12 @@ namespace B2B.Transactions.Api
                             return storage;
                         });
                     services.AddScoped<RequestResponseLoggingMiddleware>();
-
-                    services.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
-                    services.AddScoped<ClaimsPrincipalContext>();
-                    services.AddScoped(s => new OpenIdSettings(metaDataAddress, audience));
-                    services.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
+                    //services.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
+                    //services.AddScoped<ClaimsPrincipalContext>();
+                    //services.AddScoped(s => new OpenIdSettings(metaDataAddress, audience));
+                    //services.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
                     services.AddScoped<IActorContext, ActorContext>();
-                    services.AddScoped<IActorProvider, ActorProvider>();
+                    //services.AddScoped<IActorProvider, ActorProvider>();
                     services.AddScoped<IDbConnectionFactory>(_ =>
                     {
                         var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING");

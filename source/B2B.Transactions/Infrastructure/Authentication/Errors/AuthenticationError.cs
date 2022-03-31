@@ -21,6 +21,6 @@ namespace B2B.Transactions.Infrastructure.Authentication.Errors
             Message = message;
         }
 
-        protected string Message { get; set; }
+        public string Message { get; set; }
     }
 }
