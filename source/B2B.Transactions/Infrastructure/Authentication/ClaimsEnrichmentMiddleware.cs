@@ -17,8 +17,10 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Dapper;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.MarketRoles.Infrastructure;
+using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
@@ -28,15 +30,15 @@ namespace B2B.Transactions.Infrastructure.Authentication
 {
     public class ClaimsEnrichmentMiddleware : IFunctionsWorkerMiddleware
     {
-        private readonly ActorProvider _actorProvider;
         private readonly CurrentAuthenticatedUser _currentAuthenticatedUser;
         private readonly ILogger<ClaimsEnrichmentMiddleware> _logger;
+        private readonly IDbConnectionFactory _connectionFactory;
 
-        public ClaimsEnrichmentMiddleware(ActorProvider actorProvider, CurrentAuthenticatedUser currentAuthenticatedUser, ILogger<ClaimsEnrichmentMiddleware> logger)
+        public ClaimsEnrichmentMiddleware(CurrentAuthenticatedUser currentAuthenticatedUser, ILogger<ClaimsEnrichmentMiddleware> logger, IDbConnectionFactory connectionFactory)
         {
-            _actorProvider = actorProvider ?? throw new ArgumentNullException(nameof(actorProvider));
             _currentAuthenticatedUser = currentAuthenticatedUser ?? throw new ArgumentNullException(nameof(currentAuthenticatedUser));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _connectionFactory = connectionFactory;
         }
 
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
@@ -65,7 +67,7 @@ namespace B2B.Transactions.Infrastructure.Authentication
                 return;
             }
 
-            var actor = await _actorProvider.GetActorAsync(Guid.Parse(marketActorId)).ConfigureAwait(false);
+            var actor = await GetActorAsync(Guid.Parse(marketActorId)).ConfigureAwait(false);
             if (actor is null)
             {
                 _logger.LogError($"Could not find an actor in the database with id {marketActorId}");
@@ -103,6 +105,18 @@ namespace B2B.Transactions.Infrastructure.Authentication
                 currentIdentity.NameClaimType,
                 currentIdentity.RoleClaimType);
             return identity;
+        }
+
+        private async Task<Actor?> GetActorAsync(Guid actorId)
+        {
+            var sql = "SELECT TOP 1 [Id] AS ActorId,[IdentificationType],[IdentificationNumber] AS Identifier,[Roles] FROM [dbo].[Actor] WHERE Id = @ActorId";
+
+            var result = await _connectionFactory
+                .GetOpenConnection()
+                .QuerySingleOrDefaultAsync<Actor>(sql, new { ActorId = actorId })
+                .ConfigureAwait(false);
+
+            return result;
         }
     }
 }
