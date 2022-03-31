@@ -69,7 +69,7 @@ namespace B2B.Transactions.Infrastructure.Authentication
             }
             catch (SecurityTokenException e)
             {
-                return Result.Failed(new TokenValidationFailed(e.Message));
+                return Result.Failed(new TokenValidationFailed(e.Message), token);
             }
         }
     }
