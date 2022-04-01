@@ -66,7 +66,17 @@ namespace B2B.Transactions.Api
                     services.AddScoped<SchemaStore>();
                     services.AddScoped<ISchemaProvider, SchemaProvider>();
                     services.AddScoped<MessageReceiver>();
-                    services.AddScoped<ICorrelationContext, CorrelationContext>();
+                    services.AddScoped<ICorrelationContext, CorrelationContext>(sp =>
+                    {
+                        var correlationContext = new CorrelationContext();
+                        if (IsRunningLocally())
+                        {
+                            correlationContext.SetId(Guid.NewGuid().ToString());
+                            correlationContext.SetParentId(Guid.NewGuid().ToString());
+                        }
+
+                        return correlationContext;
+                    });
                     services.AddScoped<ITransactionIds, TransactionIdRegistry>();
                     services.AddScoped<IMessageIds, MessageIdRegistry>();
                     services.AddScoped<IDocumentProvider<IMessage>, AcceptDocumentProvider>();
