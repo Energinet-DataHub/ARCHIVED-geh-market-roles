@@ -43,6 +43,13 @@ namespace B2B.Transactions.Infrastructure.Authentication.Bearer
         public async Task Invoke(FunctionContext context, FunctionExecutionDelegate next)
         {
             if (next == null) throw new ArgumentNullException(nameof(next));
+            if (!context.Is(FunctionContextExtensions.TriggerType.HttpTrigger))
+            {
+                _logger.LogInformation("Functions is not triggered by HTTP. Call next middleware.");
+                await next(context).ConfigureAwait(false);
+                return;
+            }
+
             var httpRequestData = context.GetHttpRequestData();
             if (httpRequestData == null)
             {

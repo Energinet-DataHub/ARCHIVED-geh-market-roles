@@ -22,6 +22,22 @@ namespace B2B.Transactions.Infrastructure
 {
     public static class FunctionContextExtensions
     {
+        public enum TriggerType
+        {
+            HttpTrigger,
+            TimerTrigger,
+            ServiceBusTrigger,
+        }
+
+        /// <summary>
+        /// Returns whether or not the <paramref name="triggerType"></paramref> is a input binding on the current context.
+        /// </summary>
+        internal static bool Is(this FunctionContext context, TriggerType triggerType)
+        {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+            return context.FunctionDefinition.InputBindings.Any(input => input.Value.Type.Equals(triggerType.ToString(), StringComparison.OrdinalIgnoreCase));
+        }
+
         internal static HttpRequestData? GetHttpRequestData(this FunctionContext functionContext)
         {
             if (functionContext == null) throw new ArgumentNullException(nameof(functionContext));
