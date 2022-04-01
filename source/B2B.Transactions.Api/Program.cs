@@ -35,19 +35,22 @@ using Energinet.DataHub.MarketRoles.Infrastructure.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
 namespace B2B.Transactions.Api
 {
     public static class Program
     {
-        public static Task Main()
+        public static async Task Main()
         {
-            // var tenantId = Environment.GetEnvironmentVariable("B2C_TENANT_ID") ?? throw new InvalidOperationException(
-            //     "B2C tenant id not found.");
-            // var audience = Environment.GetEnvironmentVariable("BACKEND_SERVICE_APP_ID") ?? throw new InvalidOperationException(
-            //     "Backend service app id not found.");
-            // var metaDataAddress = $"https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration";
+            OpenIdConnectConfiguration stsConfig;
+            if (IsRunningLocally())
+            {
+                stsConfig = await GetSecurityTokenProviderConfigurationAsync().ConfigureAwait(false);
+            }
+
             var host = new HostBuilder()
                 .ConfigureFunctionsWorkerDefaults(worker =>
                 {
@@ -72,7 +75,7 @@ namespace B2B.Transactions.Api
                     services.AddScoped<CurrentClaimsPrincipal>();
                     services.AddScoped<JwtTokenParser>(sp =>
                     {
-                        if (Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT") == "Development")
+                        if (IsRunningLocally())
                         {
                             return new JwtTokenParser(new TokenValidationParameters() { ValidateAudience = false, ValidateIssuer = false, ValidateLifetime = false, SignatureValidator = (token, parameters) => new JwtSecurityToken(token) });
                         }
@@ -124,7 +127,21 @@ namespace B2B.Transactions.Api
                 })
                 .Build();
 
-            return host.RunAsync();
+            await host.RunAsync().ConfigureAwait(false);
+        }
+
+        private static bool IsRunningLocally()
+        {
+            return Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT") == "Development";
+        }
+
+        private static Task<OpenIdConnectConfiguration> GetSecurityTokenProviderConfigurationAsync()
+        {
+            var tenantId = Environment.GetEnvironmentVariable("B2C_TENANT_ID") ?? throw new InvalidOperationException("B2C tenant id not found.");
+            var audience = Environment.GetEnvironmentVariable("BACKEND_SERVICE_APP_ID") ?? throw new InvalidOperationException("Backend service app id not found.");
+            var metaDataAddress = $"https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration";
+            var openIdConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(metaDataAddress, new OpenIdConnectConfigurationRetriever());
+            return openIdConfigurationManager.GetConfigurationAsync();
         }
     }
 }
