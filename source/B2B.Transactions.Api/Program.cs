@@ -19,19 +19,11 @@ using Azure.Messaging.ServiceBus;
 using B2B.CimMessageAdapter;
 using B2B.CimMessageAdapter.Messages;
 using B2B.CimMessageAdapter.Transactions;
-using B2B.Transactions.Infrastructure.Authentication;
 using B2B.Transactions.Infrastructure.Authentication.Bearer;
 using B2B.Transactions.Infrastructure.Authentication.MarketActors;
 using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Xml.Incoming;
 using B2B.Transactions.Xml.Outgoing;
-using Energinet.DataHub.Core.App.Common;
-using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
-using Energinet.DataHub.Core.App.Common.Abstractions.Identity;
-using Energinet.DataHub.Core.App.Common.Abstractions.Security;
-using Energinet.DataHub.Core.App.Common.Identity;
-using Energinet.DataHub.Core.App.Common.Security;
-using Energinet.DataHub.Core.App.FunctionApp.Middleware;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage;
 using Energinet.DataHub.MarketRoles.Domain.SeedWork;
@@ -61,11 +53,9 @@ namespace B2B.Transactions.Api
                 {
                     worker.UseMiddleware<CorrelationIdMiddleware>();
                     worker.UseMiddleware<RequestResponseLoggingMiddleware>();
-                    //worker.UseMiddleware<JwtTokenMiddleware>();
                     worker.UseMiddleware<BearerAuthenticationMiddleware>();
                     worker.UseMiddleware<ClaimsEnrichmentMiddleware>();
                     worker.UseMiddleware<MarketActorAuthenticatorMiddleware>();
-                    //worker.UseMiddleware<ActorMiddleware>();
                 })
                 .ConfigureServices(services =>
                 {
@@ -82,8 +72,6 @@ namespace B2B.Transactions.Api
                     services.AddScoped<CurrentClaimsPrincipal>();
                     services.AddScoped<JwtTokenParser>();
                     services.AddScoped<MarketActorAuthenticator>();
-
-                    services.AddScoped<ActorProvider>();
 
                     services.AddScoped<ISystemDateTimeProvider, SystemDateTimeProvider>();
                     services.AddSingleton<IJsonSerializer, JsonSerializer>();
@@ -113,12 +101,6 @@ namespace B2B.Transactions.Api
                             return storage;
                         });
                     services.AddScoped<RequestResponseLoggingMiddleware>();
-                    //services.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
-                    //services.AddScoped<ClaimsPrincipalContext>();
-                    //services.AddScoped(s => new OpenIdSettings(metaDataAddress, audience));
-                    //services.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
-                    services.AddScoped<IActorContext, ActorContext>();
-                    //services.AddScoped<IActorProvider, ActorProvider>();
                     services.AddScoped<IDbConnectionFactory>(_ =>
                     {
                         var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING");
