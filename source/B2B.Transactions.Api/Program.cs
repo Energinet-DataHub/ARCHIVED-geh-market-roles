@@ -70,7 +70,17 @@ namespace B2B.Transactions.Api
                         };
                     });
                     services.AddScoped<CurrentClaimsPrincipal>();
-                    services.AddScoped<JwtTokenParser>();
+                    services.AddScoped<JwtTokenParser>(sp =>
+                    {
+                        if (Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT") == "Development")
+                        {
+                            return new JwtTokenParser(new TokenValidationParameters() { ValidateAudience = false, ValidateIssuer = false, ValidateLifetime = false, SignatureValidator = (token, parameters) => new JwtSecurityToken(token) });
+                        }
+                        else
+                        {
+                            return new JwtTokenParser(new TokenValidationParameters() { ValidateAudience = false, ValidateIssuer = false, ValidateLifetime = false, SignatureValidator = (token, parameters) => new JwtSecurityToken(token) });
+                        }
+                    });
                     services.AddScoped<MarketActorAuthenticator>();
 
                     services.AddScoped<ISystemDateTimeProvider, SystemDateTimeProvider>();
