@@ -13,11 +13,9 @@
 // limitations under the License.
 
 using System;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
 
@@ -58,19 +56,13 @@ namespace B2B.Transactions.Infrastructure.Authentication.Bearer
             if (result.Success == false)
             {
                 LogParseResult(result);
-                UserIsNotUnauthorized(context, httpRequestData);
+                context.RespondWithUnauthorized(httpRequestData);
                 return;
             }
 
             _currentClaimsPrincipal.SetCurrentUser(result.ClaimsPrincipal!);
             _logger.LogInformation("Bearer token authentication succeeded.");
             await next(context).ConfigureAwait(false);
-        }
-
-        private static void UserIsNotUnauthorized(FunctionContext context, HttpRequestData httpRequestData)
-        {
-            var httpResponseData = httpRequestData.CreateResponse(HttpStatusCode.Unauthorized);
-            context.SetHttpResponseData(httpResponseData);
         }
 
         private void LogParseResult(Result result)

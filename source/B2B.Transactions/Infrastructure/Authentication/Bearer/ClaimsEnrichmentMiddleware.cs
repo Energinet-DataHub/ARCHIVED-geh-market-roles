@@ -21,7 +21,6 @@ using Dapper;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
 
@@ -61,7 +60,7 @@ namespace B2B.Transactions.Infrastructure.Authentication.Bearer
             if (_currentClaimsPrincipal.ClaimsPrincipal is null)
             {
                 _logger.LogError("No current authenticated user");
-                SetUnauthorized(context, httpRequestData);
+                context.RespondWithUnauthorized(httpRequestData);
                 return;
             }
 
@@ -69,7 +68,7 @@ namespace B2B.Transactions.Infrastructure.Authentication.Bearer
             if (string.IsNullOrEmpty(marketActorId))
             {
                 _logger.LogError("Could not read market actor id from claims principal.");
-                SetUnauthorized(context, httpRequestData);
+                context.RespondWithUnauthorized(httpRequestData);
                 return;
             }
 
@@ -77,7 +76,7 @@ namespace B2B.Transactions.Infrastructure.Authentication.Bearer
             if (actor is null)
             {
                 _logger.LogError($"Could not find an actor in the database with id {marketActorId}");
-                SetUnauthorized(context, httpRequestData);
+                context.RespondWithUnauthorized(httpRequestData);
                 return;
             }
 
@@ -90,12 +89,6 @@ namespace B2B.Transactions.Infrastructure.Authentication.Bearer
         private static string? GetMarketActorId(ClaimsPrincipal claimsPrincipal)
         {
             return claimsPrincipal.FindFirst(claim => claim.Type.Equals("azp", StringComparison.OrdinalIgnoreCase))?.Value;
-        }
-
-        private static void SetUnauthorized(FunctionContext context, HttpRequestData httpRequestData)
-        {
-            var httpResponseData = httpRequestData.CreateResponse(HttpStatusCode.Unauthorized);
-            context.SetHttpResponseData(httpResponseData);
         }
 
         private ClaimsIdentity CreateClaimsIdentityFrom(Actor actor)

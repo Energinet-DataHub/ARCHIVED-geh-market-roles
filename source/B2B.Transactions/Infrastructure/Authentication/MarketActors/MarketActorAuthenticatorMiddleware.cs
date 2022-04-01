@@ -58,7 +58,7 @@ namespace B2B.Transactions.Infrastructure.Authentication.MarketActors
             if (_currentClaimsPrincipal.ClaimsPrincipal is null)
             {
                 _logger.LogError("Current claims principal is null. Cannot continue.");
-                UserIsNotUnauthorized(context, httpRequestData);
+                context.RespondWithUnauthorized(httpRequestData);
                 return;
             }
 
@@ -66,18 +66,12 @@ namespace B2B.Transactions.Infrastructure.Authentication.MarketActors
             if (_marketActorAuthenticator.CurrentIdentity is NotAuthenticated)
             {
                 _logger.LogError("Could not authenticate market actor identity. This is due to the current claims identity does hold the required claims.");
-                UserIsNotUnauthorized(context, httpRequestData);
+                context.RespondWithUnauthorized(httpRequestData);
                 return;
             }
 
             _logger.LogInformation("Successfully authenticated market actor identity.");
             await next(context).ConfigureAwait(false);
-        }
-
-        private static void UserIsNotUnauthorized(FunctionContext context, HttpRequestData httpRequestData)
-        {
-            var httpResponseData = httpRequestData.CreateResponse(HttpStatusCode.Unauthorized);
-            context.SetHttpResponseData(httpResponseData);
         }
     }
 }

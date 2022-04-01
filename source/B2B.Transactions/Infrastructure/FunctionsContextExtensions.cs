@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 
@@ -59,6 +60,17 @@ namespace B2B.Transactions.Infrastructure
             var type = functionBindingsFeature.GetType();
             var propertyInfo = type?.GetProperties().Single(p => p.Name is "InvocationResult");
             propertyInfo?.SetValue(functionBindingsFeature, response);
+        }
+
+        /// <summary>
+        /// Respond with Unauthorized HTTP 401
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="httpRequestData"></param>
+        internal static void RespondWithUnauthorized(this FunctionContext context, HttpRequestData httpRequestData)
+        {
+            var httpResponseData = httpRequestData.CreateResponse(HttpStatusCode.Unauthorized);
+            context.SetHttpResponseData(httpResponseData);
         }
 
         /// <summary>
