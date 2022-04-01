@@ -45,11 +45,7 @@ namespace B2B.Transactions.Api
     {
         public static async Task Main()
         {
-            OpenIdConnectConfiguration stsConfig;
-            if (IsRunningLocally())
-            {
-                stsConfig = await GetSecurityTokenProviderConfigurationAsync().ConfigureAwait(false);
-            }
+            var tokenValidationParameters = await GetTokenValidationParametersAsync().ConfigureAwait(false);
 
             var host = new HostBuilder()
                 .ConfigureFunctionsWorkerDefaults(worker =>
@@ -62,30 +58,9 @@ namespace B2B.Transactions.Api
                 })
                 .ConfigureServices(services =>
                 {
-                    services.AddScoped<TokenValidationParameters>(sp =>
-                    {
-                        return new()
-                        {
-                            ValidateAudience = false,
-                            ValidateLifetime = false,
-                            ValidateIssuer = false,
-                            SignatureValidator = (token, parameters) => new JwtSecurityToken(token),
-                        };
-                    });
                     services.AddScoped<CurrentClaimsPrincipal>();
-                    services.AddScoped<JwtTokenParser>(sp =>
-                    {
-                        if (IsRunningLocally())
-                        {
-                            return new JwtTokenParser(new TokenValidationParameters() { ValidateAudience = false, ValidateIssuer = false, ValidateLifetime = false, SignatureValidator = (token, parameters) => new JwtSecurityToken(token) });
-                        }
-                        else
-                        {
-                            return new JwtTokenParser(new TokenValidationParameters() { ValidateAudience = false, ValidateIssuer = false, ValidateLifetime = false, SignatureValidator = (token, parameters) => new JwtSecurityToken(token) });
-                        }
-                    });
+                    services.AddScoped<JwtTokenParser>(sp => new JwtTokenParser(tokenValidationParameters));
                     services.AddScoped<MarketActorAuthenticator>();
-
                     services.AddScoped<ISystemDateTimeProvider, SystemDateTimeProvider>();
                     services.AddSingleton<IJsonSerializer, JsonSerializer>();
                     services.AddScoped<SchemaStore>();
@@ -135,13 +110,36 @@ namespace B2B.Transactions.Api
             return Environment.GetEnvironmentVariable("AZURE_FUNCTIONS_ENVIRONMENT") == "Development";
         }
 
-        private static Task<OpenIdConnectConfiguration> GetSecurityTokenProviderConfigurationAsync()
+        private static async Task<TokenValidationParameters> GetTokenValidationParametersAsync()
         {
+            if (IsRunningLocally())
+            {
+                return new TokenValidationParameters()
+                {
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
+                    ValidateLifetime = false,
+                    SignatureValidator = (token, parameters) => new JwtSecurityToken(token),
+                };
+            }
+
             var tenantId = Environment.GetEnvironmentVariable("B2C_TENANT_ID") ?? throw new InvalidOperationException("B2C tenant id not found.");
             var audience = Environment.GetEnvironmentVariable("BACKEND_SERVICE_APP_ID") ?? throw new InvalidOperationException("Backend service app id not found.");
             var metaDataAddress = $"https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration";
             var openIdConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(metaDataAddress, new OpenIdConnectConfigurationRetriever());
-            return openIdConfigurationManager.GetConfigurationAsync();
+            var stsConfig = await openIdConfigurationManager.GetConfigurationAsync().ConfigureAwait(false);
+            return new TokenValidationParameters
+            {
+                ValidateAudience = true,
+                ValidateIssuer = true,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = true,
+                RequireSignedTokens = true,
+                ClockSkew = TimeSpan.Zero,
+                ValidAudience = audience,
+                IssuerSigningKeys = stsConfig.SigningKeys,
+                ValidIssuer = stsConfig.Issuer,
+            };
         }
     }
 }
