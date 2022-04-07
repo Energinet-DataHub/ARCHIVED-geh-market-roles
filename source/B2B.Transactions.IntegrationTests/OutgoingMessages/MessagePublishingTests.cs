@@ -36,7 +36,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
             : base(databaseFixture)
         {
             var systemDateTimeProvider = GetService<ISystemDateTimeProvider>();
-            _outgoingMessageStore = new OutgoingMessageStoreSpy();
+            _outgoingMessageStore = GetService<IOutgoingMessageStore>();
             _messageFactory = new AcceptMessageFactory(systemDateTimeProvider);
         }
 
