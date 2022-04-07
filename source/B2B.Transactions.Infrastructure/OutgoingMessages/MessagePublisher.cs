@@ -40,17 +40,22 @@ namespace B2B.Transactions.Infrastructure.OutgoingMessages
             {
                 await _dataAvailableNotificationSender.SendAsync(
                     _correlationContext.Id,
-                    new DataAvailableNotificationDto(
-                        Guid.NewGuid(),
-                        new GlobalLocationNumberDto(message.RecipientId),
-                        new MessageTypeDto(string.Empty),
-                        DomainOrigin.MarketRoles,
-                        false,
-                        1,
-                        message.DocumentType)).ConfigureAwait(false);
+                    CreateDataAvailableNotificationFrom(message)).ConfigureAwait(false);
 
                 message.Published();
             }
+        }
+
+        private static DataAvailableNotificationDto CreateDataAvailableNotificationFrom(OutgoingMessage message)
+        {
+            return new DataAvailableNotificationDto(
+                Guid.NewGuid(),
+                new GlobalLocationNumberDto(message.RecipientId),
+                new MessageTypeDto(string.Empty),
+                DomainOrigin.MarketRoles,
+                false,
+                1,
+                message.DocumentType);
         }
     }
 }
