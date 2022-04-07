@@ -30,7 +30,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
     public class MessagePublishingTests : TestBase
     {
         private readonly IOutgoingMessageStore _outgoingMessageStore;
-        private readonly IMessageFactory<IMessage> _messageFactory;
+        private readonly IMessageFactory<IDocument> _messageFactory;
         private readonly MessagePublisher _messagePublisher;
         private readonly DataAvailableNotificationSenderSpy _dataAvailableNotificationSenderSpy;
 

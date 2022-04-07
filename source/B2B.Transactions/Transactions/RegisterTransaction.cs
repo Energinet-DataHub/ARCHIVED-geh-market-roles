@@ -24,10 +24,10 @@ namespace B2B.Transactions.Transactions
     {
         private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly ITransactionRepository _transactionRepository;
-        private readonly IMessageFactory<IMessage> _messageFactory;
+        private readonly IMessageFactory<IDocument> _messageFactory;
         private readonly IUnitOfWork _unitOfWork;
 
-        public RegisterTransaction(IOutgoingMessageStore outgoingMessageStore, ITransactionRepository transactionRepository, IMessageFactory<IMessage> messageFactory, IUnitOfWork unitOfWork)
+        public RegisterTransaction(IOutgoingMessageStore outgoingMessageStore, ITransactionRepository transactionRepository, IMessageFactory<IDocument> messageFactory, IUnitOfWork unitOfWork)
         {
             _outgoingMessageStore = outgoingMessageStore ?? throw new ArgumentNullException(nameof(outgoingMessageStore));
             _transactionRepository = transactionRepository ?? throw new ArgumentNullException(nameof(transactionRepository));
@@ -51,16 +51,16 @@ namespace B2B.Transactions.Transactions
     #pragma warning disable
     public class OutgoingMessage
     {
-        public OutgoingMessage(IMessage message, string recipientId)
+        public OutgoingMessage(IDocument document, string recipientId)
         {
-            Message = message ?? throw new ArgumentNullException(nameof(message));
+            Document = document ?? throw new ArgumentNullException(nameof(document));
             RecipientId = recipientId;
         }
 
-        public IMessage Message { get; }
+        public IDocument Document { get; }
         public bool IsPublished { get; private set; }
         public string RecipientId { get; }
-        public string DocumentType => Message.DocumentType;
+        public string DocumentType => Document.DocumentType;
 
         public void Published()
         {
