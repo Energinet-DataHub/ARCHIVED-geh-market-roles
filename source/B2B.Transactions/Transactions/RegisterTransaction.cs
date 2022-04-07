@@ -44,8 +44,7 @@ namespace B2B.Transactions.Transactions
 
             _outgoingMessageStore.Add(outgoingMessage);
 
-            _unitOfWork.SaveTransaction();
-            return Task.CompletedTask;
+            return _unitOfWork.CommitAsync();
         }
     }
 
