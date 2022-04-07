@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -113,18 +112,6 @@ namespace B2B.Transactions.IntegrationTests
 
                 message.Published();
             }
-        }
-    }
-
-    public class DataAvailableNotificationSenderSpy : IDataAvailableNotificationSender
-    {
-        public ReadOnlyCollection<DataAvailableNotificationDto> PublishedMessages => _publishedMessages.AsReadOnly();
-
-        private List<DataAvailableNotificationDto> _publishedMessages = new();
-        public Task SendAsync(string correlationId, DataAvailableNotificationDto dataAvailableNotificationDto)
-        {
-            _publishedMessages.Add(dataAvailableNotificationDto);
-            return Task.CompletedTask;
         }
     }
 }
