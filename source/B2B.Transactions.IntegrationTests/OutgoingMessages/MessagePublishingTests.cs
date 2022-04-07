@@ -14,7 +14,6 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using B2B.Transactions.Infrastructure.Configuration.Correlation;
 using B2B.Transactions.Infrastructure.OutgoingMessages;
 using B2B.Transactions.IntegrationTests.Fixtures;
 using B2B.Transactions.IntegrationTests.TestDoubles;
@@ -33,6 +32,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
         private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly IMessageFactory<IMessage> _messageFactory;
         private readonly MessagePublisher _messagePublisher;
+        private readonly DataAvailableNotificationSenderSpy _dataAvailableNotificationSenderSpy;
 
         public MessagePublishingTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
@@ -41,6 +41,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
             _outgoingMessageStore = GetService<IOutgoingMessageStore>();
             _messageFactory = new AcceptMessageFactory(systemDateTimeProvider);
             _messagePublisher = GetService<MessagePublisher>();
+            _dataAvailableNotificationSenderSpy = (DataAvailableNotificationSenderSpy)GetService<IDataAvailableNotificationSender>();
         }
 
         [Fact]
@@ -49,12 +50,9 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
             var outgoingMessage = CreateOutgoingMessage();
 
             await _messagePublisher.PublishAsync(await _outgoingMessageStore.GetUnpublishedAsync().ConfigureAwait(false)).ConfigureAwait(false);
+
             var unpublishedMessages = await _outgoingMessageStore.GetUnpublishedAsync().ConfigureAwait(false);
-
-            var dataAvailableNotificationSenderSpy =
-                GetService<IDataAvailableNotificationSender>() as DataAvailableNotificationSenderSpy;
-            var publishedMessage = dataAvailableNotificationSenderSpy?.PublishedMessages.FirstOrDefault();
-
+            var publishedMessage = _dataAvailableNotificationSenderSpy.PublishedMessages.FirstOrDefault();
             Assert.Empty(unpublishedMessages);
             Assert.NotNull(publishedMessage);
             Assert.Equal(outgoingMessage.RecipientId, publishedMessage?.Recipient.Value);
