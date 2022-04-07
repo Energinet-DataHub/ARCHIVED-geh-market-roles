@@ -46,9 +46,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
         [Fact]
         public async Task Outgoing_messages_are_published()
         {
-            var transaction = TransactionBuilder.CreateTransaction();
-            var outgoingMessage = new OutgoingMessage(_messageFactory.CreateMessage(transaction), transaction.Message.ReceiverId);
-            _outgoingMessageStore.Add(outgoingMessage);
+            var outgoingMessage = CreateOutgoingMessage();
 
             await _messagePublisher.PublishAsync(await _outgoingMessageStore.GetUnpublishedAsync().ConfigureAwait(false)).ConfigureAwait(false);
             var unpublishedMessages = await _outgoingMessageStore.GetUnpublishedAsync().ConfigureAwait(false);
@@ -64,6 +62,15 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
             Assert.Equal(outgoingMessage.DocumentType, publishedMessage?.DocumentType);
             Assert.Equal(false, publishedMessage?.SupportsBundling);
             Assert.Equal(string.Empty, publishedMessage?.MessageType.Value);
+        }
+
+        private OutgoingMessage CreateOutgoingMessage()
+        {
+            var transaction = TransactionBuilder.CreateTransaction();
+            var outgoingMessage =
+                new OutgoingMessage(_messageFactory.CreateMessage(transaction), transaction.Message.ReceiverId);
+            _outgoingMessageStore.Add(outgoingMessage);
+            return outgoingMessage;
         }
     }
 }
