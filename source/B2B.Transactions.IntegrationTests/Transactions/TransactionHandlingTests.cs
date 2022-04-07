@@ -23,7 +23,7 @@ using B2B.Transactions.Transactions;
 using B2B.Transactions.Xml.Outgoing;
 using Xunit;
 
-namespace B2B.Transactions.IntegrationTests
+namespace B2B.Transactions.IntegrationTests.Transactions
 {
     public class TransactionHandlingTests : TestBase
     {
