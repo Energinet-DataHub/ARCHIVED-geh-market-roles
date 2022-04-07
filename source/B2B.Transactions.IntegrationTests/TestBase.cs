@@ -13,12 +13,10 @@
 // limitations under the License.
 
 using System;
-using B2B.Transactions.DataAccess;
 using B2B.Transactions.Infrastructure.Configuration;
 using B2B.Transactions.Infrastructure.Configuration.Correlation;
 using B2B.Transactions.IntegrationTests.Fixtures;
 using B2B.Transactions.IntegrationTests.TestDoubles;
-using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -60,13 +58,6 @@ namespace B2B.Transactions.IntegrationTests
             where T : notnull
         {
             return _serviceProvider.GetRequiredService<T>();
-        }
-
-        protected OutboxMessage GetOutboxMessage<T>()
-            where T : notnull
-        {
-            var sql = $"SELECT * FROM [b2b].[OutboxMessages] WHERE Type = '{typeof(T).FullName}'";
-            return GetService<IDbConnectionFactory>().GetOpenConnection().QuerySingleOrDefault<OutboxMessage>(sql);
         }
 
         protected virtual void Dispose(bool disposing)

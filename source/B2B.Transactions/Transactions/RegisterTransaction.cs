@@ -13,12 +13,10 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using B2B.Transactions.DataAccess;
 using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Xml.Outgoing;
-using Energinet.DataHub.MessageHub.Model.Model;
 
 namespace B2B.Transactions.Transactions
 {
@@ -27,15 +25,13 @@ namespace B2B.Transactions.Transactions
         private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IMessageFactory<IMessage> _messageFactory;
-        private readonly IOutbox _outbox;
         private readonly IUnitOfWork _unitOfWork;
 
-        public RegisterTransaction(IOutgoingMessageStore outgoingMessageStore, ITransactionRepository transactionRepository, IMessageFactory<IMessage> messageFactory, IOutbox outbox, IUnitOfWork unitOfWork)
+        public RegisterTransaction(IOutgoingMessageStore outgoingMessageStore, ITransactionRepository transactionRepository, IMessageFactory<IMessage> messageFactory, IUnitOfWork unitOfWork)
         {
             _outgoingMessageStore = outgoingMessageStore ?? throw new ArgumentNullException(nameof(outgoingMessageStore));
             _transactionRepository = transactionRepository ?? throw new ArgumentNullException(nameof(transactionRepository));
             _messageFactory = messageFactory ?? throw new ArgumentNullException(nameof(messageFactory));
-            _outbox = outbox;
             _unitOfWork = unitOfWork;
         }
 
@@ -47,19 +43,6 @@ namespace B2B.Transactions.Transactions
             var outgoingMessage = new OutgoingMessage(_messageFactory.CreateMessage(transaction), transaction.Message.ReceiverId);
 
             _outgoingMessageStore.Add(outgoingMessage);
-
-            //TODO: Insert correct values or fetch them later?
-            //TODO: Get MessageType and documentType based on transaction.Message.ProcessType?
-            var messageAvailable = new MessageAvailable(
-                transaction.Message.MessageId,
-                transaction.Message.ReceiverId,
-                "ConfirmChangeOfSupplier",
-                "MarketRoles",
-                true,
-                1,
-                "ConfirmRequestChangeOfSupplier");
-
-            _outbox.Add(messageAvailable);
 
             _unitOfWork.SaveTransaction();
             return Task.CompletedTask;

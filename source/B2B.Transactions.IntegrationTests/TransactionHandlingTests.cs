@@ -16,15 +16,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using B2B.Transactions.DataAccess;
-using B2B.Transactions.Infrastructure.DataAccess;
-using B2B.Transactions.Infrastructure.Serialization;
 using B2B.Transactions.IntegrationTests.Fixtures;
 using B2B.Transactions.IntegrationTests.TestDoubles;
 using B2B.Transactions.Messages;
 using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Transactions;
 using B2B.Transactions.Xml.Outgoing;
-using Dapper;
 using Xunit;
 
 namespace B2B.Transactions.IntegrationTests
@@ -34,7 +31,6 @@ namespace B2B.Transactions.IntegrationTests
         private static readonly SystemDateTimeProviderStub _dateTimeProvider = new();
         private readonly ITransactionRepository _transactionRepository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IOutbox _outbox;
         private readonly XNamespace _namespace = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
         private OutgoingMessageStoreSpy _outgoingMessageStoreSpy = new();
         private IMessageFactory<IMessage> _messageFactory = new AcceptMessageFactory(_dateTimeProvider);
@@ -44,7 +40,6 @@ namespace B2B.Transactions.IntegrationTests
         {
             _transactionRepository =
                 GetService<ITransactionRepository>();
-            _outbox = GetService<IOutbox>();
             _unitOfWork = GetService<IUnitOfWork>();
         }
 
@@ -97,7 +92,7 @@ namespace B2B.Transactions.IntegrationTests
 
         private Task RegisterTransaction(B2BTransaction transaction)
         {
-            var useCase = new RegisterTransaction(_outgoingMessageStoreSpy, _transactionRepository, _messageFactory, _outbox, _unitOfWork);
+            var useCase = new RegisterTransaction(_outgoingMessageStoreSpy, _transactionRepository, _messageFactory, _unitOfWork);
             return useCase.HandleAsync(transaction);
         }
 
