@@ -26,7 +26,7 @@ using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Energinet.DataHub.MessageHub.Model.Model;
 using Xunit;
 
-namespace B2B.Transactions.IntegrationTests
+namespace B2B.Transactions.IntegrationTests.OutgoingMessages
 {
     public class MessagePublishingTests : TestBase
     {
@@ -79,6 +79,4 @@ namespace B2B.Transactions.IntegrationTests
                 });
         }
     }
-
-    #pragma warning disable
 }
