@@ -120,7 +120,7 @@ namespace B2B.Transactions.Infrastructure.Configuration
             return this;
         }
 
-        public CompositionRoot AddOutgoingMessageStore(IOutgoingMessageStore outgoingMessageStore)
+        public CompositionRoot AddMessagePublishing(IOutgoingMessageStore outgoingMessageStore)
         {
             _services.AddScoped<IOutgoingMessageStore>(_ => outgoingMessageStore);
             return this;
