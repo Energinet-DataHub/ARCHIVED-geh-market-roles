@@ -18,7 +18,6 @@ using B2B.Transactions.Infrastructure.Configuration.Correlation;
 using B2B.Transactions.Infrastructure.OutgoingMessages;
 using B2B.Transactions.IntegrationTests.Fixtures;
 using B2B.Transactions.IntegrationTests.TestDoubles;
-using B2B.Transactions.Messages;
 using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Transactions;
 using B2B.Transactions.Xml.Outgoing;
@@ -46,7 +45,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
         {
             var dataAvailableNotificationSenderSpy = new DataAvailableNotificationSenderSpy();
             var messagePublisher = new MessagePublisher(dataAvailableNotificationSenderSpy, GetService<ICorrelationContext>());
-            var transaction = CreateTransaction();
+            var transaction = TransactionBuilder.CreateTransaction();
             var outgoingMessage = new OutgoingMessage(_messageFactory.CreateMessage(transaction), transaction.Message.ReceiverId);
             _outgoingMessageStore.Add(outgoingMessage);
 
@@ -61,22 +60,6 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
             Assert.Equal(outgoingMessage.DocumentType, publishedMessage?.DocumentType);
             Assert.Equal(false, publishedMessage?.SupportsBundling);
             Assert.Equal(string.Empty, publishedMessage?.MessageType.Value);
-        }
-
-        private static B2BTransaction CreateTransaction()
-        {
-            return B2BTransaction.Create(
-                new MessageHeader("fake", "fake", "fake", "fake", "fake", "somedate", "fake"),
-                new MarketActivityRecord()
-                {
-                    BalanceResponsibleId = "fake",
-                    Id = "fake",
-                    ConsumerId = "fake",
-                    ConsumerName = "fake",
-                    EffectiveDate = "fake",
-                    EnergySupplierId = "fake",
-                    MarketEvaluationPointId = "fake",
-                });
         }
     }
 }

@@ -18,7 +18,6 @@ using System.Xml.Linq;
 using B2B.Transactions.DataAccess;
 using B2B.Transactions.IntegrationTests.Fixtures;
 using B2B.Transactions.IntegrationTests.TestDoubles;
-using B2B.Transactions.Messages;
 using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Transactions;
 using B2B.Transactions.Xml.Outgoing;
@@ -46,7 +45,7 @@ namespace B2B.Transactions.IntegrationTests
         [Fact]
         public async Task Transaction_is_registered()
         {
-            var transaction = CreateTransaction();
+            var transaction = TransactionBuilder.CreateTransaction();
             await RegisterTransaction(transaction).ConfigureAwait(false);
 
             var savedTransaction = _transactionRepository.GetById(transaction.Message.MessageId);
@@ -58,7 +57,7 @@ namespace B2B.Transactions.IntegrationTests
         {
             var now = _dateTimeProvider.Now();
             _dateTimeProvider.SetNow(now);
-            var transaction = CreateTransaction();
+            var transaction = TransactionBuilder.CreateTransaction();
             await RegisterTransaction(transaction).ConfigureAwait(false);
 
             var acceptMessage = _outgoingMessageStoreSpy.Messages.FirstOrDefault();
@@ -67,22 +66,6 @@ namespace B2B.Transactions.IntegrationTests
 
             AssertHeader(document, transaction);
             AssertMarketActivityRecord(document, transaction);
-        }
-
-        private static B2BTransaction CreateTransaction()
-        {
-            return B2BTransaction.Create(
-                new MessageHeader("fake", "fake", "fake", "fake", "fake", "somedate", "fake"),
-                new MarketActivityRecord()
-                {
-                    BalanceResponsibleId = "fake",
-                    Id = "fake",
-                    ConsumerId = "fake",
-                    ConsumerName = "fake",
-                    EffectiveDate = "fake",
-                    EnergySupplierId = "fake",
-                    MarketEvaluationPointId = "fake",
-                });
         }
 
         private static XDocument CreateDocument(string payload)
