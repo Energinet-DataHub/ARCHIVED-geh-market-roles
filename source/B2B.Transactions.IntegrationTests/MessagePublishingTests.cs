@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using B2B.Transactions.Infrastructure.Configuration.Correlation;
+using B2B.Transactions.Infrastructure.OutgoingMessages;
 using B2B.Transactions.IntegrationTests.Fixtures;
 using B2B.Transactions.IntegrationTests.TestDoubles;
 using B2B.Transactions.Messages;
@@ -24,7 +23,6 @@ using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Transactions;
 using B2B.Transactions.Xml.Outgoing;
 using Energinet.DataHub.MarketRoles.Domain.SeedWork;
-using Energinet.DataHub.MessageHub.Client.DataAvailable;
 using Energinet.DataHub.MessageHub.Model.Model;
 using Xunit;
 
@@ -83,35 +81,4 @@ namespace B2B.Transactions.IntegrationTests
     }
 
     #pragma warning disable
-    public class MessagePublisher
-    {
-        private readonly IDataAvailableNotificationSender _dataAvailableNotificationSender;
-        private readonly ICorrelationContext _correlationContext;
-
-        public MessagePublisher(IDataAvailableNotificationSender dataAvailableNotificationSender, ICorrelationContext correlationContext)
-        {
-            _dataAvailableNotificationSender = dataAvailableNotificationSender ?? throw new ArgumentNullException(nameof(dataAvailableNotificationSender));
-            _correlationContext = correlationContext;
-        }
-
-
-        public async Task PublishAsync(ReadOnlyCollection<OutgoingMessage> unpublishedMessages)
-        {
-            foreach (var message in unpublishedMessages)
-            {
-                await _dataAvailableNotificationSender.SendAsync(
-                    _correlationContext.Id,
-                    new DataAvailableNotificationDto(
-                        Guid.NewGuid(),
-                        new GlobalLocationNumberDto(message.RecipientId),
-                        new MessageTypeDto(string.Empty),
-                        DomainOrigin.MarketRoles,
-                        false,
-                        1,
-                        message.DocumentType)).ConfigureAwait(false);
-
-                message.Published();
-            }
-        }
-    }
 }
