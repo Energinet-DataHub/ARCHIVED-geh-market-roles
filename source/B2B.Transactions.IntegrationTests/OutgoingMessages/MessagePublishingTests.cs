@@ -22,6 +22,7 @@ using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Transactions;
 using B2B.Transactions.Xml.Outgoing;
 using Energinet.DataHub.MarketRoles.Domain.SeedWork;
+using Energinet.DataHub.MessageHub.Client.DataAvailable;
 using Energinet.DataHub.MessageHub.Model.Model;
 using Xunit;
 
@@ -31,6 +32,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
     {
         private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly IMessageFactory<IMessage> _messageFactory;
+        private readonly MessagePublisher _messagePublisher;
 
         public MessagePublishingTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
@@ -38,20 +40,22 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
             var systemDateTimeProvider = GetService<ISystemDateTimeProvider>();
             _outgoingMessageStore = GetService<IOutgoingMessageStore>();
             _messageFactory = new AcceptMessageFactory(systemDateTimeProvider);
+            _messagePublisher = GetService<MessagePublisher>();
         }
 
         [Fact]
         public async Task Outgoing_messages_are_published()
         {
-            var dataAvailableNotificationSenderSpy = new DataAvailableNotificationSenderSpy();
-            var messagePublisher = new MessagePublisher(dataAvailableNotificationSenderSpy, GetService<ICorrelationContext>());
             var transaction = TransactionBuilder.CreateTransaction();
             var outgoingMessage = new OutgoingMessage(_messageFactory.CreateMessage(transaction), transaction.Message.ReceiverId);
             _outgoingMessageStore.Add(outgoingMessage);
 
-            await messagePublisher.PublishAsync(await _outgoingMessageStore.GetUnpublishedAsync().ConfigureAwait(false)).ConfigureAwait(false);
+            await _messagePublisher.PublishAsync(await _outgoingMessageStore.GetUnpublishedAsync().ConfigureAwait(false)).ConfigureAwait(false);
             var unpublishedMessages = await _outgoingMessageStore.GetUnpublishedAsync().ConfigureAwait(false);
-            var publishedMessage = dataAvailableNotificationSenderSpy.PublishedMessages.FirstOrDefault();
+
+            var dataAvailableNotificationSenderSpy =
+                GetService<IDataAvailableNotificationSender>() as DataAvailableNotificationSenderSpy;
+            var publishedMessage = dataAvailableNotificationSenderSpy?.PublishedMessages.FirstOrDefault();
 
             Assert.Empty(unpublishedMessages);
             Assert.NotNull(publishedMessage);
