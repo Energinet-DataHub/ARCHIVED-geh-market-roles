@@ -47,25 +47,4 @@ namespace B2B.Transactions.Transactions
             return _unitOfWork.CommitAsync();
         }
     }
-
-    #pragma warning disable
-    public class OutgoingMessage
-    {
-        public OutgoingMessage(IDocument document, string recipientId)
-        {
-            Document = document ?? throw new ArgumentNullException(nameof(document));
-            RecipientId = recipientId;
-        }
-
-        public IDocument Document { get; }
-        public bool IsPublished { get; private set; }
-        public string RecipientId { get; }
-        public string DocumentType => Document.DocumentType;
-
-        public void Published()
-        {
-            IsPublished = true;
-        }
-    }
-    #pragma warning restore
 }
