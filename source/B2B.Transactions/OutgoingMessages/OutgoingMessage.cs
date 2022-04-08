@@ -13,9 +13,8 @@
 // limitations under the License.
 
 using System;
-using B2B.Transactions.OutgoingMessages;
 
-namespace B2B.Transactions.Transactions
+namespace B2B.Transactions.OutgoingMessages
 {
     public class OutgoingMessage
     {

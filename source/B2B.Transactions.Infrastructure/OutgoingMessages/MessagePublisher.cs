@@ -16,6 +16,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using B2B.Transactions.Infrastructure.Configuration.Correlation;
+using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Transactions;
 using Energinet.DataHub.MessageHub.Client.DataAvailable;
 using Energinet.DataHub.MessageHub.Model.Model;
