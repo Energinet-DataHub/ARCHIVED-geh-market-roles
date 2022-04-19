@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -32,7 +33,21 @@ namespace B2B.Transactions.IntegrationTests.TestDoubles
         {
             return _messages.Where(message => message.IsPublished == false).ToList().AsReadOnly();
         }
-        #pragma warning restore
+
+        public ReadOnlyCollection<OutgoingMessage> GetMessagesToForward(ReadOnlyCollection<Guid> ids)
+        {
+            var toReturn = new List<OutgoingMessage>();
+            foreach (var id in ids)
+            {
+                foreach (var outgoingMessage in _messages.Where(message => message.Id == id))
+                {
+                    toReturn.Add(outgoingMessage);
+                }
+            }
+
+            return toReturn.AsReadOnly();
+        }
+#pragma warning restore
 
         public void Add(OutgoingMessage message)
         {

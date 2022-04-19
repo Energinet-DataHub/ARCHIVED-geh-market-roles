@@ -15,30 +15,64 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using B2B.Transactions.IntegrationTests.Fixtures;
+using B2B.Transactions.IntegrationTests.Transactions;
+using B2B.Transactions.OutgoingMessages;
+using B2B.Transactions.Xml.Outgoing;
+using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Xunit;
 
 namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
 {
-    public class MessageRequestTests
+    public class MessageRequestTests : TestBase
     {
+        private readonly IOutgoingMessageStore _outgoingMessageStore;
+        private readonly IMessageFactory<IDocument> _messageFactory;
+
+        public MessageRequestTests(DatabaseFixture databaseFixture)
+            : base(databaseFixture)
+        {
+            var systemDateTimeProvider = GetService<ISystemDateTimeProvider>();
+            _outgoingMessageStore = GetService<IOutgoingMessageStore>();
+            _messageFactory = new AcceptMessageFactory(systemDateTimeProvider);
+        }
+
         [Fact]
         public async Task Message_is_forwarded_on_request()
         {
-            List<Guid> messageIdsToForward = new List<Guid>() { Guid.NewGuid(), Guid.NewGuid() };
+            var messageIdsToForward = new List<Guid>() { CreateOutgoingMessage().Id, CreateOutgoingMessage().Id };
             var messageForwarder = new MessageForwarderSpy();
 
             await messageForwarder.ForwardAsync(messageIdsToForward).ConfigureAwait(false);
 
             Assert.NotNull(messageForwarder.ForwardedMessages);
         }
+
+        private OutgoingMessage CreateOutgoingMessage()
+        {
+            var transaction = TransactionBuilder.CreateTransaction();
+            var document = _messageFactory.CreateMessage(transaction);
+            var outgoingMessage =
+                new OutgoingMessage(document.DocumentType, document.MessagePayload, transaction.Message.ReceiverId);
+            _outgoingMessageStore.Add(outgoingMessage);
+            return outgoingMessage;
+        }
     }
 
 #pragma warning disable
     public class MessageForwarderSpy
     {
+        private readonly IOutgoingMessageStore _outgoingMessageStore;
 
+        public MessageForwarderSpy(IOutgoingMessageStore outgoingMessageStore)
+        {
+            _outgoingMessageStore = outgoingMessageStore;
+        }
         public Task ForwardAsync(List<Guid> messageIdsToForward)
         {
+            var messagesToForward = _outgoingMessageStore.GetMessagesToForward(messageIdsToForward);
+
+
             foreach (var messageId in messageIdsToForward)
             {
                 ForwardedMessages.Add(messageId);
