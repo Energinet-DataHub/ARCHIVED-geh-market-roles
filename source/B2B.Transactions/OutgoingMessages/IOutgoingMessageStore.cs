@@ -39,6 +39,6 @@ namespace B2B.Transactions.OutgoingMessages
         /// </summary>
         /// <param name="messageId"></param>
         /// <returns><see cref="OutgoingMessage"/></returns>
-        OutgoingMessage? GetMessage(Guid messageId);
+        OutgoingMessage? GetById(Guid messageId);
     }
 }

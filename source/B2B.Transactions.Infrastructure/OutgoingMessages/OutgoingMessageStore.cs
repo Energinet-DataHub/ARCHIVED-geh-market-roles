@@ -43,7 +43,7 @@ namespace B2B.Transactions.Infrastructure.OutgoingMessages
                     .AsReadOnly();
         }
 
-        public OutgoingMessage? GetMessage(Guid messageId)
+        public OutgoingMessage? GetById(Guid messageId)
         {
             return _context.OutgoingMessages.Find(messageId);
         }

@@ -84,7 +84,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
 
             foreach (var messageId in messageIdsToForward)
             {
-                var message = _outgoingMessageStore.GetMessage(messageId);
+                var message = _outgoingMessageStore.GetById(messageId);
                 if (message is null)
                 {
                     exceptions.Add(new OutgoingMessageNotFoundException(messageId));
