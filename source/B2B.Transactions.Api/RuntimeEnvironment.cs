@@ -18,6 +18,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace B2B.Transactions.Api
 {
     [SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "Property name should match environment name")]
+    [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Property name should match environment name")]
     public class RuntimeEnvironment
     {
         private const string DevelopmentEnvironmentVariable = "Development";
