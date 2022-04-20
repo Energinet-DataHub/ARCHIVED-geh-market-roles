@@ -14,7 +14,7 @@
 
 using System;
 
-namespace B2B.Transactions.Infrastructure.Configuration.Correlation
+namespace B2B.Transactions.Api.Middleware.Correlation
 {
     public sealed class SessionContext : ISessionContext
     {
