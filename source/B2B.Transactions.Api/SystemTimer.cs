@@ -14,11 +14,8 @@
 
 using System;
 using System.Threading.Tasks;
-using B2B.Transactions.Infrastructure.SystemTime;
-using MediatR;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using NodaTime;
 
 namespace B2B.Transactions.Api;
 
