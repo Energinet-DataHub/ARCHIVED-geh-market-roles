@@ -15,9 +15,9 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
+using B2B.Transactions.Api.Middleware.Authentication.Bearer;
+using B2B.Transactions.Api.Middleware.Authentication.MarketActors;
 using B2B.Transactions.Api.Middleware.Correlation;
-using B2B.Transactions.Infrastructure.Authentication.Bearer;
-using B2B.Transactions.Infrastructure.Authentication.MarketActors;
 using B2B.Transactions.Infrastructure.Configuration;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
 using Microsoft.Extensions.Hosting;

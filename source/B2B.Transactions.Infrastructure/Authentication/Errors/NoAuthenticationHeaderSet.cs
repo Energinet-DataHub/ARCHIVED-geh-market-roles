@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace B2B.Transactions.Infrastructure.Authentication.Bearer.Errors
+namespace B2B.Transactions.Infrastructure.Authentication.Errors
 {
-    public abstract class AuthenticationError
+    public class NoAuthenticationHeaderSet : AuthenticationError
     {
-        protected AuthenticationError(string message)
+        public NoAuthenticationHeaderSet()
+        : base("No authorization header is set.")
         {
-            Message = message;
         }
-
-        public string Message { get; set; }
     }
 }
