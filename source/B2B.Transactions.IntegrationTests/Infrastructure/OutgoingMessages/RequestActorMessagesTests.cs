@@ -14,7 +14,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
+using B2B.Transactions.DataAccess;
 using B2B.Transactions.IntegrationTests.Fixtures;
 using B2B.Transactions.IntegrationTests.Transactions;
 using B2B.Transactions.OutgoingMessages;
@@ -40,7 +44,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         [Fact]
         public async Task Message_is_forwarded_on_request()
         {
-            var messageIdsToForward = new List<Guid>() { CreateOutgoingMessage().Id, CreateOutgoingMessage().Id };
+            var messageIdsToForward = new List<Guid>() { CreateOutgoingMessageOld().Id, CreateOutgoingMessageOld().Id };
 
             await _messageForwarder.ForwardAsync(messageIdsToForward).ConfigureAwait(false);
 
@@ -57,7 +61,33 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             Assert.Contains(result.Errors, error => error is OutgoingMessageNotFoundException);
         }
 
+        [Fact]
+        public async Task Requested_messages_are_bundled_in_a_bundle_message()
+        {
+            var message1 = CreateOutgoingMessage();
+            var message2 = CreateOutgoingMessage();
+            _outgoingMessageStore.Add(message1);
+            _outgoingMessageStore.Add(message2);
+            await GetService<IUnitOfWork>().CommitAsync().ConfigureAwait(false);
+
+            var result = await _messageForwarder.ForwardAsync(new List<Guid> { message1.Id, message2.Id }).ConfigureAwait(false);
+
+            Assert.NotNull(result.BundledMessage);
+
+            var bundledMessage = XDocument.Load(result.BundledMessage);
+        }
+
         private OutgoingMessage CreateOutgoingMessage()
+        {
+            var transaction = TransactionBuilder.CreateTransaction();
+            var document = _messageFactory.CreateMessage(transaction);
+            var outgoingMessage =
+                new OutgoingMessage(document.DocumentType, document.MessagePayload, transaction.Message.ReceiverId, Guid.NewGuid().ToString());
+
+            return outgoingMessage;
+        }
+
+        private OutgoingMessage CreateOutgoingMessageOld()
         {
             var transaction = TransactionBuilder.CreateTransaction();
             var document = _messageFactory.CreateMessage(transaction);
@@ -72,6 +102,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
     public class MessageForwarderSpy
     {
         private readonly IOutgoingMessageStore _outgoingMessageStore;
+        public List<Guid> ForwardedMessages { get; } = new ();
 
         public MessageForwarderSpy(IOutgoingMessageStore outgoingMessageStore)
         {
@@ -95,10 +126,18 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
                 }
             }
 
-            return Task.FromResult(new Result(exceptions));
+            return Task.FromResult(exceptions.Count == 0 ? new Result(CreateBundledMessage()) : new Result(exceptions)) ;
         }
 
-        public List<Guid> ForwardedMessages { get; } = new ();
+        private Stream CreateBundledMessage()
+        {
+            var stream = new MemoryStream();
+            using var xmlWriter = XmlWriter.Create(stream);
+            xmlWriter.WriteStartDocument();
+            xmlWriter.Close();
+
+            return stream;
+        }
     }
 
     public class Result
@@ -108,7 +147,13 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             Errors = exceptions;
         }
 
+        public Result(Stream bundledMessage)
+        {
+            BundledMessage = bundledMessage;
+        }
+
         public IReadOnlyCollection<Exception> Errors { get; }
+        public Stream BundledMessage { get; }
     }
 
     public class OutgoingMessageNotFoundException : Exception
