@@ -20,6 +20,8 @@ namespace B2B.Transactions.Api
     [SuppressMessage("Naming", "CA1707:Identifiers should not contain underscores", Justification = "Property name should match environment name")]
     public class RuntimeEnvironment
     {
+        private const string DevelopmentEnvironmentVariable = "Development";
+
         public static RuntimeEnvironment Default => new();
 
         public virtual string? DB_CONNECTION_STRING => GetEnvironmentVariable(nameof(DB_CONNECTION_STRING));
@@ -40,7 +42,7 @@ namespace B2B.Transactions.Api
 
         public virtual bool IsRunningLocally()
         {
-            return AZURE_FUNCTIONS_ENVIRONMENT == "Development";
+            return AZURE_FUNCTIONS_ENVIRONMENT == DevelopmentEnvironmentVariable;
         }
 
         protected virtual string? GetEnvironmentVariable(string variable)
