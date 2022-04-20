@@ -48,12 +48,13 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         }
 
         [Fact]
-        public async Task Throw_if_message_does_not_exist()
+        public async Task Result_contains_exception_if_message_does_not_exist()
         {
             var nonExistingMessage = new List<Guid>() { Guid.NewGuid() };
 
-            await Assert.ThrowsAsync<OutgoingMessageNotFoundException>(() => _messageForwarder.ForwardAsync(nonExistingMessage))
-                .ConfigureAwait(false);
+            var result = await _messageForwarder.ForwardAsync(nonExistingMessage).ConfigureAwait(false);
+
+            Assert.Contains(result.Errors, error => error is OutgoingMessageNotFoundException);
         }
 
         private OutgoingMessage CreateOutgoingMessage()
@@ -77,22 +78,37 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             _outgoingMessageStore = outgoingMessageStore;
         }
 
-        public Task ForwardAsync(List<Guid> messageIdsToForward)
+        public Task<Result> ForwardAsync(List<Guid> messageIdsToForward)
         {
+            var exceptions = new List<Exception>();
+
             foreach (var messageId in messageIdsToForward)
             {
                 var message = _outgoingMessageStore.GetMessage(messageId);
                 if (message is null)
                 {
-                    throw new OutgoingMessageNotFoundException(messageId);
+                    exceptions.Add(new OutgoingMessageNotFoundException(messageId));
                 }
-
-                ForwardedMessages.Add(messageId);
+                else
+                {
+                    ForwardedMessages.Add(messageId);
+                }
             }
-            return Task.CompletedTask;
+
+            return Task.FromResult(new Result(exceptions));
         }
 
         public List<Guid> ForwardedMessages { get; } = new ();
+    }
+
+    public class Result
+    {
+        public Result(List<Exception> exceptions)
+        {
+            Errors = exceptions;
+        }
+
+        public IReadOnlyCollection<Exception> Errors { get; }
     }
 
     public class OutgoingMessageNotFoundException : Exception
