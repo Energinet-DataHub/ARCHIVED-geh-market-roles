@@ -13,10 +13,7 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using B2B.Transactions.Transactions;
 
 namespace B2B.Transactions.OutgoingMessages
 {
@@ -38,9 +35,10 @@ namespace B2B.Transactions.OutgoingMessages
         ReadOnlyCollection<OutgoingMessage> GetUnpublished();
 
         /// <summary>
-        /// Get messages by list of ids
+        /// Gets an outgoing message from message store
         /// </summary>
-        /// <returns> A read only collection of messages</returns>
-        ReadOnlyCollection<OutgoingMessage> GetMessagesToForward(ReadOnlyCollection<Guid> ids);
+        /// <param name="messageId"></param>
+        /// <returns><see cref="OutgoingMessage"/></returns>
+        OutgoingMessage? GetMessage(Guid messageId);
     }
 }

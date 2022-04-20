@@ -19,7 +19,6 @@ using B2B.Transactions.IntegrationTests.Fixtures;
 using B2B.Transactions.IntegrationTests.Transactions;
 using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Xml.Outgoing;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Xunit;
 
 namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
@@ -28,24 +27,33 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
     {
         private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly IMessageFactory<IDocument> _messageFactory;
+        private readonly MessageForwarderSpy _messageForwarder;
 
         public MessageRequestTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
-            var systemDateTimeProvider = GetService<ISystemDateTimeProvider>();
             _outgoingMessageStore = GetService<IOutgoingMessageStore>();
-            _messageFactory = new AcceptMessageFactory(systemDateTimeProvider);
+            _messageFactory = GetService<IMessageFactory<IDocument>>();
+            _messageForwarder = new MessageForwarderSpy(_outgoingMessageStore);
         }
 
         [Fact]
         public async Task Message_is_forwarded_on_request()
         {
             var messageIdsToForward = new List<Guid>() { CreateOutgoingMessage().Id, CreateOutgoingMessage().Id };
-            var messageForwarder = new MessageForwarderSpy();
 
-            await messageForwarder.ForwardAsync(messageIdsToForward).ConfigureAwait(false);
+            await _messageForwarder.ForwardAsync(messageIdsToForward).ConfigureAwait(false);
 
-            Assert.NotNull(messageForwarder.ForwardedMessages);
+            Assert.NotNull(_messageForwarder.ForwardedMessages);
+        }
+
+        [Fact]
+        public async Task Throw_if_message_does_not_exist()
+        {
+            var nonExistingMessage = new List<Guid>() { Guid.NewGuid() };
+
+            await Assert.ThrowsAsync<OutgoingMessageNotFoundException>(() => _messageForwarder.ForwardAsync(nonExistingMessage))
+                .ConfigureAwait(false);
         }
 
         private OutgoingMessage CreateOutgoingMessage()
@@ -53,7 +61,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             var transaction = TransactionBuilder.CreateTransaction();
             var document = _messageFactory.CreateMessage(transaction);
             var outgoingMessage =
-                new OutgoingMessage(document.DocumentType, document.MessagePayload, transaction.Message.ReceiverId);
+                new OutgoingMessage(document.DocumentType, document.MessagePayload, transaction.Message.ReceiverId, Guid.NewGuid().ToString());
             _outgoingMessageStore.Add(outgoingMessage);
             return outgoingMessage;
         }
@@ -68,18 +76,30 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         {
             _outgoingMessageStore = outgoingMessageStore;
         }
+
         public Task ForwardAsync(List<Guid> messageIdsToForward)
         {
-            var messagesToForward = _outgoingMessageStore.GetMessagesToForward(messageIdsToForward);
-
-
             foreach (var messageId in messageIdsToForward)
             {
+                var message = _outgoingMessageStore.GetMessage(messageId);
+                if (message is null)
+                {
+                    throw new OutgoingMessageNotFoundException(messageId);
+                }
+
                 ForwardedMessages.Add(messageId);
             }
             return Task.CompletedTask;
         }
 
         public List<Guid> ForwardedMessages { get; } = new ();
+    }
+
+    public class OutgoingMessageNotFoundException : Exception
+    {
+        public OutgoingMessageNotFoundException(Guid messageId)
+            : base($"Message with id:{messageId} does not exist")
+        {
+        }
     }
 }

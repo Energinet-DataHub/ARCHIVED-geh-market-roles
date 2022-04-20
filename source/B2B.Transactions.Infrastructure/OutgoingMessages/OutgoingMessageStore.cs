@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using B2B.Transactions.Infrastructure.DataAccess;
 using B2B.Transactions.OutgoingMessages;
-using Microsoft.EntityFrameworkCore;
 
 namespace B2B.Transactions.Infrastructure.OutgoingMessages
 {
@@ -41,6 +41,11 @@ namespace B2B.Transactions.Infrastructure.OutgoingMessages
                     .Where(x => x.IsPublished == false)
                     .ToList()
                     .AsReadOnly();
+        }
+
+        public OutgoingMessage? GetMessage(Guid messageId)
+        {
+            return _context.OutgoingMessages.Find(messageId);
         }
     }
 }
