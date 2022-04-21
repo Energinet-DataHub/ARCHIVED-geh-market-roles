@@ -99,6 +99,9 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
                     StringComparison.OrdinalIgnoreCase) ?? false).FirstOrDefault();
 
             Assert.NotNull(marketActivityRecord);
+            Assert.Equal(
+                message.OriginalTransactionId,
+                marketActivityRecord?.Element(ns + "originalTransactionIDReference_MktActivityRecord.mRID")?.Value);
         }
 
         private OutgoingMessage CreateOutgoingMessage()
@@ -106,17 +109,17 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             var transaction = TransactionBuilder.CreateTransaction();
             var document = _messageFactory.CreateMessage(transaction);
             var outgoingMessage =
-                new OutgoingMessage(document.DocumentType, document.MessagePayload, transaction.Message.ReceiverId, Guid.NewGuid().ToString());
+                new OutgoingMessage(document.DocumentType, document.MessagePayload, transaction.Message.ReceiverId, Guid.NewGuid().ToString(), transaction.MarketActivityRecord.Id);
 
             return outgoingMessage;
         }
 
-        private OutgoingMessage CreateOutgoingMessageOld()
+        private OutgoingMessage CreateOutgoingMessageOld() // TODO: Refactor
         {
             var transaction = TransactionBuilder.CreateTransaction();
             var document = _messageFactory.CreateMessage(transaction);
             var outgoingMessage =
-                new OutgoingMessage(document.DocumentType, document.MessagePayload, transaction.Message.ReceiverId, Guid.NewGuid().ToString());
+                new OutgoingMessage(document.DocumentType, document.MessagePayload, transaction.Message.ReceiverId, Guid.NewGuid().ToString(), transaction.MarketActivityRecord.Id);
             _outgoingMessageStore.Add(outgoingMessage);
             return outgoingMessage;
         }
@@ -205,6 +208,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             {
                 writer.WriteStartElement(Prefix, "MktActivityRecord", null);
                 writer.WriteElementString(Prefix, "mRID", null, message.Id.ToString());
+                writer.WriteElementString(Prefix, "originalTransactionIDReference_MktActivityRecord.mRID", null, message.OriginalTransactionId);
                 writer.WriteEndElement();
             }
 

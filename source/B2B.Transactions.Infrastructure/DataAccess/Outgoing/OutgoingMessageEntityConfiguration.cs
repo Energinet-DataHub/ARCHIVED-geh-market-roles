@@ -32,6 +32,7 @@ namespace B2B.Transactions.Infrastructure.DataAccess.Outgoing
             builder.Property(x => x.IsPublished);
             builder.Property(x => x.RecipientId);
             builder.Property(x => x.CorrelationId);
+            builder.Property(x => x.OriginalTransactionId);
         }
     }
 }

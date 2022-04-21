@@ -44,7 +44,7 @@ namespace B2B.Transactions.Transactions
             var acceptedTransaction = new AcceptedTransaction(transaction.MarketActivityRecord.Id);
             _transactionRepository.Add(acceptedTransaction);
             var document = _messageFactory.CreateMessage(transaction);
-            var outgoingMessage = new OutgoingMessage(document.DocumentType, document.MessagePayload, transaction.Message.ReceiverId, _correlationContext.Id);
+            var outgoingMessage = new OutgoingMessage(document.DocumentType, document.MessagePayload, transaction.Message.ReceiverId, _correlationContext.Id, transaction.MarketActivityRecord.Id);
 
             _outgoingMessageStore.Add(outgoingMessage);
 
