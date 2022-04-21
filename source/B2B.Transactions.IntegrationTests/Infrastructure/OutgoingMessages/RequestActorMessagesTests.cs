@@ -15,6 +15,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
@@ -22,7 +24,9 @@ using B2B.Transactions.DataAccess;
 using B2B.Transactions.IntegrationTests.Fixtures;
 using B2B.Transactions.IntegrationTests.Transactions;
 using B2B.Transactions.OutgoingMessages;
+using B2B.Transactions.Transactions;
 using B2B.Transactions.Xml.Outgoing;
+using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Xunit;
 
 namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
@@ -32,13 +36,17 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly IMessageFactory<IDocument> _messageFactory;
         private readonly MessageForwarderSpy _messageForwarder;
+        private readonly ISystemDateTimeProvider _timeProvider;
+        private readonly MessageValidator _messageValidator;
 
         public MessageRequestTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
             _outgoingMessageStore = GetService<IOutgoingMessageStore>();
             _messageFactory = GetService<IMessageFactory<IDocument>>();
-            _messageForwarder = new MessageForwarderSpy(_outgoingMessageStore);
+            _timeProvider = GetService<ISystemDateTimeProvider>();
+            _messageValidator = GetService<MessageValidator>();
+            _messageForwarder = new MessageForwarderSpy(_outgoingMessageStore, _timeProvider, _messageValidator);
         }
 
         [Fact]
@@ -75,6 +83,8 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             Assert.NotNull(result.BundledMessage);
 
             var bundledMessage = XDocument.Load(result.BundledMessage);
+            var someVar = bundledMessage.Root?.Elements().Where(x => x.Name.LocalName.Equals("MktActivityRecord", StringComparison.OrdinalIgnoreCase));
+            Assert.Equal(2, someVar!.Count());
         }
 
         private OutgoingMessage CreateOutgoingMessage()
@@ -102,11 +112,18 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
     public class MessageForwarderSpy
     {
         private readonly IOutgoingMessageStore _outgoingMessageStore;
+        private readonly ISystemDateTimeProvider _systemDateTimeProvider;
+        private readonly MessageValidator _messageValidator;
         public List<Guid> ForwardedMessages { get; } = new ();
 
-        public MessageForwarderSpy(IOutgoingMessageStore outgoingMessageStore)
+        public MessageForwarderSpy(
+            IOutgoingMessageStore outgoingMessageStore,
+            ISystemDateTimeProvider systemDateTimeProvider,
+            MessageValidator messageValidator)
         {
             _outgoingMessageStore = outgoingMessageStore;
+            _systemDateTimeProvider = systemDateTimeProvider;
+            _messageValidator = messageValidator;
         }
 
         public Task<Result> ForwardAsync(List<Guid> messageIdsToForward)
@@ -126,17 +143,89 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
                 }
             }
 
-            return Task.FromResult(exceptions.Count == 0 ? new Result(CreateBundledMessage()) : new Result(exceptions)) ;
+            return Task.FromResult(exceptions.Count == 0
+                ? new Result(CreateBundledMessage())
+                : new Result(exceptions)) ;
         }
+
 
         private Stream CreateBundledMessage()
         {
-            var stream = new MemoryStream();
-            using var xmlWriter = XmlWriter.Create(stream);
-            xmlWriter.WriteStartDocument();
-            xmlWriter.Close();
+            const string MessageType = "ConfirmRequestChangeOfSupplier";
+            const string Prefix = "cim";
 
-            return stream;
+            var settings = new XmlWriterSettings() { OmitXmlDeclaration = false, Encoding = Encoding.UTF8 };
+            using var stream = new MemoryStream();
+            using var output = new Utf8StringWriter();
+            using var writer = XmlWriter.Create(output, settings);
+
+            writer.WriteStartDocument();
+            writer.WriteStartElement(Prefix, "ConfirmRequestChangeOfSupplier_MarketDocument", "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1");
+            writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
+            writer.WriteAttributeString("xsi", "schemaLocation", null, "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1 urn-ediel-org-structure-confirmrequestchangeofsupplier-0-1.xsd");
+            writer.WriteElementString(Prefix, "mRID", null, GenerateMessageId());
+            writer.WriteElementString(Prefix, "type", null, "414");
+            // writer.WriteElementString(Prefix, "process.processType", null, transaction?.Message.ProcessType);
+            // writer.WriteElementString(Prefix, "businessSector.type", null, "23");
+            //
+            // writer.WriteStartElement(Prefix, "sender_MarketParticipant.mRID", null);
+            // writer.WriteAttributeString(null, "codingScheme", null, "A10");
+            // writer.WriteValue("5790001330552");
+            // writer.WriteEndElement();
+            //
+            // writer.WriteElementString(Prefix, "sender_MarketParticipant.marketRole.type", null, "DDZ");
+            //
+            // writer.WriteStartElement(Prefix, "receiver_MarketParticipant.mRID", null);
+            // writer.WriteAttributeString(null, "codingScheme", null, "A10");
+            // writer.WriteValue(transaction?.Message.SenderId);
+            // writer.WriteEndElement();
+            //
+            // writer.WriteElementString(Prefix, "receiver_MarketParticipant.marketRole.type", null, transaction?.Message.SenderRole);
+            // writer.WriteElementString(Prefix, "createdDateTime", null, GetCurrentDateTime());
+            // writer.WriteElementString(Prefix, "reason.code", null, "A01");
+            //
+            writer.WriteStartElement(Prefix, "MktActivityRecord", null);
+            writer.WriteElementString(Prefix, "mRID", null, GenerateTransactionId());
+            writer.WriteEndElement();
+            writer.WriteStartElement(Prefix, "MktActivityRecord", null);
+            writer.WriteEndElement();
+            // writer.WriteElementString(Prefix, "mRID", null, GenerateTransactionId());
+            // writer.WriteElementString(Prefix, "originalTransactionIDReference_MktActivityRecord.mRID", null, transaction?.MarketActivityRecord.Id);
+            //
+            // writer.WriteStartElement(Prefix, "marketEvaluationPoint.mRID", null);
+            // writer.WriteAttributeString(null, "codingScheme", null, "A10");
+            // writer.WriteValue(transaction?.MarketActivityRecord.EnergySupplierId);
+            // writer.WriteEndElement();
+            // writer.WriteEndElement();
+
+            writer.WriteEndElement();
+            writer.Close();
+            output.Flush();
+
+            // var parseResult = _messageValidator.ParseAsync(output.ToString(), "confirmrequestchangeofsupplier", "1.0");
+            // if (!_messageValidator.Success)
+            // {
+            //     throw new InvalidOperationException($"Generated accept message does not conform with XSD schema definition: {_messageValidator.Errors()}");
+            // }
+
+            var data = Encoding.UTF8.GetBytes(output.ToString());
+
+            return new MemoryStream(data);
+        }
+
+        protected string GenerateMessageId()
+        {
+            return MessageIdGenerator.Generate();
+        }
+
+        protected string GenerateTransactionId()
+        {
+            return TransactionIdGenerator.Generate();
+        }
+
+        protected string GetCurrentDateTime()
+        {
+            return _systemDateTimeProvider.Now().ToString();
         }
     }
 
