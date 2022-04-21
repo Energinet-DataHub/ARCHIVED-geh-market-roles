@@ -83,8 +83,22 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             Assert.NotNull(result.BundledMessage);
 
             var bundledMessage = XDocument.Load(result.BundledMessage);
-            var someVar = bundledMessage.Root?.Elements().Where(x => x.Name.LocalName.Equals("MktActivityRecord", StringComparison.OrdinalIgnoreCase));
-            Assert.Equal(2, someVar!.Count());
+            var marketActivityRecords = bundledMessage.Root?.Elements().Where(x => x.Name.LocalName.Equals("MktActivityRecord", StringComparison.OrdinalIgnoreCase)).ToList();
+            Assert.Equal(2, marketActivityRecords?.Count);
+
+            AssertMarketActivityRecord(marketActivityRecords, message1);
+            AssertMarketActivityRecord(marketActivityRecords, message2);
+        }
+
+        private static void AssertMarketActivityRecord(List<XElement>? marketActivityRecords, OutgoingMessage message)
+        {
+            XNamespace ns = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
+            var marketActivityRecord = marketActivityRecords?.Where(x =>
+                x.Element(ns + "mRID")?.Value.Equals(
+                    message.Id.ToString(),
+                    StringComparison.OrdinalIgnoreCase) ?? false).FirstOrDefault();
+
+            Assert.NotNull(marketActivityRecord);
         }
 
         private OutgoingMessage CreateOutgoingMessage()
@@ -129,6 +143,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         public Task<Result> ForwardAsync(List<Guid> messageIdsToForward)
         {
             var exceptions = new List<Exception>();
+            var messages = new List<OutgoingMessage>();
 
             foreach (var messageId in messageIdsToForward)
             {
@@ -140,16 +155,17 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
                 else
                 {
                     ForwardedMessages.Add(messageId);
+                    messages.Add(message);
                 }
             }
 
             return Task.FromResult(exceptions.Count == 0
-                ? new Result(CreateBundledMessage())
+                ? new Result(CreateBundledMessage(messages))
                 : new Result(exceptions)) ;
         }
 
 
-        private Stream CreateBundledMessage()
+        private Stream CreateBundledMessage(List<OutgoingMessage> messages)
         {
             const string MessageType = "ConfirmRequestChangeOfSupplier";
             const string Prefix = "cim";
@@ -184,11 +200,14 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             // writer.WriteElementString(Prefix, "createdDateTime", null, GetCurrentDateTime());
             // writer.WriteElementString(Prefix, "reason.code", null, "A01");
             //
-            writer.WriteStartElement(Prefix, "MktActivityRecord", null);
-            writer.WriteElementString(Prefix, "mRID", null, GenerateTransactionId());
-            writer.WriteEndElement();
-            writer.WriteStartElement(Prefix, "MktActivityRecord", null);
-            writer.WriteEndElement();
+
+            foreach (var message in messages)
+            {
+                writer.WriteStartElement(Prefix, "MktActivityRecord", null);
+                writer.WriteElementString(Prefix, "mRID", null, message.Id.ToString());
+                writer.WriteEndElement();
+            }
+
             // writer.WriteElementString(Prefix, "mRID", null, GenerateTransactionId());
             // writer.WriteElementString(Prefix, "originalTransactionIDReference_MktActivityRecord.mRID", null, transaction?.MarketActivityRecord.Id);
             //
