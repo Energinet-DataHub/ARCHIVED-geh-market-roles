@@ -103,7 +103,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
 
         private static OutgoingMessage CreateOutgoingMessage(IDocument document, B2BTransaction transaction)
         {
-            return new OutgoingMessage(document.DocumentType, document.MessagePayload, transaction.Message.ReceiverId, Guid.NewGuid().ToString(), transaction.MarketActivityRecord.Id, transaction.MarketActivityRecord.MarketEvaluationPointId);
+            return new OutgoingMessage(document.DocumentType, transaction.Message.ReceiverId, Guid.NewGuid().ToString(), transaction.MarketActivityRecord.Id, transaction.MarketActivityRecord.MarketEvaluationPointId);
         }
 
         private OutgoingMessage CreateOutgoingMessage()

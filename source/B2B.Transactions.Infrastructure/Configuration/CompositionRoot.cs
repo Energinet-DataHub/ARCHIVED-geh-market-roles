@@ -20,6 +20,7 @@ using B2B.CimMessageAdapter.Transactions;
 using B2B.Transactions.Authentication;
 using B2B.Transactions.Configuration;
 using B2B.Transactions.DataAccess;
+using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.Infrastructure.Authentication;
 using B2B.Transactions.Infrastructure.DataAccess;
 using B2B.Transactions.Infrastructure.DataAccess.Transaction;
@@ -58,8 +59,10 @@ namespace B2B.Transactions.Infrastructure.Configuration
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IOutgoingMessageStore, OutgoingMessageStore>();
             services.AddScoped<IMessageFactory<IDocument>, AcceptMessageFactory>();
-            services.AddScoped<RegisterTransaction>();
             services.AddScoped<MessageValidator>();
+            services.AddScoped<IncomingMessageHandler>();
+            services.AddScoped<IncomingMessageStore>();
+
             services.AddLogging();
             AddXmlSchema(services);
         }

@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using B2B.Transactions.Configuration;
 using B2B.Transactions.DataAccess;
+using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.IntegrationTests.Fixtures;
 using B2B.Transactions.IntegrationTests.TestDoubles;
 using B2B.Transactions.OutgoingMessages;
@@ -38,7 +36,8 @@ namespace B2B.Transactions.IntegrationTests.Transactions
         private readonly ITransactionRepository _transactionRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IOutgoingMessageStore _outgoingMessageStore;
-        private IMessageFactory<IDocument> _messageFactory = new AcceptMessageFactory(_dateTimeProvider, new MessageValidator(new SchemaProvider(new SchemaStore())));
+        private readonly IncomingMessageStore _incomingMessageStore;
+        private readonly IncomingMessageHandler _incomingMessageHandler;
 
         public TransactionHandlingTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
@@ -48,47 +47,29 @@ namespace B2B.Transactions.IntegrationTests.Transactions
             _transactionRepository =
                 GetService<ITransactionRepository>();
             _unitOfWork = GetService<IUnitOfWork>();
+            _incomingMessageStore = GetService<IncomingMessageStore>();
+            _incomingMessageHandler = GetService<IncomingMessageHandler>();
         }
 
         [Fact]
-        public void Transaction_is_registered()
+        public async Task Transaction_is_registered()
         {
-            var incomingMessageStore = new IncomingMessageStore();
             var incomingMessage = TransactionBuilder.CreateTransaction();
-            var incomingMessageHandler = new IncomingMessageHandler(incomingMessageStore, _transactionRepository, _outgoingMessageStore, _unitOfWork, _correlationContext);
 
-            incomingMessageHandler.HandleAsync(incomingMessage);
+            await _incomingMessageHandler.HandleAsync(incomingMessage).ConfigureAwait(false);
 
             var savedTransaction = _transactionRepository.GetById(incomingMessage.Message.MessageId);
             Assert.NotNull(savedTransaction);
         }
 
         [Fact]
-        public async Task Message_is_generated_when_transaction_is_accepted()
+        public async Task Incoming_message_is_stored()
         {
-            var now = _dateTimeProvider.Now();
-            _dateTimeProvider.SetNow(now);
-            var transaction = TransactionBuilder.CreateTransaction();
-            await RegisterTransaction(transaction).ConfigureAwait(false);
-
-            var acceptMessage = _outgoingMessageStore.GetUnpublished().FirstOrDefault();
-            Assert.NotNull(acceptMessage);
-            var document = CreateDocument(acceptMessage!.MessagePayload ?? string.Empty);
-
-            AssertHeader(document, transaction);
-            AssertMarketActivityRecord(document, transaction);
-        }
-
-        [Fact]
-        public void Incoming_message_is_stored()
-        {
-            var incomingMessageStore = new IncomingMessageStore();
             var incomingMessage = TransactionBuilder.CreateTransaction();
-            var incomingMessageHandler = new IncomingMessageHandler(incomingMessageStore, _transactionRepository, _outgoingMessageStore, _unitOfWork, _correlationContext);
 
-            incomingMessageHandler.HandleAsync(incomingMessage);
+            await _incomingMessageHandler.HandleAsync(incomingMessage).ConfigureAwait(false);
 
-            Assert.Equal(incomingMessage, incomingMessageStore.GetById(incomingMessage.Id));
+            Assert.Equal(incomingMessage, _incomingMessageStore.GetById(incomingMessage.Id));
         }
 
         private static XDocument CreateDocument(string payload)
@@ -116,60 +97,5 @@ namespace B2B.Transactions.IntegrationTests.Transactions
             AssertXmlMessage.AssertHasHeaderValue(document, "createdDateTime", _dateTimeProvider.Now().ToString());
             AssertXmlMessage.AssertHasHeaderValue(document, "reason.code", "A01");
         }
-
-        private Task RegisterTransaction(B2BTransaction transaction)
-        {
-            var handler = new RegisterTransaction(_outgoingMessageStore, _transactionRepository, _messageFactory, _unitOfWork, _correlationContext);
-            return handler.HandleAsync(transaction);
-        }
     }
-
-#pragma warning disable
-    public class IncomingMessageStore
-    {
-        private List<B2BTransaction> messages = new();
-
-        public B2BTransaction? GetById(string incomingMessageId)
-        {
-            return messages.Find(x => x.Id == incomingMessageId);
-        }
-
-        public void Add(B2BTransaction incomingMessage)
-        {
-            messages.Add(incomingMessage);
-        }
-    }
-
-    public class IncomingMessageHandler
-    {
-        private readonly IncomingMessageStore _store;
-        private readonly ITransactionRepository _transactionRepository;
-        private readonly IOutgoingMessageStore _outgoingMessageStore;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ICorrelationContext _correlationContext;
-
-        public IncomingMessageHandler(IncomingMessageStore store, ITransactionRepository transactionRepository, IOutgoingMessageStore outgoingMessageStore, IUnitOfWork unitOfWork, ICorrelationContext correlationContext)
-        {
-            _store = store;
-            _transactionRepository = transactionRepository;
-            _outgoingMessageStore = outgoingMessageStore;
-            _unitOfWork = unitOfWork;
-            _correlationContext = correlationContext;
-        }
-
-        public void HandleAsync(B2BTransaction incomingMessage)
-        {
-            _store.Add(incomingMessage);
-            if (incomingMessage == null) throw new ArgumentNullException(nameof(incomingMessage));
-            var acceptedTransaction = new AcceptedTransaction(incomingMessage.MarketActivityRecord.Id);
-            _transactionRepository.Add(acceptedTransaction);
-            var outgoingMessage = new OutgoingMessage("ConfirmRequestChangeOfSupplier", string.Empty, incomingMessage.Message.ReceiverId, _correlationContext.Id, incomingMessage.MarketActivityRecord.Id, incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
-
-            _outgoingMessageStore.Add(outgoingMessage);
-
-            _unitOfWork.CommitAsync();
-        }
-    }
-
-    #pragma warning restore
 }

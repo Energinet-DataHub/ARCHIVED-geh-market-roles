@@ -27,7 +27,6 @@ namespace B2B.Transactions.Infrastructure.DataAccess.Outgoing
 
             builder.ToTable("OutgoingMessages", "b2b");
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.MessagePayload);
             builder.Property(x => x.DocumentType);
             builder.Property(x => x.IsPublished);
             builder.Property(x => x.RecipientId);
