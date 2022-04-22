@@ -86,14 +86,13 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             var marketActivityRecords = AssertXmlMessage.GetMarketActivityRecords(bundledMessage);
             Assert.Equal(2, marketActivityRecords?.Count);
 
-            var record1 = AssertXmlMessage.GetMarketActivityRecordById(bundledMessage, message1.Id.ToString());
-            var record2 = AssertXmlMessage.GetMarketActivityRecordById(bundledMessage, message2.Id.ToString());
-            AssertMarketActivityRecord(record1!, message1);
-            AssertMarketActivityRecord(record2!, message2);
+            AssertMarketActivityRecord(bundledMessage, message1);
+            AssertMarketActivityRecord(bundledMessage, message2);
         }
 
-        private static void AssertMarketActivityRecord(XElement marketActivityRecord, OutgoingMessage message)
+        private static void AssertMarketActivityRecord(XDocument document, OutgoingMessage message)
         {
+            var marketActivityRecord = AssertXmlMessage.GetMarketActivityRecordById(document, message.Id.ToString())!;
             Assert.NotNull(marketActivityRecord);
             AssertXmlMessage.AssertMarketActivityRecordValue(marketActivityRecord, "originalTransactionIDReference_MktActivityRecord.mRID", message.OriginalTransactionId);
         }
