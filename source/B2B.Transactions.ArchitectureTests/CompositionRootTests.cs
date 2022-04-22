@@ -39,7 +39,7 @@ namespace B2B.Transactions.ArchitectureTests
             foreach (var dependency in dependencies)
             {
                 var resolvedInstance = scope.ServiceProvider.GetService(dependency);
-                Assert.True(resolvedInstance != null, $"Can resolve {dependency.Name}");
+                Assert.True(resolvedInstance != null, $"Unable to resolve {dependency.Name}");
             }
         }
 
@@ -58,7 +58,7 @@ namespace B2B.Transactions.ArchitectureTests
             foreach (var dependency in dependencies)
             {
                 var resolvedInstance = scope.ServiceProvider.GetService(dependency);
-                Assert.True(resolvedInstance != null, $"Can resolve {dependency.Name}");
+                Assert.True(resolvedInstance != null, $"Unable to resolve {dependency.Name}");
             }
         }
 
