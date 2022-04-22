@@ -95,24 +95,26 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             var marketActivityRecord = AssertXmlMessage.GetMarketActivityRecordById(document, message.Id.ToString())!;
             Assert.NotNull(marketActivityRecord);
             AssertXmlMessage.AssertMarketActivityRecordValue(marketActivityRecord, "originalTransactionIDReference_MktActivityRecord.mRID", message.OriginalTransactionId);
+            AssertXmlMessage.AssertMarketActivityRecordValue(marketActivityRecord, "marketEvaluationPoint.mRID", message.MarketEvaluationPointId);
+        }
+
+        private static OutgoingMessage CreateOutgoingMessage(IDocument document, B2BTransaction transaction)
+        {
+            return new OutgoingMessage(document.DocumentType, document.MessagePayload, transaction.Message.ReceiverId, Guid.NewGuid().ToString(), transaction.MarketActivityRecord.Id, transaction.MarketActivityRecord.MarketEvaluationPointId);
         }
 
         private OutgoingMessage CreateOutgoingMessage()
         {
             var transaction = TransactionBuilder.CreateTransaction();
             var document = _messageFactory.CreateMessage(transaction);
-            var outgoingMessage =
-                new OutgoingMessage(document.DocumentType, document.MessagePayload, transaction.Message.ReceiverId, Guid.NewGuid().ToString(), transaction.MarketActivityRecord.Id);
-
-            return outgoingMessage;
+            return CreateOutgoingMessage(document, transaction);
         }
 
         private OutgoingMessage CreateOutgoingMessageOld() // TODO: Refactor
         {
             var transaction = TransactionBuilder.CreateTransaction();
             var document = _messageFactory.CreateMessage(transaction);
-            var outgoingMessage =
-                new OutgoingMessage(document.DocumentType, document.MessagePayload, transaction.Message.ReceiverId, Guid.NewGuid().ToString(), transaction.MarketActivityRecord.Id);
+            var outgoingMessage = CreateOutgoingMessage(document, transaction);
             _outgoingMessageStore.Add(outgoingMessage);
             return outgoingMessage;
         }
@@ -202,15 +204,12 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
                 writer.WriteStartElement(Prefix, "MktActivityRecord", null);
                 writer.WriteElementString(Prefix, "mRID", null, message.Id.ToString());
                 writer.WriteElementString(Prefix, "originalTransactionIDReference_MktActivityRecord.mRID", null, message.OriginalTransactionId);
+                writer.WriteStartElement(Prefix, "marketEvaluationPoint.mRID", null);
+                writer.WriteAttributeString(null, "codingScheme", null, "A10");
+                writer.WriteValue(message.MarketEvaluationPointId);
+                writer.WriteEndElement();
                 writer.WriteEndElement();
             }
-
-            // writer.WriteElementString(Prefix, "mRID", null, GenerateTransactionId());
-            // writer.WriteElementString(Prefix, "originalTransactionIDReference_MktActivityRecord.mRID", null, transaction?.MarketActivityRecord.Id);
-            //
-            // writer.WriteStartElement(Prefix, "marketEvaluationPoint.mRID", null);
-            // writer.WriteAttributeString(null, "codingScheme", null, "A10");
-            // writer.WriteValue(transaction?.MarketActivityRecord.EnergySupplierId);
             // writer.WriteEndElement();
             // writer.WriteEndElement();
 
