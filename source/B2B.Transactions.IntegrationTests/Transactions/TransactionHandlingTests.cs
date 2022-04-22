@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -79,7 +80,7 @@ namespace B2B.Transactions.IntegrationTests.Transactions
         {
             var incomingMessageStore = new IncomingMessageStore();
             var incomingMessage = TransactionBuilder.CreateTransaction();
-            var incomingMessageHandler = new IncomingMessageHandler();
+            var incomingMessageHandler = new IncomingMessageHandler(incomingMessageStore);
 
             incomingMessageHandler.Handle(incomingMessage);
 
@@ -122,17 +123,31 @@ namespace B2B.Transactions.IntegrationTests.Transactions
 #pragma warning disable
     public class IncomingMessageStore
     {
-        public B2BTransaction GetById(string incomingMessageId)
+        private List<B2BTransaction> messages = new();
+
+        public B2BTransaction? GetById(string incomingMessageId)
         {
-            throw new System.NotImplementedException();
+            return messages.Find(x => x.Id == incomingMessageId);
+        }
+
+        public void Add(B2BTransaction incomingMessage)
+        {
+            messages.Add(incomingMessage);
         }
     }
 
     public class IncomingMessageHandler
     {
+        private readonly IncomingMessageStore _store;
+
+        public IncomingMessageHandler(IncomingMessageStore store)
+        {
+            _store = store;
+        }
+
         public void Handle(B2BTransaction incomingMessage)
         {
-            throw new System.NotImplementedException();
+            _store.Add(incomingMessage);
         }
     }
 
