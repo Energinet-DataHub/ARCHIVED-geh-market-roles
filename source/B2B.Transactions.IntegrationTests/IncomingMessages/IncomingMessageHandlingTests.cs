@@ -13,20 +13,14 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using B2B.Transactions.Configuration;
-using B2B.Transactions.DataAccess;
 using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.IntegrationTests.Fixtures;
-using B2B.Transactions.IntegrationTests.TestDoubles;
-using B2B.Transactions.OutgoingMessages;
+using B2B.Transactions.IntegrationTests.Transactions;
 using B2B.Transactions.Transactions;
-using B2B.Transactions.Xml.Incoming;
-using B2B.Transactions.Xml.Outgoing;
 using Xunit;
 using Xunit.Categories;
 
-namespace B2B.Transactions.IntegrationTests.Transactions
+namespace B2B.Transactions.IntegrationTests.IncomingMessages
 {
     [IntegrationTest]
     public class IncomingMessageHandlingTests : TestBase
