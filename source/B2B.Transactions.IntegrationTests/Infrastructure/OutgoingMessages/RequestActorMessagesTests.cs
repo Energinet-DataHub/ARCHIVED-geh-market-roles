@@ -88,6 +88,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
 
             AssertMarketActivityRecord(bundledMessage, message1);
             AssertMarketActivityRecord(bundledMessage, message2);
+            AssertMessageHeader(bundledMessage);
         }
 
         private static void AssertMarketActivityRecord(XDocument document, OutgoingMessage message)
@@ -96,6 +97,11 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             Assert.NotNull(marketActivityRecord);
             AssertXmlMessage.AssertMarketActivityRecordValue(marketActivityRecord, "originalTransactionIDReference_MktActivityRecord.mRID", message.OriginalTransactionId);
             AssertXmlMessage.AssertMarketActivityRecordValue(marketActivityRecord, "marketEvaluationPoint.mRID", message.MarketEvaluationPointId);
+        }
+
+        private static void AssertMessageHeader(XDocument document)
+        {
+            Assert.NotEmpty(AssertXmlMessage.GetMessageHeaderValue(document, "mRID")!);
         }
 
         private static OutgoingMessage CreateOutgoingMessage(IDocument document, B2BTransaction transaction)
