@@ -36,6 +36,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly IMessageFactory<IDocument> _messageFactory;
         private readonly MessageForwarderSpy _messageForwarder;
+        private readonly IncomingMessageHandler _incomingMessageHandler;
 
         public MessageRequestTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
@@ -44,7 +45,8 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             _messageFactory = GetService<IMessageFactory<IDocument>>();
             var timeProvider = GetService<ISystemDateTimeProvider>();
             var messageValidator = GetService<MessageValidator>();
-            _messageForwarder = new MessageForwarderSpy(_outgoingMessageStore, timeProvider, messageValidator);
+            _incomingMessageHandler = GetService<IncomingMessageHandler>();
+            _messageForwarder = new MessageForwarderSpy(_outgoingMessageStore, timeProvider, messageValidator, GetService<IncomingMessageStore>());
         }
 
         [Fact]
@@ -70,13 +72,13 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         [Fact]
         public async Task Requested_messages_are_bundled_in_a_bundle_message()
         {
-            var message1 = CreateOutgoingMessage();
-            var message2 = CreateOutgoingMessage();
-            _outgoingMessageStore.Add(message1);
-            _outgoingMessageStore.Add(message2);
-            await GetService<IUnitOfWork>().CommitAsync().ConfigureAwait(false);
+            var incomingMessage1 = IncomingMessageBuilder.CreateMessage();
+            await _incomingMessageHandler.HandleAsync(incomingMessage1).ConfigureAwait(false);
+            var incomingMessage2 = IncomingMessageBuilder.CreateMessage();
+            await _incomingMessageHandler.HandleAsync(incomingMessage2).ConfigureAwait(false);
+            var outgoingMessages = _outgoingMessageStore.GetUnpublished();
 
-            var result = await _messageForwarder.ForwardAsync(new List<Guid> { message1.Id, message2.Id }).ConfigureAwait(false);
+            var result = await _messageForwarder.ForwardAsync(new List<Guid> { outgoingMessages[0].Id, outgoingMessages[1].Id }).ConfigureAwait(false);
 
             Assert.NotNull(result.BundledMessage);
 
@@ -84,23 +86,24 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             var marketActivityRecords = AssertXmlMessage.GetMarketActivityRecords(bundledMessage);
             Assert.Equal(2, marketActivityRecords.Count);
 
-            AssertMarketActivityRecord(bundledMessage, message1);
-            AssertMarketActivityRecord(bundledMessage, message2);
+            AssertMarketActivityRecord(bundledMessage, outgoingMessages[0], incomingMessage1);
+            AssertMarketActivityRecord(bundledMessage, outgoingMessages[1], incomingMessage2);
             AssertMessageHeader(bundledMessage);
         }
 
-        private static void AssertMarketActivityRecord(XDocument document, OutgoingMessage message)
+        private static void AssertMarketActivityRecord(XDocument document, OutgoingMessage message, IncomingMessage incomingMessage)
         {
             var marketActivityRecord = AssertXmlMessage.GetMarketActivityRecordById(document, message.Id.ToString())!;
             Assert.NotNull(marketActivityRecord);
-            AssertXmlMessage.AssertMarketActivityRecordValue(marketActivityRecord, "originalTransactionIDReference_MktActivityRecord.mRID", message.OriginalTransactionId);
-            AssertXmlMessage.AssertMarketActivityRecordValue(marketActivityRecord, "marketEvaluationPoint.mRID", message.MarketEvaluationPointId);
+            AssertXmlMessage.AssertMarketActivityRecordValue(marketActivityRecord, "originalTransactionIDReference_MktActivityRecord.mRID", incomingMessage.MarketActivityRecord.Id);
+            AssertXmlMessage.AssertMarketActivityRecordValue(marketActivityRecord, "marketEvaluationPoint.mRID", incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
         }
 
         private static void AssertMessageHeader(XDocument document)
         {
             Assert.NotEmpty(AssertXmlMessage.GetMessageHeaderValue(document, "mRID")!);
             AssertXmlMessage.AssertHasHeaderValue(document, "type", "414");
+            AssertXmlMessage.AssertHasHeaderValue(document, "process.processType", "E03");
         }
 
         private static OutgoingMessage CreateOutgoingMessage(IDocument document, IncomingMessage transaction)
@@ -131,16 +134,19 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
         private readonly MessageValidator _messageValidator;
+        private readonly IncomingMessageStore _incomingMessageStore;
         public List<Guid> ForwardedMessages { get; } = new ();
 
         public MessageForwarderSpy(
             IOutgoingMessageStore outgoingMessageStore,
             ISystemDateTimeProvider systemDateTimeProvider,
-            MessageValidator messageValidator)
+            MessageValidator messageValidator,
+            IncomingMessageStore incomingMessageStore)
         {
             _outgoingMessageStore = outgoingMessageStore;
             _systemDateTimeProvider = systemDateTimeProvider;
             _messageValidator = messageValidator;
+            _incomingMessageStore = incomingMessageStore;
         }
 
         public Task<Result> ForwardAsync(List<Guid> messageIdsToForward)
@@ -173,6 +179,8 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             const string MessageType = "ConfirmRequestChangeOfSupplier";
             const string Prefix = "cim";
 
+            var incomingMessage = _incomingMessageStore.GetById(messages[0].OriginalMessageId);
+
             var settings = new XmlWriterSettings { OmitXmlDeclaration = false, Encoding = Encoding.UTF8 };
             using var stream = new MemoryStream();
             using var output = new Utf8StringWriter();
@@ -184,7 +192,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             writer.WriteAttributeString("xsi", "schemaLocation", null, "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1 urn-ediel-org-structure-confirmrequestchangeofsupplier-0-1.xsd");
             writer.WriteElementString(Prefix, "mRID", null, GenerateMessageId());
             writer.WriteElementString(Prefix, "type", null, "414");
-            // writer.WriteElementString(Prefix, "process.processType", null, transaction?.Message.ProcessType);
+            writer.WriteElementString(Prefix, "process.processType", null,incomingMessage.Message.ProcessType);
             // writer.WriteElementString(Prefix, "businessSector.type", null, "23");
             //
             // writer.WriteStartElement(Prefix, "sender_MarketParticipant.mRID", null);
@@ -208,10 +216,10 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             {
                 writer.WriteStartElement(Prefix, "MktActivityRecord", null);
                 writer.WriteElementString(Prefix, "mRID", null, message.Id.ToString());
-                writer.WriteElementString(Prefix, "originalTransactionIDReference_MktActivityRecord.mRID", null, message.OriginalTransactionId);
+                writer.WriteElementString(Prefix, "originalTransactionIDReference_MktActivityRecord.mRID", null, incomingMessage.MarketActivityRecord.Id);
                 writer.WriteStartElement(Prefix, "marketEvaluationPoint.mRID", null);
                 writer.WriteAttributeString(null, "codingScheme", null, "A10");
-                writer.WriteValue(message.MarketEvaluationPointId);
+                writer.WriteValue(incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
                 writer.WriteEndElement();
                 writer.WriteEndElement();
             }

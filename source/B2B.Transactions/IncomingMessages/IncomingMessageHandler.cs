@@ -44,7 +44,7 @@ namespace B2B.Transactions.IncomingMessages
             if (incomingMessage == null) throw new ArgumentNullException(nameof(incomingMessage));
             var acceptedTransaction = new AcceptedTransaction(incomingMessage.MarketActivityRecord.Id);
             _transactionRepository.Add(acceptedTransaction);
-            var outgoingMessage = new OutgoingMessage("ConfirmRequestChangeOfSupplier", incomingMessage.Message.ReceiverId, _correlationContext.Id, incomingMessage.MarketActivityRecord.Id, incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
+            var outgoingMessage = new OutgoingMessage("ConfirmRequestChangeOfSupplier", incomingMessage.Message.ReceiverId, _correlationContext.Id, incomingMessage.Message.MessageId, incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
 
             _outgoingMessageStore.Add(outgoingMessage);
 

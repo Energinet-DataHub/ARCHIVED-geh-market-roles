@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.Messages;
 using B2B.Transactions.Transactions;
@@ -27,11 +28,11 @@ namespace B2B.Transactions.IntegrationTests.Transactions
         internal static IncomingMessage CreateMessage()
         {
             return IncomingMessage.Create(
-                new MessageHeader("fake", "E03", "fake", "DDZ", "fake", "DDQ", "fake"),
+                new MessageHeader(Guid.NewGuid().ToString(), "E03", "fake", "DDZ", "fake", "DDQ", "fake"),
                 new MarketActivityRecord()
                 {
                     BalanceResponsibleId = "fake",
-                    Id = "fake",
+                    Id = Guid.NewGuid().ToString(),
                     ConsumerId = "fake",
                     ConsumerName = "fake",
                     EffectiveDate = "fake",
