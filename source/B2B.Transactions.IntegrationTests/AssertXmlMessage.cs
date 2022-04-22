@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Linq;
 using System.Xml.Linq;
 using Xunit;
 
@@ -33,6 +35,18 @@ namespace B2B.Transactions.IntegrationTests
             return header?.Element(header.Name.Namespace + elementName)?.Value;
         }
 
+        internal static XElement? GetMarketActivityRecordById(XDocument document, string id)
+        {
+            var marketActivityRecords = document.Root?.Elements()
+                .Where(x => x.Name.LocalName.Equals("MktActivityRecord", StringComparison.OrdinalIgnoreCase)).ToList();
+
+            //XNamespace ns = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
+            return marketActivityRecords?.Where(x =>
+                x.Element(document.Root!.Name.Namespace + "mRID")?.Value.Equals(
+                    id,
+                    StringComparison.OrdinalIgnoreCase) ?? false).FirstOrDefault();
+        }
+
         internal static void AssertHasHeaderValue(XDocument document, string elementName, string? expectedValue)
         {
             Assert.Equal(expectedValue, GetMessageHeaderValue(document, elementName));
@@ -41,6 +55,11 @@ namespace B2B.Transactions.IntegrationTests
         internal static void AssertMarketActivityRecordValue(XDocument document, string elementName, string? expectedValue)
         {
             Assert.Equal(expectedValue, GetMarketActivityRecordValue(document, elementName));
+        }
+
+        internal static void AssertMarketActivityRecordValue(XElement marketActivityRecord, string elementName, string? expectedValue)
+        {
+            Assert.Equal(expectedValue, GetMarketActivityRecordValue(marketActivityRecord.Document!, elementName));
         }
 
         private static XElement? GetHeaderElement(XDocument document)

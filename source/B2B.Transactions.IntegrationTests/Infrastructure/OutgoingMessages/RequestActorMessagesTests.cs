@@ -86,22 +86,16 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             var marketActivityRecords = bundledMessage.Root?.Elements().Where(x => x.Name.LocalName.Equals("MktActivityRecord", StringComparison.OrdinalIgnoreCase)).ToList();
             Assert.Equal(2, marketActivityRecords?.Count);
 
-            AssertMarketActivityRecord(marketActivityRecords, message1);
-            AssertMarketActivityRecord(marketActivityRecords, message2);
+            var record1 = AssertXmlMessage.GetMarketActivityRecordById(bundledMessage, message1.Id.ToString());
+            var record2 = AssertXmlMessage.GetMarketActivityRecordById(bundledMessage, message2.Id.ToString());
+            AssertMarketActivityRecord(record1!, message1);
+            AssertMarketActivityRecord(record2!, message2);
         }
 
-        private static void AssertMarketActivityRecord(List<XElement>? marketActivityRecords, OutgoingMessage message)
+        private static void AssertMarketActivityRecord(XElement marketActivityRecord, OutgoingMessage message)
         {
-            XNamespace ns = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
-            var marketActivityRecord = marketActivityRecords?.Where(x =>
-                x.Element(ns + "mRID")?.Value.Equals(
-                    message.Id.ToString(),
-                    StringComparison.OrdinalIgnoreCase) ?? false).FirstOrDefault();
-
             Assert.NotNull(marketActivityRecord);
-            Assert.Equal(
-                message.OriginalTransactionId,
-                marketActivityRecord?.Element(ns + "originalTransactionIDReference_MktActivityRecord.mRID")?.Value);
+            AssertXmlMessage.AssertMarketActivityRecordValue(marketActivityRecord, "originalTransactionIDReference_MktActivityRecord.mRID", message.OriginalTransactionId);
         }
 
         private OutgoingMessage CreateOutgoingMessage()
