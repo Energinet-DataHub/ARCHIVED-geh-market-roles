@@ -38,12 +38,12 @@ namespace B2B.Transactions.IntegrationTests
 
         internal static XElement? GetMarketActivityRecordById(XDocument document, string id)
         {
-            var marketActivityRecords = GetMarketActivityRecords(document);
-
-            return marketActivityRecords?.Where(x =>
-                x.Element(document.Root!.Name.Namespace + "mRID")?.Value.Equals(
-                    id,
-                    StringComparison.OrdinalIgnoreCase) ?? false).FirstOrDefault();
+            var header = document.Root!;
+            var ns = header.Name.Namespace;
+            return header
+                .Elements(ns + "MktActivityRecord")
+                .FirstOrDefault(x => x.Element(ns + "mRID")?.Value
+                    .Equals(id, StringComparison.OrdinalIgnoreCase) ?? false);
         }
 
         internal static List<XElement> GetMarketActivityRecords(XDocument document)
