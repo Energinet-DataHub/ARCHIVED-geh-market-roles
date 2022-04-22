@@ -22,11 +22,13 @@ namespace B2B.Transactions.IntegrationTests
 {
     internal static class AssertXmlMessage
     {
+        private const string MarketActivityRecordElementName = "MktActivityRecord";
+
         internal static string GetMarketActivityRecordValue(XDocument document, string elementName)
         {
             var header = GetHeaderElement(document);
             var documentNamespace = header?.Name.Namespace!;
-            var element = header?.Element(documentNamespace + "MktActivityRecord")?.Element(documentNamespace + elementName);
+            var element = header?.Element(documentNamespace + MarketActivityRecordElementName)?.Element(documentNamespace + elementName);
             return element?.Value ?? string.Empty;
         }
 
@@ -41,7 +43,7 @@ namespace B2B.Transactions.IntegrationTests
             var header = document.Root!;
             var ns = header.Name.Namespace;
             return header
-                .Elements(ns + "MktActivityRecord")
+                .Elements(ns + MarketActivityRecordElementName)
                 .FirstOrDefault(x => x.Element(ns + "mRID")?.Value
                     .Equals(id, StringComparison.OrdinalIgnoreCase) ?? false);
         }
@@ -49,7 +51,7 @@ namespace B2B.Transactions.IntegrationTests
         internal static List<XElement> GetMarketActivityRecords(XDocument document)
         {
             return document.Root?.Elements()
-                .Where(x => x.Name.LocalName.Equals("MktActivityRecord", StringComparison.OrdinalIgnoreCase))
+                .Where(x => x.Name.LocalName.Equals(MarketActivityRecordElementName, StringComparison.OrdinalIgnoreCase))
                 .ToList() ?? new List<XElement>();
         }
 
