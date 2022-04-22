@@ -74,6 +74,18 @@ namespace B2B.Transactions.IntegrationTests.Transactions
             AssertMarketActivityRecord(document, transaction);
         }
 
+        [Fact]
+        public void Incoming_message_is_stored()
+        {
+            var incomingMessageStore = new IncomingMessageStore();
+            var incomingMessage = TransactionBuilder.CreateTransaction();
+            var incomingMessageHandler = new IncomingMessageHandler();
+
+            incomingMessageHandler.Handle(incomingMessage);
+
+            Assert.Equal(incomingMessage, incomingMessageStore.GetById(incomingMessage.Id));
+        }
+
         private static XDocument CreateDocument(string payload)
         {
             return XDocument.Parse(payload);
@@ -106,4 +118,23 @@ namespace B2B.Transactions.IntegrationTests.Transactions
             return handler.HandleAsync(transaction);
         }
     }
+
+#pragma warning disable
+    public class IncomingMessageStore
+    {
+        public B2BTransaction GetById(string incomingMessageId)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
+
+    public class IncomingMessageHandler
+    {
+        public void Handle(B2BTransaction incomingMessage)
+        {
+            throw new System.NotImplementedException();
+        }
+    }
+
+    #pragma warning restore
 }

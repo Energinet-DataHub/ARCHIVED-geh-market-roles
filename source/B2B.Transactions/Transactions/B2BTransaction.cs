@@ -12,14 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using B2B.Transactions.Messages;
 
 namespace B2B.Transactions.Transactions
 {
     public class B2BTransaction
     {
-        private B2BTransaction(MessageHeader message, MarketActivityRecord marketActivityRecord)
+        public B2BTransaction(MessageHeader message, MarketActivityRecord marketActivityRecord)
         {
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            Id = message.MessageId;
             Message = message;
             MarketActivityRecord = marketActivityRecord;
         }
@@ -28,8 +31,11 @@ namespace B2B.Transactions.Transactions
 
         public MarketActivityRecord MarketActivityRecord { get; }
 
+        public string Id { get; }
+
         public static B2BTransaction Create(MessageHeader messageHeader, MarketActivityRecord marketActivityRecord)
         {
+            if (messageHeader == null) throw new ArgumentNullException(nameof(messageHeader));
             return new B2BTransaction(messageHeader, marketActivityRecord);
         }
     }

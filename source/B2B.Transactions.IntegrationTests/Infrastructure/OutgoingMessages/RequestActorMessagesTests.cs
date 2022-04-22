@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -36,23 +35,21 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly IMessageFactory<IDocument> _messageFactory;
         private readonly MessageForwarderSpy _messageForwarder;
-        private readonly ISystemDateTimeProvider _timeProvider;
-        private readonly MessageValidator _messageValidator;
 
         public MessageRequestTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
             _outgoingMessageStore = GetService<IOutgoingMessageStore>();
             _messageFactory = GetService<IMessageFactory<IDocument>>();
-            _timeProvider = GetService<ISystemDateTimeProvider>();
-            _messageValidator = GetService<MessageValidator>();
-            _messageForwarder = new MessageForwarderSpy(_outgoingMessageStore, _timeProvider, _messageValidator);
+            var timeProvider = GetService<ISystemDateTimeProvider>();
+            var messageValidator = GetService<MessageValidator>();
+            _messageForwarder = new MessageForwarderSpy(_outgoingMessageStore, timeProvider, messageValidator);
         }
 
         [Fact]
         public async Task Message_is_forwarded_on_request()
         {
-            var messageIdsToForward = new List<Guid>() { CreateOutgoingMessageOld().Id, CreateOutgoingMessageOld().Id };
+            var messageIdsToForward = new List<Guid> { CreateOutgoingMessageOld().Id, CreateOutgoingMessageOld().Id };
 
             await _messageForwarder.ForwardAsync(messageIdsToForward).ConfigureAwait(false);
 
@@ -62,7 +59,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         [Fact]
         public async Task Result_contains_exception_if_message_does_not_exist()
         {
-            var nonExistingMessage = new List<Guid>() { Guid.NewGuid() };
+            var nonExistingMessage = new List<Guid> { Guid.NewGuid() };
 
             var result = await _messageForwarder.ForwardAsync(nonExistingMessage).ConfigureAwait(false);
 
@@ -84,7 +81,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
 
             var bundledMessage = XDocument.Load(result.BundledMessage);
             var marketActivityRecords = AssertXmlMessage.GetMarketActivityRecords(bundledMessage);
-            Assert.Equal(2, marketActivityRecords?.Count);
+            Assert.Equal(2, marketActivityRecords.Count);
 
             AssertMarketActivityRecord(bundledMessage, message1);
             AssertMarketActivityRecord(bundledMessage, message2);
@@ -174,7 +171,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             const string MessageType = "ConfirmRequestChangeOfSupplier";
             const string Prefix = "cim";
 
-            var settings = new XmlWriterSettings() { OmitXmlDeclaration = false, Encoding = Encoding.UTF8 };
+            var settings = new XmlWriterSettings { OmitXmlDeclaration = false, Encoding = Encoding.UTF8 };
             using var stream = new MemoryStream();
             using var output = new Utf8StringWriter();
             using var writer = XmlWriter.Create(output, settings);
