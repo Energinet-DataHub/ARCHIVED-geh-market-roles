@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -50,12 +51,15 @@ namespace B2B.Transactions.IntegrationTests.Transactions
         }
 
         [Fact]
-        public async Task Transaction_is_registered()
+        public void Transaction_is_registered()
         {
-            var transaction = TransactionBuilder.CreateTransaction();
-            await RegisterTransaction(transaction).ConfigureAwait(false);
+            var incomingMessageStore = new IncomingMessageStore();
+            var incomingMessage = TransactionBuilder.CreateTransaction();
+            var incomingMessageHandler = new IncomingMessageHandler(incomingMessageStore, _transactionRepository, _outgoingMessageStore, _unitOfWork, _correlationContext);
 
-            var savedTransaction = _transactionRepository.GetById(transaction.Message.MessageId);
+            incomingMessageHandler.HandleAsync(incomingMessage);
+
+            var savedTransaction = _transactionRepository.GetById(incomingMessage.Message.MessageId);
             Assert.NotNull(savedTransaction);
         }
 
@@ -80,9 +84,9 @@ namespace B2B.Transactions.IntegrationTests.Transactions
         {
             var incomingMessageStore = new IncomingMessageStore();
             var incomingMessage = TransactionBuilder.CreateTransaction();
-            var incomingMessageHandler = new IncomingMessageHandler(incomingMessageStore);
+            var incomingMessageHandler = new IncomingMessageHandler(incomingMessageStore, _transactionRepository, _outgoingMessageStore, _unitOfWork, _correlationContext);
 
-            incomingMessageHandler.Handle(incomingMessage);
+            incomingMessageHandler.HandleAsync(incomingMessage);
 
             Assert.Equal(incomingMessage, incomingMessageStore.GetById(incomingMessage.Id));
         }
@@ -139,15 +143,31 @@ namespace B2B.Transactions.IntegrationTests.Transactions
     public class IncomingMessageHandler
     {
         private readonly IncomingMessageStore _store;
+        private readonly ITransactionRepository _transactionRepository;
+        private readonly IOutgoingMessageStore _outgoingMessageStore;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ICorrelationContext _correlationContext;
 
-        public IncomingMessageHandler(IncomingMessageStore store)
+        public IncomingMessageHandler(IncomingMessageStore store, ITransactionRepository transactionRepository, IOutgoingMessageStore outgoingMessageStore, IUnitOfWork unitOfWork, ICorrelationContext correlationContext)
         {
             _store = store;
+            _transactionRepository = transactionRepository;
+            _outgoingMessageStore = outgoingMessageStore;
+            _unitOfWork = unitOfWork;
+            _correlationContext = correlationContext;
         }
 
-        public void Handle(B2BTransaction incomingMessage)
+        public void HandleAsync(B2BTransaction incomingMessage)
         {
             _store.Add(incomingMessage);
+            if (incomingMessage == null) throw new ArgumentNullException(nameof(incomingMessage));
+            var acceptedTransaction = new AcceptedTransaction(incomingMessage.MarketActivityRecord.Id);
+            _transactionRepository.Add(acceptedTransaction);
+            var outgoingMessage = new OutgoingMessage("ConfirmRequestChangeOfSupplier", string.Empty, incomingMessage.Message.ReceiverId, _correlationContext.Id, incomingMessage.MarketActivityRecord.Id, incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
+
+            _outgoingMessageStore.Add(outgoingMessage);
+
+            _unitOfWork.CommitAsync();
         }
     }
 
