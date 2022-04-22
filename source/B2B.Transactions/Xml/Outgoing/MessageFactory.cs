@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Transactions;
 using Energinet.DataHub.MarketRoles.Domain.SeedWork;
@@ -28,7 +29,7 @@ namespace B2B.Transactions.Xml.Outgoing
             _systemDateTimeProvider = systemDateTimeProvider ?? throw new ArgumentNullException(nameof(systemDateTimeProvider));
         }
 
-        public abstract TMessage CreateMessage(B2BTransaction transaction);
+        public abstract TMessage CreateMessage(IncomingMessage transaction);
 
         protected string GenerateMessageId()
         {

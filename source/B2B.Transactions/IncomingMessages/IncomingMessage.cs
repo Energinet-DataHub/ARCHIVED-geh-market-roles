@@ -15,11 +15,11 @@
 using System;
 using B2B.Transactions.Messages;
 
-namespace B2B.Transactions.Transactions
+namespace B2B.Transactions.IncomingMessages
 {
-    public class B2BTransaction
+    public class IncomingMessage
     {
-        public B2BTransaction(MessageHeader message, MarketActivityRecord marketActivityRecord)
+        public IncomingMessage(MessageHeader message, MarketActivityRecord marketActivityRecord)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
             Id = message.MessageId;
@@ -33,10 +33,10 @@ namespace B2B.Transactions.Transactions
 
         public string Id { get; }
 
-        public static B2BTransaction Create(MessageHeader messageHeader, MarketActivityRecord marketActivityRecord)
+        public static IncomingMessage Create(MessageHeader messageHeader, MarketActivityRecord marketActivityRecord)
         {
             if (messageHeader == null) throw new ArgumentNullException(nameof(messageHeader));
-            return new B2BTransaction(messageHeader, marketActivityRecord);
+            return new IncomingMessage(messageHeader, marketActivityRecord);
         }
     }
 }

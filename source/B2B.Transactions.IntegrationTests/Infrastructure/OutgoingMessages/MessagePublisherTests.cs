@@ -73,7 +73,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
 
         private OutgoingMessage CreateOutgoingMessage()
         {
-            var transaction = TransactionBuilder.CreateTransaction();
+            var transaction = IncomingMessageBuilder.CreateMessage();
             var document = _messageFactory.CreateMessage(transaction);
             return new OutgoingMessage(document.DocumentType, transaction.Message.ReceiverId, _correlationContext.Id, transaction.MarketActivityRecord.Id, transaction.MarketActivityRecord.MarketEvaluationPointId);
         }

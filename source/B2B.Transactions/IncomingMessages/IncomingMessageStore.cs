@@ -19,14 +19,14 @@ namespace B2B.Transactions.IncomingMessages
 {
     public class IncomingMessageStore
     {
-        private readonly List<B2BTransaction> _messages = new();
+        private readonly List<IncomingMessage> _messages = new();
 
-        public B2BTransaction? GetById(string incomingMessageId)
+        public IncomingMessage? GetById(string incomingMessageId)
         {
             return _messages.Find(x => x.Id == incomingMessageId);
         }
 
-        public void Add(B2BTransaction incomingMessage)
+        public void Add(IncomingMessage incomingMessage)
         {
             _messages.Add(incomingMessage);
         }

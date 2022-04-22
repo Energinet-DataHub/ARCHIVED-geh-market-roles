@@ -38,7 +38,7 @@ namespace B2B.Transactions.IncomingMessages
             _correlationContext = correlationContext;
         }
 
-        public Task HandleAsync(B2BTransaction incomingMessage)
+        public Task HandleAsync(IncomingMessage incomingMessage)
         {
             _store.Add(incomingMessage);
             if (incomingMessage == null) throw new ArgumentNullException(nameof(incomingMessage));

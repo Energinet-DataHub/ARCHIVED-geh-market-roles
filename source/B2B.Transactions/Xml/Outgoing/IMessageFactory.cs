@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.Transactions;
 
 namespace B2B.Transactions.Xml.Outgoing
@@ -26,6 +27,6 @@ namespace B2B.Transactions.Xml.Outgoing
         /// </summary>
         /// <param name="transaction"></param>
         /// <returns><see cref="AcceptMessageFactory"/></returns>
-        TMessage CreateMessage(B2BTransaction transaction);
+        TMessage CreateMessage(IncomingMessage transaction);
     }
 }

@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
+using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Transactions;
 using B2B.Transactions.Xml.Incoming;
@@ -37,7 +38,7 @@ namespace B2B.Transactions.Xml.Outgoing
             _messageValidator = messageValidator;
         }
 
-        public override IDocument CreateMessage(B2BTransaction transaction)
+        public override IDocument CreateMessage(IncomingMessage transaction)
         {
             var settings = new XmlWriterSettings() { OmitXmlDeclaration = false, Encoding = Encoding.UTF8 };
             using var output = new Utf8StringWriter();

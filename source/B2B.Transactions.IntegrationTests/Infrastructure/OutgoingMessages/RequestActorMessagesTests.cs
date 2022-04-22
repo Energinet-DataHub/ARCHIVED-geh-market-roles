@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using B2B.Transactions.DataAccess;
+using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.IntegrationTests.Fixtures;
 using B2B.Transactions.IntegrationTests.Transactions;
 using B2B.Transactions.OutgoingMessages;
@@ -101,21 +102,21 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             Assert.NotEmpty(AssertXmlMessage.GetMessageHeaderValue(document, "mRID")!);
         }
 
-        private static OutgoingMessage CreateOutgoingMessage(IDocument document, B2BTransaction transaction)
+        private static OutgoingMessage CreateOutgoingMessage(IDocument document, IncomingMessage transaction)
         {
             return new OutgoingMessage(document.DocumentType, transaction.Message.ReceiverId, Guid.NewGuid().ToString(), transaction.MarketActivityRecord.Id, transaction.MarketActivityRecord.MarketEvaluationPointId);
         }
 
         private OutgoingMessage CreateOutgoingMessage()
         {
-            var transaction = TransactionBuilder.CreateTransaction();
+            var transaction = IncomingMessageBuilder.CreateMessage();
             var document = _messageFactory.CreateMessage(transaction);
             return CreateOutgoingMessage(document, transaction);
         }
 
         private OutgoingMessage CreateOutgoingMessageOld() // TODO: Refactor
         {
-            var transaction = TransactionBuilder.CreateTransaction();
+            var transaction = IncomingMessageBuilder.CreateMessage();
             var document = _messageFactory.CreateMessage(transaction);
             var outgoingMessage = CreateOutgoingMessage(document, transaction);
             _outgoingMessageStore.Add(outgoingMessage);

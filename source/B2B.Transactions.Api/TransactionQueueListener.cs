@@ -54,7 +54,7 @@ namespace B2B.Transactions.Api
             var byteAsString = Encoding.UTF8.GetString(data);
 
             await _incomingMessageHandler.HandleAsync(
-                    _jsonSerializer.Deserialize<B2BTransaction>(byteAsString))
+                    _jsonSerializer.Deserialize<IncomingMessage>(byteAsString))
                 .ConfigureAwait(false);
 
             _logger.LogInformation("B2B transaction dequeued with correlation id: {correlationId}", _correlationContext.Id);
