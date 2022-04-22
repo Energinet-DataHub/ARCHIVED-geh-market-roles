@@ -47,5 +47,11 @@ namespace B2B.Transactions.Infrastructure.OutgoingMessages
         {
             return _context.OutgoingMessages.Find(messageId);
         }
+
+        public OutgoingMessage? GetByOriginalMessageId(string incomingMessageId)
+        {
+            return _context.OutgoingMessages
+                .FirstOrDefault(message => message.OriginalMessageId == incomingMessageId);
+        }
     }
 }

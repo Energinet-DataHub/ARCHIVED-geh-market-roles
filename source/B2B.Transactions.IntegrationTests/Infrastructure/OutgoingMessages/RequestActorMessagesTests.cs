@@ -82,30 +82,18 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         {
             var incomingMessage1 = await MessageArrived().ConfigureAwait(false);
             var incomingMessage2 = await MessageArrived().ConfigureAwait(false);
-            var outgoingMessages = _outgoingMessageStore.GetUnpublished();
-            var outgoingMessage1 =
-                outgoingMessages.First(x => x.OriginalMessageId.Equals(incomingMessage1.Id, StringComparison.OrdinalIgnoreCase));
-            var outgoingMessage2 =
-                outgoingMessages.First(x => x.OriginalMessageId.Equals(incomingMessage2.Id, StringComparison.OrdinalIgnoreCase));
+            var outgoingMessage1 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage1.Id)!;
+            var outgoingMessage2 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage2.Id)!;
 
             var result = await _messageForwarder.ForwardAsync(new List<Guid> { outgoingMessage1.Id, outgoingMessage2.Id, }).ConfigureAwait(false);
 
             Assert.NotNull(result.BundledMessage);
-
             var bundledMessage = XDocument.Load(result.BundledMessage);
             var marketActivityRecords = AssertXmlMessage.GetMarketActivityRecords(bundledMessage);
             Assert.Equal(2, marketActivityRecords.Count);
-            AssertMarketActivityRecord(bundledMessage, outgoingMessage1, incomingMessage1);
-            AssertMarketActivityRecord(bundledMessage, outgoingMessage2, incomingMessage2);
+            AssertMarketActivityRecord(bundledMessage, incomingMessage1, outgoingMessage1);
+            AssertMarketActivityRecord(bundledMessage, incomingMessage2, outgoingMessage2);
             AssertMessageHeader(bundledMessage);
-        }
-
-        private static void AssertMarketActivityRecord(XDocument document, OutgoingMessage message, IncomingMessage incomingMessage)
-        {
-            var marketActivityRecord = AssertXmlMessage.GetMarketActivityRecordById(document, message.Id.ToString())!;
-            Assert.NotNull(marketActivityRecord);
-            AssertXmlMessage.AssertMarketActivityRecordValue(marketActivityRecord, "originalTransactionIDReference_MktActivityRecord.mRID", incomingMessage.MarketActivityRecord.Id);
-            AssertXmlMessage.AssertMarketActivityRecordValue(marketActivityRecord, "marketEvaluationPoint.mRID", incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
         }
 
         private static void AssertMessageHeader(XDocument document)
@@ -113,6 +101,15 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             Assert.NotEmpty(AssertXmlMessage.GetMessageHeaderValue(document, "mRID")!);
             AssertXmlMessage.AssertHasHeaderValue(document, "type", "414");
             AssertXmlMessage.AssertHasHeaderValue(document, "process.processType", "E03");
+        }
+
+        private static void AssertMarketActivityRecord(XDocument document, IncomingMessage incomingMessage, OutgoingMessage outgoingMessage)
+        {
+            var marketActivityRecord = AssertXmlMessage.GetMarketActivityRecordById(document, outgoingMessage.Id.ToString())!;
+
+            Assert.NotNull(marketActivityRecord);
+            AssertXmlMessage.AssertMarketActivityRecordValue(marketActivityRecord, "originalTransactionIDReference_MktActivityRecord.mRID", incomingMessage.MarketActivityRecord.Id);
+            AssertXmlMessage.AssertMarketActivityRecordValue(marketActivityRecord, "marketEvaluationPoint.mRID", incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
         }
 
         private async Task<IncomingMessage> MessageArrived()
