@@ -100,6 +100,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         private static void AssertMessageHeader(XDocument document)
         {
             Assert.NotEmpty(AssertXmlMessage.GetMessageHeaderValue(document, "mRID")!);
+            AssertXmlMessage.AssertHasHeaderValue(document, "type", "414");
         }
 
         private static OutgoingMessage CreateOutgoingMessage(IDocument document, IncomingMessage transaction)
