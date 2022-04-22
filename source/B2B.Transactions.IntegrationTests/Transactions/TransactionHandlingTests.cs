@@ -35,7 +35,6 @@ namespace B2B.Transactions.IntegrationTests.Transactions
         private readonly ICorrelationContext _correlationContext;
         private readonly ITransactionRepository _transactionRepository;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly XNamespace _namespace = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
         private readonly IOutgoingMessageStore _outgoingMessageStore;
         private IMessageFactory<IDocument> _messageFactory = new AcceptMessageFactory(_dateTimeProvider, new MessageValidator(new SchemaProvider(new SchemaStore())));
 
@@ -80,20 +79,43 @@ namespace B2B.Transactions.IntegrationTests.Transactions
             return XDocument.Parse(payload);
         }
 
-        private Task RegisterTransaction(B2BTransaction transaction)
+        private static XElement? GetHeaderElement(XDocument document)
         {
-            var handler = new RegisterTransaction(_outgoingMessageStore, _transactionRepository, _messageFactory, _unitOfWork, _correlationContext);
-            return handler.HandleAsync(transaction);
+            return document.Root;
         }
 
-        private void AssertMarketActivityRecord(XDocument document, B2BTransaction transaction)
+        private static string GetMarketActivityRecordValue(XDocument document, string elementName)
+        {
+            var header = GetHeaderElement(document);
+            var documentNamespace = header?.Name.Namespace!;
+            var element = header?.Element(documentNamespace + "MktActivityRecord")?.Element(documentNamespace + elementName);
+            return element?.Value ?? string.Empty;
+        }
+
+        private static string? GetMessageHeaderValue(XDocument document, string elementName)
+        {
+            var header = GetHeaderElement(document);
+            return header?.Element(header.Name.Namespace + elementName)?.Value;
+        }
+
+        private static void AssertHasHeaderValue(XDocument document, string elementName, string? expectedValue)
+        {
+            Assert.Equal(expectedValue, GetMessageHeaderValue(document, elementName));
+        }
+
+        private static void AssertMarketActivityRecordValue(XDocument document, string elementName, string? expectedValue)
+        {
+            Assert.Equal(expectedValue, GetMarketActivityRecordValue(document, elementName));
+        }
+
+        private static void AssertMarketActivityRecord(XDocument document, B2BTransaction transaction)
         {
             Assert.NotNull(GetMarketActivityRecordValue(document, "mRID"));
             AssertMarketActivityRecordValue(document, "originalTransactionIDReference_MktActivityRecord.mRID", transaction.MarketActivityRecord.Id);
             AssertMarketActivityRecordValue(document, "marketEvaluationPoint.mRID", transaction.MarketActivityRecord.MarketEvaluationPointId);
         }
 
-        private void AssertHeader(XDocument document, B2BTransaction transaction)
+        private static void AssertHeader(XDocument document, B2BTransaction transaction)
         {
             Assert.NotNull(GetMessageHeaderValue(document, "mRID"));
             AssertHasHeaderValue(document, "type", "414");
@@ -107,30 +129,10 @@ namespace B2B.Transactions.IntegrationTests.Transactions
             AssertHasHeaderValue(document, "reason.code", "A01");
         }
 
-        private void AssertHasHeaderValue(XDocument document, string elementName, string? expectedValue)
+        private Task RegisterTransaction(B2BTransaction transaction)
         {
-            Assert.Equal(expectedValue, GetMessageHeaderValue(document, elementName));
-        }
-
-        private void AssertMarketActivityRecordValue(XDocument document, string elementName, string? expectedValue)
-        {
-            Assert.Equal(expectedValue, GetMarketActivityRecordValue(document, elementName));
-        }
-
-        private string GetMarketActivityRecordValue(XDocument document, string elementName)
-        {
-            var element = GetHeaderElement(document)?.Element(_namespace + "MktActivityRecord")?.Element(_namespace + elementName);
-            return element?.Value ?? string.Empty;
-        }
-
-        private string? GetMessageHeaderValue(XDocument document, string elementName)
-        {
-            return GetHeaderElement(document)?.Element(_namespace + elementName)?.Value;
-        }
-
-        private XElement? GetHeaderElement(XDocument document)
-        {
-            return document?.Element(_namespace + "ConfirmRequestChangeOfSupplier_MarketDocument");
+            var handler = new RegisterTransaction(_outgoingMessageStore, _transactionRepository, _messageFactory, _unitOfWork, _correlationContext);
+            return handler.HandleAsync(transaction);
         }
     }
 }
