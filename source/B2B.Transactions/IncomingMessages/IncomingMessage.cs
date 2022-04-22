@@ -22,7 +22,7 @@ namespace B2B.Transactions.IncomingMessages
         public IncomingMessage(MessageHeader message, MarketActivityRecord marketActivityRecord)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
-            Id = message.MessageId;
+            Id = Guid.NewGuid().ToString();
             Message = message;
             MarketActivityRecord = marketActivityRecord;
         }

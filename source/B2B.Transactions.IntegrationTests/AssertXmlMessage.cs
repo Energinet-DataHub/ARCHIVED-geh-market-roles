@@ -24,14 +24,6 @@ namespace B2B.Transactions.IntegrationTests
     {
         private const string MarketActivityRecordElementName = "MktActivityRecord";
 
-        internal static string GetMarketActivityRecordValue(XDocument document, string elementName)
-        {
-            var header = GetHeaderElement(document);
-            var documentNamespace = header?.Name.Namespace!;
-            var element = header?.Element(documentNamespace + MarketActivityRecordElementName)?.Element(documentNamespace + elementName);
-            return element?.Value ?? string.Empty;
-        }
-
         internal static string? GetMessageHeaderValue(XDocument document, string elementName)
         {
             var header = GetHeaderElement(document);
@@ -60,14 +52,9 @@ namespace B2B.Transactions.IntegrationTests
             Assert.Equal(expectedValue, GetMessageHeaderValue(document, elementName));
         }
 
-        internal static void AssertMarketActivityRecordValue(XDocument document, string elementName, string? expectedValue)
-        {
-            Assert.Equal(expectedValue, GetMarketActivityRecordValue(document, elementName));
-        }
-
         internal static void AssertMarketActivityRecordValue(XElement marketActivityRecord, string elementName, string? expectedValue)
         {
-            Assert.Equal(expectedValue, GetMarketActivityRecordValue(marketActivityRecord.Document!, elementName));
+            Assert.Equal(expectedValue, marketActivityRecord.Element(marketActivityRecord.Name.Namespace + elementName)?.Value);
         }
 
         private static XElement? GetHeaderElement(XDocument document)

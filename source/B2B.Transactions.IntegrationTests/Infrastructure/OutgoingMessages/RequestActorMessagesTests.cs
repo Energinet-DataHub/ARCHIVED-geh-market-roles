@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -52,7 +53,14 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         [Fact]
         public async Task Message_is_forwarded_on_request()
         {
-            var messageIdsToForward = new List<Guid> { CreateOutgoingMessageOld().Id, CreateOutgoingMessageOld().Id };
+            var message1 = await MessageArrived().ConfigureAwait(false);
+            var message2 = await MessageArrived().ConfigureAwait(false);
+
+            var messageIdsToForward = new List<Guid>
+            {
+                Guid.Parse(message1.Id),
+                Guid.Parse(message2.Id),
+            };
 
             await _messageForwarder.ForwardAsync(messageIdsToForward).ConfigureAwait(false);
 
@@ -72,22 +80,23 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         [Fact]
         public async Task Requested_messages_are_bundled_in_a_bundle_message()
         {
-            var incomingMessage1 = IncomingMessageBuilder.CreateMessage();
-            await _incomingMessageHandler.HandleAsync(incomingMessage1).ConfigureAwait(false);
-            var incomingMessage2 = IncomingMessageBuilder.CreateMessage();
-            await _incomingMessageHandler.HandleAsync(incomingMessage2).ConfigureAwait(false);
+            var incomingMessage1 = await MessageArrived().ConfigureAwait(false);
+            var incomingMessage2 = await MessageArrived().ConfigureAwait(false);
             var outgoingMessages = _outgoingMessageStore.GetUnpublished();
+            var outgoingMessage1 =
+                outgoingMessages.First(x => x.OriginalMessageId.Equals(incomingMessage1.Id, StringComparison.OrdinalIgnoreCase));
+            var outgoingMessage2 =
+                outgoingMessages.First(x => x.OriginalMessageId.Equals(incomingMessage2.Id, StringComparison.OrdinalIgnoreCase));
 
-            var result = await _messageForwarder.ForwardAsync(new List<Guid> { outgoingMessages[0].Id, outgoingMessages[1].Id }).ConfigureAwait(false);
+            var result = await _messageForwarder.ForwardAsync(new List<Guid> { outgoingMessage1.Id, outgoingMessage2.Id, }).ConfigureAwait(false);
 
             Assert.NotNull(result.BundledMessage);
 
             var bundledMessage = XDocument.Load(result.BundledMessage);
             var marketActivityRecords = AssertXmlMessage.GetMarketActivityRecords(bundledMessage);
             Assert.Equal(2, marketActivityRecords.Count);
-
-            AssertMarketActivityRecord(bundledMessage, outgoingMessages[0], incomingMessage1);
-            AssertMarketActivityRecord(bundledMessage, outgoingMessages[1], incomingMessage2);
+            AssertMarketActivityRecord(bundledMessage, outgoingMessage1, incomingMessage1);
+            AssertMarketActivityRecord(bundledMessage, outgoingMessage2, incomingMessage2);
             AssertMessageHeader(bundledMessage);
         }
 
@@ -106,25 +115,11 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             AssertXmlMessage.AssertHasHeaderValue(document, "process.processType", "E03");
         }
 
-        private static OutgoingMessage CreateOutgoingMessage(IDocument document, IncomingMessage transaction)
+        private async Task<IncomingMessage> MessageArrived()
         {
-            return new OutgoingMessage(document.DocumentType, transaction.Message.ReceiverId, Guid.NewGuid().ToString(), transaction.MarketActivityRecord.Id, transaction.MarketActivityRecord.MarketEvaluationPointId);
-        }
-
-        private OutgoingMessage CreateOutgoingMessage()
-        {
-            var transaction = IncomingMessageBuilder.CreateMessage();
-            var document = _messageFactory.CreateMessage(transaction);
-            return CreateOutgoingMessage(document, transaction);
-        }
-
-        private OutgoingMessage CreateOutgoingMessageOld() // TODO: Refactor
-        {
-            var transaction = IncomingMessageBuilder.CreateMessage();
-            var document = _messageFactory.CreateMessage(transaction);
-            var outgoingMessage = CreateOutgoingMessage(document, transaction);
-            _outgoingMessageStore.Add(outgoingMessage);
-            return outgoingMessage;
+            var incomingMessage = IncomingMessageBuilder.CreateMessage();
+            await _incomingMessageHandler.HandleAsync(incomingMessage).ConfigureAwait(false);
+            return incomingMessage;
         }
     }
 
@@ -214,12 +209,13 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
 
             foreach (var message in messages)
             {
+                var xIncomingMessage = _incomingMessageStore.GetById(message.OriginalMessageId);
                 writer.WriteStartElement(Prefix, "MktActivityRecord", null);
                 writer.WriteElementString(Prefix, "mRID", null, message.Id.ToString());
-                writer.WriteElementString(Prefix, "originalTransactionIDReference_MktActivityRecord.mRID", null, incomingMessage.MarketActivityRecord.Id);
+                writer.WriteElementString(Prefix, "originalTransactionIDReference_MktActivityRecord.mRID", null, xIncomingMessage.MarketActivityRecord.Id);
                 writer.WriteStartElement(Prefix, "marketEvaluationPoint.mRID", null);
                 writer.WriteAttributeString(null, "codingScheme", null, "A10");
-                writer.WriteValue(incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
+                writer.WriteValue(xIncomingMessage.MarketActivityRecord.MarketEvaluationPointId);
                 writer.WriteEndElement();
                 writer.WriteEndElement();
             }

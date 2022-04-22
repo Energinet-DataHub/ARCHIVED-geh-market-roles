@@ -45,7 +45,7 @@ namespace B2B.Transactions.IntegrationTests.IncomingMessages
 
             await _incomingMessageHandler.HandleAsync(incomingMessage).ConfigureAwait(false);
 
-            var savedTransaction = _transactionRepository.GetById(incomingMessage.Message.MessageId);
+            var savedTransaction = _transactionRepository.GetById(incomingMessage.MarketActivityRecord.Id);
             Assert.NotNull(savedTransaction);
         }
 
