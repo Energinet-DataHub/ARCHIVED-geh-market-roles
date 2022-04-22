@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Xunit;
@@ -37,14 +38,19 @@ namespace B2B.Transactions.IntegrationTests
 
         internal static XElement? GetMarketActivityRecordById(XDocument document, string id)
         {
-            var marketActivityRecords = document.Root?.Elements()
-                .Where(x => x.Name.LocalName.Equals("MktActivityRecord", StringComparison.OrdinalIgnoreCase)).ToList();
+            var marketActivityRecords = GetMarketActivityRecords(document);
 
-            //XNamespace ns = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
             return marketActivityRecords?.Where(x =>
                 x.Element(document.Root!.Name.Namespace + "mRID")?.Value.Equals(
                     id,
                     StringComparison.OrdinalIgnoreCase) ?? false).FirstOrDefault();
+        }
+
+        internal static List<XElement> GetMarketActivityRecords(XDocument document)
+        {
+            return document.Root?.Elements()
+                .Where(x => x.Name.LocalName.Equals("MktActivityRecord", StringComparison.OrdinalIgnoreCase))
+                .ToList() ?? new List<XElement>();
         }
 
         internal static void AssertHasHeaderValue(XDocument document, string elementName, string? expectedValue)

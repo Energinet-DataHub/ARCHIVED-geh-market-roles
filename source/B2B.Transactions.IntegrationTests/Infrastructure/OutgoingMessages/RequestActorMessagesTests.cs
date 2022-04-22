@@ -83,7 +83,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             Assert.NotNull(result.BundledMessage);
 
             var bundledMessage = XDocument.Load(result.BundledMessage);
-            var marketActivityRecords = bundledMessage.Root?.Elements().Where(x => x.Name.LocalName.Equals("MktActivityRecord", StringComparison.OrdinalIgnoreCase)).ToList();
+            var marketActivityRecords = AssertXmlMessage.GetMarketActivityRecords(bundledMessage);
             Assert.Equal(2, marketActivityRecords?.Count);
 
             var record1 = AssertXmlMessage.GetMarketActivityRecordById(bundledMessage, message1.Id.ToString());
