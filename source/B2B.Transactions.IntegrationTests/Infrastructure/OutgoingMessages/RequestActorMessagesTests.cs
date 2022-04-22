@@ -206,13 +206,13 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
 
             foreach (var message in messages)
             {
-                var xIncomingMessage = _incomingMessageStore.GetById(message.OriginalMessageId);
+                var originalMessage = _incomingMessageStore.GetById(message.OriginalMessageId);
                 writer.WriteStartElement(Prefix, "MktActivityRecord", null);
                 writer.WriteElementString(Prefix, "mRID", null, message.Id.ToString());
-                writer.WriteElementString(Prefix, "originalTransactionIDReference_MktActivityRecord.mRID", null, xIncomingMessage.MarketActivityRecord.Id);
+                writer.WriteElementString(Prefix, "originalTransactionIDReference_MktActivityRecord.mRID", null, originalMessage.MarketActivityRecord.Id);
                 writer.WriteStartElement(Prefix, "marketEvaluationPoint.mRID", null);
                 writer.WriteAttributeString(null, "codingScheme", null, "A10");
-                writer.WriteValue(xIncomingMessage.MarketActivityRecord.MarketEvaluationPointId);
+                writer.WriteValue(originalMessage.MarketActivityRecord.MarketEvaluationPointId);
                 writer.WriteEndElement();
                 writer.WriteEndElement();
             }
