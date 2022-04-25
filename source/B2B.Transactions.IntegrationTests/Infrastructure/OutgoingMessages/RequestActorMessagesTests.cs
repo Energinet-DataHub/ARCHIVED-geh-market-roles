@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -56,11 +57,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             var message1 = await MessageArrived().ConfigureAwait(false);
             var message2 = await MessageArrived().ConfigureAwait(false);
 
-            var messageIdsToForward = new List<Guid>
-            {
-                Guid.Parse(message1.Id),
-                Guid.Parse(message2.Id),
-            };
+            var messageIdsToForward = new List<string> { message1.Id, message2.Id, };
 
             await _messageForwarder.ForwardAsync(messageIdsToForward).ConfigureAwait(false);
 
@@ -70,7 +67,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         [Fact]
         public async Task Result_contains_exception_if_message_does_not_exist()
         {
-            var nonExistingMessage = new List<Guid> { Guid.NewGuid() };
+            var nonExistingMessage = new List<string> { Guid.NewGuid().ToString() };
 
             var result = await _messageForwarder.ForwardAsync(nonExistingMessage).ConfigureAwait(false);
 
@@ -85,7 +82,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             var outgoingMessage1 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage1.Id)!;
             var outgoingMessage2 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage2.Id)!;
 
-            var result = await _messageForwarder.ForwardAsync(new List<Guid> { outgoingMessage1.Id, outgoingMessage2.Id, }).ConfigureAwait(false);
+            var result = await _messageForwarder.ForwardAsync(new List<string> { outgoingMessage1.Id.ToString(), outgoingMessage2.Id.ToString(), }).ConfigureAwait(false);
 
             Assert.NotNull(result.BundledMessage);
             var bundledMessage = XDocument.Load(result.BundledMessage);
@@ -133,7 +130,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
         private readonly MessageValidator _messageValidator;
         private readonly IncomingMessageStore _incomingMessageStore;
-        public List<Guid> ForwardedMessages { get; } = new ();
+        public List<string> ForwardedMessages { get; } = new();
 
         public MessageForwarderSpy(
             IOutgoingMessageStore outgoingMessageStore,
@@ -147,35 +144,31 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             _incomingMessageStore = incomingMessageStore;
         }
 
-        public async Task<Result> ForwardAsync(List<Guid> messageIdsToForward)
+        public async Task<Result> ForwardAsync(List<string> messageIdsToForward)
         {
-            var exceptions = new List<Exception>();
-            var messages = new List<OutgoingMessage>();
+            var messages = _outgoingMessageStore.GetByIds(messageIdsToForward.AsReadOnly());
+            var exceptions = EnsureMessagesExists(messageIdsToForward, messages);
 
-            foreach (var messageId in messageIdsToForward)
-            {
-                var message = _outgoingMessageStore.GetById(messageId);
-                if (message is null)
-                {
-                    exceptions.Add(new OutgoingMessageNotFoundException(messageId));
-                }
-                else
-                {
-                    ForwardedMessages.Add(messageId);
-                    messages.Add(message);
-                }
-            }
-
-            if (exceptions.Count > 0)
+            if (exceptions.Any())
             {
                 return new Result(exceptions);
             }
 
-            return new Result(await CreateBundledMessage(messages).ConfigureAwait(false));
+            ForwardedMessages.AddRange(messageIdsToForward);
+
+            return new Result(await CreateMessageFrom(messages).ConfigureAwait(false));
+        }
+
+        private static List<OutgoingMessageNotFoundException> EnsureMessagesExists(List<string> messageIdsToForward, ReadOnlyCollection<OutgoingMessage> messages)
+        {
+            return messageIdsToForward
+                .Except(messages.Select(message => message.Id.ToString()))
+                .Select(messageId => new OutgoingMessageNotFoundException(messageId))
+                .ToList();
         }
 
 
-        private async Task<Stream> CreateBundledMessage(List<OutgoingMessage> messages)
+        private async Task<Stream> CreateMessageFrom(ReadOnlyCollection<OutgoingMessage> messages)
         {
             const string MessageType = "ConfirmRequestChangeOfSupplier";
             const string Prefix = "cim";
@@ -193,7 +186,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             writer.WriteAttributeString("xsi", "schemaLocation", null, "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1 urn-ediel-org-structure-confirmrequestchangeofsupplier-0-1.xsd");
             writer.WriteElementString(Prefix, "mRID", null, GenerateMessageId());
             writer.WriteElementString(Prefix, "type", null, "414");
-            writer.WriteElementString(Prefix, "process.processType", null,incomingMessage.Message.ProcessType);
+            writer.WriteElementString(Prefix, "process.processType", null, incomingMessage.Message.ProcessType);
             writer.WriteElementString(Prefix, "businessSector.type", null, "23");
 
             writer.WriteStartElement(Prefix, "sender_MarketParticipant.mRID", null);
@@ -264,9 +257,9 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
 
     public class Result
     {
-        public Result(List<Exception> exceptions)
+        public Result(IEnumerable<Exception> exceptions)
         {
-            Errors = exceptions;
+            Errors = exceptions.ToList();
         }
 
         public Result(Stream bundledMessage)
@@ -280,7 +273,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
 
     public class OutgoingMessageNotFoundException : Exception
     {
-        public OutgoingMessageNotFoundException(Guid messageId)
+        public OutgoingMessageNotFoundException(string messageId)
             : base($"Message with id:{messageId} does not exist")
         {
         }

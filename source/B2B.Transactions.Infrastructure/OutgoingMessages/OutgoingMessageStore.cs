@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using B2B.Transactions.Infrastructure.DataAccess;
@@ -37,10 +38,10 @@ namespace B2B.Transactions.Infrastructure.OutgoingMessages
         public ReadOnlyCollection<OutgoingMessage> GetUnpublished()
         {
             return _context
-                    .OutgoingMessages
-                    .Where(x => x.IsPublished == false)
-                    .ToList()
-                    .AsReadOnly();
+                .OutgoingMessages
+                .Where(x => x.IsPublished == false)
+                .ToList()
+                .AsReadOnly();
         }
 
         public OutgoingMessage? GetById(Guid messageId)
@@ -52,6 +53,11 @@ namespace B2B.Transactions.Infrastructure.OutgoingMessages
         {
             return _context.OutgoingMessages
                 .FirstOrDefault(message => message.OriginalMessageId == incomingMessageId);
+        }
+
+        public ReadOnlyCollection<OutgoingMessage> GetByIds(ReadOnlyCollection<string> messageIds)
+        {
+            return _context.OutgoingMessages.Where(message => messageIds.Contains(message.Id.ToString())).ToList().AsReadOnly();
         }
     }
 }

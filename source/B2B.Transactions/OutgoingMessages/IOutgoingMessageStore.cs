@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace B2B.Transactions.OutgoingMessages
@@ -47,5 +48,12 @@ namespace B2B.Transactions.OutgoingMessages
         /// <param name="incomingMessageId"></param>
         /// <returns><see cref="OutgoingMessage"/></returns>
         OutgoingMessage? GetByOriginalMessageId(string incomingMessageId);
+
+        /// <summary>
+        /// Get outgoing messages by list of incoming message ids
+        /// </summary>
+        /// <param name="messageIds"></param>
+        /// <returns><see cref="ReadOnlyCollection{OutgoingMessage}"/></returns>
+        ReadOnlyCollection<OutgoingMessage> GetByIds(ReadOnlyCollection<string> messageIds);
     }
 }
