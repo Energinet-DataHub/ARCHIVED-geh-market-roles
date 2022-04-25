@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using B2B.Transactions.Messages;
 
 namespace B2B.Transactions.IncomingMessages
 {
