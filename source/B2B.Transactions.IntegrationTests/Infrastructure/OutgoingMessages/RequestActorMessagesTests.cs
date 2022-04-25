@@ -37,6 +37,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly MessageForwarderSpy _messageForwarder;
         private readonly IncomingMessageHandler _incomingMessageHandler;
+        private readonly MessageDispatcher _messageDispatcher;
 
         public MessageRequestTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
@@ -45,20 +46,30 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             var timeProvider = GetService<ISystemDateTimeProvider>();
             var messageValidator = GetService<MessageValidator>();
             _incomingMessageHandler = GetService<IncomingMessageHandler>();
-            _messageForwarder = new MessageForwarderSpy(_outgoingMessageStore, timeProvider, messageValidator, GetService<IncomingMessageStore>());
+            _messageDispatcher = new MessageDispatcher();
+            _messageForwarder = new MessageForwarderSpy(
+                _outgoingMessageStore,
+                timeProvider,
+                messageValidator,
+                GetService<IncomingMessageStore>(),
+                _messageDispatcher);
         }
 
         [Fact]
-        public async Task Message_is_forwarded_on_request()
+        public async Task Message_is_dispatched_on_request()
         {
-            var message1 = await MessageArrived().ConfigureAwait(false);
-            var message2 = await MessageArrived().ConfigureAwait(false);
+            var incomingMessage1 = await MessageArrived().ConfigureAwait(false);
+            var incomingMessage2 = await MessageArrived().ConfigureAwait(false);
+            var outgoingMessage1 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage1.Id)!;
+            var outgoingMessage2 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage2.Id)!;
 
-            var messageIdsToForward = new List<string> { message1.Id, message2.Id, };
+            var messageIdsToForward = new List<string> { outgoingMessage1.Id.ToString(), outgoingMessage2.Id.ToString(), };
 
             await _messageForwarder.ForwardAsync(messageIdsToForward).ConfigureAwait(false);
 
+            var dispatchedMessage = _messageDispatcher.DispatchedMessage;
             Assert.NotNull(_messageForwarder.ForwardedMessages);
+            Assert.NotNull(dispatchedMessage);
         }
 
         [Fact]
@@ -121,24 +132,37 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
     }
 
 #pragma warning disable
+    public class MessageDispatcher
+    {
+        public Stream DispatchedMessage { get; private set; }
+
+        public async Task DispatchAsync(Stream message)
+        {
+            DispatchedMessage = message;
+        }
+    }
+
     public class MessageForwarderSpy
     {
         private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
         private readonly MessageValidator _messageValidator;
         private readonly IncomingMessageStore _incomingMessageStore;
+        private readonly MessageDispatcher _messageDispatcher;
         public List<string> ForwardedMessages { get; } = new();
 
         public MessageForwarderSpy(
             IOutgoingMessageStore outgoingMessageStore,
             ISystemDateTimeProvider systemDateTimeProvider,
             MessageValidator messageValidator,
-            IncomingMessageStore incomingMessageStore)
+            IncomingMessageStore incomingMessageStore,
+            MessageDispatcher messageDispatcher)
         {
             _outgoingMessageStore = outgoingMessageStore;
             _systemDateTimeProvider = systemDateTimeProvider;
             _messageValidator = messageValidator;
             _incomingMessageStore = incomingMessageStore;
+            _messageDispatcher = messageDispatcher;
         }
 
         public async Task<Result> ForwardAsync(List<string> messageIdsToForward)
@@ -151,9 +175,11 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
                 return new Result(exceptions);
             }
 
+            var message = await CreateMessageFrom(messages).ConfigureAwait(false);
+            await _messageDispatcher.DispatchAsync(message).ConfigureAwait(false);
             ForwardedMessages.AddRange(messageIdsToForward);
 
-            return new Result(await CreateMessageFrom(messages).ConfigureAwait(false));
+            return new Result(message);
         }
 
         private static List<OutgoingMessageNotFoundException> EnsureMessagesExists(List<string> messageIdsToForward, ReadOnlyCollection<OutgoingMessage> messages)
