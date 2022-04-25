@@ -14,12 +14,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Linq;
 using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.IntegrationTests.Fixtures;
@@ -27,7 +22,7 @@ using B2B.Transactions.IntegrationTests.Transactions;
 using B2B.Transactions.OutgoingMessages;
 using Xunit;
 
-namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
+namespace B2B.Transactions.IntegrationTests.OutgoingMessages
 {
     public class MessageRequestTests : TestBase
     {
