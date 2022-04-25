@@ -35,7 +35,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
     public class MessageRequestTests : TestBase
     {
         private readonly IOutgoingMessageStore _outgoingMessageStore;
-        private readonly MessageForwarderSpy _messageForwarder;
+        private readonly MessageRequestHandler _messageRequestHandler;
         private readonly IncomingMessageHandler _incomingMessageHandler;
         private readonly MessageDispatcher _messageDispatcher;
 
@@ -47,7 +47,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             var messageValidator = GetService<MessageValidator>();
             _incomingMessageHandler = GetService<IncomingMessageHandler>();
             _messageDispatcher = new MessageDispatcher();
-            _messageForwarder = new MessageForwarderSpy(
+            _messageRequestHandler = new MessageRequestHandler(
                 _outgoingMessageStore,
                 timeProvider,
                 messageValidator,
@@ -63,13 +63,15 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             var outgoingMessage1 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage1.Id)!;
             var outgoingMessage2 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage2.Id)!;
 
-            var messageIdsToForward = new List<string> { outgoingMessage1.Id.ToString(), outgoingMessage2.Id.ToString(), };
-
-            await _messageForwarder.ForwardAsync(messageIdsToForward).ConfigureAwait(false);
+            var requestedMessageIds = new List<string> { outgoingMessage1.Id.ToString(), outgoingMessage2.Id.ToString(), };
+            await _messageRequestHandler.HandleAsync(requestedMessageIds).ConfigureAwait(false);
 
             var dispatchedMessage = _messageDispatcher.DispatchedMessage;
-            Assert.NotNull(_messageForwarder.ForwardedMessages);
-            Assert.NotNull(dispatchedMessage);
+            var document = XDocument.Load(dispatchedMessage);
+            var marketActivityRecords = AssertXmlMessage.GetMarketActivityRecords(document);
+            Assert.Equal(2, marketActivityRecords.Count);
+            AssertMarketActivityRecord(document, incomingMessage1, outgoingMessage1);
+            AssertMessageHeader(document, incomingMessage1);
         }
 
         [Fact]
@@ -77,28 +79,9 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         {
             var nonExistingMessage = new List<string> { Guid.NewGuid().ToString() };
 
-            var result = await _messageForwarder.ForwardAsync(nonExistingMessage).ConfigureAwait(false);
+            var result = await _messageRequestHandler.HandleAsync(nonExistingMessage).ConfigureAwait(false);
 
             Assert.Contains(result.Errors, error => error is OutgoingMessageNotFoundException);
-        }
-
-        [Fact]
-        public async Task Requested_messages_are_bundled_in_a_bundle_message()
-        {
-            var incomingMessage1 = await MessageArrived().ConfigureAwait(false);
-            var incomingMessage2 = await MessageArrived().ConfigureAwait(false);
-            var outgoingMessage1 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage1.Id)!;
-            var outgoingMessage2 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage2.Id)!;
-
-            var result = await _messageForwarder.ForwardAsync(new List<string> { outgoingMessage1.Id.ToString(), outgoingMessage2.Id.ToString(), }).ConfigureAwait(false);
-
-            Assert.NotNull(result.BundledMessage);
-            var bundledMessage = XDocument.Load(result.BundledMessage);
-            var marketActivityRecords = AssertXmlMessage.GetMarketActivityRecords(bundledMessage);
-            Assert.Equal(2, marketActivityRecords.Count);
-            AssertMarketActivityRecord(bundledMessage, incomingMessage1, outgoingMessage1);
-            AssertMarketActivityRecord(bundledMessage, incomingMessage2, outgoingMessage2);
-            AssertMessageHeader(bundledMessage, incomingMessage1);
         }
 
         private static void AssertMessageHeader(XDocument document, IncomingMessage incomingMessage)
@@ -142,16 +125,15 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         }
     }
 
-    public class MessageForwarderSpy
+    public class MessageRequestHandler
     {
         private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
         private readonly MessageValidator _messageValidator;
         private readonly IncomingMessageStore _incomingMessageStore;
         private readonly MessageDispatcher _messageDispatcher;
-        public List<string> ForwardedMessages { get; } = new();
 
-        public MessageForwarderSpy(
+        public MessageRequestHandler(
             IOutgoingMessageStore outgoingMessageStore,
             ISystemDateTimeProvider systemDateTimeProvider,
             MessageValidator messageValidator,
@@ -165,7 +147,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             _messageDispatcher = messageDispatcher;
         }
 
-        public async Task<Result> ForwardAsync(List<string> messageIdsToForward)
+        public async Task<Result> HandleAsync(List<string> messageIdsToForward)
         {
             var messages = _outgoingMessageStore.GetByIds(messageIdsToForward.AsReadOnly());
             var exceptions = EnsureMessagesExists(messageIdsToForward, messages);
@@ -177,7 +159,6 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
 
             var message = await CreateMessageFrom(messages).ConfigureAwait(false);
             await _messageDispatcher.DispatchAsync(message).ConfigureAwait(false);
-            ForwardedMessages.AddRange(messageIdsToForward);
 
             return new Result(message);
         }
