@@ -26,5 +26,7 @@ namespace B2B.Transactions.OutgoingMessages
         }
 
         public IReadOnlyCollection<Exception> Errors { get; }
+
+        public bool Success => Errors.Count == 0;
     }
 }

@@ -49,12 +49,13 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
             var outgoingMessage2 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage2.Id)!;
 
             var requestedMessageIds = new List<string> { outgoingMessage1.Id.ToString(), outgoingMessage2.Id.ToString(), };
-            await _messageRequestHandler.HandleAsync(requestedMessageIds.AsReadOnly()).ConfigureAwait(false);
+            var result = await _messageRequestHandler.HandleAsync(requestedMessageIds.AsReadOnly()).ConfigureAwait(false);
 
             var dispatchedMessage = _messageDispatcher.DispatchedMessage;
             var document = XDocument.Load(dispatchedMessage!);
             var marketActivityRecords = AssertXmlMessage.GetMarketActivityRecords(document);
             Assert.Equal(2, marketActivityRecords.Count);
+            Assert.True(result.Success);
             AssertMarketActivityRecord(document, incomingMessage1, outgoingMessage1);
             AssertMessageHeader(document, incomingMessage1);
         }
