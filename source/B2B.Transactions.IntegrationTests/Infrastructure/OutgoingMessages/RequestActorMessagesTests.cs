@@ -21,7 +21,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using B2B.Transactions.DataAccess;
 using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.IntegrationTests.Fixtures;
 using B2B.Transactions.IntegrationTests.Transactions;
@@ -36,7 +35,6 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
     public class MessageRequestTests : TestBase
     {
         private readonly IOutgoingMessageStore _outgoingMessageStore;
-        private readonly IMessageFactory<IDocument> _messageFactory;
         private readonly MessageForwarderSpy _messageForwarder;
         private readonly IncomingMessageHandler _incomingMessageHandler;
 
@@ -44,7 +42,6 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             : base(databaseFixture)
         {
             _outgoingMessageStore = GetService<IOutgoingMessageStore>();
-            _messageFactory = GetService<IMessageFactory<IDocument>>();
             var timeProvider = GetService<ISystemDateTimeProvider>();
             var messageValidator = GetService<MessageValidator>();
             _incomingMessageHandler = GetService<IncomingMessageHandler>();
