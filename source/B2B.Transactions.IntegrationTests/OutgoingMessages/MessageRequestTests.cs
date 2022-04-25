@@ -61,7 +61,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
         }
 
         [Fact]
-        public async Task Result_contains_exception_if_message_does_not_exist()
+        public async Task Requested_message_ids_must_exist()
         {
             var nonExistingMessage = new List<string> { Guid.NewGuid().ToString() };
 
