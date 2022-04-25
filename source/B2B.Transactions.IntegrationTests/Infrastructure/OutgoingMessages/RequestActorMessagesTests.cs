@@ -193,7 +193,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             writer.WriteElementString(Prefix, "businessSector.type", null, "23");
 
             writer.WriteStartElement(Prefix, "sender_MarketParticipant.mRID", null);
-            // writer.WriteAttributeString(null, "codingScheme", null, "A10");
+            writer.WriteAttributeString(null, "codingScheme", null, "A10");
             writer.WriteValue("5790001330552");
             writer.WriteEndElement();
 
@@ -205,7 +205,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             writer.WriteEndElement();
 
             writer.WriteElementString(Prefix, "receiver_MarketParticipant.marketRole.type", null, incomingMessage.Message.SenderRole);
-            // writer.WriteElementString(Prefix, "createdDateTime", null, GetCurrentDateTime());
+            writer.WriteElementString(Prefix, "createdDateTime", null, GetCurrentDateTime());
             // writer.WriteElementString(Prefix, "reason.code", null, "A01");
             //
 
@@ -228,11 +228,11 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             writer.Close();
             output.Flush();
 
-            // var parseResult = _messageValidator.ParseAsync(output.ToString(), "confirmrequestchangeofsupplier", "1.0");
-            // if (!_messageValidator.Success)
-            // {
-            //     throw new InvalidOperationException($"Generated accept message does not conform with XSD schema definition: {_messageValidator.Errors()}");
-            // }
+            var parseResult = _messageValidator.ParseAsync(output.ToString(), "confirmrequestchangeofsupplier", "1.0");
+            if (!_messageValidator.Success)
+            {
+                throw new InvalidOperationException($"Generated accept message does not conform with XSD schema definition: {_messageValidator.Errors()}");
+            }
 
             var data = Encoding.UTF8.GetBytes(output.ToString());
 
