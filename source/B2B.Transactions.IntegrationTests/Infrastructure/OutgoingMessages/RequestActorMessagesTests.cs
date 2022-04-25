@@ -106,6 +106,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.marketRole.type", "DDZ");
             AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.mRID", incomingMessage.Message.SenderId);
             AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.marketRole.type", incomingMessage.Message.SenderRole);
+            AssertXmlMessage.AssertHasHeaderValue(document, "reason.code", "A01");
         }
 
         private static void AssertMarketActivityRecord(XDocument document, IncomingMessage incomingMessage, OutgoingMessage outgoingMessage)
@@ -206,8 +207,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
 
             writer.WriteElementString(Prefix, "receiver_MarketParticipant.marketRole.type", null, incomingMessage.Message.SenderRole);
             writer.WriteElementString(Prefix, "createdDateTime", null, GetCurrentDateTime());
-            // writer.WriteElementString(Prefix, "reason.code", null, "A01");
-            //
+            writer.WriteElementString(Prefix, "reason.code", null, "A01");
 
             foreach (var message in messages)
             {
