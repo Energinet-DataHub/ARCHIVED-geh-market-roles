@@ -135,6 +135,15 @@ namespace B2B.Transactions.Infrastructure.Configuration
             return this;
         }
 
+        public CompositionRoot AddOutgoingMessageDispatcher()
+        {
+            _services.AddScoped<MessageFactory>();
+            _services.AddScoped<MessageDispatcher>();
+            _services.AddScoped<MessageRequestHandler>();
+
+            return this;
+        }
+
         private static void AddXmlSchema(IServiceCollection services)
         {
             services.AddScoped<SchemaStore>();

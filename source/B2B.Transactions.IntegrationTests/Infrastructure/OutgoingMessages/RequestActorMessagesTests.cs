@@ -25,9 +25,6 @@ using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.IntegrationTests.Fixtures;
 using B2B.Transactions.IntegrationTests.Transactions;
 using B2B.Transactions.OutgoingMessages;
-using B2B.Transactions.Transactions;
-using B2B.Transactions.Xml.Outgoing;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Xunit;
 
 namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
@@ -43,16 +40,9 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             : base(databaseFixture)
         {
             _outgoingMessageStore = GetService<IOutgoingMessageStore>();
-            var timeProvider = GetService<ISystemDateTimeProvider>();
-            var messageValidator = GetService<MessageValidator>();
             _incomingMessageHandler = GetService<IncomingMessageHandler>();
-            _messageDispatcher = new MessageDispatcher();
-            _messageRequestHandler = new MessageRequestHandler(
-                _outgoingMessageStore,
-                timeProvider,
-                messageValidator,
-                GetService<IncomingMessageStore>(),
-                _messageDispatcher);
+            _messageRequestHandler = GetService<MessageRequestHandler>();
+            _messageDispatcher = GetService<MessageDispatcher>();
         }
 
         [Fact]
@@ -64,10 +54,10 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             var outgoingMessage2 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage2.Id)!;
 
             var requestedMessageIds = new List<string> { outgoingMessage1.Id.ToString(), outgoingMessage2.Id.ToString(), };
-            await _messageRequestHandler.HandleAsync(requestedMessageIds).ConfigureAwait(false);
+            await _messageRequestHandler.HandleAsync(requestedMessageIds.AsReadOnly()).ConfigureAwait(false);
 
             var dispatchedMessage = _messageDispatcher.DispatchedMessage;
-            var document = XDocument.Load(dispatchedMessage);
+            var document = XDocument.Load(dispatchedMessage!);
             var marketActivityRecords = AssertXmlMessage.GetMarketActivityRecords(document);
             Assert.Equal(2, marketActivityRecords.Count);
             AssertMarketActivityRecord(document, incomingMessage1, outgoingMessage1);
@@ -79,7 +69,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         {
             var nonExistingMessage = new List<string> { Guid.NewGuid().ToString() };
 
-            var result = await _messageRequestHandler.HandleAsync(nonExistingMessage).ConfigureAwait(false);
+            var result = await _messageRequestHandler.HandleAsync(nonExistingMessage.AsReadOnly()).ConfigureAwait(false);
 
             Assert.Contains(result.Errors, error => error is OutgoingMessageNotFoundException);
         }
@@ -111,175 +101,6 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             var incomingMessage = IncomingMessageBuilder.CreateMessage();
             await _incomingMessageHandler.HandleAsync(incomingMessage).ConfigureAwait(false);
             return incomingMessage;
-        }
-    }
-
-#pragma warning disable
-    public class MessageDispatcher
-    {
-        public Stream DispatchedMessage { get; private set; }
-
-        public async Task DispatchAsync(Stream message)
-        {
-            DispatchedMessage = message;
-        }
-    }
-
-    public class MessageRequestHandler
-    {
-        private readonly IOutgoingMessageStore _outgoingMessageStore;
-        private readonly ISystemDateTimeProvider _systemDateTimeProvider;
-        private readonly MessageValidator _messageValidator;
-        private readonly IncomingMessageStore _incomingMessageStore;
-        private readonly MessageDispatcher _messageDispatcher;
-
-        public MessageRequestHandler(
-            IOutgoingMessageStore outgoingMessageStore,
-            ISystemDateTimeProvider systemDateTimeProvider,
-            MessageValidator messageValidator,
-            IncomingMessageStore incomingMessageStore,
-            MessageDispatcher messageDispatcher)
-        {
-            _outgoingMessageStore = outgoingMessageStore;
-            _systemDateTimeProvider = systemDateTimeProvider;
-            _messageValidator = messageValidator;
-            _incomingMessageStore = incomingMessageStore;
-            _messageDispatcher = messageDispatcher;
-        }
-
-        public async Task<Result> HandleAsync(List<string> messageIdsToForward)
-        {
-            var messages = _outgoingMessageStore.GetByIds(messageIdsToForward.AsReadOnly());
-            var exceptions = EnsureMessagesExists(messageIdsToForward, messages);
-
-            if (exceptions.Any())
-            {
-                return new Result(exceptions);
-            }
-
-            var message = await CreateMessageFrom(messages).ConfigureAwait(false);
-            await _messageDispatcher.DispatchAsync(message).ConfigureAwait(false);
-
-            return new Result(message);
-        }
-
-        private static List<OutgoingMessageNotFoundException> EnsureMessagesExists(List<string> messageIdsToForward, ReadOnlyCollection<OutgoingMessage> messages)
-        {
-            return messageIdsToForward
-                .Except(messages.Select(message => message.Id.ToString()))
-                .Select(messageId => new OutgoingMessageNotFoundException(messageId))
-                .ToList();
-        }
-
-
-        private async Task<Stream> CreateMessageFrom(ReadOnlyCollection<OutgoingMessage> messages)
-        {
-            const string MessageType = "ConfirmRequestChangeOfSupplier";
-            const string Prefix = "cim";
-
-            var incomingMessage = _incomingMessageStore.GetById(messages[0].OriginalMessageId);
-
-            var settings = new XmlWriterSettings { OmitXmlDeclaration = false, Encoding = Encoding.UTF8 };
-            using var stream = new MemoryStream();
-            using var output = new Utf8StringWriter();
-            using var writer = XmlWriter.Create(output, settings);
-
-            writer.WriteStartDocument();
-            writer.WriteStartElement(Prefix, "ConfirmRequestChangeOfSupplier_MarketDocument", "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1");
-            writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
-            writer.WriteAttributeString("xsi", "schemaLocation", null, "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1 urn-ediel-org-structure-confirmrequestchangeofsupplier-0-1.xsd");
-            writer.WriteElementString(Prefix, "mRID", null, GenerateMessageId());
-            writer.WriteElementString(Prefix, "type", null, "414");
-            writer.WriteElementString(Prefix, "process.processType", null, incomingMessage.Message.ProcessType);
-            writer.WriteElementString(Prefix, "businessSector.type", null, "23");
-
-            writer.WriteStartElement(Prefix, "sender_MarketParticipant.mRID", null);
-            writer.WriteAttributeString(null, "codingScheme", null, "A10");
-            writer.WriteValue("5790001330552");
-            writer.WriteEndElement();
-
-            writer.WriteElementString(Prefix, "sender_MarketParticipant.marketRole.type", null, "DDZ");
-
-            writer.WriteStartElement(Prefix, "receiver_MarketParticipant.mRID", null);
-            writer.WriteAttributeString(null, "codingScheme", null, "A10");
-            writer.WriteValue(incomingMessage.Message.SenderId);
-            writer.WriteEndElement();
-
-            writer.WriteElementString(Prefix, "receiver_MarketParticipant.marketRole.type", null, incomingMessage.Message.SenderRole);
-            writer.WriteElementString(Prefix, "createdDateTime", null, GetCurrentDateTime());
-            writer.WriteElementString(Prefix, "reason.code", null, "A01");
-
-            foreach (var message in messages)
-            {
-                var originalMessage = _incomingMessageStore.GetById(message.OriginalMessageId);
-                writer.WriteStartElement(Prefix, "MktActivityRecord", null);
-                writer.WriteElementString(Prefix, "mRID", null, message.Id.ToString());
-                writer.WriteElementString(Prefix, "originalTransactionIDReference_MktActivityRecord.mRID", null, originalMessage.MarketActivityRecord.Id);
-                writer.WriteStartElement(Prefix, "marketEvaluationPoint.mRID", null);
-                writer.WriteAttributeString(null, "codingScheme", null, "A10");
-                writer.WriteValue(originalMessage.MarketActivityRecord.MarketEvaluationPointId);
-                writer.WriteEndElement();
-                writer.WriteEndElement();
-            }
-
-            writer.WriteEndElement();
-            writer.Close();
-            output.Flush();
-
-            await ValidateXmlAgainstSchemaAsync(output).ConfigureAwait(false);
-
-            var data = Encoding.UTF8.GetBytes(output.ToString());
-
-            return new MemoryStream(data);
-        }
-
-        private async Task ValidateXmlAgainstSchemaAsync(Utf8StringWriter output)
-        {
-            await _messageValidator.ParseAsync(output.ToString(), "confirmrequestchangeofsupplier", "1.0").ConfigureAwait(false);
-            if (!_messageValidator.Success)
-            {
-                throw new InvalidOperationException(
-                    $"Generated accept message does not conform with XSD schema definition: {_messageValidator.Errors()}");
-            }
-        }
-
-        protected string GenerateMessageId()
-        {
-            return MessageIdGenerator.Generate();
-        }
-
-        protected string GenerateTransactionId()
-        {
-            return TransactionIdGenerator.Generate();
-        }
-
-        protected string GetCurrentDateTime()
-        {
-            return _systemDateTimeProvider.Now().ToString();
-        }
-    }
-
-    public class Result
-    {
-        public Result(IEnumerable<Exception> exceptions)
-        {
-            Errors = exceptions.ToList();
-        }
-
-        public Result(Stream bundledMessage)
-        {
-            BundledMessage = bundledMessage;
-        }
-
-        public IReadOnlyCollection<Exception> Errors { get; }
-        public Stream BundledMessage { get; }
-    }
-
-    public class OutgoingMessageNotFoundException : Exception
-    {
-        public OutgoingMessageNotFoundException(string messageId)
-            : base($"Message with id:{messageId} does not exist")
-        {
         }
     }
 }
