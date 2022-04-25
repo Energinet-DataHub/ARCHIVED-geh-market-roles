@@ -21,7 +21,6 @@ using B2B.Transactions.IntegrationTests.TestDoubles;
 using B2B.Transactions.IntegrationTests.Transactions;
 using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Xml.Incoming;
-using B2B.Transactions.Xml.Outgoing;
 using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Energinet.DataHub.MessageHub.Model.Model;
 using Xunit;

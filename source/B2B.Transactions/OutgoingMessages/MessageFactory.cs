@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.Transactions;
-using B2B.Transactions.Xml.Outgoing;
+using B2B.Transactions.Xml;
 using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 
 namespace B2B.Transactions.OutgoingMessages
