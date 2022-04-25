@@ -67,6 +67,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
 
             var result = await _messageRequestHandler.HandleAsync(nonExistingMessage.AsReadOnly()).ConfigureAwait(false);
 
+            Assert.False(result.Success);
             Assert.Contains(result.Errors, error => error is OutgoingMessageNotFoundException);
         }
 
