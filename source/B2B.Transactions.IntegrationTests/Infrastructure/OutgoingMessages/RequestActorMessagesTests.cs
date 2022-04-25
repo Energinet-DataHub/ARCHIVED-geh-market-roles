@@ -93,14 +93,18 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             Assert.Equal(2, marketActivityRecords.Count);
             AssertMarketActivityRecord(bundledMessage, incomingMessage1, outgoingMessage1);
             AssertMarketActivityRecord(bundledMessage, incomingMessage2, outgoingMessage2);
-            AssertMessageHeader(bundledMessage);
+            AssertMessageHeader(bundledMessage, incomingMessage1);
         }
 
-        private static void AssertMessageHeader(XDocument document)
+        private static void AssertMessageHeader(XDocument document, IncomingMessage incomingMessage)
         {
             Assert.NotEmpty(AssertXmlMessage.GetMessageHeaderValue(document, "mRID")!);
             AssertXmlMessage.AssertHasHeaderValue(document, "type", "414");
             AssertXmlMessage.AssertHasHeaderValue(document, "process.processType", "E03");
+            AssertXmlMessage.AssertHasHeaderValue(document, "businessSector.type", "23");
+            AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.mRID", "5790001330552");
+            AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.marketRole.type", "DDZ");
+            AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.mRID", incomingMessage.Message.SenderId);
         }
 
         private static void AssertMarketActivityRecord(XDocument document, IncomingMessage incomingMessage, OutgoingMessage outgoingMessage)
@@ -185,20 +189,20 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             writer.WriteElementString(Prefix, "mRID", null, GenerateMessageId());
             writer.WriteElementString(Prefix, "type", null, "414");
             writer.WriteElementString(Prefix, "process.processType", null,incomingMessage.Message.ProcessType);
-            // writer.WriteElementString(Prefix, "businessSector.type", null, "23");
-            //
-            // writer.WriteStartElement(Prefix, "sender_MarketParticipant.mRID", null);
+            writer.WriteElementString(Prefix, "businessSector.type", null, "23");
+
+            writer.WriteStartElement(Prefix, "sender_MarketParticipant.mRID", null);
             // writer.WriteAttributeString(null, "codingScheme", null, "A10");
-            // writer.WriteValue("5790001330552");
-            // writer.WriteEndElement();
-            //
-            // writer.WriteElementString(Prefix, "sender_MarketParticipant.marketRole.type", null, "DDZ");
-            //
-            // writer.WriteStartElement(Prefix, "receiver_MarketParticipant.mRID", null);
-            // writer.WriteAttributeString(null, "codingScheme", null, "A10");
-            // writer.WriteValue(transaction?.Message.SenderId);
-            // writer.WriteEndElement();
-            //
+            writer.WriteValue("5790001330552");
+            writer.WriteEndElement();
+
+            writer.WriteElementString(Prefix, "sender_MarketParticipant.marketRole.type", null, "DDZ");
+
+            writer.WriteStartElement(Prefix, "receiver_MarketParticipant.mRID", null);
+            writer.WriteAttributeString(null, "codingScheme", null, "A10");
+            writer.WriteValue(incomingMessage.Message.SenderId);
+            writer.WriteEndElement();
+
             // writer.WriteElementString(Prefix, "receiver_MarketParticipant.marketRole.type", null, transaction?.Message.SenderRole);
             // writer.WriteElementString(Prefix, "createdDateTime", null, GetCurrentDateTime());
             // writer.WriteElementString(Prefix, "reason.code", null, "A01");
