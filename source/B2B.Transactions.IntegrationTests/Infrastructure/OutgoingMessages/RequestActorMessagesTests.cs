@@ -147,7 +147,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
             _incomingMessageStore = incomingMessageStore;
         }
 
-        public Task<Result> ForwardAsync(List<Guid> messageIdsToForward)
+        public async Task<Result> ForwardAsync(List<Guid> messageIdsToForward)
         {
             var exceptions = new List<Exception>();
             var messages = new List<OutgoingMessage>();
@@ -166,13 +166,16 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
                 }
             }
 
-            return Task.FromResult(exceptions.Count == 0
-                ? new Result(CreateBundledMessage(messages))
-                : new Result(exceptions)) ;
+            if (exceptions.Count > 0)
+            {
+                return new Result(exceptions);
+            }
+
+            return new Result(await CreateBundledMessage(messages).ConfigureAwait(false));
         }
 
 
-        private Stream CreateBundledMessage(List<OutgoingMessage> messages)
+        private async Task<Stream> CreateBundledMessage(List<OutgoingMessage> messages)
         {
             const string MessageType = "ConfirmRequestChangeOfSupplier";
             const string Prefix = "cim";
@@ -221,22 +224,26 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
                 writer.WriteEndElement();
                 writer.WriteEndElement();
             }
-            // writer.WriteEndElement();
-            // writer.WriteEndElement();
 
             writer.WriteEndElement();
             writer.Close();
             output.Flush();
 
-            var parseResult = _messageValidator.ParseAsync(output.ToString(), "confirmrequestchangeofsupplier", "1.0");
-            if (!_messageValidator.Success)
-            {
-                throw new InvalidOperationException($"Generated accept message does not conform with XSD schema definition: {_messageValidator.Errors()}");
-            }
+            await ValidateXmlAgainstSchemaAsync(output).ConfigureAwait(false);
 
             var data = Encoding.UTF8.GetBytes(output.ToString());
 
             return new MemoryStream(data);
+        }
+
+        private async Task ValidateXmlAgainstSchemaAsync(Utf8StringWriter output)
+        {
+            await _messageValidator.ParseAsync(output.ToString(), "confirmrequestchangeofsupplier", "1.0").ConfigureAwait(false);
+            if (!_messageValidator.Success)
+            {
+                throw new InvalidOperationException(
+                    $"Generated accept message does not conform with XSD schema definition: {_messageValidator.Errors()}");
+            }
         }
 
         protected string GenerateMessageId()
