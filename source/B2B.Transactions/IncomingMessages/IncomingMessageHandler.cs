@@ -15,7 +15,7 @@
 using System;
 using System.Threading.Tasks;
 using B2B.Transactions.Configuration;
-using B2B.Transactions.DataAccess;
+using B2B.Transactions.Configuration.DataAccess;
 using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.Transactions;
 

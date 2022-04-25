@@ -19,7 +19,7 @@ using B2B.CimMessageAdapter.Messages;
 using B2B.CimMessageAdapter.Transactions;
 using B2B.Transactions.Configuration;
 using B2B.Transactions.Configuration.Authentication;
-using B2B.Transactions.DataAccess;
+using B2B.Transactions.Configuration.DataAccess;
 using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.Infrastructure.Authentication;
 using B2B.Transactions.Infrastructure.DataAccess;
