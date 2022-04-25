@@ -21,7 +21,7 @@ using B2B.CimMessageAdapter.Errors;
 using B2B.CimMessageAdapter.Messages;
 using B2B.CimMessageAdapter.Transactions;
 using B2B.Transactions;
-using B2B.Transactions.Authentication;
+using B2B.Transactions.Configuration.Authentication;
 using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.Transactions;
 using B2B.Transactions.Xml.Incoming;

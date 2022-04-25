@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
+using System;
 
-namespace B2B.Transactions.Authentication
+namespace B2B.Transactions.Configuration.Authentication
 {
-    public class Authenticated : MarketActorIdentity
+    public class NotAuthenticated : MarketActorIdentity
     {
-        public Authenticated(string id, string actorIdentifier, IdentifierType actorIdentifierType, IEnumerable<string> roles)
-            : base(id, actorIdentifier, actorIdentifierType, roles)
+        public NotAuthenticated()
+            : base("NotSet", "NotSet", IdentifierType.Eic, Array.Empty<string>())
         {
         }
     }
