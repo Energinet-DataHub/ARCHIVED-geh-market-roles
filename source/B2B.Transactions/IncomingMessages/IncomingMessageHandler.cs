@@ -40,12 +40,13 @@ namespace B2B.Transactions.IncomingMessages
 
         public Task HandleAsync(IncomingMessage incomingMessage)
         {
-            _store.Add(incomingMessage);
             if (incomingMessage == null) throw new ArgumentNullException(nameof(incomingMessage));
+            _store.Add(incomingMessage);
+
             var acceptedTransaction = new AcceptedTransaction(incomingMessage.MarketActivityRecord.Id);
             _transactionRepository.Add(acceptedTransaction);
-            var outgoingMessage = new OutgoingMessage("ConfirmRequestChangeOfSupplier", incomingMessage.Message.ReceiverId, _correlationContext.Id, incomingMessage.Id, incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
 
+            var outgoingMessage = new OutgoingMessage("ConfirmRequestChangeOfSupplier", incomingMessage.Message.ReceiverId, _correlationContext.Id, incomingMessage.Id, incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
             _outgoingMessageStore.Add(outgoingMessage);
 
             return _unitOfWork.CommitAsync();
