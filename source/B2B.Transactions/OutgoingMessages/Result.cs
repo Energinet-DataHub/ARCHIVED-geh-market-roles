@@ -20,13 +20,27 @@ namespace B2B.Transactions.OutgoingMessages
 {
     public class Result
     {
-        public Result(IEnumerable<Exception> exceptions)
+        private Result(IEnumerable<Exception> exceptions)
         {
             Errors = exceptions.ToList();
         }
 
-        public IReadOnlyCollection<Exception> Errors { get; }
+        private Result()
+        {
+        }
+
+        public IReadOnlyCollection<Exception> Errors { get; } = new List<Exception>();
 
         public bool Success => Errors.Count == 0;
+
+        public static Result Failure(IReadOnlyCollection<Exception> exceptions)
+        {
+            return new Result(exceptions);
+        }
+
+        public static Result Succeeded()
+        {
+            return new Result();
+        }
     }
 }

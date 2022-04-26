@@ -42,14 +42,13 @@ namespace B2B.Transactions.OutgoingMessages
 
             if (exceptions.Any())
             {
-                return new Result(exceptions);
+                return Result.Failure(exceptions);
             }
 
             var message = await _messageFactory.CreateFromAsync(messages).ConfigureAwait(false);
             await _messageDispatcher.DispatchAsync(message).ConfigureAwait(false);
 
-            // TODO: We need to come up with a way to avoid returning results from this
-            return new Result(exceptions);
+            return Result.Succeeded();
         }
 
         private static List<OutgoingMessageNotFoundException> EnsureMessagesExists(ReadOnlyCollection<string> messageIdsToForward, ReadOnlyCollection<OutgoingMessage> messages)
