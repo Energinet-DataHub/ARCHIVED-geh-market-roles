@@ -47,19 +47,16 @@ namespace B2B.Transactions.OutgoingMessages
             var exceptions = new List<Exception>();
             var messages = _outgoingMessageStore.GetByIds(messageIdsToForward);
 
-            exceptions.AddRange(messageIdsToForward
-                .Except(messages.Select(message => message.Id.ToString()))
-                .Select(messageId => new OutgoingMessageNotFoundException(messageId))
-                .ToArray());
-
-            if (exceptions.Any())
+            var messageIdsNotFound = MessageIdsNotFound(messageIdsToForward, messages);
+            if (messageIdsNotFound.Any())
             {
+                exceptions.AddRange(messageIdsNotFound
+                    .Select(messageId => new OutgoingMessageNotFoundException(messageId))
+                    .ToArray());
                 return Result.Failure(exceptions.ToArray());
             }
 
-            var expectedProcessType = messages.First().ProcessType;
-            if (messages.Any(message =>
-                    message.ProcessType.Equals(expectedProcessType, StringComparison.OrdinalIgnoreCase) == false))
+            if (HasMatchingProcessTypes(messages) == false)
             {
                 return Result.Failure(new ProcessTypesDoesNotMatchException(messageIdsToForward.ToArray()));
             }
@@ -68,6 +65,19 @@ namespace B2B.Transactions.OutgoingMessages
             await _messageDispatcher.DispatchAsync(message).ConfigureAwait(false);
 
             return Result.Succeeded();
+        }
+
+        private static List<string> MessageIdsNotFound(IReadOnlyCollection<string> messageIdsToForward, ReadOnlyCollection<OutgoingMessage> messages)
+        {
+            return messageIdsToForward
+                .Except(messages.Select(message => message.Id.ToString()))
+                .ToList();
+        }
+
+        private static bool HasMatchingProcessTypes(IReadOnlyCollection<OutgoingMessage> messages)
+        {
+            var expectedProcessType = messages.First().ProcessType;
+            return messages.All(message => message.ProcessType.Equals(expectedProcessType, StringComparison.OrdinalIgnoreCase));
         }
 
         private Task<Stream> CreateMessageFromAsync(ReadOnlyCollection<OutgoingMessage> outgoingMessages)
