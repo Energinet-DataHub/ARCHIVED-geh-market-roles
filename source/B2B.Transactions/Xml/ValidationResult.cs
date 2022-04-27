@@ -12,35 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace B2B.Transactions.OutgoingMessages
+namespace B2B.Transactions.Xml
 {
-    public class Result
+    public class ValidationResult
     {
-        private Result(IEnumerable<Exception> exceptions)
+        private ValidationResult(IReadOnlyCollection<string> validationErrors)
         {
-            Errors = exceptions.ToList();
+            ValidationErrors = validationErrors;
         }
 
-        private Result()
+        private ValidationResult()
         {
         }
 
-        public IReadOnlyCollection<Exception> Errors { get; } = new List<Exception>();
+        public bool IsValid => ValidationErrors.Count == 0;
 
-        public bool Success => Errors.Count == 0;
+        public IReadOnlyCollection<string> ValidationErrors { get; } = new List<string>();
 
-        public static Result Failure(params Exception[] exceptions)
+        public static ValidationResult Valid()
         {
-            return new Result(exceptions);
+            return new ValidationResult();
         }
 
-        public static Result Succeeded()
+        public static ValidationResult Invalid(IReadOnlyCollection<string> validationErrors)
         {
-            return new Result();
+            return new ValidationResult(validationErrors);
         }
     }
 }

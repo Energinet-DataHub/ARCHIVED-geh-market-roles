@@ -13,34 +13,22 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace B2B.Transactions.OutgoingMessages
+namespace B2B.Transactions.OutgoingMessages.ConfirmRequestChangeOfSupplier
 {
-    public class Result
+    public class MarketActivityRecord
     {
-        private Result(IEnumerable<Exception> exceptions)
+        public MarketActivityRecord(string id, string originalTransactionId, string marketEvaluationPointId)
         {
-            Errors = exceptions.ToList();
+            Id = id;
+            OriginalTransactionId = originalTransactionId;
+            MarketEvaluationPointId = marketEvaluationPointId;
         }
 
-        private Result()
-        {
-        }
+        public string Id { get; }
 
-        public IReadOnlyCollection<Exception> Errors { get; } = new List<Exception>();
+        public string OriginalTransactionId { get; }
 
-        public bool Success => Errors.Count == 0;
-
-        public static Result Failure(params Exception[] exceptions)
-        {
-            return new Result(exceptions);
-        }
-
-        public static Result Succeeded()
-        {
-            return new Result();
-        }
+        public string MarketEvaluationPointId { get; }
     }
 }

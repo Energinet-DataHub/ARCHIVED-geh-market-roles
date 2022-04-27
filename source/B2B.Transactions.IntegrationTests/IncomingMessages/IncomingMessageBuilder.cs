@@ -13,21 +13,55 @@
 // limitations under the License.
 
 using System;
+using B2B.Transactions.Configuration;
 using B2B.Transactions.IncomingMessages;
-using B2B.Transactions.Transactions;
 
 namespace B2B.Transactions.IntegrationTests.Transactions
 {
     internal class IncomingMessageBuilder
     {
-        public IncomingMessageBuilder()
-        {
-        }
+        private string _processType = "NotSet";
+        private string _senderId = "NotSet";
 
         internal static IncomingMessage CreateMessage()
         {
             return IncomingMessage.Create(
-                new MessageHeader(Guid.NewGuid().ToString(), "E03", "fake", "DDZ", "fake", "DDQ", "fake"),
+                new MessageHeader(Guid.NewGuid().ToString(), "E03", "senderIdfake", "DDZ", DataHubDetails.IdentificationNumber, "DDQ", "fake"),
+                new MarketActivityRecord()
+                {
+                    BalanceResponsibleId = "fake",
+                    Id = Guid.NewGuid().ToString(),
+                    ConsumerId = "fake",
+                    ConsumerName = "fake",
+                    EffectiveDate = "fake",
+                    EnergySupplierId = "fake",
+                    MarketEvaluationPointId = "fake",
+                });
+        }
+
+        internal IncomingMessageBuilder WithProcessType(string processType)
+        {
+            _processType = processType;
+            return this;
+        }
+
+        internal IncomingMessageBuilder WithSenderId(string senderId)
+        {
+            _senderId = senderId;
+            return this;
+        }
+
+        internal IncomingMessage Build()
+        {
+            return IncomingMessage.Create(
+                new MessageHeader(
+                    Guid.NewGuid().ToString(),
+                    _processType,
+                    _senderId,
+                    "DDZ",
+                    DataHubDetails.IdentificationNumber,
+                    "DDQ",
+                    "fake"),
                 new MarketActivityRecord()
                 {
                     BalanceResponsibleId = "fake",

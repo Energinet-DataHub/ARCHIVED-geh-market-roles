@@ -13,34 +13,29 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections;
 
 namespace B2B.Transactions.OutgoingMessages
 {
-    public class Result
+    public class ReceiverIdsDoesNotMatchException : Exception
     {
-        private Result(IEnumerable<Exception> exceptions)
-        {
-            Errors = exceptions.ToList();
-        }
-
-        private Result()
+        public ReceiverIdsDoesNotMatchException(IEnumerable messageIds)
+            : base($"Messages ({messageIds}) does not have matching receiver ids")
         {
         }
 
-        public IReadOnlyCollection<Exception> Errors { get; } = new List<Exception>();
-
-        public bool Success => Errors.Count == 0;
-
-        public static Result Failure(params Exception[] exceptions)
+        public ReceiverIdsDoesNotMatchException()
         {
-            return new Result(exceptions);
         }
 
-        public static Result Succeeded()
+        public ReceiverIdsDoesNotMatchException(string message, Exception innerException)
+            : base(message, innerException)
         {
-            return new Result();
+        }
+
+        private ReceiverIdsDoesNotMatchException(string message)
+            : base(message)
+        {
         }
     }
 }
