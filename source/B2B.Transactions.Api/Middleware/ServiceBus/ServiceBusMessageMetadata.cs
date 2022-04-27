@@ -12,24 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Security.Claims;
-
-namespace B2B.Transactions.Authentication
+namespace B2B.Transactions.Api.Middleware.ServiceBus
 {
-    /// <summary>
-    /// Service for authenticating an market actor
-    /// </summary>
-    public interface IMarketActorAuthenticator
+    public class ServiceBusMessageMetadata
     {
-        /// <summary>
-        /// Current identity
-        /// </summary>
-        MarketActorIdentity CurrentIdentity { get; }
+        public ServiceBusMessageMetadata(string correlationId)
+        {
+            CorrelationID = correlationId;
+        }
 
-        /// <summary>
-        /// Authenticates a claims principal
-        /// </summary>
-        /// <param name="claimsPrincipal"></param>
-        void Authenticate(ClaimsPrincipal claimsPrincipal);
+        public string CorrelationID { get; }
     }
 }

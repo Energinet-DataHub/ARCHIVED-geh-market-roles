@@ -12,15 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using System.Threading.Tasks;
 
-namespace B2B.Transactions.Authentication
+namespace B2B.Transactions.Configuration.DataAccess
 {
-    public class NotAuthenticated : MarketActorIdentity
+    /// <summary>
+    /// Unit of work
+    /// </summary>
+    public interface IUnitOfWork
     {
-        public NotAuthenticated()
-            : base("NotSet", "NotSet", IdentifierType.Eic, Array.Empty<string>())
-        {
-        }
+        /// <summary>
+        /// Commits current transaction
+        /// </summary>
+        Task CommitAsync();
     }
 }

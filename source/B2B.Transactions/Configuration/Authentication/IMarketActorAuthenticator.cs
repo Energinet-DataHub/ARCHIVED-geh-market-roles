@@ -12,19 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Data;
+using System.Security.Claims;
 
-namespace B2B.Transactions.DataAccess
+namespace B2B.Transactions.Configuration.Authentication
 {
     /// <summary>
-    /// Factory for creating database connections
+    /// Service for authenticating an market actor
     /// </summary>
-    public interface IDbConnectionFactory
+    public interface IMarketActorAuthenticator
     {
         /// <summary>
-        /// Returns and existing open connection if any, or creates a new open connection
+        /// Current identity
         /// </summary>
-        /// <returns><see cref="IDbConnection"/></returns>
-        IDbConnection GetOpenConnection();
+        MarketActorIdentity CurrentIdentity { get; }
+
+        /// <summary>
+        /// Authenticates a claims principal
+        /// </summary>
+        /// <param name="claimsPrincipal"></param>
+        void Authenticate(ClaimsPrincipal claimsPrincipal);
     }
 }

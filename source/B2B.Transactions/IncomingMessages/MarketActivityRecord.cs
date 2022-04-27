@@ -12,23 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
-using B2B.Transactions.Configuration.DataAccess;
-
-namespace B2B.Transactions.Infrastructure.DataAccess
+namespace B2B.Transactions.IncomingMessages
 {
-    public class UnitOfWork : IUnitOfWork
+    public class MarketActivityRecord
     {
-        private readonly B2BContext _context;
+        public string Id { get; init; } = string.Empty;
 
-        public UnitOfWork(B2BContext context)
-        {
-            _context = context;
-        }
+        public string? ConsumerId { get; init; }
 
-        public Task CommitAsync()
-        {
-            return _context.SaveChangesAsync();
-        }
+        public string? BalanceResponsibleId { get; init; }
+
+        public string? EnergySupplierId { get; init; }
+
+        public string MarketEvaluationPointId { get; init; } = string.Empty;
+
+        public string? ConsumerName { get; init; }
+
+        public string EffectiveDate { get; init; } = string.Empty;
     }
 }
