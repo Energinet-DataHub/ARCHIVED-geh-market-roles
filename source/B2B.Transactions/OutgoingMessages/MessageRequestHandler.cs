@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -41,28 +42,32 @@ namespace B2B.Transactions.OutgoingMessages
             _incomingMessageStore = incomingMessageStore;
         }
 
-        public async Task<Result> HandleAsync(ReadOnlyCollection<string> messageIdsToForward)
+        public async Task<Result> HandleAsync(IReadOnlyCollection<string> messageIdsToForward)
         {
+            var exceptions = new List<Exception>();
             var messages = _outgoingMessageStore.GetByIds(messageIdsToForward);
-            var exceptions = EnsureMessagesExists(messageIdsToForward, messages);
+
+            exceptions.AddRange(messageIdsToForward
+                .Except(messages.Select(message => message.Id.ToString()))
+                .Select(messageId => new OutgoingMessageNotFoundException(messageId))
+                .ToArray());
 
             if (exceptions.Any())
             {
-                return Result.Failure(exceptions);
+                return Result.Failure(exceptions.ToArray());
+            }
+
+            var expectedProcessType = messages.First().ProcessType;
+            if (messages.Any(message =>
+                    message.ProcessType.Equals(expectedProcessType, StringComparison.OrdinalIgnoreCase) == false))
+            {
+                return Result.Failure(new ProcessTypesDoesNotMatchException(messageIdsToForward.ToArray()));
             }
 
             var message = await CreateMessageFromAsync(messages).ConfigureAwait(false);
             await _messageDispatcher.DispatchAsync(message).ConfigureAwait(false);
 
             return Result.Succeeded();
-        }
-
-        private static List<OutgoingMessageNotFoundException> EnsureMessagesExists(ReadOnlyCollection<string> messageIdsToForward, ReadOnlyCollection<OutgoingMessage> messages)
-        {
-            return messageIdsToForward
-                .Except(messages.Select(message => message.Id.ToString()))
-                .Select(messageId => new OutgoingMessageNotFoundException(messageId))
-                .ToList();
         }
 
         private Task<Stream> CreateMessageFromAsync(ReadOnlyCollection<OutgoingMessage> outgoingMessages)
