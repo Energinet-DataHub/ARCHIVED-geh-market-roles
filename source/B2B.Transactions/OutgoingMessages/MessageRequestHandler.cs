@@ -42,10 +42,10 @@ namespace B2B.Transactions.OutgoingMessages
             _incomingMessageStore = incomingMessageStore;
         }
 
-        public async Task<Result> HandleAsync(IReadOnlyCollection<string> messageIdsToForward)
+        public async Task<Result> HandleAsync(IReadOnlyCollection<string> requestedMessageIds)
         {
-            var messages = _outgoingMessageStore.GetByIds(messageIdsToForward);
-            var exceptions = CheckBundleApplicability(messageIdsToForward, messages);
+            var messages = _outgoingMessageStore.GetByIds(requestedMessageIds);
+            var exceptions = CheckBundleApplicability(requestedMessageIds, messages);
             if (exceptions.Count > 0)
             {
                 return Result.Failure(exceptions.ToArray());
@@ -57,11 +57,11 @@ namespace B2B.Transactions.OutgoingMessages
             return Result.Succeeded();
         }
 
-        private static IReadOnlyList<Exception> CheckBundleApplicability(IReadOnlyCollection<string> messageIdsToForward, ReadOnlyCollection<OutgoingMessage> messages)
+        private static IReadOnlyList<Exception> CheckBundleApplicability(IReadOnlyCollection<string> requestedMessageIds, ReadOnlyCollection<OutgoingMessage> messages)
         {
             var exceptions = new List<Exception>();
 
-            var messageIdsNotFound = MessageIdsNotFound(messageIdsToForward, messages);
+            var messageIdsNotFound = MessageIdsNotFound(requestedMessageIds, messages);
             if (messageIdsNotFound.Any())
             {
                 exceptions.AddRange(messageIdsNotFound
@@ -72,12 +72,12 @@ namespace B2B.Transactions.OutgoingMessages
 
             if (HasMatchingProcessTypes(messages) == false)
             {
-                exceptions.Add(new ProcessTypesDoesNotMatchException(messageIdsToForward.ToArray()));
+                exceptions.Add(new ProcessTypesDoesNotMatchException(requestedMessageIds.ToArray()));
             }
 
             if (HasMatchingReceiver(messages) == false)
             {
-                exceptions.Add(new ReceiverIdsDoesNotMatchException(messageIdsToForward.ToArray()));
+                exceptions.Add(new ReceiverIdsDoesNotMatchException(requestedMessageIds.ToArray()));
             }
 
             return exceptions;
@@ -89,9 +89,9 @@ namespace B2B.Transactions.OutgoingMessages
             return messages.All(message => message.RecipientId.Equals(expectedReceiver, StringComparison.OrdinalIgnoreCase));
         }
 
-        private static List<string> MessageIdsNotFound(IReadOnlyCollection<string> messageIdsToForward, ReadOnlyCollection<OutgoingMessage> messages)
+        private static List<string> MessageIdsNotFound(IReadOnlyCollection<string> requestedMessageIds, ReadOnlyCollection<OutgoingMessage> messages)
         {
-            return messageIdsToForward
+            return requestedMessageIds
                 .Except(messages.Select(message => message.Id.ToString()))
                 .ToList();
         }
