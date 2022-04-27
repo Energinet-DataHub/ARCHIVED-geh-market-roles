@@ -44,8 +44,22 @@ namespace B2B.Transactions.OutgoingMessages
 
         public async Task<Result> HandleAsync(IReadOnlyCollection<string> messageIdsToForward)
         {
-            var exceptions = new List<Exception>();
             var messages = _outgoingMessageStore.GetByIds(messageIdsToForward);
+            var exceptions = CheckBundleApplicability(messageIdsToForward, messages);
+            if (exceptions.Count > 0)
+            {
+                return Result.Failure(exceptions.ToArray());
+            }
+
+            var message = await CreateMessageFromAsync(messages).ConfigureAwait(false);
+            await _messageDispatcher.DispatchAsync(message).ConfigureAwait(false);
+
+            return Result.Succeeded();
+        }
+
+        private static IReadOnlyList<Exception> CheckBundleApplicability(IReadOnlyCollection<string> messageIdsToForward, ReadOnlyCollection<OutgoingMessage> messages)
+        {
+            var exceptions = new List<Exception>();
 
             var messageIdsNotFound = MessageIdsNotFound(messageIdsToForward, messages);
             if (messageIdsNotFound.Any())
@@ -53,23 +67,20 @@ namespace B2B.Transactions.OutgoingMessages
                 exceptions.AddRange(messageIdsNotFound
                     .Select(messageId => new OutgoingMessageNotFoundException(messageId))
                     .ToArray());
-                return Result.Failure(exceptions.ToArray());
+                return exceptions;
             }
 
             if (HasMatchingProcessTypes(messages) == false)
             {
-                return Result.Failure(new ProcessTypesDoesNotMatchException(messageIdsToForward.ToArray()));
+                exceptions.Add(new ProcessTypesDoesNotMatchException(messageIdsToForward.ToArray()));
             }
 
             if (HasMatchingReceiver(messages) == false)
             {
-                return Result.Failure(new ReceiverIdsDoesNotMatchException(messageIdsToForward.ToArray()));
+                exceptions.Add(new ReceiverIdsDoesNotMatchException(messageIdsToForward.ToArray()));
             }
 
-            var message = await CreateMessageFromAsync(messages).ConfigureAwait(false);
-            await _messageDispatcher.DispatchAsync(message).ConfigureAwait(false);
-
-            return Result.Succeeded();
+            return exceptions;
         }
 
         private static bool HasMatchingReceiver(IReadOnlyCollection<OutgoingMessage> messages)
