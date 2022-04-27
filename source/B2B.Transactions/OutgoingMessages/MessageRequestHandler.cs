@@ -61,10 +61,21 @@ namespace B2B.Transactions.OutgoingMessages
                 return Result.Failure(new ProcessTypesDoesNotMatchException(messageIdsToForward.ToArray()));
             }
 
+            if (HasMatchingReceiver(messages) == false)
+            {
+                return Result.Failure(new ReceiverIdsDoesNotMatchException(messageIdsToForward.ToArray()));
+            }
+
             var message = await CreateMessageFromAsync(messages).ConfigureAwait(false);
             await _messageDispatcher.DispatchAsync(message).ConfigureAwait(false);
 
             return Result.Succeeded();
+        }
+
+        private static bool HasMatchingReceiver(IReadOnlyCollection<OutgoingMessage> messages)
+        {
+            var expectedReceiver = messages.First().RecipientId;
+            return messages.All(message => message.RecipientId.Equals(expectedReceiver, StringComparison.OrdinalIgnoreCase));
         }
 
         private static List<string> MessageIdsNotFound(IReadOnlyCollection<string> messageIdsToForward, ReadOnlyCollection<OutgoingMessage> messages)
