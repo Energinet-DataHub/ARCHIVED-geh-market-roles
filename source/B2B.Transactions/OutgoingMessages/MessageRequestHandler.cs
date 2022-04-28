@@ -100,10 +100,19 @@ namespace B2B.Transactions.OutgoingMessages
             return messages.All(message => message.ProcessType.Equals(expectedProcessType, StringComparison.OrdinalIgnoreCase));
         }
 
+        private static MessageHeader CreateMessageHeaderFrom(OutgoingMessage message)
+        {
+            return new MessageHeader(
+                message.ProcessType,
+                message.SenderId,
+                message.SenderRole,
+                message.ReceiverId,
+                message.ReceiverRole);
+        }
+
         private Task<Stream> CreateMessageFromAsync(ReadOnlyCollection<OutgoingMessage> outgoingMessages)
         {
-            var firstMessage = outgoingMessages.First();
-            var messageHeader = new MessageHeader(firstMessage.ProcessType, firstMessage.SenderId, firstMessage.SenderRole, firstMessage.ReceiverId, firstMessage.ReceiverRole);
+            var messageHeader = CreateMessageHeaderFrom(outgoingMessages.First());
             var marketActivityRecords = new List<MarketActivityRecord>();
             foreach (var outgoingMessage in outgoingMessages)
             {
