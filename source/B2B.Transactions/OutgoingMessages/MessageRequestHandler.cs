@@ -18,29 +18,23 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using B2B.Transactions.IncomingMessages;
-using B2B.Transactions.OutgoingMessages.ConfirmRequestChangeOfSupplier;
-using MarketActivityRecord = B2B.Transactions.OutgoingMessages.ConfirmRequestChangeOfSupplier.MarketActivityRecord;
 
 namespace B2B.Transactions.OutgoingMessages
 {
     public class MessageRequestHandler
     {
         private readonly IOutgoingMessageStore _outgoingMessageStore;
-        private readonly IncomingMessageStore _incomingMessageStore;
         private readonly MessageDispatcher _messageDispatcher;
         private readonly MessageFactory _messageFactory;
 
         public MessageRequestHandler(
             IOutgoingMessageStore outgoingMessageStore,
             MessageDispatcher messageDispatcher,
-            MessageFactory messageFactory,
-            IncomingMessageStore incomingMessageStore)
+            MessageFactory messageFactory)
         {
             _outgoingMessageStore = outgoingMessageStore;
             _messageDispatcher = messageDispatcher;
             _messageFactory = messageFactory;
-            _incomingMessageStore = incomingMessageStore;
         }
 
         public async Task<Result> HandleAsync(IReadOnlyCollection<string> requestedMessageIds)
@@ -86,8 +80,8 @@ namespace B2B.Transactions.OutgoingMessages
 
         private static bool HasMatchingReceiver(IReadOnlyCollection<OutgoingMessage> messages)
         {
-            var expectedReceiver = messages.First().RecipientId;
-            return messages.All(message => message.RecipientId.Equals(expectedReceiver, StringComparison.OrdinalIgnoreCase));
+            var expectedReceiver = messages.First().ReceiverId;
+            return messages.All(message => message.ReceiverId.Equals(expectedReceiver, StringComparison.OrdinalIgnoreCase));
         }
 
         private static List<string> MessageIdsNotFound(IReadOnlyCollection<string> requestedMessageIds, ReadOnlyCollection<OutgoingMessage> messages)
@@ -103,18 +97,23 @@ namespace B2B.Transactions.OutgoingMessages
             return messages.All(message => message.ProcessType.Equals(expectedProcessType, StringComparison.OrdinalIgnoreCase));
         }
 
+        private static MessageHeader CreateMessageHeaderFrom(OutgoingMessage message)
+        {
+            return new MessageHeader(
+                message.ProcessType,
+                message.SenderId,
+                message.SenderRole,
+                message.ReceiverId,
+                message.ReceiverRole);
+        }
+
         private Task<Stream> CreateMessageFromAsync(ReadOnlyCollection<OutgoingMessage> outgoingMessages)
         {
-            var incomingMessage = _incomingMessageStore.GetById(outgoingMessages[0].OriginalMessageId);
-            var messageHeader = new MessageHeader(incomingMessage!.Message.ProcessType, incomingMessage.Message.ReceiverId, incomingMessage.Message.ReceiverRole, incomingMessage.Message.SenderId, incomingMessage.Message.SenderRole);
-            var marketActivityRecords = new List<MarketActivityRecord>();
-            foreach (var outgoingMessage in outgoingMessages)
-            {
-                marketActivityRecords.Add(
-                    new MarketActivityRecord(outgoingMessage.Id.ToString(), incomingMessage.MarketActivityRecord.Id, incomingMessage.MarketActivityRecord.MarketEvaluationPointId));
-            }
-
-            return _messageFactory.CreateFromAsync(messageHeader, marketActivityRecords.AsReadOnly());
+            var messageHeader = CreateMessageHeaderFrom(outgoingMessages.First());
+            var marketActivityRecordPayload = outgoingMessages
+                .Select(message => new MarketActivityRecordPayload(message.MarketActivityRecord))
+                .ToList();
+            return _messageFactory.CreateFromAsync(messageHeader, marketActivityRecordPayload, outgoingMessages.First().DocumentType);
         }
     }
 }

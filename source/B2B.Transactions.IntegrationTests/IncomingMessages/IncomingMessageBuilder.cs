@@ -15,6 +15,7 @@
 using System;
 using B2B.Transactions.Configuration;
 using B2B.Transactions.IncomingMessages;
+using B2B.Transactions.IncomingMessages.RequestChangeOfSupplier;
 
 namespace B2B.Transactions.IntegrationTests.Transactions
 {

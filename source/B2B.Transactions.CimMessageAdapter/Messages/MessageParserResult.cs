@@ -15,6 +15,7 @@
 using System.Collections.Generic;
 using B2B.CimMessageAdapter.Errors;
 using B2B.Transactions.IncomingMessages;
+using B2B.Transactions.IncomingMessages.RequestChangeOfSupplier;
 
 namespace B2B.CimMessageAdapter.Messages
 {

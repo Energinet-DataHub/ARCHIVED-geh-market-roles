@@ -23,6 +23,7 @@ using B2B.CimMessageAdapter.Transactions;
 using B2B.Transactions;
 using B2B.Transactions.Configuration.Authentication;
 using B2B.Transactions.IncomingMessages;
+using B2B.Transactions.IncomingMessages.RequestChangeOfSupplier;
 using B2B.Transactions.Transactions;
 using B2B.Transactions.Xml.Incoming;
 

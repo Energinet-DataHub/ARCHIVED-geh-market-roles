@@ -44,7 +44,7 @@ namespace B2B.Transactions.Infrastructure.OutgoingMessages
         {
             return new DataAvailableNotificationDto(
                 message.Id,
-                new GlobalLocationNumberDto(message.RecipientId),
+                new GlobalLocationNumberDto(message.ReceiverId),
                 new MessageTypeDto(string.Empty),
                 DomainOrigin.MarketRoles,
                 false,

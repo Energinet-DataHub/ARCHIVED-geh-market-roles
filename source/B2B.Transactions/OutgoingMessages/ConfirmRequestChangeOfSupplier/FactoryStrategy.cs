@@ -15,21 +15,38 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using B2B.Transactions.Configuration.Serialization;
 using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 
 namespace B2B.Transactions.OutgoingMessages.ConfirmRequestChangeOfSupplier
 {
-    public class MessageFactory
+    public class FactoryStrategy : IMessageFactoryStrategy
     {
         private const string Prefix = "cim";
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
+        private readonly ISerializer _serializer;
 
-        public MessageFactory(ISystemDateTimeProvider systemDateTimeProvider)
+        public FactoryStrategy(ISystemDateTimeProvider systemDateTimeProvider, ISerializer serializer)
         {
             _systemDateTimeProvider = systemDateTimeProvider;
+            _serializer = serializer;
+        }
+
+        public bool CanHandleDocumentType(string documentType)
+        {
+            if (documentType == null) throw new ArgumentNullException(nameof(documentType));
+            return documentType.Equals("ConfirmRequestChangeOfSupplier", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public Task<Stream> CreateFromAsync(MessageHeader header, IReadOnlyCollection<MarketActivityRecordPayload> marketActivityRecordPayloads)
+        {
+            var marketActivityRecords = marketActivityRecordPayloads
+                .Select(record => _serializer.Deserialize<MarketActivityRecord>(record.Payload)).ToList();
+            return CreateFromAsync(header, marketActivityRecords);
         }
 
         public async Task<Stream> CreateFromAsync(MessageHeader messageHeader, IReadOnlyCollection<MarketActivityRecord> marketActivityRecords)

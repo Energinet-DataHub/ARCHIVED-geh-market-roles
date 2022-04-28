@@ -20,18 +20,17 @@ using B2B.CimMessageAdapter.Transactions;
 using B2B.Transactions.Configuration;
 using B2B.Transactions.Configuration.Authentication;
 using B2B.Transactions.Configuration.DataAccess;
+using B2B.Transactions.Configuration.Serialization;
 using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.Infrastructure.Authentication;
 using B2B.Transactions.Infrastructure.DataAccess;
 using B2B.Transactions.Infrastructure.DataAccess.Transaction;
 using B2B.Transactions.Infrastructure.Messages;
 using B2B.Transactions.Infrastructure.OutgoingMessages;
-using B2B.Transactions.Infrastructure.Serialization;
 using B2B.Transactions.Infrastructure.Transactions;
 using B2B.Transactions.OutgoingMessages;
 using B2B.Transactions.OutgoingMessages.ConfirmRequestChangeOfSupplier;
 using B2B.Transactions.Transactions;
-using B2B.Transactions.Xml;
 using B2B.Transactions.Xml.Incoming;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage;
 using Energinet.DataHub.MarketRoles.Domain.SeedWork;
@@ -58,11 +57,11 @@ namespace B2B.Transactions.Infrastructure.Configuration
             services.AddScoped<IMarketActorAuthenticator, MarketActorAuthenticator>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IOutgoingMessageStore, OutgoingMessageStore>();
-            services.AddScoped<IncomingMessageHandler>();
-            services.AddScoped<IncomingMessageStore>();
 
             services.AddLogging();
             AddXmlSchema(services);
+            AddIncomingMessageHandling();
+            AddOutgoingMessageHandling();
         }
 
         public static CompositionRoot Initialize(IServiceCollection services)
@@ -135,9 +134,7 @@ namespace B2B.Transactions.Infrastructure.Configuration
 
         public CompositionRoot AddOutgoingMessageDispatcher()
         {
-            _services.AddScoped<MessageFactory>();
             _services.AddScoped<MessageDispatcher>();
-            _services.AddScoped<MessageRequestHandler>();
 
             return this;
         }
@@ -146,7 +143,20 @@ namespace B2B.Transactions.Infrastructure.Configuration
         {
             services.AddScoped<SchemaStore>();
             services.AddScoped<ISchemaProvider, SchemaProvider>();
-            services.AddScoped<MessageReceiver>();
+        }
+
+        private void AddOutgoingMessageHandling()
+        {
+            _services.AddTransient<IMessageFactoryStrategy, FactoryStrategy>();
+            _services.AddTransient<MessageRequestHandler>();
+            _services.AddTransient<MessageFactory>();
+        }
+
+        private void AddIncomingMessageHandling()
+        {
+            _services.AddScoped<MessageReceiver>();
+            _services.AddScoped<IncomingMessageHandler>();
+            _services.AddScoped<IncomingMessageStore>();
         }
     }
 }

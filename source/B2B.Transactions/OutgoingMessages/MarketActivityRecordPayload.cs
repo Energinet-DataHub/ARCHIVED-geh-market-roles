@@ -12,22 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace B2B.Transactions.IncomingMessages
+namespace B2B.Transactions.OutgoingMessages
 {
-    public class MarketActivityRecord
+    public class MarketActivityRecordPayload
     {
-        public string Id { get; init; } = string.Empty;
+        public MarketActivityRecordPayload(string payload)
+        {
+            Payload = payload;
+        }
 
-        public string? ConsumerId { get; init; }
-
-        public string? BalanceResponsibleId { get; init; }
-
-        public string? EnergySupplierId { get; init; }
-
-        public string MarketEvaluationPointId { get; init; } = string.Empty;
-
-        public string? ConsumerName { get; init; }
-
-        public string EffectiveDate { get; init; } = string.Empty;
+        public string Payload { get; }
     }
 }
