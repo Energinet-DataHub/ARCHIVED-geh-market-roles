@@ -41,7 +41,7 @@ namespace B2B.Transactions.Api
             _messageReceiver = messageReceiver ?? throw new ArgumentNullException(nameof(messageReceiver));
         }
 
-        [Function(nameof(RequestChangeOfSupplierMessageReceiver))]
+        [Function("RequestChangeOfSupplier")]
         public async Task<HttpResponseData> RunAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")]
             HttpRequestData request)
