@@ -35,6 +35,8 @@ namespace B2B.Transactions.Infrastructure.DataAccess.Outgoing
             builder.Property(x => x.ProcessType);
             builder.Property(x => x.TransactionId);
             builder.Property(x => x.MarketActivityRecord);
+            builder.Property(x => x.SenderId);
+            builder.Property(x => x.SenderRole);
         }
     }
 }

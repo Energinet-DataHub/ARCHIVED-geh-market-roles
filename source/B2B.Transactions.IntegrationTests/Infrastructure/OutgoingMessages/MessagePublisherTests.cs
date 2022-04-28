@@ -66,7 +66,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         private OutgoingMessage CreateOutgoingMessage()
         {
             var transaction = IncomingMessageBuilder.CreateMessage();
-            return new OutgoingMessage(Guid.NewGuid(), "FakeDocumentType", transaction.Message.ReceiverId, _correlationContext.Id, transaction.MarketActivityRecord.Id, transaction.Message.ProcessType, transaction.MarketActivityRecord.Id, string.Empty);
+            return new OutgoingMessage(Guid.NewGuid(), "FakeDocumentType", transaction.Message.ReceiverId, _correlationContext.Id, transaction.MarketActivityRecord.Id, transaction.Message.ProcessType, transaction.MarketActivityRecord.Id, string.Empty, transaction.Message.ReceiverId, transaction.Message.ReceiverRole);
         }
     }
 }

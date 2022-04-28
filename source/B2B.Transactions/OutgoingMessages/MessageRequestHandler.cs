@@ -20,6 +20,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.OutgoingMessages.ConfirmRequestChangeOfSupplier;
+using Newtonsoft.Json;
 using MarketActivityRecord = B2B.Transactions.OutgoingMessages.ConfirmRequestChangeOfSupplier.MarketActivityRecord;
 
 namespace B2B.Transactions.OutgoingMessages
@@ -105,13 +106,15 @@ namespace B2B.Transactions.OutgoingMessages
 
         private Task<Stream> CreateMessageFromAsync(ReadOnlyCollection<OutgoingMessage> outgoingMessages)
         {
-            var incomingMessage = _incomingMessageStore.GetById(outgoingMessages[0].OriginalMessageId);
-            var messageHeader = new MessageHeader(incomingMessage!.Message.ProcessType, incomingMessage.Message.ReceiverId, incomingMessage.Message.ReceiverRole, incomingMessage.Message.SenderId, incomingMessage.Message.SenderRole);
+            var firstMessage = outgoingMessages.First();
+            var incomingMessage = _incomingMessageStore.GetById(outgoingMessages[0].OriginalMessageId)!;
+            var messageHeader = new MessageHeader(firstMessage.ProcessType, firstMessage.SenderId, firstMessage.SenderRole, incomingMessage.Message.SenderId, incomingMessage.Message.SenderRole);
             var marketActivityRecords = new List<MarketActivityRecord>();
             foreach (var outgoingMessage in outgoingMessages)
             {
+                var marketActivityRecord = JsonConvert.DeserializeObject<MarketActivityRecord>(outgoingMessage.MarketActivityRecord);
                 marketActivityRecords.Add(
-                    new MarketActivityRecord(outgoingMessage.Id.ToString(), incomingMessage.MarketActivityRecord.Id, incomingMessage.MarketActivityRecord.MarketEvaluationPointId));
+                    marketActivityRecord);
             }
 
             return _messageFactory.CreateFromAsync(messageHeader, marketActivityRecords.AsReadOnly());
