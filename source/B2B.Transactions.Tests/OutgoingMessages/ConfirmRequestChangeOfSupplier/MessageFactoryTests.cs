@@ -27,13 +27,13 @@ namespace B2B.Transactions.Tests.OutgoingMessages.ConfirmRequestChangeOfSupplier
 {
     public class MessageFactoryTests
     {
-        private readonly MessageFactory _messageFactory;
+        private readonly FactoryStrategy _factoryStrategy;
         private readonly ISchemaProvider _schemaProvider;
 
         public MessageFactoryTests()
         {
             _schemaProvider = new SchemaProvider(new SchemaStore());
-            _messageFactory = new MessageFactory(new SystemDateTimeProviderStub());
+            _factoryStrategy = new FactoryStrategy(new SystemDateTimeProviderStub());
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace B2B.Transactions.Tests.OutgoingMessages.ConfirmRequestChangeOfSupplier
                 new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "FakeMarketEvaluationPointId"),
             };
 
-            var message = await _messageFactory.CreateFromAsync(header, marketActivityRecords).ConfigureAwait(false);
+            var message = await _factoryStrategy.CreateFromAsync(header, marketActivityRecords).ConfigureAwait(false);
 
             await AssertMessage(message, header, marketActivityRecords).ConfigureAwait(false);
         }

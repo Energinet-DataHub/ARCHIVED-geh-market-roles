@@ -18,9 +18,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using B2B.Transactions.OutgoingMessages.ConfirmRequestChangeOfSupplier;
-using Newtonsoft.Json;
-using MarketActivityRecord = B2B.Transactions.OutgoingMessages.ConfirmRequestChangeOfSupplier.MarketActivityRecord;
 
 namespace B2B.Transactions.OutgoingMessages
 {
@@ -113,15 +110,10 @@ namespace B2B.Transactions.OutgoingMessages
         private Task<Stream> CreateMessageFromAsync(ReadOnlyCollection<OutgoingMessage> outgoingMessages)
         {
             var messageHeader = CreateMessageHeaderFrom(outgoingMessages.First());
-            var marketActivityRecords = new List<MarketActivityRecord>();
-            foreach (var outgoingMessage in outgoingMessages)
-            {
-                var marketActivityRecord = JsonConvert.DeserializeObject<MarketActivityRecord>(outgoingMessage.MarketActivityRecord);
-                marketActivityRecords.Add(
-                    marketActivityRecord);
-            }
-
-            return _messageFactory.CreateFromAsync(messageHeader, marketActivityRecords.AsReadOnly());
+            var marketActivityRecordPayload = outgoingMessages
+                .Select(message => new MarketActivityRecordPayload(message.MarketActivityRecord))
+                .ToList();
+            return _messageFactory.CreateFromAsync(messageHeader, marketActivityRecordPayload, outgoingMessages.First().DocumentType);
         }
     }
 }
