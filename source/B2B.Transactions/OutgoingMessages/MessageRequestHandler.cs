@@ -18,7 +18,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using B2B.Transactions.IncomingMessages;
 using B2B.Transactions.OutgoingMessages.ConfirmRequestChangeOfSupplier;
 using Newtonsoft.Json;
 using MarketActivityRecord = B2B.Transactions.OutgoingMessages.ConfirmRequestChangeOfSupplier.MarketActivityRecord;
@@ -28,20 +27,17 @@ namespace B2B.Transactions.OutgoingMessages
     public class MessageRequestHandler
     {
         private readonly IOutgoingMessageStore _outgoingMessageStore;
-        private readonly IncomingMessageStore _incomingMessageStore;
         private readonly MessageDispatcher _messageDispatcher;
         private readonly MessageFactory _messageFactory;
 
         public MessageRequestHandler(
             IOutgoingMessageStore outgoingMessageStore,
             MessageDispatcher messageDispatcher,
-            MessageFactory messageFactory,
-            IncomingMessageStore incomingMessageStore)
+            MessageFactory messageFactory)
         {
             _outgoingMessageStore = outgoingMessageStore;
             _messageDispatcher = messageDispatcher;
             _messageFactory = messageFactory;
-            _incomingMessageStore = incomingMessageStore;
         }
 
         public async Task<Result> HandleAsync(IReadOnlyCollection<string> requestedMessageIds)
@@ -107,7 +103,6 @@ namespace B2B.Transactions.OutgoingMessages
         private Task<Stream> CreateMessageFromAsync(ReadOnlyCollection<OutgoingMessage> outgoingMessages)
         {
             var firstMessage = outgoingMessages.First();
-            var incomingMessage = _incomingMessageStore.GetById(outgoingMessages[0].OriginalMessageId)!;
             var messageHeader = new MessageHeader(firstMessage.ProcessType, firstMessage.SenderId, firstMessage.SenderRole, firstMessage.ReceiverId, firstMessage.ReceiverRole);
             var marketActivityRecords = new List<MarketActivityRecord>();
             foreach (var outgoingMessage in outgoingMessages)
