@@ -18,10 +18,9 @@ namespace B2B.Transactions.OutgoingMessages
 {
     public class OutgoingMessage
     {
-        public OutgoingMessage(Guid id, string documentType, string recipientId, string correlationId, string originalMessageId, string processType, string transactionId, string marketActivityRecord, string senderId, string senderRole)
+        public OutgoingMessage(Guid id, string documentType, string correlationId, string originalMessageId, string processType, string transactionId, string marketActivityRecord, string senderId, string senderRole, string receiverRole, string receiverId)
         {
             DocumentType = documentType;
-            RecipientId = recipientId;
             CorrelationId = correlationId;
             OriginalMessageId = originalMessageId;
             ProcessType = processType;
@@ -29,14 +28,14 @@ namespace B2B.Transactions.OutgoingMessages
             MarketActivityRecord = marketActivityRecord;
             SenderId = senderId;
             SenderRole = senderRole;
+            ReceiverRole = receiverRole;
+            ReceiverId = receiverId;
             Id = id;
         }
 
         public Guid Id { get; }
 
         public bool IsPublished { get; private set; }
-
-        public string RecipientId { get; }
 
         public string DocumentType { get; }
 
@@ -53,6 +52,10 @@ namespace B2B.Transactions.OutgoingMessages
         public string SenderId { get; }
 
         public string SenderRole { get; }
+
+        public string ReceiverRole { get; }
+
+        public string ReceiverId { get; }
 
         public void Published()
         {

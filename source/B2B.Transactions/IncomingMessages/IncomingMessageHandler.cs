@@ -54,14 +54,15 @@ namespace B2B.Transactions.IncomingMessages
             var outgoingMessage = new OutgoingMessage(
                 confirmChangeOfSupplierRecordId,
                 "ConfirmRequestChangeOfSupplier",
-                incomingMessage.Message.SenderId,
                 _correlationContext.Id,
                 incomingMessage.Id,
                 incomingMessage.Message.ProcessType,
                 acceptedTransaction.TransactionId,
                 JsonConvert.SerializeObject(confirmChangeOfSupplierRecord),
                 DataHubDetails.IdentificationNumber,
-                incomingMessage.Message.ReceiverRole);
+                incomingMessage.Message.ReceiverRole,
+                incomingMessage.Message.SenderRole,
+                incomingMessage.Message.SenderId);
             _outgoingMessageStore.Add(outgoingMessage);
 
             return _unitOfWork.CommitAsync();

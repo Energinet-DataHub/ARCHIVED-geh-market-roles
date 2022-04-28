@@ -87,8 +87,8 @@ namespace B2B.Transactions.OutgoingMessages
 
         private static bool HasMatchingReceiver(IReadOnlyCollection<OutgoingMessage> messages)
         {
-            var expectedReceiver = messages.First().RecipientId;
-            return messages.All(message => message.RecipientId.Equals(expectedReceiver, StringComparison.OrdinalIgnoreCase));
+            var expectedReceiver = messages.First().ReceiverId;
+            return messages.All(message => message.ReceiverId.Equals(expectedReceiver, StringComparison.OrdinalIgnoreCase));
         }
 
         private static List<string> MessageIdsNotFound(IReadOnlyCollection<string> requestedMessageIds, ReadOnlyCollection<OutgoingMessage> messages)
@@ -108,7 +108,7 @@ namespace B2B.Transactions.OutgoingMessages
         {
             var firstMessage = outgoingMessages.First();
             var incomingMessage = _incomingMessageStore.GetById(outgoingMessages[0].OriginalMessageId)!;
-            var messageHeader = new MessageHeader(firstMessage.ProcessType, firstMessage.SenderId, firstMessage.SenderRole, incomingMessage.Message.SenderId, incomingMessage.Message.SenderRole);
+            var messageHeader = new MessageHeader(firstMessage.ProcessType, firstMessage.SenderId, firstMessage.SenderRole, firstMessage.ReceiverId, firstMessage.ReceiverRole);
             var marketActivityRecords = new List<MarketActivityRecord>();
             foreach (var outgoingMessage in outgoingMessages)
             {
