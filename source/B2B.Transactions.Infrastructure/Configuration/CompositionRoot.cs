@@ -57,11 +57,10 @@ namespace B2B.Transactions.Infrastructure.Configuration
             services.AddScoped<IMarketActorAuthenticator, MarketActorAuthenticator>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IOutgoingMessageStore, OutgoingMessageStore>();
-            services.AddScoped<IncomingMessageHandler>();
-            services.AddScoped<IncomingMessageStore>();
 
             services.AddLogging();
             AddXmlSchema(services);
+            AddIncomingMessageHandling();
             AddOutgoingMessageHandling();
         }
 
@@ -144,7 +143,6 @@ namespace B2B.Transactions.Infrastructure.Configuration
         {
             services.AddScoped<SchemaStore>();
             services.AddScoped<ISchemaProvider, SchemaProvider>();
-            services.AddScoped<MessageReceiver>();
         }
 
         private void AddOutgoingMessageHandling()
@@ -152,6 +150,13 @@ namespace B2B.Transactions.Infrastructure.Configuration
             _services.AddTransient<IMessageFactoryStrategy, FactoryStrategy>();
             _services.AddTransient<MessageRequestHandler>();
             _services.AddTransient<MessageFactory>();
+        }
+
+        private void AddIncomingMessageHandling()
+        {
+            _services.AddScoped<MessageReceiver>();
+            _services.AddScoped<IncomingMessageHandler>();
+            _services.AddScoped<IncomingMessageStore>();
         }
     }
 }
