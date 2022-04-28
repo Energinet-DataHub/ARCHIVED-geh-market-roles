@@ -19,8 +19,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using B2B.Transactions.Configuration.Serialization;
 using Energinet.DataHub.MarketRoles.Domain.SeedWork;
-using Newtonsoft.Json;
 
 namespace B2B.Transactions.OutgoingMessages.ConfirmRequestChangeOfSupplier
 {
@@ -28,10 +28,12 @@ namespace B2B.Transactions.OutgoingMessages.ConfirmRequestChangeOfSupplier
     {
         private const string Prefix = "cim";
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
+        private readonly ISerializer _serializer;
 
-        public FactoryStrategy(ISystemDateTimeProvider systemDateTimeProvider)
+        public FactoryStrategy(ISystemDateTimeProvider systemDateTimeProvider, ISerializer serializer)
         {
             _systemDateTimeProvider = systemDateTimeProvider;
+            _serializer = serializer;
         }
 
         public bool CanHandleDocumentType(string documentType)
@@ -43,7 +45,7 @@ namespace B2B.Transactions.OutgoingMessages.ConfirmRequestChangeOfSupplier
         public Task<Stream> CreateFromAsync(MessageHeader header, IReadOnlyCollection<MarketActivityRecordPayload> marketActivityRecordPayloads)
         {
             var marketActivityRecords = marketActivityRecordPayloads
-                .Select(record => JsonConvert.DeserializeObject<MarketActivityRecord>(record.Payload)).ToList();
+                .Select(record => _serializer.Deserialize<MarketActivityRecord>(record.Payload)).ToList();
             return CreateFromAsync(header, marketActivityRecords);
         }
 
