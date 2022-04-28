@@ -17,7 +17,9 @@ using System.Threading.Tasks;
 using B2B.Transactions.Configuration;
 using B2B.Transactions.Configuration.DataAccess;
 using B2B.Transactions.OutgoingMessages;
+using B2B.Transactions.OutgoingMessages.ConfirmRequestChangeOfSupplier;
 using B2B.Transactions.Transactions;
+using Newtonsoft.Json;
 
 namespace B2B.Transactions.IncomingMessages
 {
@@ -46,7 +48,10 @@ namespace B2B.Transactions.IncomingMessages
             var acceptedTransaction = new AcceptedTransaction(incomingMessage.MarketActivityRecord.Id);
             _transactionRepository.Add(acceptedTransaction);
 
-            var outgoingMessage = new OutgoingMessage("ConfirmRequestChangeOfSupplier", incomingMessage.Message.SenderId, _correlationContext.Id, incomingMessage.Id, incomingMessage.Message.ProcessType, acceptedTransaction.TransactionId);
+            var confirmChangeOfSupplierRecordId = Guid.NewGuid();
+            var confirmChangeOfSupplierRecord = new MarketActivityRecord(confirmChangeOfSupplierRecordId.ToString(), acceptedTransaction.TransactionId, incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
+
+            var outgoingMessage = new OutgoingMessage(confirmChangeOfSupplierRecordId, "ConfirmRequestChangeOfSupplier", incomingMessage.Message.SenderId, _correlationContext.Id, incomingMessage.Id, incomingMessage.Message.ProcessType, acceptedTransaction.TransactionId, JsonConvert.SerializeObject(confirmChangeOfSupplierRecord));
             _outgoingMessageStore.Add(outgoingMessage);
 
             return _unitOfWork.CommitAsync();

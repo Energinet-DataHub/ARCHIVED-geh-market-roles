@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading.Tasks;
 using B2B.Transactions.Configuration;
 using B2B.Transactions.Configuration.DataAccess;
@@ -65,7 +66,7 @@ namespace B2B.Transactions.IntegrationTests.Infrastructure.OutgoingMessages
         private OutgoingMessage CreateOutgoingMessage()
         {
             var transaction = IncomingMessageBuilder.CreateMessage();
-            return new OutgoingMessage("FakeDocumentType", transaction.Message.ReceiverId, _correlationContext.Id, transaction.MarketActivityRecord.Id, transaction.Message.ProcessType, transaction.MarketActivityRecord.Id);
+            return new OutgoingMessage(Guid.NewGuid(), "FakeDocumentType", transaction.Message.ReceiverId, _correlationContext.Id, transaction.MarketActivityRecord.Id, transaction.Message.ProcessType, transaction.MarketActivityRecord.Id, string.Empty);
         }
     }
 }
