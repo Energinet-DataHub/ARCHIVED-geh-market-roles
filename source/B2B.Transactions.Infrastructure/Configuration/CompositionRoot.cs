@@ -140,11 +140,10 @@ namespace B2B.Transactions.Infrastructure.Configuration
             return this;
         }
 
-        public CompositionRoot AddOutgoingMessageDispatcher(IMessageDispatcher messageDispatcher, IMessageDispatcherArguments messageDispatcherArguments)
+        public CompositionRoot AddOutgoingMessageDispatcher(IMessageDispatcher messageDispatcher)
         {
             _services.AddScoped<MessageFactory>();
             _services.AddScoped<IMessageDispatcher>(_ => messageDispatcher);
-            _services.AddScoped<IMessageDispatcherArguments>(_ => messageDispatcherArguments);
             _services.AddScoped<MessageRequestHandler>();
 
             return this;

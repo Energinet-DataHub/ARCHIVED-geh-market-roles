@@ -39,7 +39,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
             _incomingMessageHandler = GetService<IncomingMessageHandler>();
             _messageRequestHandler = GetService<MessageRequestHandler>();
             _messageDispatcherSpy = (MessageDispatcherSpy)GetService<IMessageDispatcher>();
-            _messageDispatcherArguments = (MessageDispatcherSpyArguments)GetService<IMessageDispatcherArguments>();
+            _messageDispatcherArguments = new MessageDispatcherSpyArguments();
         }
 
         [Fact]
