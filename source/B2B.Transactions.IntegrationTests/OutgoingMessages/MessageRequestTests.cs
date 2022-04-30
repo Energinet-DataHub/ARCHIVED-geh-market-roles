@@ -30,7 +30,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
         private readonly MessageRequestHandler _messageRequestHandler;
         private readonly IncomingMessageHandler _incomingMessageHandler;
         private readonly MessageDispatcherSpy _messageDispatcherSpy;
-        private readonly IMessageDispatcherArguments _messageDispatcherArguments;
+        private readonly IMessageDispatcherArguments _messageDispatcherSpyArguments;
 
         public MessageRequestTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
@@ -39,7 +39,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
             _incomingMessageHandler = GetService<IncomingMessageHandler>();
             _messageRequestHandler = GetService<MessageRequestHandler>();
             _messageDispatcherSpy = (MessageDispatcherSpy)GetService<IMessageDispatcher>();
-            _messageDispatcherArguments = new MessageDispatcherSpyArguments();
+            _messageDispatcherSpyArguments = new MessageDispatcherSpyArguments();
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
                 outgoingMessage1.Id.ToString(),
                 outgoingMessage2.Id.ToString(),
             },
-                _messageDispatcherArguments).ConfigureAwait(false);
+                _messageDispatcherSpyArguments).ConfigureAwait(false);
 
             Assert.False(result.Success);
         }
@@ -89,7 +89,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
                 outgoingMessage1.Id.ToString(),
                 outgoingMessage2.Id.ToString(),
             },
-                _messageDispatcherArguments).ConfigureAwait(false);
+                _messageDispatcherSpyArguments).ConfigureAwait(false);
 
             Assert.False(result.Success);
         }
@@ -103,7 +103,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
             var outgoingMessage2 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage2.Id)!;
 
             var requestedMessageIds = new List<string> { outgoingMessage1.Id.ToString(), outgoingMessage2.Id.ToString(), };
-            var result = await _messageRequestHandler.HandleAsync(requestedMessageIds.AsReadOnly(), _messageDispatcherArguments).ConfigureAwait(false);
+            var result = await _messageRequestHandler.HandleAsync(requestedMessageIds.AsReadOnly(), _messageDispatcherSpyArguments).ConfigureAwait(false);
 
             Assert.True(result.Success);
             Assert.NotNull(_messageDispatcherSpy.DispatchedMessage);
@@ -114,7 +114,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
         {
             var nonExistingMessage = new List<string> { Guid.NewGuid().ToString() };
 
-            var result = await _messageRequestHandler.HandleAsync(nonExistingMessage.AsReadOnly(), _messageDispatcherArguments).ConfigureAwait(false);
+            var result = await _messageRequestHandler.HandleAsync(nonExistingMessage.AsReadOnly(), _messageDispatcherSpyArguments).ConfigureAwait(false);
 
             Assert.False(result.Success);
             Assert.Contains(result.Errors, error => error is OutgoingMessageNotFoundException);
