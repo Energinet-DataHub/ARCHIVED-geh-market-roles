@@ -20,7 +20,6 @@ using B2B.Transactions.IntegrationTests.Fixtures;
 using B2B.Transactions.IntegrationTests.TestDoubles;
 using B2B.Transactions.IntegrationTests.Transactions;
 using B2B.Transactions.OutgoingMessages;
-using Energinet.DataHub.MessageHub.Model.Model;
 using Xunit;
 
 namespace B2B.Transactions.IntegrationTests.OutgoingMessages
@@ -31,7 +30,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
         private readonly MessageRequestHandler _messageRequestHandler;
         private readonly IncomingMessageHandler _incomingMessageHandler;
         private readonly MessageDispatcherSpy _messageDispatcherSpy;
-        private readonly DataBundleRequestDto _bundleRequestDto;
+        private readonly IMessageDispatcherArguments _messageDispatcherArguments;
 
         public MessageRequestTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
@@ -40,7 +39,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
             _incomingMessageHandler = GetService<IncomingMessageHandler>();
             _messageRequestHandler = GetService<MessageRequestHandler>();
             _messageDispatcherSpy = (MessageDispatcherSpy)GetService<IMessageDispatcher>();
-            _bundleRequestDto = new DataBundleRequestDto(Guid.NewGuid(), "fake", "fake", "fake");
+            _messageDispatcherArguments = (MessageDispatcherSpyArguments)GetService<IMessageDispatcherArguments>();
         }
 
         [Fact]
@@ -64,7 +63,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
                 outgoingMessage1.Id.ToString(),
                 outgoingMessage2.Id.ToString(),
             },
-                _bundleRequestDto).ConfigureAwait(false);
+                _messageDispatcherArguments).ConfigureAwait(false);
 
             Assert.False(result.Success);
         }
@@ -90,7 +89,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
                 outgoingMessage1.Id.ToString(),
                 outgoingMessage2.Id.ToString(),
             },
-                _bundleRequestDto).ConfigureAwait(false);
+                _messageDispatcherArguments).ConfigureAwait(false);
 
             Assert.False(result.Success);
         }
@@ -104,7 +103,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
             var outgoingMessage2 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage2.Id)!;
 
             var requestedMessageIds = new List<string> { outgoingMessage1.Id.ToString(), outgoingMessage2.Id.ToString(), };
-            var result = await _messageRequestHandler.HandleAsync(requestedMessageIds.AsReadOnly(), _bundleRequestDto).ConfigureAwait(false);
+            var result = await _messageRequestHandler.HandleAsync(requestedMessageIds.AsReadOnly(), _messageDispatcherArguments).ConfigureAwait(false);
 
             Assert.True(result.Success);
             Assert.NotNull(_messageDispatcherSpy.DispatchedMessage);
@@ -115,7 +114,7 @@ namespace B2B.Transactions.IntegrationTests.OutgoingMessages
         {
             var nonExistingMessage = new List<string> { Guid.NewGuid().ToString() };
 
-            var result = await _messageRequestHandler.HandleAsync(nonExistingMessage.AsReadOnly(), _bundleRequestDto).ConfigureAwait(false);
+            var result = await _messageRequestHandler.HandleAsync(nonExistingMessage.AsReadOnly(), _messageDispatcherArguments).ConfigureAwait(false);
 
             Assert.False(result.Success);
             Assert.Contains(result.Errors, error => error is OutgoingMessageNotFoundException);

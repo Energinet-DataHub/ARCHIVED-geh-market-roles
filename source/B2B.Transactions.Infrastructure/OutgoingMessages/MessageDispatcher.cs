@@ -30,9 +30,11 @@ namespace B2B.Transactions.Infrastructure.OutgoingMessages
             _storageHandler = storageHandler;
         }
 
-        public async Task<Uri> DispatchAsync(Stream message, DataBundleRequestDto requestDto)
+        public async Task<Uri> DispatchAsync(IMessageDispatcherArguments arguments)
         {
-            return await _storageHandler.AddStreamToStorageAsync(message, requestDto).ConfigureAwait(false);
+            if (arguments == null) throw new ArgumentNullException(nameof(arguments));
+            var messageArguments = arguments as MessageDispatcherArguments;
+            return await _storageHandler.AddStreamToStorageAsync(messageArguments?.Stream ?? throw new InvalidOperationException(), messageArguments?.DataBundleRequestDto ?? throw new InvalidOperationException()).ConfigureAwait(false);
         }
     }
 }

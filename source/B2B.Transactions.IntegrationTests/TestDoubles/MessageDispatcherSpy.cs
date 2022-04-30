@@ -16,7 +16,6 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using B2B.Transactions.OutgoingMessages;
-using Energinet.DataHub.MessageHub.Model.Model;
 
 namespace B2B.Transactions.IntegrationTests.TestDoubles
 {
@@ -24,10 +23,11 @@ namespace B2B.Transactions.IntegrationTests.TestDoubles
     {
         public Stream? DispatchedMessage { get; private set; }
 
-        public async Task<Uri> DispatchAsync(Stream message, DataBundleRequestDto requestDto)
+        public async Task<Uri> DispatchAsync(IMessageDispatcherArguments arguments)
         {
-            if (requestDto == null) throw new ArgumentNullException(nameof(requestDto));
-            DispatchedMessage = message;
+            if (arguments == null) throw new ArgumentNullException(nameof(arguments));
+            var messageArguments = arguments as MessageDispatcherSpyArguments;
+            DispatchedMessage = messageArguments?.Stream;
             return await Task.FromResult(new Uri("https://randomUri.com")).ConfigureAwait(false);
         }
     }

@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
+using System.IO;
+using B2B.Transactions.OutgoingMessages;
+using Energinet.DataHub.MessageHub.Model.Model;
 
-namespace B2B.Transactions.OutgoingMessages
+namespace B2B.Transactions.IntegrationTests.TestDoubles
 {
-    /// <summary>
-    /// Interface for dispatching messages
-    /// </summary>
-    public interface IMessageDispatcher
+    public class MessageDispatcherSpyArguments : IMessageDispatcherArguments
     {
-        /// <summary>
-        /// Dispatches the message
-        /// </summary>
-        /// <param name="arguments"></param>
-        Task<Uri> DispatchAsync(IMessageDispatcherArguments arguments);
+        public Stream? Stream { get; private set; }
+
+        public void SetStream(Stream stream)
+        {
+            Stream = stream;
+        }
     }
 }
