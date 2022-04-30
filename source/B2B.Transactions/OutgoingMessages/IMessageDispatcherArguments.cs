@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace B2B.Transactions.OutgoingMessages
 {
     /// <summary>
-    /// Interface for dispatching messages
+    /// EmptyInterface for message dispatcher args
     /// </summary>
-    public interface IMessageDispatcher
+    public interface IMessageDispatcherArguments
     {
         /// <summary>
-        /// Dispatches the message
+        /// set the message stream
         /// </summary>
-        /// <param name="arguments"></param>
-        Task<Uri> DispatchAsync(IMessageDispatcherArguments arguments);
+        /// <param name="stream"></param>
+        void SetStream(Stream stream);
     }
 }
