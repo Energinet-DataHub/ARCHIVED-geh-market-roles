@@ -16,7 +16,7 @@ namespace Processing.Api
             await host.RunAsync().ConfigureAwait(false);
         }
 
-        private static IHost ConfigureHost(RuntimeEnvironment runtime)
+        public static IHost ConfigureHost(RuntimeEnvironment runtime)
         {
             return new HostBuilder()
                 .ConfigureFunctionsWorkerDefaults(worker =>
