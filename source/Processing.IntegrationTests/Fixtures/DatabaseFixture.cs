@@ -52,12 +52,7 @@ namespace Processing.IntegrationTests.Fixtures
 
         public void CleanupDatabase()
         {
-            var cleanupStatement =
-                $"DELETE FROM [b2b].[Transactions] " +
-                $"DELETE FROM [b2b].[MessageIds] " +
-                $"DELETE FROM [b2b].[TransactionIds]" +
-                $"DELETE FROM [b2b].[OutgoingMessages]";
-
+            var cleanupStatement = string.Empty;
             _context.Database.ExecuteSqlRaw(cleanupStatement);
         }
 
