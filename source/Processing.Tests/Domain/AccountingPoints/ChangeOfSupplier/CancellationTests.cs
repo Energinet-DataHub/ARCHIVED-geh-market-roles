@@ -13,53 +13,49 @@
 // limitations under the License.
 
 using System;
-using System.Linq;
 using NodaTime;
 using Processing.Domain.AccountingPoints;
 using Processing.Domain.AccountingPoints.Events;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
+using Processing.Tests.TestDoubles;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.Tests.Domain.MeteringPoints.ChangeOfSupplier
+namespace Processing.Tests.Domain.AccountingPoints.ChangeOfSupplier
 {
     [UnitTest]
-    public class EffectuateTests
+    public class CancellationTests
     {
         private SystemDateTimeProviderStub _systemDateTimeProvider;
 
-        public EffectuateTests()
+        public CancellationTests()
         {
             _systemDateTimeProvider = new SystemDateTimeProviderStub();
         }
 
         [Fact]
-        public void Effectuate_WhenBeforeOfEffectiveDate_IsNotPossible()
+        public void Cancel_WhenProcessIsPending_Success()
         {
-            var accountingPoint = CreateTestObject();
-
-            var supplyStartDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(5));
+            var (meteringPoint, _) = CreateWithActiveMoveIn();
             var transaction = CreateTransaction();
-            accountingPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), supplyStartDate, transaction, _systemDateTimeProvider);
+            meteringPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), _systemDateTimeProvider.Now().Plus(Duration.FromDays(5)), transaction, _systemDateTimeProvider);
 
-            Assert.Throws<BusinessProcessException>(() => accountingPoint.EffectuateChangeOfSupplier(transaction, _systemDateTimeProvider));
+            meteringPoint.CancelChangeOfSupplier(transaction);
+
+            Assert.Contains(meteringPoint.DomainEvents !, e => e is ChangeOfSupplierCancelled);
         }
 
         [Fact]
-        public void Effectuate_WhenCurrentDateIsEffectiveDate_IsSuccess()
+        public void Cancel_WhenIsNotPending_IsNotPossible()
         {
-            var accountingPoint = CreateTestObject();
-
-            var supplyStartDate = _systemDateTimeProvider.Now();
+            var (meteringPoint, _) = CreateWithActiveMoveIn();
             var transaction = CreateTransaction();
-            accountingPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), supplyStartDate, transaction, _systemDateTimeProvider);
-            accountingPoint.EffectuateChangeOfSupplier(transaction, _systemDateTimeProvider);
+            var supplyStartDate = _systemDateTimeProvider.Now();
+            meteringPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), supplyStartDate, transaction, _systemDateTimeProvider);
+            meteringPoint.EffectuateChangeOfSupplier(transaction, _systemDateTimeProvider);
 
-            var @event =
-                accountingPoint.DomainEvents.FirstOrDefault(e => e is EnergySupplierChanged) as EnergySupplierChanged;
-
-            Assert.NotNull(@event);
+            Assert.Throws<BusinessProcessException>(() => meteringPoint.CancelChangeOfSupplier(transaction));
         }
 
         private static Transaction CreateTransaction()
@@ -77,13 +73,13 @@ namespace Energinet.DataHub.MarketRoles.Tests.Domain.MeteringPoints.ChangeOfSupp
             return new ConsumerId(Guid.NewGuid());
         }
 
-        private AccountingPoint CreateTestObject()
+        private (AccountingPoint AccountingPoint, Transaction Transaction) CreateWithActiveMoveIn()
         {
             var accountingPoint = new AccountingPoint(GsrnNumber.Create("571234567891234568"), MeteringPointType.Consumption);
             var transaction = CreateTransaction();
             accountingPoint.AcceptConsumerMoveIn(CreateConsumerId(), CreateEnergySupplierId(), _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)), transaction);
             accountingPoint.EffectuateConsumerMoveIn(transaction, _systemDateTimeProvider);
-            return accountingPoint;
+            return (accountingPoint, transaction);
         }
     }
 }

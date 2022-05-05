@@ -20,10 +20,11 @@ using Processing.Domain.AccountingPoints.Rules.ChangeEnergySupplier;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.SeedWork;
+using Processing.Tests.TestDoubles;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.Tests.Domain.MeteringPoints.ChangeOfSupplier
+namespace Processing.Tests.Domain.AccountingPoints.ChangeOfSupplier
 {
     [UnitTest]
     public class AcceptTests
