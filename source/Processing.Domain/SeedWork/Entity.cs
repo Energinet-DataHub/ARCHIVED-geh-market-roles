@@ -16,12 +16,12 @@ namespace Processing.Domain.SeedWork
 {
     public abstract class Entity
     {
-        private List<IDomainEvent> _domainEvents = new List<IDomainEvent>();
+        private readonly List<DomainEvent> _domainEvents = new();
 
         /// <summary>
         /// Domain events occurred.
         /// </summary>
-        public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+        public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
         /// <summary>
         /// Clears all recorded events
@@ -31,27 +31,11 @@ namespace Processing.Domain.SeedWork
             _domainEvents.Clear();
         }
 
-        // /// <summary>
-        // /// Validates a bussines rule
-        // /// </summary>
-        // /// <param name="rule"></param>
-        // /// <returns><see cref="BusinessRuleValidationResult"/></returns>
-        // /// <exception cref="ArgumentNullException"><see cref="ArgumentNullException"/></exception>
-        // protected static BusinessRuleValidationResult CheckRule(IBusinessRule rule)
-        // {
-        //     if (rule is null)
-        //     {
-        //         throw new ArgumentNullException(nameof(rule));
-        //     }
-        //
-        //     return rule.Validate();
-        // }
-
         /// <summary>
         /// Add domain event.
         /// </summary>
         /// <param name="domainEvent">Domain event.</param>
-        protected void AddDomainEvent(IDomainEvent domainEvent)
+        protected void AddDomainEvent(DomainEvent domainEvent)
         {
             _domainEvents.Add(domainEvent);
         }

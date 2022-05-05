@@ -12,24 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
-using NodaTime;
+using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.SeedWork
+namespace Processing.Domain.AccountingPoints
 {
-    /// <summary>
-    /// Interface for domain events
-    /// </summary>
-    public interface IDomainEvent : INotification
+    public class PhysicalState : EnumerationType
     {
-        /// <summary>
-        /// Correlation id of event
-        /// </summary>
-        Guid Id { get; }
+        public static readonly PhysicalState New = new PhysicalState(0, nameof(New));
+        public static readonly PhysicalState Connected = new PhysicalState(1, nameof(Connected));
+        public static readonly PhysicalState Disconnected = new PhysicalState(2, nameof(Disconnected));
+        public static readonly PhysicalState ClosedDown = new PhysicalState(3, nameof(ClosedDown));
 
-        /// <summary>
-        /// Date and time of occurence
-        /// </summary>
-        Instant OccurredOn { get; }
+        public PhysicalState(int id, string name)
+            : base(id, name)
+        {
+        }
     }
 }

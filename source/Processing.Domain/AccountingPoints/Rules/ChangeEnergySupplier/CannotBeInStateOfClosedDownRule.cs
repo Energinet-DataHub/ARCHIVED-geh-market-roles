@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.SeedWork
+namespace Processing.Domain.AccountingPoints.Rules.ChangeEnergySupplier
 {
-    public class DomainEventBase : IDomainEvent
+    public class CannotBeInStateOfClosedDownRule : IBusinessRule
     {
-        public DomainEventBase()
+        private readonly PhysicalState _physicalState;
+
+        internal CannotBeInStateOfClosedDownRule(PhysicalState physicalState)
         {
-            Id = Guid.NewGuid();
-            OccurredOn = SystemClock.Instance.GetCurrentInstant();
+            _physicalState = physicalState;
         }
 
-        public Guid Id { get; }
+        public bool IsBroken => _physicalState == PhysicalState.ClosedDown;
 
-        public Instant OccurredOn { get; }
+        public ValidationError ValidationError => new CannotBeInStateOfClosedDownRuleError();
     }
 }
