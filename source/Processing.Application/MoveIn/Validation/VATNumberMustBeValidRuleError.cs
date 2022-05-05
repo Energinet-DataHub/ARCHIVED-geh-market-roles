@@ -12,21 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
-using NodaTime;
+using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.SeedWork
+namespace Processing.Application.MoveIn.Validation
 {
-    public class DomainEvent : INotification
+    public class VATNumberMustBeValidRuleError : ValidationError
     {
-        public DomainEvent()
+        public VATNumberMustBeValidRuleError(string vatNumber)
         {
-            Id = Guid.NewGuid();
-            OccurredOn = SystemClock.Instance.GetCurrentInstant();
+            VATNumber = vatNumber;
         }
 
-        public Guid Id { get; }
-
-        public Instant OccurredOn { get; }
+        public string VATNumber { get; }
     }
 }

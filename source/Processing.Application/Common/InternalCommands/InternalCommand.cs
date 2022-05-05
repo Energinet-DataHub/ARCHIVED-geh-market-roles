@@ -12,21 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
-using NodaTime;
-
-namespace Processing.Domain.SeedWork
+namespace Processing.Application.Common.InternalCommands
 {
-    public class DomainEvent : INotification
+    public abstract class InternalCommand : ICommand
     {
-        public DomainEvent()
+        protected InternalCommand()
         {
             Id = Guid.NewGuid();
-            OccurredOn = SystemClock.Instance.GetCurrentInstant();
         }
 
-        public Guid Id { get; }
-
-        public Instant OccurredOn { get; }
+        public Guid Id { get; protected init; }
     }
 }

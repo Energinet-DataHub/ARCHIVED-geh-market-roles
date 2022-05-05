@@ -12,12 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
+using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common
+namespace Processing.Application.Common
 {
     public class BusinessProcessResult
     {

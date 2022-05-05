@@ -13,20 +13,17 @@
 // limitations under the License.
 
 using MediatR;
-using NodaTime;
 
-namespace Processing.Domain.SeedWork
+namespace Processing.Application.Common
 {
-    public class DomainEvent : INotification
+    /// <summary>
+    /// Request for starting a business process
+    /// </summary>
+    public interface IBusinessRequest : IRequest<BusinessProcessResult>
     {
-        public DomainEvent()
-        {
-            Id = Guid.NewGuid();
-            OccurredOn = SystemClock.Instance.GetCurrentInstant();
-        }
-
-        public Guid Id { get; }
-
-        public Instant OccurredOn { get; }
+        /// <summary>
+        /// Business process transaction id
+        /// </summary>
+        string TransactionId { get; }
     }
 }

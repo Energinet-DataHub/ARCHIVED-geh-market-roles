@@ -12,21 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
-using NodaTime;
+using Processing.Domain.EnergySuppliers;
+using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.SeedWork
+namespace Processing.Application.MoveIn.Validation
 {
-    public class DomainEvent : INotification
+    public class EnergySupplierMustBeKnownRule : IBusinessRule
     {
-        public DomainEvent()
+        private readonly string _glnNumber;
+
+        public EnergySupplierMustBeKnownRule(EnergySupplier? energySupplier, string glnNumber)
         {
-            Id = Guid.NewGuid();
-            OccurredOn = SystemClock.Instance.GetCurrentInstant();
+            _glnNumber = glnNumber;
+            IsBroken = energySupplier == null;
         }
 
-        public Guid Id { get; }
+        public bool IsBroken { get; }
 
-        public Instant OccurredOn { get; }
+        public ValidationError ValidationError => new EnergySupplierMustBeKnownRuleError();
     }
 }

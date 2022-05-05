@@ -12,21 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
-using NodaTime;
+using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.SeedWork
+namespace Processing.Application.MoveIn.Validation
 {
-    public class DomainEvent : INotification
+    public class SocialSecurityNumberMustBeValidRuleError : ValidationError
     {
-        public DomainEvent()
+        public SocialSecurityNumberMustBeValidRuleError(string socialSecurityNumber)
         {
-            Id = Guid.NewGuid();
-            OccurredOn = SystemClock.Instance.GetCurrentInstant();
+            SocialSecurityNumber = socialSecurityNumber;
         }
 
-        public Guid Id { get; }
-
-        public Instant OccurredOn { get; }
+        public string SocialSecurityNumber { get; }
     }
 }

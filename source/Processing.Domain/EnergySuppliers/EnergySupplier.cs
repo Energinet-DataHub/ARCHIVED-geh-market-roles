@@ -12,21 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
-using NodaTime;
+using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.SeedWork
+namespace Processing.Domain.EnergySuppliers
 {
-    public class DomainEvent : INotification
+    public class EnergySupplier : Entity
     {
-        public DomainEvent()
+        public EnergySupplier(EnergySupplierId energySupplierId, GlnNumber glnNumber)
+            : base()
         {
-            Id = Guid.NewGuid();
-            OccurredOn = SystemClock.Instance.GetCurrentInstant();
+            EnergySupplierId = energySupplierId ?? throw new ArgumentNullException(nameof(energySupplierId));
+            GlnNumber = glnNumber ?? throw new ArgumentNullException(nameof(glnNumber));
         }
 
-        public Guid Id { get; }
+        public EnergySupplierId EnergySupplierId { get; }
 
-        public Instant OccurredOn { get; }
+        public GlnNumber GlnNumber { get; }
     }
 }

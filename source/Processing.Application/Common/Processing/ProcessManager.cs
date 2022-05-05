@@ -12,21 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
 using NodaTime;
+using Processing.Domain.AccountingPoints;
 
-namespace Processing.Domain.SeedWork
+namespace Processing.Application.Common.Processing
 {
-    public class DomainEvent : INotification
+    public abstract class ProcessManager
     {
-        public DomainEvent()
+        protected ProcessManager()
         {
             Id = Guid.NewGuid();
-            OccurredOn = SystemClock.Instance.GetCurrentInstant();
         }
 
         public Guid Id { get; }
 
-        public Instant OccurredOn { get; }
+        public BusinessProcessId BusinessProcessId { get; protected set; } = null!;
+
+        public Instant EffectiveDate { get; protected set;  }
+
+        #pragma warning disable CA1002
+        public List<EnqueuedCommand> CommandsToSend { get; } = new List<EnqueuedCommand>();
+
+        public abstract bool IsCompleted();
     }
 }

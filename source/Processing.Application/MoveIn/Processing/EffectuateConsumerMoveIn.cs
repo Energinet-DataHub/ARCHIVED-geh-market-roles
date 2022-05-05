@@ -12,21 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
-using NodaTime;
+using Processing.Application.Common.InternalCommands;
 
-namespace Processing.Domain.SeedWork
+namespace Processing.Application.MoveIn.Processing
 {
-    public class DomainEvent : INotification
+    public class EffectuateConsumerMoveIn
+        : InternalCommand
     {
-        public DomainEvent()
+        public EffectuateConsumerMoveIn(Guid accountingPointId, string transaction)
         {
-            Id = Guid.NewGuid();
-            OccurredOn = SystemClock.Instance.GetCurrentInstant();
+            AccountingPointId = accountingPointId;
+            Transaction = transaction;
         }
 
-        public Guid Id { get; }
+        public EffectuateConsumerMoveIn(Guid id, Guid accountingPointId, string transaction)
+            : this(accountingPointId, transaction)
+        {
+            Id = id;
+        }
 
-        public Instant OccurredOn { get; }
+        public Guid AccountingPointId { get; }
+
+        public string Transaction { get; }
     }
 }

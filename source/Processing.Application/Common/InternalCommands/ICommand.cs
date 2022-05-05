@@ -13,20 +13,23 @@
 // limitations under the License.
 
 using MediatR;
-using NodaTime;
 
-namespace Processing.Domain.SeedWork
+namespace Processing.Application.Common.InternalCommands
 {
-    public class DomainEvent : INotification
+    #pragma warning disable CA1040
+    /// <summary>
+    /// CQRS command object
+    /// </summary>
+    public interface ICommand : IRequest
     {
-        public DomainEvent()
-        {
-            Id = Guid.NewGuid();
-            OccurredOn = SystemClock.Instance.GetCurrentInstant();
-        }
-
-        public Guid Id { get; }
-
-        public Instant OccurredOn { get; }
     }
+
+    /// <summary>
+    /// CQRS command with result
+    /// </summary>
+    /// <typeparam name="TResult"><see cref="IRequest"/></typeparam>
+    public interface ICommand<out TResult> : IRequest<TResult>
+    {
+    }
+    #pragma warning restore
 }

@@ -12,21 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
-using NodaTime;
+using Processing.Application.Common;
 
-namespace Processing.Domain.SeedWork
+namespace Processing.Application.MoveIn
 {
-    public class DomainEvent : INotification
-    {
-        public DomainEvent()
-        {
-            Id = Guid.NewGuid();
-            OccurredOn = SystemClock.Instance.GetCurrentInstant();
-        }
-
-        public Guid Id { get; }
-
-        public Instant OccurredOn { get; }
-    }
+    public record RequestMoveIn(
+        string TransactionId = "",
+        string EnergySupplierGlnNumber = "",
+        string SocialSecurityNumber = "",
+        string VATNumber = "",
+        string ConsumerName = "",
+        string AccountingPointGsrnNumber = "",
+        string MoveInDate = "")
+        : IBusinessRequest;
 }

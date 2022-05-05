@@ -12,21 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
-using NodaTime;
+using Processing.Domain.AccountingPoints;
 
-namespace Processing.Domain.SeedWork
+namespace Processing.Application.Common.Processing
 {
-    public class DomainEvent : INotification
+    public class InvalidProcessManagerStateException : BusinessProcessException
     {
-        public DomainEvent()
+        public InvalidProcessManagerStateException()
         {
-            Id = Guid.NewGuid();
-            OccurredOn = SystemClock.Instance.GetCurrentInstant();
         }
 
-        public Guid Id { get; }
+        public InvalidProcessManagerStateException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
 
-        public Instant OccurredOn { get; }
+        public InvalidProcessManagerStateException(string message)
+            : base(message)
+        {
+        }
     }
 }
