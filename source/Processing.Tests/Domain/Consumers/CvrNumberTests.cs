@@ -17,20 +17,21 @@ using Processing.Domain.Consumers;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.Tests.Domain.CprNumbers
+namespace Processing.Tests.Domain.Consumers
 {
     [UnitTest]
-    public class CprNumberTests
+    public class CvrNumberTests
     {
         [Theory]
-        [InlineData("123456", false)]
-        [InlineData("123456abcd", false)]
-        [InlineData("1234567890", false)]
-        [InlineData("12345678901", false)]
-        [InlineData("2601211234", true)]
-        public void Validate_Cpr_Number(string cprNumber, bool expectedIsSuccess)
+        [InlineData("10000000", true)]
+        [InlineData("50000000", true)]
+        [InlineData("99999999", true)]
+        [InlineData("abcdefgh", false)]
+        [InlineData("4567895", false)]
+        [InlineData("842546194", false)]
+        public void Validate_Cvr_Number(string cvrNumber, bool expectedIsSuccess)
         {
-            var actualIsSuccess = CprNumber.CheckRules(cprNumber).Success;
+            var actualIsSuccess = CvrNumber.CheckRules(cvrNumber).Success;
 
             actualIsSuccess.Should().Be(expectedIsSuccess);
         }

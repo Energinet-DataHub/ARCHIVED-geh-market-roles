@@ -95,19 +95,7 @@ updates:
     open-pull-requests-limit: 0
 
   - package-ecosystem: "nuget"
-    directory: "/source/Energinet.DataHub.MarketRoles.Application"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 0
-
-  - package-ecosystem: "nuget"
     directory: "/source/Energinet.DataHub.MarketRoles.ApplyDBMigrationsApp"
-    schedule:
-      interval: "weekly"
-    open-pull-requests-limit: 0
-
-  - package-ecosystem: "nuget"
-    directory: "/source/Energinet.DataHub.MarketRoles.Domain"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 0

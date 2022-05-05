@@ -13,29 +13,24 @@
 // limitations under the License.
 
 using FluentAssertions;
-using Processing.Domain.EnergySuppliers;
+using Processing.Domain.Consumers;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.Tests.Domain.GlnNumbers
+namespace Processing.Tests.Domain.Consumers
 {
     [UnitTest]
-    public class GltNumberTests
+    public class CprNumberTests
     {
         [Theory]
-        [InlineData(" ", false)]
-        [InlineData("", false)]
-        [InlineData(null, false)]
         [InlineData("123456", false)]
         [InlineData("123456abcd", false)]
         [InlineData("1234567890", false)]
         [InlineData("12345678901", false)]
-        [InlineData("8200000007432", true)]
-        [InlineData("5799999911118", true)]
-        [InlineData("7495563456235", true)]
-        public void Validate_GlnNumber(string glnNumber, bool expectedIsSuccess)
+        [InlineData("2601211234", true)]
+        public void Validate_Cpr_Number(string cprNumber, bool expectedIsSuccess)
         {
-            var actualIsSuccess = GlnNumber.CheckRules(glnNumber).Success;
+            var actualIsSuccess = CprNumber.CheckRules(cprNumber).Success;
 
             actualIsSuccess.Should().Be(expectedIsSuccess);
         }
