@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Domain.Consumers;
-using Energinet.DataHub.MarketRoles.Domain.EnergySuppliers;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints.Events;
 using NodaTime;
+using Processing.Domain.AccountingPoints;
+using Processing.Domain.AccountingPoints.Events;
+using Processing.Domain.Consumers;
+using Processing.Domain.EnergySuppliers;
 using Xunit;
 using Xunit.Categories;
 

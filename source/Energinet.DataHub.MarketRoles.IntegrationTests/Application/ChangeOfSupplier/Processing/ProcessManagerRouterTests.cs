@@ -15,14 +15,14 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.ConsumerDetails;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
-using Energinet.DataHub.MarketRoles.Domain.Consumers;
-using Energinet.DataHub.MarketRoles.Domain.EnergySuppliers;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints.Events;
+using Processing.Application.ChangeOfSupplier.Processing;
+using Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails;
+using Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
+using Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
+using Processing.Domain.AccountingPoints;
+using Processing.Domain.AccountingPoints.Events;
+using Processing.Domain.Consumers;
+using Processing.Domain.EnergySuppliers;
 using Xunit;
 using Xunit.Categories;
 

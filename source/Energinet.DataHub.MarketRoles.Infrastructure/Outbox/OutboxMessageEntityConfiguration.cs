@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Processing.Domain.SeedWork;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.Outbox
 {

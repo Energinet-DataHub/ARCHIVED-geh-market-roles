@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Processing.Application.ChangeOfSupplier.Processing;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.ProcessManagers
 {

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using NodaTime.Text;
+using Processing.Domain.Helpers;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.Consumers.Rules
@@ -37,15 +38,10 @@ namespace Processing.Domain.Consumers.Rules
             return cprValue.Length == RequiredIdLength;
         }
 
-        private static bool ParseNumber(string value, out long parsedNumber)
-        {
-            return long.TryParse(value, out parsedNumber);
-        }
-
         private bool IsValidCprNumber()
         {
             return !string.IsNullOrEmpty(_cprValue)
-                   && ParseNumber(_cprValue, out _)
+                   && NumberHelper.ParseNumber(_cprValue, out _)
                    && LengthIsValid(_cprValue)
                    && DateIsValid(_cprValue);
         }

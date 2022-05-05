@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.Consumers.Events
 {
-    public class ConsumerCreated : DomainEvent
+    public class ConsumerCreated : DomainEventBase
     {
         public ConsumerCreated(Guid consumerId, string? cprNumber, string? cvrNumber, string fullName)
         {

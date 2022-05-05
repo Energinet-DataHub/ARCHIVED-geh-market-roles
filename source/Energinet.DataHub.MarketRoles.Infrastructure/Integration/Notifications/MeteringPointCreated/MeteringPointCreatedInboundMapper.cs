@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Application.Common.Transport;
 using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
+using Processing.Application.Common.Transport;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.Notifications.MeteringPointCreated
 {
@@ -24,7 +24,7 @@ namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.Notifications
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-            return new Application.AccountingPoint.MeteringPointCreated(
+            return new Processing.Application.AccountingPoint.MeteringPointCreated(
                 obj.MeteringPointId,
                 obj.GsrnNumber);
         }

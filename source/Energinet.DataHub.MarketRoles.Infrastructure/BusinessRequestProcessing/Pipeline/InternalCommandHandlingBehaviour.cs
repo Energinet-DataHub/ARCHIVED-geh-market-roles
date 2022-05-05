@@ -15,10 +15,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Application.Common.Commands;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
 using MediatR;
+using Processing.Application.Common.Commands;
+using Processing.Domain.SeedWork;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.BusinessRequestProcessing.Pipeline
 {

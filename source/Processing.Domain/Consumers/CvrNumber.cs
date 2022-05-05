@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.ObjectModel;
 using Processing.Domain.Consumers.Rules;
 using Processing.Domain.SeedWork;
@@ -38,9 +39,9 @@ namespace Processing.Domain.Consumers
             return new CvrNumber(formattedValue);
         }
 
-        public static ValidationResult CheckRules(string? cvrValue)
+        public static BusinessRulesValidationResult CheckRules(string? cvrValue)
         {
-            return new ValidationResult(new Collection<IBusinessRule>()
+            return new BusinessRulesValidationResult(new Collection<IBusinessRule>()
             {
                 new CvrNumberFormatRule(cvrValue),
             });

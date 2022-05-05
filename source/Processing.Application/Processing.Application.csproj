@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 Copyright 2020 Energinet DataHub A/S
 
 Licensed under the Apache License, Version 2.0 (the "License2");
@@ -15,22 +15,20 @@ limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Processing.Domain\Processing.Domain.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Energinet.DataHub.Core.App.Common" Version="2.3.1" />
+    <PackageReference Include="FluentValidation" Version="10.4.0" />
+    <PackageReference Include="MediatR" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
+    <PackageReference Include="NodaTime" Version="3.0.10" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="FluentValidation" Version="11.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="MoveIn" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Processing.Domain\Processing.Domain.csproj" />
+  </ItemGroup>
 
 </Project>

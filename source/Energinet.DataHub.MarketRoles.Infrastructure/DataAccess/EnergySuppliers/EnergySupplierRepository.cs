@@ -15,8 +15,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Domain.EnergySuppliers;
 using Microsoft.EntityFrameworkCore;
+using Processing.Domain.EnergySuppliers;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.EnergySuppliers
 {

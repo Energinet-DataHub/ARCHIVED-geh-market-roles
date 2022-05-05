@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Energinet.DataHub.MarketRoles.Infrastructure.EDI.Acknowledgements;
 using Energinet.DataHub.MarketRoles.Infrastructure.EDI.GenericNotification;
+using Processing.Domain.SeedWork;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI
 {

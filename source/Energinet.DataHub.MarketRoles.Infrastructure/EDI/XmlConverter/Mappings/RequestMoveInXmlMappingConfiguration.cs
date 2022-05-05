@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Linq;
-using Energinet.DataHub.MarketRoles.Application.MoveIn;
+using Processing.Application.MoveIn;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.XmlConverter.Mappings
 {

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
 using NotificationContracts;
+using Processing.Domain.AccountingPoints;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.Notifications.ProductionMeteringPoint
 {

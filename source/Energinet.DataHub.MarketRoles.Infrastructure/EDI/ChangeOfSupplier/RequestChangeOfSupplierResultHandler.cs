@@ -15,12 +15,12 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier;
-using Energinet.DataHub.MarketRoles.Application.Common;
-using Energinet.DataHub.MarketRoles.Application.EDI;
 using Energinet.DataHub.MarketRoles.Infrastructure.BusinessRequestProcessing;
 using Energinet.DataHub.MarketRoles.Infrastructure.Outbox;
 using Energinet.DataHub.MarketRoles.Infrastructure.Serialization;
+using Processing.Application.ChangeOfSupplier;
+using Processing.Application.Common;
+using Processing.Application.EDI;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.ChangeOfSupplier
 {

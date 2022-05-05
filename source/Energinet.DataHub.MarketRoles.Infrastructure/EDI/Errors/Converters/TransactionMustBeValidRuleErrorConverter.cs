@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
-using Energinet.DataHub.MarketRoles.Application.Common.Validation;
-using Energinet.DataHub.MarketRoles.Application.EDI;
+using Processing.Application.Common.Validation;
+using Processing.Application.EDI;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.Errors.Converters
 {

@@ -17,7 +17,7 @@ using System.Globalization;
 using Energinet.DataHub.MarketRoles.Contracts;
 using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Google.Protobuf;
-using RequestChangeOfSupplier = Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.RequestChangeOfSupplier;
+using RequestChangeOfSupplier = Processing.Application.ChangeOfSupplier.RequestChangeOfSupplier;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.Ingestion.Mappers
 {

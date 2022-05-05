@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Processing.Domain.Helpers;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.Consumers.Rules
@@ -42,15 +43,10 @@ namespace Processing.Domain.Consumers.Rules
             return cvrNumber >= LowerBound && cvrNumber <= UpperBound;
         }
 
-        private static bool ParseNumber(string value, out long parsedNumber)
-        {
-            return long.TryParse(value, out parsedNumber);
-        }
-
         private bool IsValidCvrNumber()
         {
             return !string.IsNullOrEmpty(_cvrValue)
-                && ParseNumber(_cvrValue, out var cvrNumber)
+                && NumberHelper.ParseNumber(_cvrValue, out var cvrNumber)
                 && LengthIsValid(_cvrValue)
                 && RangeIsValid(cvrNumber);
         }

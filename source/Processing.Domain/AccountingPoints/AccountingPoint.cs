@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using NodaTime;
 using Processing.Domain.AccountingPoints.Events;
 using Processing.Domain.AccountingPoints.Rules.ChangeEnergySupplier;
@@ -22,13 +25,13 @@ using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.AccountingPoints
 {
-    public sealed class AccountingPoint : Entity
+    public sealed class AccountingPoint : AggregateRootBase
     {
         private readonly MeteringPointType _meteringPointType;
         private readonly bool _isProductionObligated;
-        private readonly List<BusinessProcess> _businessProcesses = new();
-        private readonly List<ConsumerRegistration> _consumerRegistrations = new();
-        private readonly List<SupplierRegistration> _supplierRegistrations = new();
+        private readonly List<BusinessProcess> _businessProcesses = new List<BusinessProcess>();
+        private readonly List<ConsumerRegistration> _consumerRegistrations = new List<ConsumerRegistration>();
+        private readonly List<SupplierRegistration> _supplierRegistrations = new List<SupplierRegistration>();
         private PhysicalState _physicalState;
 
         public AccountingPoint(GsrnNumber gsrnNumber, MeteringPointType meteringPointType)
@@ -64,7 +67,7 @@ namespace Processing.Domain.AccountingPoints
             return new AccountingPoint(gsrnNumber, MeteringPointType.Production, isObligated);
         }
 
-        public ValidationResult ChangeSupplierAcceptable(EnergySupplierId energySupplierId, Instant supplyStartDate, ISystemDateTimeProvider systemDateTimeProvider)
+        public BusinessRulesValidationResult ChangeSupplierAcceptable(EnergySupplierId energySupplierId, Instant supplyStartDate, ISystemDateTimeProvider systemDateTimeProvider)
         {
             if (energySupplierId is null)
             {
@@ -90,7 +93,7 @@ namespace Processing.Domain.AccountingPoints
                 new CannotBeCurrentSupplierRule(energySupplierId, GetCurrentSupplier(systemDateTimeProvider)),
             };
 
-            return new ValidationResult(rules);
+            return new BusinessRulesValidationResult(rules);
         }
 
         public void AcceptChangeOfSupplier(EnergySupplierId energySupplierId, Instant supplyStartDate, Transaction transaction, ISystemDateTimeProvider systemDateTimeProvider)
@@ -144,14 +147,14 @@ namespace Processing.Domain.AccountingPoints
             }
         }
 
-        public ValidationResult ConsumerMoveInAcceptable(Instant moveInDate)
+        public BusinessRulesValidationResult ConsumerMoveInAcceptable(Instant moveInDate)
         {
             var rules = new Collection<IBusinessRule>()
             {
                 new MoveInRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), moveInDate),
             };
 
-            return new ValidationResult(rules);
+            return new BusinessRulesValidationResult(rules);
         }
 
         public void AcceptConsumerMoveIn(ConsumerId consumerId, EnergySupplierId energySupplierId, Instant moveInDate, Transaction transaction)

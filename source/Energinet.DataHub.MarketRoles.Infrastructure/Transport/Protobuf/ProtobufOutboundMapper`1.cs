@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Application.Common.Transport;
 using Google.Protobuf;
+using Processing.Application.Common.Transport;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf
 {

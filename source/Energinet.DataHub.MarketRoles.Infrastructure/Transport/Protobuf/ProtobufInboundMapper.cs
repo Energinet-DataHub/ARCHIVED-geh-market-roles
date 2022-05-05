@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.MarketRoles.Application.Common.Transport;
 using Google.Protobuf;
+using Processing.Application.Common.Transport;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf
 {

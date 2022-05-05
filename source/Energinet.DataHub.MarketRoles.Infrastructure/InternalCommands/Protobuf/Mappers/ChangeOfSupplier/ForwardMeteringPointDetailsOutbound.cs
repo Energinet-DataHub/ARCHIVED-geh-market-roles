@@ -16,7 +16,7 @@ using System;
 using Energinet.DataHub.MarketRoles.Contracts;
 using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Google.Protobuf;
-using ForwardMeteringPointDetails = Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.MeteringPointDetails.ForwardMeteringPointDetails;
+using ForwardMeteringPointDetails = Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails.ForwardMeteringPointDetails;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSupplier
 {

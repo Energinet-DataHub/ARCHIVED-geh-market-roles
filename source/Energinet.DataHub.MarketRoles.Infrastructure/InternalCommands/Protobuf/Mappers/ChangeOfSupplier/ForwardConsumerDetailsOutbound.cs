@@ -16,7 +16,7 @@ using System;
 using Energinet.DataHub.MarketRoles.Contracts;
 using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Google.Protobuf;
-using ForwardConsumerDetails = Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.ConsumerDetails.ForwardConsumerDetails;
+using ForwardConsumerDetails = Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails.ForwardConsumerDetails;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSupplier
 {

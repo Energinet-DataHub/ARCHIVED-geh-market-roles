@@ -16,16 +16,17 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
-using Energinet.DataHub.MarketRoles.Domain.EnergySuppliers;
 using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
 using Energinet.DataHub.MarketRoles.Infrastructure.Outbox;
 using MediatR;
+using Processing.Domain.AccountingPoints.Events;
+using Processing.Domain.EnergySuppliers;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.IntegrationEvents.FutureEnergySupplierChangeRegistered
 {
     public class
         PublishWhenEnergySupplierChangeRegistered : INotificationHandler<
-            Domain.MeteringPoints.Events.EnergySupplierChangeRegistered>
+            EnergySupplierChangeRegistered>
     {
         private readonly IDbConnectionFactory _connectionFactory;
         private readonly IOutbox _outbox;
@@ -43,7 +44,7 @@ namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.IntegrationEv
         }
 
         public async Task Handle(
-            Domain.MeteringPoints.Events.EnergySupplierChangeRegistered notification,
+            EnergySupplierChangeRegistered notification,
             CancellationToken cancellationToken)
         {
             if (notification == null) throw new ArgumentNullException(nameof(notification));

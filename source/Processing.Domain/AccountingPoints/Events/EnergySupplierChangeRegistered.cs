@@ -18,7 +18,7 @@ using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.AccountingPoints.Events
 {
-    public class EnergySupplierChangeRegistered : DomainEvent
+    public class EnergySupplierChangeRegistered : DomainEventBase
     {
         public EnergySupplierChangeRegistered(AccountingPointId accountingPointId, GsrnNumber gsrnNumber, BusinessProcessId businessProcessId, Transaction transaction, Instant effectiveDate, EnergySupplierId energySupplierId)
         {

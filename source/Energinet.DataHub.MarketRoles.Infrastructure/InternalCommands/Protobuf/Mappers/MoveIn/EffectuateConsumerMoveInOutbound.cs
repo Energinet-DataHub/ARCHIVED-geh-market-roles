@@ -16,7 +16,7 @@ using System;
 using Energinet.DataHub.MarketRoles.Contracts;
 using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Google.Protobuf;
-using EffectuateConsumerMoveIn = Energinet.DataHub.MarketRoles.Application.MoveIn.Processing.EffectuateConsumerMoveIn;
+using EffectuateConsumerMoveIn = Processing.Application.MoveIn.Processing.EffectuateConsumerMoveIn;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf.Mappers.MoveIn
 {

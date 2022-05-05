@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using NodaTime;
-using Processing.Application.Common.InternalCommands;
+using Processing.Application.Common.Commands;
 using Processing.Domain.AccountingPoints;
 
 namespace Processing.Application.Common.Processing

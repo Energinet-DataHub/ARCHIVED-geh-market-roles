@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.ObjectModel;
 using Processing.Domain.AccountingPoints.Rules;
 using Processing.Domain.SeedWork;
@@ -46,9 +47,9 @@ namespace Processing.Domain.AccountingPoints
             return new GsrnNumber(formattedValue);
         }
 
-        public static ValidationResult CheckRules(string gsrnValue)
+        public static BusinessRulesValidationResult CheckRules(string gsrnValue)
         {
-            return new ValidationResult(new Collection<IBusinessRule>()
+            return new BusinessRulesValidationResult(new Collection<IBusinessRule>()
             {
                 new GsrnNumberMustBeValidRule(gsrnValue),
             });

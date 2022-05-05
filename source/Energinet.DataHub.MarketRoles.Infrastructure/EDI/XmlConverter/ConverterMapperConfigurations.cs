@@ -15,8 +15,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier;
-using Energinet.DataHub.MarketRoles.Application.Common;
+using Processing.Application.ChangeOfSupplier;
+using Processing.Application.Common;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.XmlConverter
 {

@@ -12,16 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+
 namespace Processing.Domain.SeedWork
 {
     public abstract class Entity
     {
-        private readonly List<DomainEvent> _domainEvents = new();
+        private List<IDomainEvent> _domainEvents = new List<IDomainEvent>();
 
         /// <summary>
         /// Domain events occurred.
         /// </summary>
-        public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+        public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
         /// <summary>
         /// Clears all recorded events
@@ -31,11 +33,27 @@ namespace Processing.Domain.SeedWork
             _domainEvents.Clear();
         }
 
+        // /// <summary>
+        // /// Validates a bussines rule
+        // /// </summary>
+        // /// <param name="rule"></param>
+        // /// <returns><see cref="BusinessRuleValidationResult"/></returns>
+        // /// <exception cref="ArgumentNullException"><see cref="ArgumentNullException"/></exception>
+        // protected static BusinessRuleValidationResult CheckRule(IBusinessRule rule)
+        // {
+        //     if (rule is null)
+        //     {
+        //         throw new ArgumentNullException(nameof(rule));
+        //     }
+        //
+        //     return rule.Validate();
+        // }
+
         /// <summary>
         /// Add domain event.
         /// </summary>
         /// <param name="domainEvent">Domain event.</param>
-        protected void AddDomainEvent(DomainEvent domainEvent)
+        protected void AddDomainEvent(IDomainEvent domainEvent)
         {
             _domainEvents.Add(domainEvent);
         }

@@ -12,14 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Collections.Generic;
+using Processing.Domain.AccountingPoints;
 using Processing.Domain.Consumers.Events;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.Consumers
 {
-    public class Consumer : Entity
+    public class Consumer : AggregateRootBase
     {
         private readonly ConsumerName _name;
+
+        #pragma warning disable
+        private readonly List<ConsumerRegistration> _consumerRegistrations = new List<ConsumerRegistration>();
+        #pragma warning restore
 
         public Consumer(ConsumerId consumerId, CprNumber cprNumber, ConsumerName name)
             : this(consumerId, name)

@@ -16,7 +16,7 @@ using System;
 using Energinet.DataHub.MarketRoles.Contracts;
 using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Google.Protobuf;
-using NotifyCurrentSupplier = Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification.NotifyCurrentSupplier;
+using NotifyCurrentSupplier = Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification.NotifyCurrentSupplier;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSupplier
 {

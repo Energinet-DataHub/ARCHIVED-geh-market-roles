@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
+using Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
+using Processing.Domain.AccountingPoints;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.ChangeOfSupplier.EndOfSupplyNotification
 {

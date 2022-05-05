@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using NodaTime;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.AccountingPoints.Events
 {
-    public class ConsumerMoveInAccepted : DomainEvent
+    public class ConsumerMoveInAccepted : DomainEventBase
     {
         public ConsumerMoveInAccepted(Guid accountingPointId, string gsrnNumber, Guid businessProcessId, string transaction, Guid consumerId, Guid energySupplierId, Instant moveInDate)
         {

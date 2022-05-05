@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.ObjectModel;
 using Processing.Domain.AccountingPoints;
 using Processing.Domain.AccountingPoints.Rules;
@@ -38,9 +39,9 @@ namespace Processing.Domain.EnergySuppliers
             return new GlnNumber(formattedValue);
         }
 
-        public static ValidationResult CheckRules(string gsrnValue)
+        public static BusinessRulesValidationResult CheckRules(string gsrnValue)
         {
-            return new ValidationResult(new Collection<IBusinessRule>() { new GlnNumberMustBeValidRule(gsrnValue), });
+            return new BusinessRulesValidationResult(new Collection<IBusinessRule>() { new GlnNumberMustBeValidRule(gsrnValue), });
         }
 
         public override string ToString()

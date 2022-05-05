@@ -14,11 +14,11 @@
 
 using System;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Application.Common.Commands;
-using Energinet.DataHub.MarketRoles.Application.Common.Processing;
-using Energinet.DataHub.MarketRoles.Application.MoveIn;
-using Energinet.DataHub.MarketRoles.Application.MoveIn.Processing;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
+using Processing.Application.Common.Commands;
+using Processing.Application.Common.Processing;
+using Processing.Application.MoveIn;
+using Processing.Application.MoveIn.Processing;
+using Processing.Domain.AccountingPoints;
 using Xunit;
 using Xunit.Categories;
 

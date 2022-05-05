@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Collections.Generic;
 using Processing.Domain.Consumers.Rules;
 using Processing.Domain.SeedWork;
 
@@ -37,9 +39,9 @@ namespace Processing.Domain.Consumers
             return new CprNumber(formattedValue);
         }
 
-        public static ValidationResult CheckRules(string? cprValue)
+        public static BusinessRulesValidationResult CheckRules(string? cprValue)
         {
-            return new ValidationResult(new List<IBusinessRule>()
+            return new BusinessRulesValidationResult(new List<IBusinessRule>()
             {
                 new CprNumberFormatRule(cprValue),
             });

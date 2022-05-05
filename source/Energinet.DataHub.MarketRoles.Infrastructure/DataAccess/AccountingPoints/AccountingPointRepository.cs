@@ -14,8 +14,8 @@
 
 using System;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
 using Microsoft.EntityFrameworkCore;
+using Processing.Domain.AccountingPoints;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.AccountingPoints
 {

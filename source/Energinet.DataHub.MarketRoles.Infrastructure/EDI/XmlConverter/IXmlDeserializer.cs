@@ -15,7 +15,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Application.Common;
+using Processing.Application.Common;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.XmlConverter
 {

@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.EnergySuppliers
 {
-    public class EnergySupplier : Entity
+    public class EnergySupplier : AggregateRootBase
     {
         public EnergySupplier(EnergySupplierId energySupplierId, GlnNumber glnNumber)
             : base()

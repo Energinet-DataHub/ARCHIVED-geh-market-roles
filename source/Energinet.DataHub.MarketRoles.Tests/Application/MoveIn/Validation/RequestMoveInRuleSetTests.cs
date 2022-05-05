@@ -14,12 +14,12 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Energinet.DataHub.MarketRoles.Application.Common.Validation.Consumers;
-using Energinet.DataHub.MarketRoles.Application.MoveIn;
-using Energinet.DataHub.MarketRoles.Application.MoveIn.Validation;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using NodaTime;
+using Processing.Application.Common.Validation.Consumers;
+using Processing.Application.MoveIn;
+using Processing.Application.MoveIn.Validation;
+using Processing.Domain.SeedWork;
 using Xunit;
 using Xunit.Categories;
 
