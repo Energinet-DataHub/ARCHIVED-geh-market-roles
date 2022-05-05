@@ -29,4 +29,8 @@ limitations under the License.
       <PackageReference Include="FluentValidation" Version="11.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="MoveIn" />
+    </ItemGroup>
+
 </Project>

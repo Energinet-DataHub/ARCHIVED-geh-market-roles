@@ -19,7 +19,6 @@ using Processing.Domain.EnergySuppliers;
 using Processing.Infrastructure.Configuration.DataAccess.AccountingPoints;
 using Processing.Infrastructure.Configuration.DataAccess.Consumers;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
-using Processing.Infrastructure.Configuration.DataAccess.ProcessManagers;
 
 namespace Processing.Infrastructure.Configuration.DataAccess
 {
@@ -48,8 +47,6 @@ namespace Processing.Infrastructure.Configuration.DataAccess
             modelBuilder.ApplyConfiguration(new EnergySupplierEntityConfiguration());
             modelBuilder.ApplyConfiguration(new AccountingPointEntityConfiguration());
             modelBuilder.ApplyConfiguration(new ConsumerEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new ProcessManagerEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new MoveInProcessManagerEntityConfiguration());
         }
     }
 }
