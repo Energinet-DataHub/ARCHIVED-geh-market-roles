@@ -29,8 +29,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Energinet.DataHub.MarketRol
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Energinet.DataHub.MarketRoles.EntryPoints.LocalMessageHub", "Energinet.DataHub.MarketRoles.EntryPoints.LocalMessageHub\Energinet.DataHub.MarketRoles.EntryPoints.LocalMessageHub.csproj", "{B631AE9E-A349-4CEE-8440-A54AE8272B26}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Energinet.DataHub.MarketRoles.Messaging", "Energinet.DataHub.MarketRoles.Messaging\Energinet.DataHub.MarketRoles.Messaging.csproj", "{2AC3F815-7722-42F8-9348-72CFEDCB81EE}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging.CimMessageAdapter.Tests", "Messaging.CimMessageAdapter.Tests\Messaging.CimMessageAdapter.Tests.csproj", "{0B8E940E-A2CE-458B-BB51-C12050D91360}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messaging.CimMessageAdapter", "Messaging.CimMessageAdapter\Messaging.CimMessageAdapter.csproj", "{27395443-B503-4A4A-B9F1-01C3F9C75222}"
@@ -111,10 +109,6 @@ Global
 		{B631AE9E-A349-4CEE-8440-A54AE8272B26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B631AE9E-A349-4CEE-8440-A54AE8272B26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B631AE9E-A349-4CEE-8440-A54AE8272B26}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2AC3F815-7722-42F8-9348-72CFEDCB81EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2AC3F815-7722-42F8-9348-72CFEDCB81EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2AC3F815-7722-42F8-9348-72CFEDCB81EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2AC3F815-7722-42F8-9348-72CFEDCB81EE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0B8E940E-A2CE-458B-BB51-C12050D91360}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0B8E940E-A2CE-458B-BB51-C12050D91360}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B8E940E-A2CE-458B-BB51-C12050D91360}.Release|Any CPU.ActiveCfg = Release|Any CPU
