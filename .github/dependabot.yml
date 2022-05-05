@@ -5,6 +5,42 @@
 version: 2
 updates:
   - package-ecosystem: "nuget"
+    directory: "/source/Processing.Tests"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+
+  - package-ecosystem: "nuget"
+    directory: "/source/Processing.ArchitectureTests"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+
+  - package-ecosystem: "nuget"
+    directory: "/source/Processing.Infrastructure"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+  
+  - package-ecosystem: "nuget"
+    directory: "/source/Processing.IntegrationTests"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+  
+  - package-ecosystem: "nuget"
+    directory: "/source/Processing.Application"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+
+  - package-ecosystem: "nuget"
+    directory: "/source/Processing.Domain"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 0
+
+  - package-ecosystem: "nuget"
     directory: "/source/B2B.Transactions.Tests"
     schedule:
       interval: "weekly"
