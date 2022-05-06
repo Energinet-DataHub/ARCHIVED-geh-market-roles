@@ -57,32 +57,36 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
             };
             var businessProcessResult = await businessProcess.InvokeAsync(businessProcess).ConfigureAwait(false);
 
-            var messageId = Guid.NewGuid();
             if (businessProcessResult.Success == false)
             {
                 _outgoingMessageStore.Add(RejectMessage(incomingMessage));
             }
             else
             {
-                var marketActivityRecord = new OutgoingMessages.ConfirmRequestChangeOfSupplier.MarketActivityRecord(
-                    messageId.ToString(),
-                    acceptedTransaction.TransactionId,
-                    incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
-
-                var outgoingMessage = new OutgoingMessage(
-                    "ConfirmRequestChangeOfSupplier",
-                    incomingMessage.Message.SenderId,
-                    _correlationContext.Id,
-                    incomingMessage.Id,
-                    incomingMessage.Message.ProcessType,
-                    incomingMessage.Message.SenderRole,
-                    incomingMessage.Message.ReceiverId,
-                    incomingMessage.Message.ReceiverRole,
-                    _marketActivityRecordParser.From(marketActivityRecord));
-                _outgoingMessageStore.Add(outgoingMessage);
+                _outgoingMessageStore.Add(ConfirmMessage(incomingMessage, acceptedTransaction.TransactionId));
             }
 
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        }
+
+        private OutgoingMessage ConfirmMessage(IncomingMessage incomingMessage, string transactionId)
+        {
+            var messageId = Guid.NewGuid();
+            var marketActivityRecord = new OutgoingMessages.ConfirmRequestChangeOfSupplier.MarketActivityRecord(
+                messageId.ToString(),
+                transactionId,
+                incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
+
+            return new OutgoingMessage(
+                "ConfirmRequestChangeOfSupplier",
+                incomingMessage.Message.SenderId,
+                _correlationContext.Id,
+                incomingMessage.Id,
+                incomingMessage.Message.ProcessType,
+                incomingMessage.Message.SenderRole,
+                incomingMessage.Message.ReceiverId,
+                incomingMessage.Message.ReceiverRole,
+                _marketActivityRecordParser.From(marketActivityRecord));
         }
 
         private OutgoingMessage RejectMessage(IncomingMessage incomingMessage)
