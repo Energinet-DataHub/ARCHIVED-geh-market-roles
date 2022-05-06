@@ -31,22 +31,11 @@ namespace Processing.Infrastructure.BusinessRequestProcessing.Pipeline
             _businessProcessResultHandler = businessProcessResultHandler ?? throw new ArgumentNullException(nameof(businessProcessResultHandler));
         }
 
-        public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
+        public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (next == null) throw new ArgumentNullException(nameof(next));
-            // TODO: Invoke authorization handlers/service
-            bool success = true;
-            if (success)
-            {
-                return await next().ConfigureAwait(false);
-            }
-            else
-            {
-                var result = (TResponse)BusinessProcessResult.Fail(request.TransactionId);
-                await _businessProcessResultHandler.HandleAsync(request, result).ConfigureAwait(false);
-                return result;
-            }
+            return next();
         }
     }
 }
