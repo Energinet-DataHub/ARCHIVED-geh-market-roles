@@ -22,7 +22,7 @@ using Processing.Domain.MeteringPoints;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.IntegrationTests.Application.MoveIn.Processing
+namespace Processing.IntegrationTests.Application.MoveIn.Processing
 {
     [IntegrationTest]
     public class MoveInProcessManagerTests : TestHost

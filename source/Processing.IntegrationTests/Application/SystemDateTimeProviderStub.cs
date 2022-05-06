@@ -15,7 +15,7 @@
 using NodaTime;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.IntegrationTests.Application
+namespace Processing.IntegrationTests.Application
 {
     public class SystemDateTimeProviderStub : ISystemDateTimeProvider
     {

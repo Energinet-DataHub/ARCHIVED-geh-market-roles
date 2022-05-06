@@ -17,7 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Processing.Infrastructure.Transport;
 
-namespace Energinet.DataHub.MarketRoles.IntegrationTests.Transport.TestImplementations
+namespace Processing.IntegrationTests.Transport.TestImplementations
 {
     public class InProcessChannel : Channel
     {

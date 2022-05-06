@@ -21,7 +21,7 @@ using Processing.Infrastructure.EDI;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.IntegrationTests.Application.ChangeOfSupplier
+namespace Processing.IntegrationTests.Application.ChangeOfSupplier
 {
     [IntegrationTest]
     public sealed class RequestTests : TestHost

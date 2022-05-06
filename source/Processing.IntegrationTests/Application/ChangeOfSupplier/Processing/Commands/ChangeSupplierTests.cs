@@ -31,7 +31,7 @@ using Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySuppli
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.IntegrationTests.Application.ChangeOfSupplier.Processing.Commands
+namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing.Commands
 {
     [IntegrationTest]
     public class ChangeSupplierTests : TestHost

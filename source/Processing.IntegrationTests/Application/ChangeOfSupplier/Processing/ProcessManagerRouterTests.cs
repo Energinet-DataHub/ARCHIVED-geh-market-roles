@@ -26,7 +26,7 @@ using Processing.Domain.MeteringPoints.Events;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.IntegrationTests.Application.ChangeOfSupplier.Processing
+namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing
 {
     [IntegrationTest]
     public class ProcessManagerRouterTests : TestHost

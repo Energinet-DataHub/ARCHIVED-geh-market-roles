@@ -14,17 +14,15 @@
 
 using System.Threading.Tasks;
 using Energinet.DataHub.MarketRoles.Contracts;
-using Energinet.DataHub.MarketRoles.EntryPoints.Common.SimpleInjector;
-using Energinet.DataHub.MarketRoles.IntegrationTests.Transport.TestImplementations;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using Processing.Infrastructure.Transport;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
+using Processing.IntegrationTests.Transport.TestImplementations;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using Xunit;
 
-namespace Energinet.DataHub.MarketRoles.IntegrationTests.Transport
+namespace Processing.IntegrationTests.Transport
 {
     public class TransportTests
     {

@@ -15,7 +15,7 @@
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Energinet.DataHub.MarketRoles.IntegrationTests.Application
+namespace Processing.IntegrationTests.Application
 {
     public class DatabaseFixture : IAsyncLifetime
     {

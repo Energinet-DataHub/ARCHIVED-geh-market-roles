@@ -15,7 +15,7 @@
 using System;
 using Xunit;
 
-namespace Energinet.DataHub.MarketRoles.IntegrationTests
+namespace Processing.IntegrationTests
 {
     public class AzureFunctionHostConfigurationTests
     {
@@ -37,7 +37,7 @@ namespace Energinet.DataHub.MarketRoles.IntegrationTests
             Environment.SetEnvironmentVariable("MESSAGEHUB_DATA_AVAILABLE_QUEUE", SomeString);
             Environment.SetEnvironmentVariable("MESSAGEHUB_DOMAIN_REPLY_QUEUE", SomeString);
 
-            var program = new EntryPoints.Outbox.Program();
+            var program = new Energinet.DataHub.MarketRoles.EntryPoints.Outbox.Program();
 
             program.ConfigureApplication();
 
@@ -53,7 +53,7 @@ namespace Energinet.DataHub.MarketRoles.IntegrationTests
             Environment.SetEnvironmentVariable("B2C_TENANT_ID", SomeString);
             Environment.SetEnvironmentVariable("BACKEND_SERVICE_APP_ID", SomeString);
             Environment.SetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING", SomeString);
-            var program = new EntryPoints.Ingestion.Program();
+            var program = new Energinet.DataHub.MarketRoles.EntryPoints.Ingestion.Program();
 
             program.ConfigureApplication();
 

@@ -14,7 +14,7 @@
 
 using Xunit;
 
-namespace Energinet.DataHub.MarketRoles.IntegrationTests.Application
+namespace Processing.IntegrationTests.Application
 {
     [CollectionDefinition("IntegrationTest")]
     public class IntegrationTestDatabaseFixture : ICollectionFixture<DatabaseFixture>

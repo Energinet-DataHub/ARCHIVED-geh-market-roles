@@ -77,7 +77,7 @@ using Xunit;
 using RequestChangeOfSupplier = Processing.Application.ChangeOfSupplier.RequestChangeOfSupplier;
 using RequestMoveIn = Processing.Application.MoveIn.RequestMoveIn;
 
-namespace Energinet.DataHub.MarketRoles.IntegrationTests.Application
+namespace Processing.IntegrationTests.Application
 {
     [Collection("IntegrationTest")]
 #pragma warning disable CA1724 // TODO: TestHost is reserved. Maybe refactor to base EntryPoint?

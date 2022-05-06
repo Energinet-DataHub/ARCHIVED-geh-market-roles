@@ -19,7 +19,7 @@ using Energinet.DataHub.MarketRoles.ApplyDBMigrationsApp.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Processing.Infrastructure.DataAccess;
 
-namespace Energinet.DataHub.MarketRoles.IntegrationTests.Application
+namespace Processing.IntegrationTests.Application
 {
     public class MarketRolesDatabaseManager : SqlServerDatabaseManager<MarketRolesContext>
     {

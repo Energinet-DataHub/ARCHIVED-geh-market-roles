@@ -14,7 +14,7 @@
 
 using Processing.Application.Common.Transport;
 
-namespace Energinet.DataHub.MarketRoles.IntegrationTests.Transport.TestImplementations
+namespace Processing.IntegrationTests.Transport.TestImplementations
 {
     public record TransportTestRecord(string TestProperty) :
     IOutboundMessage,

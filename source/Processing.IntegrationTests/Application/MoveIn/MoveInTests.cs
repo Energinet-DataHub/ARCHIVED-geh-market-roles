@@ -21,7 +21,7 @@ using Processing.Infrastructure.EDI;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.IntegrationTests.Application.MoveIn
+namespace Processing.IntegrationTests.Application.MoveIn
 {
     [IntegrationTest]
     public class MoveInTests : TestHost

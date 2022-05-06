@@ -17,7 +17,7 @@ using Energinet.DataHub.MarketRoles.Contracts;
 using Google.Protobuf;
 using Processing.Infrastructure.Transport.Protobuf;
 
-namespace Energinet.DataHub.MarketRoles.IntegrationTests.Transport.TestImplementations
+namespace Processing.IntegrationTests.Transport.TestImplementations
 {
     public class TransportTestOutboundMapper : ProtobufOutboundMapper<TransportTestRecord>
     {
