@@ -62,12 +62,14 @@ namespace Messaging.IntegrationTests.IncomingMessages
             var messageBuilder = new IncomingMessageBuilder();
             var incomingMessage = messageBuilder
                 .WithProcessType("E03")
+                .WithReceiver("5790001330552")
+                .WithSenderId("123456")
                 .WithConsumerName(null)
                 .Build();
 
             await _requestChangeOfSupplierHandler.HandleAsync(incomingMessage).ConfigureAwait(false);
             var rejectMessage = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage.Id)!;
-            await RequestMessageGeneratedBy(rejectMessage.Id.ToString()).ConfigureAwait(false);
+            await RequestMessage(rejectMessage.Id.ToString()).ConfigureAwait(false);
 
             await AssertRejectMessage(rejectMessage).ConfigureAwait(false);
         }
@@ -78,7 +80,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
             AssertXmlMessage.AssertHasHeaderValue(document, "type", "414");
             AssertXmlMessage.AssertHasHeaderValue(document, "process.processType", message.ProcessType);
             AssertXmlMessage.AssertHasHeaderValue(document, "businessSector.type", "23");
-            // AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.mRID", header.SenderId);
+            AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.mRID", message.SenderId);
             // AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.marketRole.type", "DDZ");
             // AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.mRID", header.ReceiverId);
             // AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.marketRole.type", header.ReceiverRole);
@@ -97,7 +99,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
             AssertHeader(document, rejectMessage);
         }
 
-        private async Task RequestMessageGeneratedBy(string id)
+        private async Task RequestMessage(string id)
         {
             await GetService<MessageRequestHandler>().HandleAsync(new[] { id }).ConfigureAwait(false);
         }

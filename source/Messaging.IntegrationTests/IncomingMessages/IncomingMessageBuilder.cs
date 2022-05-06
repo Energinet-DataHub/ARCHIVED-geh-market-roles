@@ -23,6 +23,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
     {
         private string _processType = "NotSet";
         private string _senderId = "NotSet";
+        private string _receiverId = DataHubDetails.IdentificationNumber;
         private string? _consumerName = "NotSet";
 
         internal static IncomingMessage CreateMessage()
@@ -59,6 +60,12 @@ namespace Messaging.IntegrationTests.IncomingMessages
             return this;
         }
 
+        internal IncomingMessageBuilder WithReceiver(string receiverId)
+        {
+            _receiverId = receiverId;
+            return this;
+        }
+
         internal IncomingMessage Build()
         {
             return IncomingMessage.Create(
@@ -67,7 +74,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
                     _processType,
                     _senderId,
                     "DDZ",
-                    DataHubDetails.IdentificationNumber,
+                    _receiverId,
                     "DDQ",
                     "fake"),
                 new MarketActivityRecord()

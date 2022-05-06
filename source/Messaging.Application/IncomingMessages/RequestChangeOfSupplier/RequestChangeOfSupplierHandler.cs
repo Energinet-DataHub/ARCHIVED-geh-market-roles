@@ -147,7 +147,7 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
 
         public bool Success => ValidationErrors.Count == 0;
 
-        public IReadOnlyCollection<ZZValidationError> ValidationErrors { get; set; }
+        public IReadOnlyCollection<ZZValidationError> ValidationErrors { get; } = new List<ZZValidationError>();
 
         public static BusinessRequestResult Failure(params ZZValidationError[] validationErrors)
         {
