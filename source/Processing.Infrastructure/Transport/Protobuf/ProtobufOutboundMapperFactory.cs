@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Application.Common.Transport;
+using Processing.Application.Common.Transport;
 using SimpleInjector;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf

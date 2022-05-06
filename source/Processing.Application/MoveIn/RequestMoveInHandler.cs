@@ -17,16 +17,16 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Application.Common;
-using Energinet.DataHub.MarketRoles.Application.Common.Validation;
 using NodaTime;
 using NodaTime.Text;
+using Processing.Application.Common;
+using Processing.Application.Common.Validation;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.MoveIn
+namespace Processing.Application.MoveIn
 {
     public class RequestMoveInHandler : IBusinessRequestHandler<RequestMoveIn>
     {

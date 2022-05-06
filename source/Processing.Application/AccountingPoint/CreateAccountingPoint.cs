@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using Energinet.DataHub.MarketRoles.Application.Common.Commands;
-using Energinet.DataHub.MarketRoles.Application.Common.Transport;
+using Processing.Application.Common.Commands;
+using Processing.Application.Common.Transport;
 
-namespace Energinet.DataHub.MarketRoles.Application.AccountingPoint
+namespace Processing.Application.AccountingPoint
 {
     public class CreateAccountingPoint : InternalCommand, IOutboundMessage, IInboundMessage
     {

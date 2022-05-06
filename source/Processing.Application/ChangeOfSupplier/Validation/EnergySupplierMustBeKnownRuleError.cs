@@ -14,7 +14,7 @@
 
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Validation
+namespace Processing.Application.ChangeOfSupplier.Validation
 {
     public class EnergySupplierMustBeKnownRuleError : ValidationError
     {

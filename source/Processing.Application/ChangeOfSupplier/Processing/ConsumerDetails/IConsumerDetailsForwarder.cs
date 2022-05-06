@@ -15,7 +15,7 @@
 using System.Threading.Tasks;
 using Processing.Domain.MeteringPoints;
 
-namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.ConsumerDetails
+namespace Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails
 {
     /// <summary>
     /// Handler for forwarding accounting point consumer details to future energy supplier. This handler is used

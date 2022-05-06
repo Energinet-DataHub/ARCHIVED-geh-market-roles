@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Validation;
+using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common.Validation
+namespace Processing.Application.Common.Validation
 {
     public class MeteringPointMustBeKnownRule : IBusinessRule
     {

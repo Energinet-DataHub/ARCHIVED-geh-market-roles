@@ -14,7 +14,7 @@
 
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.EDI
+namespace Processing.Application.EDI
 {
     #pragma warning disable SA1402 // These ErrorConverter types "overloaded" by type parameter are tightly coupled and it seems logical to have them in the same file.
     public abstract class ErrorConverter

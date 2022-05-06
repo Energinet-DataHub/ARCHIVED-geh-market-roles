@@ -17,7 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace Energinet.DataHub.MarketRoles.Application.AccountingPoint
+namespace Processing.Application.AccountingPoint
 {
     public class MeteringPointCreatedHandler : INotificationHandler<MeteringPointCreated>
     {

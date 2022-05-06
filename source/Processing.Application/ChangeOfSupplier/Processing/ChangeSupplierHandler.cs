@@ -15,12 +15,12 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Application.Common.Commands;
 using MediatR;
+using Processing.Application.Common.Commands;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing
+namespace Processing.Application.ChangeOfSupplier.Processing
 {
     public class ChangeSupplierHandler : ICommandHandler<ChangeSupplier>
     {

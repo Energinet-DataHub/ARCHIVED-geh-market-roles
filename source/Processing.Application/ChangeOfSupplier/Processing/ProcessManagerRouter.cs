@@ -16,16 +16,16 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.ConsumerDetails;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
-using Energinet.DataHub.MarketRoles.Application.Common.Commands;
-using Energinet.DataHub.MarketRoles.Application.Common.Processing;
 using MediatR;
+using Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails;
+using Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
+using Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
+using Processing.Application.Common.Commands;
+using Processing.Application.Common.Processing;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.MeteringPoints.Events;
 
-namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing
+namespace Processing.Application.ChangeOfSupplier.Processing
 {
     public class ProcessManagerRouter
         : INotificationHandler<EnergySupplierChangeRegistered>,

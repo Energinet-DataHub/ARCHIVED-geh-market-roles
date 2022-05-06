@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.MarketRoles.Application.Common.Validation;
 using FluentValidation;
+using Processing.Application.Common.Validation;
 
-namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Validation
+namespace Processing.Application.ChangeOfSupplier.Validation
 {
     public class RequestChangeOfSupplierRuleSet : AbstractValidator<RequestChangeOfSupplier>
     {

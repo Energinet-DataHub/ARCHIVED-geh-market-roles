@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Processing.Domain.MeteringPoints;
 
-namespace Energinet.DataHub.MarketRoles.Application.Connected
+namespace Processing.Application.Connected
 {
     public class MeteringPointConnectedHandler : INotificationHandler<MeteringPointConnected>
     {

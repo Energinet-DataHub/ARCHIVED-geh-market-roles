@@ -15,7 +15,7 @@
 using System.Threading.Tasks;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common.DomainEvents
+namespace Processing.Application.Common.DomainEvents
 {
     /// <summary>
     /// Service for publishing domain events

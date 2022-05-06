@@ -16,7 +16,7 @@ using FluentValidation;
 using Processing.Domain.Consumers;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common.Validation.Consumers
+namespace Processing.Application.Common.Validation.Consumers
 {
     public class SocialSecurityNumberMustBeValid : AbstractValidator<string>
     {

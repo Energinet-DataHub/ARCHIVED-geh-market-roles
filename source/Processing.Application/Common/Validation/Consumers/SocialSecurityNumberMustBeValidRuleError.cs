@@ -14,7 +14,7 @@
 
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common.Validation.Consumers
+namespace Processing.Application.Common.Validation.Consumers
 {
     public class SocialSecurityNumberMustBeValidRuleError : ValidationError
     {

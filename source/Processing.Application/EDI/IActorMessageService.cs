@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NodaTime;
 
-namespace Energinet.DataHub.MarketRoles.Application.EDI
+namespace Processing.Application.EDI
 {
     /// <summary>
     /// Create business documents.

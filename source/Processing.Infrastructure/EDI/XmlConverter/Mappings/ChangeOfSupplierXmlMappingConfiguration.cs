@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Linq;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier;
+using Processing.Application.ChangeOfSupplier;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.XmlConverter.Mappings
 {

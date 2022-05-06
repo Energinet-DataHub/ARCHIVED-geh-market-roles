@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using NodaTime;
 using Processing.Domain.MeteringPoints;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common.Commands
+namespace Processing.Application.Common.Commands
 {
     /// <summary>
     /// Service for scheduling and enqueueing internal commands for later processing

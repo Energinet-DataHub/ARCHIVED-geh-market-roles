@@ -15,7 +15,7 @@
 using System;
 using System.Linq;
 using System.Text.Json;
-using Energinet.DataHub.MarketRoles.Application.Common.Users;
+using Processing.Application.Common.Users;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.Users
 {

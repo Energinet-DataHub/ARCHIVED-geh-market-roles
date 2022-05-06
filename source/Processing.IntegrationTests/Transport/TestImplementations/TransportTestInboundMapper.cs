@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Application.Common.Transport;
 using Energinet.DataHub.MarketRoles.Contracts;
 using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
+using Processing.Application.Common.Transport;
 
 namespace Energinet.DataHub.MarketRoles.IntegrationTests.Transport.TestImplementations
 {

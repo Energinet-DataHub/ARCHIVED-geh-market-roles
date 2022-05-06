@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.MarketRoles.Application.Common.Transport;
 using MediatR;
+using Processing.Application.Common.Transport;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common.Commands
+namespace Processing.Application.Common.Commands
 {
     #pragma warning disable CA1040
     /// <summary>

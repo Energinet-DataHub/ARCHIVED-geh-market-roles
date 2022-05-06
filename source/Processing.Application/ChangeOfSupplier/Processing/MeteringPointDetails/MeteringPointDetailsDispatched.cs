@@ -16,7 +16,7 @@ using System;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.MeteringPointDetails
+namespace Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails
 {
     public class MeteringPointDetailsDispatched : DomainEventBase
     {

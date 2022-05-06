@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Application.Common.Commands;
+using Processing.Application.Common.Commands;
 
-namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.ConsumerDetails
+namespace Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails
 {
     public class ForwardConsumerDetails : InternalCommand
     {

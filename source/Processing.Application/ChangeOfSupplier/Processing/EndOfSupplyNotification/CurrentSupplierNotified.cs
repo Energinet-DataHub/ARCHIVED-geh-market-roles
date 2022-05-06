@@ -15,7 +15,7 @@
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification
+namespace Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification
 {
     public class CurrentSupplierNotified : DomainEventBase
     {

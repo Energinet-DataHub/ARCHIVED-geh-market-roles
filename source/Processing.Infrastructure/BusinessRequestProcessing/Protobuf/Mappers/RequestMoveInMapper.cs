@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Application.Common.Transport;
 using Energinet.DataHub.MarketRoles.Contracts;
 using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using NodaTime;
+using Processing.Application.Common.Transport;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.BusinessRequestProcessing.Protobuf.Mappers
 {
@@ -26,7 +26,7 @@ namespace Energinet.DataHub.MarketRoles.Infrastructure.BusinessRequestProcessing
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-            return new Application.MoveIn.RequestMoveIn
+            return new Processing.Application.MoveIn.RequestMoveIn
             {
                 TransactionId = obj.TransactionId,
                 EnergySupplierGlnNumber = obj.EnergySupplierGlnNumber,

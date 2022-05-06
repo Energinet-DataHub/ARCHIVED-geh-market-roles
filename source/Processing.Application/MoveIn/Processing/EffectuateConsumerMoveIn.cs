@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Application.Common.Commands;
+using Processing.Application.Common.Commands;
 
-namespace Energinet.DataHub.MarketRoles.Application.MoveIn.Processing
+namespace Processing.Application.MoveIn.Processing
 {
     public class EffectuateConsumerMoveIn
         : InternalCommand

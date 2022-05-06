@@ -14,7 +14,7 @@
 
 using MediatR;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common
+namespace Processing.Application.Common
 {
     /// <summary>
     /// Request for starting a business process

@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.EDI
+namespace Processing.Application.EDI
 {
     public record ErrorConverterRegistration(Type Error, Func<ErrorConverter> Func);
 

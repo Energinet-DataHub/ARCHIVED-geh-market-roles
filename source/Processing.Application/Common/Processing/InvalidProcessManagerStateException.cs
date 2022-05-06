@@ -15,7 +15,7 @@
 using System;
 using Processing.Domain.MeteringPoints;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common.Processing
+namespace Processing.Application.Common.Processing
 {
     public class InvalidProcessManagerStateException : BusinessProcessException
     {

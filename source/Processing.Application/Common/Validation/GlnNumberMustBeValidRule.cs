@@ -16,7 +16,7 @@ using FluentValidation;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common.Validation
+namespace Processing.Application.Common.Validation
 {
     public class GlnNumberMustBeValidRule : AbstractValidator<string>
     {

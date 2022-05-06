@@ -16,7 +16,7 @@ using System;
 using Energinet.DataHub.MarketRoles.Contracts;
 using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Google.Protobuf;
-using CreateAccountingPoint = Energinet.DataHub.MarketRoles.Application.AccountingPoint.CreateAccountingPoint;
+using CreateAccountingPoint = Processing.Application.AccountingPoint.CreateAccountingPoint;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf.Mappers.AccountingPoint
 {

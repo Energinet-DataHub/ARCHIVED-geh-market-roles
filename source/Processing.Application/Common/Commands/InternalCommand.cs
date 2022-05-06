@@ -13,9 +13,8 @@
 // limitations under the License.
 
 using System;
-using System.Text.Json.Serialization;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common.Commands
+namespace Processing.Application.Common.Commands
 {
     public abstract class InternalCommand : ICommand
     {

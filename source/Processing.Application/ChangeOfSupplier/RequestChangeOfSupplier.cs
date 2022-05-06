@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.MarketRoles.Application.Common;
-using Energinet.DataHub.MarketRoles.Application.Common.Transport;
+using Processing.Application.Common;
+using Processing.Application.Common.Transport;
 
-namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier
+namespace Processing.Application.ChangeOfSupplier
 {
     public record RequestChangeOfSupplier(
             string TransactionId = "",

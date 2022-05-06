@@ -16,14 +16,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Application.Common;
-using Energinet.DataHub.MarketRoles.Application.Common.Validation;
 using NodaTime.Text;
+using Processing.Application.Common;
+using Processing.Application.Common.Validation;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier
+namespace Processing.Application.ChangeOfSupplier
 {
     public class RequestChangeOfSupplierHandler : IBusinessRequestHandler<RequestChangeOfSupplier>
     {

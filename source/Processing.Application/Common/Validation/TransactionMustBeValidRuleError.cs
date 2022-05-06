@@ -14,7 +14,7 @@
 
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common.Validation
+namespace Processing.Application.Common.Validation
 {
     public class TransactionMustBeValidRuleError : ValidationError
     {

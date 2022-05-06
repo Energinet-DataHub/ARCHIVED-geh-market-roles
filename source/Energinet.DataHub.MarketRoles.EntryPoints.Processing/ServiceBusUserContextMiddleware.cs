@@ -19,7 +19,7 @@ using Energinet.DataHub.MarketRoles.Infrastructure.Users;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
-using IUserContext = Energinet.DataHub.MarketRoles.Application.Common.Users.IUserContext;
+using IUserContext = Processing.Application.Common.Users.IUserContext;
 
 namespace Energinet.DataHub.MarketRoles.EntryPoints.Processing
 {

@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.MarketRoles.Application.Common.Validation;
-using Energinet.DataHub.MarketRoles.Application.Common.Validation.Consumers;
 using FluentValidation;
+using Processing.Application.Common.Validation;
+using Processing.Application.Common.Validation.Consumers;
 
-namespace Energinet.DataHub.MarketRoles.Application.MoveIn.Validation
+namespace Processing.Application.MoveIn.Validation
 {
     public class RequestMoveInRuleSet : AbstractValidator<RequestMoveIn>
     {

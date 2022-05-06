@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Application.Common.Transport;
 using Energinet.DataHub.MarketRoles.Contracts;
 using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
+using Processing.Application.Common.Transport;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf.Mappers.MoveIn
 {
@@ -24,7 +24,7 @@ namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf
         protected override IInboundMessage Convert(EffectuateConsumerMoveIn obj)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
-            return new Application.MoveIn.Processing.EffectuateConsumerMoveIn(
+            return new Processing.Application.MoveIn.Processing.EffectuateConsumerMoveIn(
                 Guid.Parse(obj.Id),
                 Guid.Parse(obj.AccountingPointId),
                 obj.Transaction);

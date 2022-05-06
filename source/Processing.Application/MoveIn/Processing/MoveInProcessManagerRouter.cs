@@ -16,13 +16,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Application.Common.Commands;
-using Energinet.DataHub.MarketRoles.Application.Common.Processing;
 using MediatR;
+using Processing.Application.Common.Commands;
+using Processing.Application.Common.Processing;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.MeteringPoints.Events;
 
-namespace Energinet.DataHub.MarketRoles.Application.MoveIn.Processing
+namespace Processing.Application.MoveIn.Processing
 {
     public class MoveInProcessManagerRouter
         : INotificationHandler<ConsumerMoveInAccepted>,

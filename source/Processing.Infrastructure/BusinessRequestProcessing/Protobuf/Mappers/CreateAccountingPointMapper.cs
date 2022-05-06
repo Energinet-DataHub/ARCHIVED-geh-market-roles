@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Application.Common.Transport;
 using Energinet.DataHub.MarketRoles.Contracts;
 using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
+using Processing.Application.Common.Transport;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.BusinessRequestProcessing.Protobuf.Mappers
 {
@@ -25,7 +25,7 @@ namespace Energinet.DataHub.MarketRoles.Infrastructure.BusinessRequestProcessing
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-            return new Application.AccountingPoint.CreateAccountingPoint(
+            return new Processing.Application.AccountingPoint.CreateAccountingPoint(
                 obj.AccountingPointId,
                 obj.GsrnNumber,
                 obj.MeteringPointType,

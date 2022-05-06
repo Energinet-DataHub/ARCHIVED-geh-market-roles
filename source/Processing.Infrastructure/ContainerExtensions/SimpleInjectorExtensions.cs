@@ -15,7 +15,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Energinet.DataHub.MarketRoles.Application.EDI;
+using Processing.Application.EDI;
 using Processing.Domain.SeedWork;
 using SimpleInjector;
 

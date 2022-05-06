@@ -14,8 +14,8 @@
 
 using System;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Application.Common.Processing;
 using Microsoft.EntityFrameworkCore;
+using Processing.Application.Common.Processing;
 using Processing.Domain.MeteringPoints;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.ProcessManagers

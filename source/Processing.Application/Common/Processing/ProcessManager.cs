@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using NodaTime;
 using Processing.Domain.MeteringPoints;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common.Processing
+namespace Processing.Application.Common.Processing
 {
     public abstract class ProcessManager
     {

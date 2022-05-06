@@ -17,7 +17,7 @@ using System.Globalization;
 using Energinet.DataHub.MarketRoles.Contracts;
 using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Google.Protobuf;
-using RequestMoveIn = Energinet.DataHub.MarketRoles.Application.MoveIn.RequestMoveIn;
+using RequestMoveIn = Processing.Application.MoveIn.RequestMoveIn;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.Ingestion.Mappers
 {

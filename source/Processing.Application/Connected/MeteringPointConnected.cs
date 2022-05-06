@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.MarketRoles.Application.Common.Transport;
 using MediatR;
 using NodaTime;
+using Processing.Application.Common.Transport;
 
-namespace Energinet.DataHub.MarketRoles.Application.Connected
+namespace Processing.Application.Connected
 {
     public record MeteringPointConnected(string MeteringPointId, string GsrnNumber, Instant EffectiveDate)
         : INotification, IInboundMessage;

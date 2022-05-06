@@ -13,14 +13,14 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Application.Common.Commands;
-using Energinet.DataHub.MarketRoles.Application.Common.Processing;
 using NodaTime;
+using Processing.Application.Common.Commands;
+using Processing.Application.Common.Processing;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.MeteringPoints.Events;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.MoveIn.Processing
+namespace Processing.Application.MoveIn.Processing
 {
     public class MoveInProcessManager : ProcessManager
     {

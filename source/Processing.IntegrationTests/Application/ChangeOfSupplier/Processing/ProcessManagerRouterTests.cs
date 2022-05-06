@@ -15,10 +15,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.ConsumerDetails;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
+using Processing.Application.ChangeOfSupplier.Processing;
+using Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails;
+using Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
+using Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;

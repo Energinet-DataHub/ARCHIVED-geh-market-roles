@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.MarketRoles.Application.Common.Users
+namespace Processing.Application.Common.Users
 {
     public class UserContext : IUserContext
     {

@@ -15,10 +15,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Application.Common.Commands;
 using MediatR;
+using Processing.Application.Common.Commands;
 
-namespace Energinet.DataHub.MarketRoles.Application.AccountingPoint
+namespace Processing.Application.AccountingPoint
 {
     public class ProductionMeteringPointCreatedHandler : INotificationHandler<ProductionMeteringPointCreated>
     {

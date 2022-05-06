@@ -14,7 +14,7 @@
 
 using MediatR;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common.Commands
+namespace Processing.Application.Common.Commands
 {
     /// <summary>
     /// Handler for CQRS command

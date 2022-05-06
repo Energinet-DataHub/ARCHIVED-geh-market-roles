@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Application.Common.Transport;
 using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using NodaTime;
+using Processing.Application.Common.Transport;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.Notifications.MeteringPointConnected
 {
@@ -25,7 +25,7 @@ namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.Notifications
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-            return new Application.Connected.MeteringPointConnected(
+            return new Processing.Application.Connected.MeteringPointConnected(
                 obj.MeteringpointId,
                 obj.GsrnNumber,
                 Instant.FromUnixTimeSeconds(obj.EffectiveDate.Seconds));

@@ -15,10 +15,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Validation;
-using Energinet.DataHub.MarketRoles.Application.Common.Validation;
 using NodaTime;
+using Processing.Application.ChangeOfSupplier;
+using Processing.Application.ChangeOfSupplier.Validation;
+using Processing.Application.Common.Validation;
 using Processing.Domain.SeedWork;
 using Xunit;
 using Xunit.Categories;

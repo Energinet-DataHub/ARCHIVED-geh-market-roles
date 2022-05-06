@@ -14,9 +14,8 @@
 
 using System;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Application;
-using Energinet.DataHub.MarketRoles.Application.Common.DomainEvents;
 using MediatR;
+using Processing.Application.Common.DomainEvents;
 using Processing.Domain.SeedWork;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.DomainEventDispatching

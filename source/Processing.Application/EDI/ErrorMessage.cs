@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.MarketRoles.Application.EDI
+namespace Processing.Application.EDI
 {
     public record ErrorMessage(string Code, string Description);
 }

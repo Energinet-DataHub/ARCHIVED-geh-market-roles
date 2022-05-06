@@ -14,7 +14,7 @@
 
 using FluentValidation;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common.Validation
+namespace Processing.Application.Common.Validation
 {
     public class StartOfSupplyMustBeValidRule : AbstractValidator<string>
     {

@@ -13,17 +13,17 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.ConsumerDetails;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
-using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
-using Energinet.DataHub.MarketRoles.Application.Common.Commands;
-using Energinet.DataHub.MarketRoles.Application.Common.Processing;
 using NodaTime;
+using Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails;
+using Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
+using Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
+using Processing.Application.Common.Commands;
+using Processing.Application.Common.Processing;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.MeteringPoints.Events;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing
+namespace Processing.Application.ChangeOfSupplier.Processing
 {
     public class ChangeOfSupplierProcessManager : ProcessManager
     {

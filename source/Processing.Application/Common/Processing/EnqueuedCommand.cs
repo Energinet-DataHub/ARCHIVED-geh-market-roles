@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Application.Common.Commands;
 using NodaTime;
+using Processing.Application.Common.Commands;
 using Processing.Domain.MeteringPoints;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common.Processing
+namespace Processing.Application.Common.Processing
 {
     public class EnqueuedCommand
     {

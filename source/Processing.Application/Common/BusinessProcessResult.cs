@@ -14,11 +14,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Application.Common
+namespace Processing.Application.Common
 {
     public class BusinessProcessResult
     {

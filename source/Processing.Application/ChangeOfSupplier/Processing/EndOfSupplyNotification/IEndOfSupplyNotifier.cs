@@ -15,7 +15,7 @@
 using System.Threading.Tasks;
 using Processing.Domain.MeteringPoints;
 
-namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification
+namespace Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification
 {
     /// <summary>
     /// Handler for notifying energy supplier about end of supply due to a change of supplier business process
