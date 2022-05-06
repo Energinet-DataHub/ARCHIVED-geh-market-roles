@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
+using System.Xml.Schema;
 using Messaging.Application.IncomingMessages;
 using Messaging.Application.IncomingMessages.RequestChangeOfSupplier;
 using Messaging.Application.OutgoingMessages;
@@ -63,21 +64,24 @@ namespace Messaging.IntegrationTests.IncomingMessages
                 .Build();
 
             await _requestChangeOfSupplierHandler.HandleAsync(incomingMessage).ConfigureAwait(false);
+            await RequestMessageGeneratedBy(incomingMessage.Id).ConfigureAwait(false);
 
-            var rejectMessage = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage.Id)!;
-            Assert.NotNull(rejectMessage);
-            await AssertOutgoingMessage(rejectMessage);
+            await AssertRejectMessage().ConfigureAwait(false);
+        }
 
+        private async Task AssertRejectMessage()
+        {
             var messageDispatcher = GetService<IMessageDispatcher>() as MessageDispatcherSpy;
-            var schema = await GetService<ISchemaProvider>().GetSchemaAsync("rejectrequestchangeofsupplier", "1.0").ConfigureAwait(false);
+            var schema = await GetService<ISchemaProvider>().GetSchemaAsync("rejectrequestchangeofsupplier", "1.0")
+                .ConfigureAwait(false);
             var valid = await MessageValidator.ValidateAsync(messageDispatcher!.DispatchedMessage!, schema!);
             Assert.True(valid.IsValid);
         }
 
-        private async Task AssertOutgoingMessage(OutgoingMessage message)
+        private async Task RequestMessageGeneratedBy(string id)
         {
-            var result = await GetService<MessageRequestHandler>().HandleAsync(new[] { message.Id.ToString(), });
-            Assert.True(result.Success);
+            var rejectMessage = _outgoingMessageStore.GetByOriginalMessageId(id)!;
+            await GetService<MessageRequestHandler>().HandleAsync(new[] { rejectMessage.Id.ToString(), }).ConfigureAwait(false);
         }
     }
 }
