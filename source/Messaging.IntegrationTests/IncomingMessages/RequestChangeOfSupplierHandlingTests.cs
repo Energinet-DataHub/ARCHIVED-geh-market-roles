@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Schema;
@@ -107,31 +108,40 @@ namespace Messaging.IntegrationTests.IncomingMessages
 
         private async Task AssertRejectMessage(OutgoingMessage rejectMessage)
         {
-            var messageDispatcher = GetService<IMessageDispatcher>() as MessageDispatcherSpy;
+            var dispatchedDocument = GetDispatchedDocument();
             var schema = await GetService<ISchemaProvider>().GetSchemaAsync("rejectrequestchangeofsupplier", "1.0")
                 .ConfigureAwait(false);
-            var validationResult = await MessageValidator.ValidateAsync(messageDispatcher!.DispatchedMessage!, schema!);
+
+            var validationResult = await MessageValidator.ValidateAsync(dispatchedDocument, schema!);
             Assert.True(validationResult.IsValid);
 
-            var document = XDocument.Load(messageDispatcher!.DispatchedMessage!);
+            var document = XDocument.Load(dispatchedDocument);
             AssertHeader(document, rejectMessage, "A02");
         }
 
         private async Task AsserConfirmMessage(OutgoingMessage message)
         {
-            var messageDispatcher = GetService<IMessageDispatcher>() as MessageDispatcherSpy;
+            var dispatchedDocument = GetDispatchedDocument();
+
             var schema = await GetService<ISchemaProvider>().GetSchemaAsync("confirmrequestchangeofsupplier", "1.0")
                 .ConfigureAwait(false);
-            var validationResult = await MessageValidator.ValidateAsync(messageDispatcher!.DispatchedMessage!, schema!);
+
+            var validationResult = await MessageValidator.ValidateAsync(dispatchedDocument!, schema!);
             Assert.True(validationResult.IsValid);
 
-            var document = XDocument.Load(messageDispatcher!.DispatchedMessage!);
+            var document = XDocument.Load(dispatchedDocument);
             AssertHeader(document, message, "A01");
         }
 
         private async Task RequestMessage(string id)
         {
             await GetService<MessageRequestHandler>().HandleAsync(new[] { id }).ConfigureAwait(false);
+        }
+
+        private Stream GetDispatchedDocument()
+        {
+            var messageDispatcher = GetService<IMessageDispatcher>() as MessageDispatcherSpy;
+            return messageDispatcher!.DispatchedMessage!;
         }
     }
 }
