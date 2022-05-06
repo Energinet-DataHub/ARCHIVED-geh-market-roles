@@ -22,7 +22,7 @@ using Messaging.Application.Transactions;
 
 namespace Messaging.Application.IncomingMessages
 {
-    public class IncomingMessageHandler
+    public class RequestChangeOfSupplierHandler
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly IOutgoingMessageStore _outgoingMessageStore;
@@ -30,7 +30,7 @@ namespace Messaging.Application.IncomingMessages
         private readonly ICorrelationContext _correlationContext;
         private readonly IMarketActivityRecordParser _marketActivityRecordParser;
 
-        public IncomingMessageHandler(
+        public RequestChangeOfSupplierHandler(
             ITransactionRepository transactionRepository,
             IOutgoingMessageStore outgoingMessageStore,
             IUnitOfWork unitOfWork,
