@@ -57,8 +57,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
         [Fact]
         public async Task Confirm_if_business_request_is_valid()
         {
-            var messageBuilder = new IncomingMessageBuilder();
-            var incomingMessage = messageBuilder
+            var incomingMessage = MessageBuilder()
                 .WithProcessType("E03")
                 .WithReceiver("5790001330552")
                 .WithSenderId("123456")
@@ -75,8 +74,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
         [Fact]
         public async Task Reject_if_business_request_is_invalid()
         {
-            var messageBuilder = new IncomingMessageBuilder();
-            var incomingMessage = messageBuilder
+            var incomingMessage = MessageBuilder()
                 .WithProcessType("E03")
                 .WithReceiver("5790001330552")
                 .WithSenderId("123456")
@@ -88,6 +86,11 @@ namespace Messaging.IntegrationTests.IncomingMessages
             await RequestMessage(rejectMessage.Id.ToString()).ConfigureAwait(false);
 
             await AssertRejectMessage(rejectMessage).ConfigureAwait(false);
+        }
+
+        private static IncomingMessageBuilder MessageBuilder()
+        {
+            return new IncomingMessageBuilder();
         }
 
         private static void AssertHeader(XDocument document, OutgoingMessage message, string expectedReasonCode)
