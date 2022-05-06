@@ -54,11 +54,11 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
             var businessProcessResult = await InvokeBusinessProcessAsync(incomingMessage).ConfigureAwait(false);
             if (businessProcessResult.Success == false)
             {
-                _outgoingMessageStore.Add(RejectMessage(incomingMessage));
+                _outgoingMessageStore.Add(RejectMessageFrom(incomingMessage));
             }
             else
             {
-                _outgoingMessageStore.Add(ConfirmMessage(incomingMessage, acceptedTransaction.TransactionId));
+                _outgoingMessageStore.Add(ConfirmMessageFrom(incomingMessage, acceptedTransaction.TransactionId));
             }
 
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
@@ -74,7 +74,7 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
             return businessProcess.InvokeAsync(businessProcess);
         }
 
-        private OutgoingMessage ConfirmMessage(IncomingMessage incomingMessage, string transactionId)
+        private OutgoingMessage ConfirmMessageFrom(IncomingMessage incomingMessage, string transactionId)
         {
             var messageId = Guid.NewGuid();
             var marketActivityRecord = new OutgoingMessages.ConfirmRequestChangeOfSupplier.MarketActivityRecord(
@@ -94,7 +94,7 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
                 _marketActivityRecordParser.From(marketActivityRecord));
         }
 
-        private OutgoingMessage RejectMessage(IncomingMessage incomingMessage)
+        private OutgoingMessage RejectMessageFrom(IncomingMessage incomingMessage)
         {
             return new OutgoingMessage(
                 "RejectRequestChangeOfSupplier",
