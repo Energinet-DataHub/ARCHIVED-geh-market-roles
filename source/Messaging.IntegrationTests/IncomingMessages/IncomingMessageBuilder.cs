@@ -23,6 +23,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
     {
         private string _processType = "NotSet";
         private string _senderId = "NotSet";
+        private string? _consumerName = "NotSet";
 
         internal static IncomingMessage CreateMessage()
         {
@@ -52,6 +53,12 @@ namespace Messaging.IntegrationTests.IncomingMessages
             return this;
         }
 
+        internal IncomingMessageBuilder WithConsumerName(string? consumerName)
+        {
+            _consumerName = consumerName;
+            return this;
+        }
+
         internal IncomingMessage Build()
         {
             return IncomingMessage.Create(
@@ -68,7 +75,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
                     BalanceResponsibleId = "fake",
                     Id = Guid.NewGuid().ToString(),
                     ConsumerId = "fake",
-                    ConsumerName = "fake",
+                    ConsumerName = _consumerName,
                     EffectiveDate = "fake",
                     EnergySupplierId = "fake",
                     MarketEvaluationPointId = "fake",

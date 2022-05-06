@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
+using Messaging.Application.IncomingMessages;
 using Messaging.Application.IncomingMessages.RequestChangeOfSupplier;
+using Messaging.Application.OutgoingMessages;
 using Messaging.Application.Transactions;
 using Messaging.IntegrationTests.Fixtures;
 using Xunit;
@@ -24,12 +26,14 @@ namespace Messaging.IntegrationTests.IncomingMessages
     [IntegrationTest]
     public class RequestChangeOfSupplierHandlingTests : TestBase
     {
+        private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly ITransactionRepository _transactionRepository;
         private readonly RequestChangeOfSupplierHandler _requestChangeOfSupplierHandler;
 
         public RequestChangeOfSupplierHandlingTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
+            _outgoingMessageStore = GetService<IOutgoingMessageStore>();
             _transactionRepository =
                 GetService<ITransactionRepository>();
             _requestChangeOfSupplierHandler = GetService<RequestChangeOfSupplierHandler>();
@@ -44,6 +48,22 @@ namespace Messaging.IntegrationTests.IncomingMessages
 
             var savedTransaction = _transactionRepository.GetById(incomingMessage.MarketActivityRecord.Id);
             Assert.NotNull(savedTransaction);
+        }
+
+        [Fact]
+        public async Task Reject_if_business_request_is_invalid()
+        {
+            var messageBuilder = new IncomingMessageBuilder();
+            var incomingMessage = messageBuilder
+                .WithConsumerName(null)
+                .Build();
+
+            await _requestChangeOfSupplierHandler.HandleAsync(incomingMessage).ConfigureAwait(false);
+
+            var rejectMessage = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage.Id);
+
+            Assert.NotNull(rejectMessage);
+            Assert.Equal("RejectRequestChangeOfSupplier", rejectMessage!.DocumentType);
         }
     }
 }

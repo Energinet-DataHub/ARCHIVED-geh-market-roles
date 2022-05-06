@@ -44,21 +44,51 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
             _marketActivityRecordParser = marketActivityRecordParser;
         }
 
-        public Task HandleAsync(IncomingMessage incomingMessage)
+        public async Task HandleAsync(IncomingMessage incomingMessage)
         {
             if (incomingMessage == null) throw new ArgumentNullException(nameof(incomingMessage));
 
             var acceptedTransaction = new AcceptedTransaction(incomingMessage.MarketActivityRecord.Id);
             _transactionRepository.Add(acceptedTransaction);
 
-            var messageId = Guid.NewGuid();
-            var marketActivityRecord = new OutgoingMessages.ConfirmRequestChangeOfSupplier.MarketActivityRecord(
-                messageId.ToString(),
-                acceptedTransaction.TransactionId,
-                incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
+            var businessProcess = new MoveInRequest()
+            {
+                ConsumerName = incomingMessage.MarketActivityRecord.ConsumerName,
+            };
+            var businessProcessResult = await businessProcess.InvokeAsync(businessProcess).ConfigureAwait(false);
 
-            var outgoingMessage = new OutgoingMessage(
-                "ConfirmRequestChangeOfSupplier",
+            var messageId = Guid.NewGuid();
+            if (businessProcessResult.Success == false)
+            {
+                _outgoingMessageStore.Add(RejectMessage(incomingMessage));
+            }
+            else
+            {
+                var marketActivityRecord = new OutgoingMessages.ConfirmRequestChangeOfSupplier.MarketActivityRecord(
+                    messageId.ToString(),
+                    acceptedTransaction.TransactionId,
+                    incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
+
+                var outgoingMessage = new OutgoingMessage(
+                    "ConfirmRequestChangeOfSupplier",
+                    incomingMessage.Message.SenderId,
+                    _correlationContext.Id,
+                    incomingMessage.Id,
+                    incomingMessage.Message.ProcessType,
+                    incomingMessage.Message.SenderRole,
+                    incomingMessage.Message.ReceiverId,
+                    incomingMessage.Message.ReceiverRole,
+                    _marketActivityRecordParser.From(marketActivityRecord));
+                _outgoingMessageStore.Add(outgoingMessage);
+            }
+
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        }
+
+        private OutgoingMessage RejectMessage(IncomingMessage incomingMessage)
+        {
+            return new OutgoingMessage(
+                "RejectRequestChangeOfSupplier",
                 incomingMessage.Message.SenderId,
                 _correlationContext.Id,
                 incomingMessage.Id,
@@ -66,10 +96,42 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
                 incomingMessage.Message.SenderRole,
                 incomingMessage.Message.ReceiverId,
                 incomingMessage.Message.ReceiverRole,
-                _marketActivityRecordParser.From(marketActivityRecord));
-            _outgoingMessageStore.Add(outgoingMessage);
+                string.Empty);
+        }
+    }
 
-            return _unitOfWork.CommitAsync();
+    #pragma warning disable
+    public class MoveInRequest
+    {
+        public Task<BusinessRequestResult> InvokeAsync(MoveInRequest moveInRequest)
+        {
+            if (string.IsNullOrEmpty(moveInRequest.ConsumerName))
+            {
+                return Task.FromResult(BusinessRequestResult.Failure());
+            }
+            return Task.FromResult<BusinessRequestResult>(BusinessRequestResult.Succeeded());
+        }
+
+        public string? ConsumerName { get; set; }
+    }
+
+    public class BusinessRequestResult
+    {
+        private BusinessRequestResult(bool success)
+        {
+            Success = success;
+        }
+
+        public bool Success { get; }
+
+        public static BusinessRequestResult Failure()
+        {
+            return new BusinessRequestResult(false);
+        }
+
+        public static BusinessRequestResult Succeeded()
+        {
+            return new BusinessRequestResult(true);
         }
     }
 }
