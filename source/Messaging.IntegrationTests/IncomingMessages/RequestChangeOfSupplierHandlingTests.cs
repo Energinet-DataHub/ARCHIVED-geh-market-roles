@@ -15,8 +15,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using System.Xml.Schema;
-using Messaging.Application.IncomingMessages;
 using Messaging.Application.IncomingMessages.RequestChangeOfSupplier;
 using Messaging.Application.OutgoingMessages;
 using Messaging.Application.Transactions;
@@ -26,7 +24,6 @@ using Messaging.IntegrationTests.Fixtures;
 using Messaging.IntegrationTests.TestDoubles;
 using Xunit;
 using Xunit.Categories;
-using MessageHeader = Messaging.Application.OutgoingMessages.MessageHeader;
 
 namespace Messaging.IntegrationTests.IncomingMessages
 {
