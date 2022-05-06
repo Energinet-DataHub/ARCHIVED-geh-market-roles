@@ -109,11 +109,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
         private async Task AssertRejectMessage(OutgoingMessage rejectMessage)
         {
             var dispatchedDocument = GetDispatchedDocument();
-            var schema = await GetService<ISchemaProvider>().GetSchemaAsync("rejectrequestchangeofsupplier", "1.0")
-                .ConfigureAwait(false);
-
-            var validationResult = await MessageValidator.ValidateAsync(dispatchedDocument, schema!);
-            Assert.True(validationResult.IsValid);
+            await ValidateDocument(dispatchedDocument, "rejectrequestchangeofsupplier", "1.0").ConfigureAwait(false);
 
             var document = XDocument.Load(dispatchedDocument);
             AssertHeader(document, rejectMessage, "A02");
@@ -123,11 +119,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
         {
             var dispatchedDocument = GetDispatchedDocument();
 
-            var schema = await GetService<ISchemaProvider>().GetSchemaAsync("confirmrequestchangeofsupplier", "1.0")
-                .ConfigureAwait(false);
-
-            var validationResult = await MessageValidator.ValidateAsync(dispatchedDocument!, schema!);
-            Assert.True(validationResult.IsValid);
+            await ValidateDocument(dispatchedDocument, "confirmrequestchangeofsupplier", "1.0").ConfigureAwait(false);
 
             var document = XDocument.Load(dispatchedDocument);
             AssertHeader(document, message, "A01");
@@ -142,6 +134,15 @@ namespace Messaging.IntegrationTests.IncomingMessages
         {
             var messageDispatcher = GetService<IMessageDispatcher>() as MessageDispatcherSpy;
             return messageDispatcher!.DispatchedMessage!;
+        }
+
+        private async Task ValidateDocument(Stream dispatchedDocument, string schemaName, string schemaVersion)
+        {
+            var schema = await GetService<ISchemaProvider>().GetSchemaAsync(schemaName, schemaVersion)
+                .ConfigureAwait(false);
+
+            var validationResult = await MessageValidator.ValidateAsync(dispatchedDocument, schema!);
+            Assert.True(validationResult.IsValid);
         }
     }
 }
