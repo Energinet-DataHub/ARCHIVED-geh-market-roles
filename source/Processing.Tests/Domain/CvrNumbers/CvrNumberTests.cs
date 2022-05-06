@@ -17,7 +17,7 @@ using Processing.Domain.Consumers;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.Tests.Domain.CvrNumbers
+namespace Processing.Tests.Domain.CvrNumbers
 {
     [UnitTest]
     public class CvrNumberTests

@@ -14,7 +14,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NodaTime;
 using Processing.Application.ChangeOfSupplier;
 using Processing.Application.ChangeOfSupplier.Validation;
@@ -23,7 +22,7 @@ using Processing.Domain.SeedWork;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.Tests.Application.ChangeOfSupplier.Validation
+namespace Processing.Tests.Application.ChangeOfSupplier.Validation
 {
     [UnitTest]
     public class RequestChangeOfSupplierRuleSetTests

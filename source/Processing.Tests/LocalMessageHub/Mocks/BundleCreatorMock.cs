@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using Energinet.DataHub.MarketRoles.Messaging.Bundling;
 using Processing.Infrastructure.LocalMessageHub;
 
-namespace Energinet.DataHub.MarketRoles.Tests.LocalMessageHub.Mocks
+namespace Processing.Tests.LocalMessageHub.Mocks
 {
     public class BundleCreatorMock : IBundleCreator
     {

@@ -14,7 +14,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using NodaTime;
 using Processing.Application.Common.Validation.Consumers;
 using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Validation;
@@ -22,7 +21,7 @@ using Processing.Domain.SeedWork;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.Tests.Application.MoveIn.Validation
+namespace Processing.Tests.Application.MoveIn.Validation
 {
     [UnitTest]
     public class RequestMoveInRuleSetTests

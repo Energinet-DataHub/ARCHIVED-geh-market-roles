@@ -26,7 +26,7 @@ using Processing.Infrastructure.EDI.XmlConverter.Mappings;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.Tests.EDI
+namespace Processing.Tests.EDI
 {
     [UnitTest]
     public class XmlConverterTests

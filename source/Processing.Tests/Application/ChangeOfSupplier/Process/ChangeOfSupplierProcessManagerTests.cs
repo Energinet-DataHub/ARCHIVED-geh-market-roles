@@ -14,7 +14,6 @@
 
 using System;
 using System.Linq;
-using Energinet.DataHub.MarketRoles.Tests.Domain;
 using NodaTime;
 using Processing.Application.ChangeOfSupplier.Processing;
 using Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails;
@@ -24,10 +23,11 @@ using Processing.Application.Common.Processing;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.MeteringPoints.Events;
+using Processing.Tests.Domain;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.Tests.Application.ChangeOfSupplier.Process
+namespace Processing.Tests.Application.ChangeOfSupplier.Process
 {
     [UnitTest]
     public class ChangeOfSupplierProcessManagerTests

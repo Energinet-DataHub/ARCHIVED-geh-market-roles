@@ -16,7 +16,7 @@ using Processing.Domain.MeteringPoints;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.Tests.Domain.MeteringPoints
+namespace Processing.Tests.Domain.MeteringPoints
 {
     [UnitTest]
     public class GsrnNumberTests

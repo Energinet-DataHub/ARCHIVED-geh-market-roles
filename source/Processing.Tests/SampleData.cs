@@ -15,7 +15,7 @@
 using System;
 using NodaTime;
 
-namespace Energinet.DataHub.MarketRoles.Tests
+namespace Processing.Tests
 {
     internal static class SampleData
     {

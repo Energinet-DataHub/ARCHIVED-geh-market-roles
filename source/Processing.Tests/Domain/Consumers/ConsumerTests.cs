@@ -19,7 +19,7 @@ using Processing.Domain.Consumers.Events;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.Tests.Domain.Consumers
+namespace Processing.Tests.Domain.Consumers
 {
     [UnitTest]
     public class ConsumerTests

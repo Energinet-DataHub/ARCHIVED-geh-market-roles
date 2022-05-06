@@ -34,7 +34,7 @@ using SimpleInjector;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.Tests.LocalMessageHub
+namespace Processing.Tests.LocalMessageHub
 {
     [UnitTest]
     public class BundleCreatorTests

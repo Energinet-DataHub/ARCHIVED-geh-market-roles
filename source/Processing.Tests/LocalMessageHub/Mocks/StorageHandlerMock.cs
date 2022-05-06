@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 using Energinet.DataHub.MessageHub.Client.Storage;
 using Energinet.DataHub.MessageHub.Model.Model;
 
-namespace Energinet.DataHub.MarketRoles.Tests.LocalMessageHub.Mocks
+namespace Processing.Tests.LocalMessageHub.Mocks
 {
     public class StorageHandlerMock : IStorageHandler
     {

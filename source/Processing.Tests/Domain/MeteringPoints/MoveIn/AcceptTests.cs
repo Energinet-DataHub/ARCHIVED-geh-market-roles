@@ -20,7 +20,7 @@ using Processing.Domain.MeteringPoints.Events;
 using Processing.Domain.MeteringPoints.Rules.ChangeEnergySupplier;
 using Xunit;
 
-namespace Energinet.DataHub.MarketRoles.Tests.Domain.MeteringPoints.MoveIn
+namespace Processing.Tests.Domain.MeteringPoints.MoveIn
 {
     public class AcceptTests
     {

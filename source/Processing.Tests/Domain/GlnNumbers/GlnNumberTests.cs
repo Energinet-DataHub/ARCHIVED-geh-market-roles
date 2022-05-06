@@ -17,7 +17,7 @@ using Processing.Domain.EnergySuppliers;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.Tests.Domain.GlnNumbers
+namespace Processing.Tests.Domain.GlnNumbers
 {
     [UnitTest]
     public class GltNumberTests

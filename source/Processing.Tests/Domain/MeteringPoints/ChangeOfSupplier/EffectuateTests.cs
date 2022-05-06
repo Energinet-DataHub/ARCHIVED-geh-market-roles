@@ -22,7 +22,7 @@ using Processing.Domain.MeteringPoints.Events;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.Tests.Domain.MeteringPoints.ChangeOfSupplier
+namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
 {
     [UnitTest]
     public class EffectuateTests

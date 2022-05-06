@@ -18,7 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Processing.Infrastructure.LocalMessageHub;
 
-namespace Energinet.DataHub.MarketRoles.Tests.LocalMessageHub.Mocks
+namespace Processing.Tests.LocalMessageHub.Mocks
 {
     public class MessageHubMessageRepositoryMock : IMessageHubMessageRepository
     {

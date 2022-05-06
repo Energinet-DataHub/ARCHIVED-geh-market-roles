@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Processing.Infrastructure.LocalMessageHub;
 
-namespace Energinet.DataHub.MarketRoles.Tests.LocalMessageHub.Mocks
+namespace Processing.Tests.LocalMessageHub.Mocks
 {
     public class DataAvailableNotificationOutboxDispatcherMock : IOutboxDispatcher<DataAvailableNotification>
     {

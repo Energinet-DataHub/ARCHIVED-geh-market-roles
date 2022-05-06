@@ -16,8 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Energinet.DataHub.MarketRoles.Messaging;
-using Energinet.DataHub.MarketRoles.Tests.Domain;
-using Energinet.DataHub.MarketRoles.Tests.LocalMessageHub.Mocks;
 using Energinet.DataHub.MessageHub.Model.Dequeue;
 using Energinet.DataHub.MessageHub.Model.Model;
 using Energinet.DataHub.MessageHub.Model.Peek;
@@ -25,10 +23,12 @@ using FluentAssertions;
 using Processing.Infrastructure.Correlation;
 using Processing.Infrastructure.EDI;
 using Processing.Infrastructure.LocalMessageHub;
+using Processing.Tests.Domain;
+using Processing.Tests.LocalMessageHub.Mocks;
 using Xunit;
 using Xunit.Categories;
 
-namespace Energinet.DataHub.MarketRoles.Tests.LocalMessageHub
+namespace Processing.Tests.LocalMessageHub
 {
     [UnitTest]
     public class LocalMessageHubTests
