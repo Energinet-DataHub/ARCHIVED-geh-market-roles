@@ -82,8 +82,8 @@ namespace Messaging.IntegrationTests.IncomingMessages
             AssertXmlMessage.AssertHasHeaderValue(document, "businessSector.type", "23");
             AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.mRID", message.SenderId);
             // AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.marketRole.type", "DDZ");
-            // AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.mRID", header.ReceiverId);
-            // AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.marketRole.type", header.ReceiverRole);
+            AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.mRID", message.RecipientId);
+            AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.marketRole.type", message.ReceiverRole);
             AssertXmlMessage.AssertHasHeaderValue(document, "reason.code", "A02");
         }
 
