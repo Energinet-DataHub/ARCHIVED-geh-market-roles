@@ -17,7 +17,10 @@ using Messaging.Application.IncomingMessages;
 using Messaging.Application.IncomingMessages.RequestChangeOfSupplier;
 using Messaging.Application.OutgoingMessages;
 using Messaging.Application.Transactions;
+using Messaging.Application.Xml;
+using Messaging.Application.Xml.SchemaStore;
 using Messaging.IntegrationTests.Fixtures;
+using Messaging.IntegrationTests.TestDoubles;
 using Xunit;
 using Xunit.Categories;
 
@@ -60,10 +63,20 @@ namespace Messaging.IntegrationTests.IncomingMessages
 
             await _requestChangeOfSupplierHandler.HandleAsync(incomingMessage).ConfigureAwait(false);
 
-            var rejectMessage = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage.Id);
-
+            var rejectMessage = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage.Id)!;
             Assert.NotNull(rejectMessage);
-            Assert.Equal("RejectRequestChangeOfSupplier", rejectMessage!.DocumentType);
+            await AssertOutgoingMessage(rejectMessage);
+
+            var messageDispatcher = GetService<IMessageDispatcher>() as MessageDispatcherSpy;
+            var schema = await GetService<ISchemaProvider>().GetSchemaAsync("rejectrequestchangeofsupplier", "1.0").ConfigureAwait(false);
+            var valid = await MessageValidator.ValidateAsync(messageDispatcher!.DispatchedMessage!, schema!);
+            Assert.True(valid.IsValid);
+        }
+
+        private async Task AssertOutgoingMessage(OutgoingMessage message)
+        {
+            var result = await GetService<MessageRequestHandler>().HandleAsync(new[] { message.Id.ToString(), });
+            Assert.True(result.Success);
         }
     }
 }

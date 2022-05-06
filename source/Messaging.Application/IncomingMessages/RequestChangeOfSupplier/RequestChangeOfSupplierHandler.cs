@@ -13,11 +13,14 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Messaging.Application.Common;
 using Messaging.Application.Configuration;
 using Messaging.Application.Configuration.DataAccess;
 using Messaging.Application.OutgoingMessages;
+using Messaging.Application.OutgoingMessages.RejectRequestChangeOfSupplier;
 using Messaging.Application.Transactions;
 
 namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
@@ -54,7 +57,7 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
             var businessProcessResult = await InvokeBusinessProcessAsync(incomingMessage).ConfigureAwait(false);
             if (businessProcessResult.Success == false)
             {
-                _outgoingMessageStore.Add(RejectMessageFrom(incomingMessage));
+                _outgoingMessageStore.Add(RejectMessageFrom(incomingMessage, acceptedTransaction.TransactionId, businessProcessResult));
             }
             else
             {
@@ -94,8 +97,15 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
                 _marketActivityRecordParser.From(marketActivityRecord));
         }
 
-        private OutgoingMessage RejectMessageFrom(IncomingMessage incomingMessage)
+        private OutgoingMessage RejectMessageFrom(IncomingMessage incomingMessage, string transactionId, BusinessRequestResult businessRequestResult)
         {
+            var messageId = Guid.NewGuid();
+            var marketActivityRecord = new OutgoingMessages.RejectRequestChangeOfSupplier.MarketActivityRecord(
+                messageId.ToString(),
+                transactionId,
+                incomingMessage.MarketActivityRecord.MarketEvaluationPointId,
+                businessRequestResult.ValidationErrors.Select(validationError => new Reason(validationError.Message, validationError.Code)));
+
             return new OutgoingMessage(
                 "RejectRequestChangeOfSupplier",
                 incomingMessage.Message.SenderId,
@@ -105,7 +115,7 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
                 incomingMessage.Message.SenderRole,
                 incomingMessage.Message.ReceiverId,
                 incomingMessage.Message.ReceiverRole,
-                string.Empty);
+                _marketActivityRecordParser.From(marketActivityRecord));
         }
     }
 
@@ -116,7 +126,7 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
         {
             if (string.IsNullOrEmpty(moveInRequest.ConsumerName))
             {
-                return Task.FromResult(BusinessRequestResult.Failure());
+                return Task.FromResult(BusinessRequestResult.Failure(new ZZValidationError("somecode", "somemessage")));
             }
             return Task.FromResult<BusinessRequestResult>(BusinessRequestResult.Succeeded());
         }
@@ -126,21 +136,40 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
 
     public class BusinessRequestResult
     {
-        private BusinessRequestResult(bool success)
+        private BusinessRequestResult()
         {
-            Success = success;
         }
 
-        public bool Success { get; }
-
-        public static BusinessRequestResult Failure()
+        private BusinessRequestResult(IReadOnlyCollection<ZZValidationError> validationErrors)
         {
-            return new BusinessRequestResult(false);
+            ValidationErrors = validationErrors;
+        }
+
+        public bool Success => ValidationErrors.Count == 0;
+
+        public IReadOnlyCollection<ZZValidationError> ValidationErrors { get; set; }
+
+        public static BusinessRequestResult Failure(params ZZValidationError[] validationErrors)
+        {
+            return new BusinessRequestResult(validationErrors);
         }
 
         public static BusinessRequestResult Succeeded()
         {
-            return new BusinessRequestResult(true);
+            return new BusinessRequestResult();
         }
+    }
+
+    public class ZZValidationError
+    {
+        public ZZValidationError(string code, string message)
+        {
+            Code = code;
+            Message = message;
+        }
+
+        public string Code { get; protected init; } = string.Empty;
+
+        public string Message { get; protected init; } = string.Empty;
     }
 }
