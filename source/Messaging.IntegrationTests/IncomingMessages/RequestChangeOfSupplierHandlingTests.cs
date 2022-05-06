@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
-using Messaging.Application.IncomingMessages;
 using Messaging.Application.IncomingMessages.RequestChangeOfSupplier;
 using Messaging.Application.Transactions;
 using Messaging.IntegrationTests.Fixtures;
@@ -23,12 +22,12 @@ using Xunit.Categories;
 namespace Messaging.IntegrationTests.IncomingMessages
 {
     [IntegrationTest]
-    public class IncomingMessageHandlingTests : TestBase
+    public class RequestChangeOfSupplierHandlingTests : TestBase
     {
         private readonly ITransactionRepository _transactionRepository;
         private readonly RequestChangeOfSupplierHandler _requestChangeOfSupplierHandler;
 
-        public IncomingMessageHandlingTests(DatabaseFixture databaseFixture)
+        public RequestChangeOfSupplierHandlingTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
             _transactionRepository =
