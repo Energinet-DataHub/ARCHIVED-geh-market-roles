@@ -74,14 +74,14 @@ namespace Messaging.IntegrationTests.IncomingMessages
         private static void AssertHeader(XDocument document)
         {
             Assert.NotEmpty(AssertXmlMessage.GetMessageHeaderValue(document, "mRID")!);
-            // AssertXmlMessage.AssertHasHeaderValue(document, "type", "414");
+            AssertXmlMessage.AssertHasHeaderValue(document, "type", "414");
             // AssertXmlMessage.AssertHasHeaderValue(document, "process.processType", header.ProcessType);
-            // AssertXmlMessage.AssertHasHeaderValue(document, "businessSector.type", "23");
+            AssertXmlMessage.AssertHasHeaderValue(document, "businessSector.type", "23");
             // AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.mRID", header.SenderId);
             // AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.marketRole.type", "DDZ");
             // AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.mRID", header.ReceiverId);
             // AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.marketRole.type", header.ReceiverRole);
-            // AssertXmlMessage.AssertHasHeaderValue(document, "reason.code", "A01");
+            AssertXmlMessage.AssertHasHeaderValue(document, "reason.code", "A02");
         }
 
         private async Task AssertRejectMessage()
