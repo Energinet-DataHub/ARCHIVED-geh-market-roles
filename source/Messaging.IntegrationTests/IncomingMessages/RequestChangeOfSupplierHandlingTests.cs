@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using System.Xml.Schema;
 using Messaging.Application.IncomingMessages;
 using Messaging.Application.IncomingMessages.RequestChangeOfSupplier;
@@ -24,6 +25,7 @@ using Messaging.IntegrationTests.Fixtures;
 using Messaging.IntegrationTests.TestDoubles;
 using Xunit;
 using Xunit.Categories;
+using MessageHeader = Messaging.Application.OutgoingMessages.MessageHeader;
 
 namespace Messaging.IntegrationTests.IncomingMessages
 {
@@ -69,13 +71,29 @@ namespace Messaging.IntegrationTests.IncomingMessages
             await AssertRejectMessage().ConfigureAwait(false);
         }
 
+        private static void AssertHeader(XDocument document)
+        {
+            Assert.NotEmpty(AssertXmlMessage.GetMessageHeaderValue(document, "mRID")!);
+            // AssertXmlMessage.AssertHasHeaderValue(document, "type", "414");
+            // AssertXmlMessage.AssertHasHeaderValue(document, "process.processType", header.ProcessType);
+            // AssertXmlMessage.AssertHasHeaderValue(document, "businessSector.type", "23");
+            // AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.mRID", header.SenderId);
+            // AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.marketRole.type", "DDZ");
+            // AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.mRID", header.ReceiverId);
+            // AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.marketRole.type", header.ReceiverRole);
+            // AssertXmlMessage.AssertHasHeaderValue(document, "reason.code", "A01");
+        }
+
         private async Task AssertRejectMessage()
         {
             var messageDispatcher = GetService<IMessageDispatcher>() as MessageDispatcherSpy;
             var schema = await GetService<ISchemaProvider>().GetSchemaAsync("rejectrequestchangeofsupplier", "1.0")
                 .ConfigureAwait(false);
-            var valid = await MessageValidator.ValidateAsync(messageDispatcher!.DispatchedMessage!, schema!);
-            Assert.True(valid.IsValid);
+            var validationResult = await MessageValidator.ValidateAsync(messageDispatcher!.DispatchedMessage!, schema!);
+            Assert.True(validationResult.IsValid);
+
+            var document = XDocument.Load(messageDispatcher!.DispatchedMessage!);
+            AssertHeader(document);
         }
 
         private async Task RequestMessageGeneratedBy(string id)
