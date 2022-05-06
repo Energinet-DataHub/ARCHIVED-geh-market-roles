@@ -15,9 +15,9 @@
 using System;
 using System.Threading.Tasks;
 using Energinet.DataHub.MarketRoles.Application.MoveIn;
-using Energinet.DataHub.MarketRoles.Domain.Consumers;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Energinet.DataHub.MarketRoles.Infrastructure.EDI;
+using Processing.Domain.Consumers;
+using Processing.Domain.SeedWork;
 using Xunit;
 using Xunit.Categories;
 

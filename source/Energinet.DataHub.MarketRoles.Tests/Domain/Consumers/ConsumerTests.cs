@@ -14,8 +14,8 @@
 
 using System;
 using System.Linq;
-using Energinet.DataHub.MarketRoles.Domain.Consumers;
-using Energinet.DataHub.MarketRoles.Domain.Consumers.Events;
+using Processing.Domain.Consumers;
+using Processing.Domain.Consumers.Events;
 using Xunit;
 using Xunit.Categories;
 

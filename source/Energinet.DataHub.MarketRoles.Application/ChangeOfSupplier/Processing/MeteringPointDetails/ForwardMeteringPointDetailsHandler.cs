@@ -17,8 +17,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Energinet.DataHub.MarketRoles.Application.Common.Commands;
 using Energinet.DataHub.MarketRoles.Application.Common.DomainEvents;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
 using MediatR;
+using Processing.Domain.MeteringPoints;
 
 namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.MeteringPointDetails
 {

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.MarketRoles.Domain.EnergySuppliers;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using FluentValidation;
+using Processing.Domain.EnergySuppliers;
+using Processing.Domain.SeedWork;
 
 namespace Energinet.DataHub.MarketRoles.Application.Common.Validation
 {

@@ -19,12 +19,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Energinet.DataHub.MarketRoles.Application.Common;
 using Energinet.DataHub.MarketRoles.Application.Common.Validation;
-using Energinet.DataHub.MarketRoles.Domain.Consumers;
-using Energinet.DataHub.MarketRoles.Domain.EnergySuppliers;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using NodaTime;
 using NodaTime.Text;
+using Processing.Domain.Consumers;
+using Processing.Domain.EnergySuppliers;
+using Processing.Domain.MeteringPoints;
+using Processing.Domain.SeedWork;
 
 namespace Energinet.DataHub.MarketRoles.Application.MoveIn
 {
@@ -71,7 +71,7 @@ namespace Energinet.DataHub.MarketRoles.Application.MoveIn
             return BusinessProcessResult.Ok(request.TransactionId);
         }
 
-        private static BusinessProcessResult Validate(EnergySupplier energySupplier, Domain.MeteringPoints.AccountingPoint accountingPoint, RequestMoveIn request)
+        private static BusinessProcessResult Validate(EnergySupplier energySupplier, global::Processing.Domain.MeteringPoints.AccountingPoint accountingPoint, RequestMoveIn request)
         {
             var rules = new List<IBusinessRule>()
             {
@@ -82,7 +82,7 @@ namespace Energinet.DataHub.MarketRoles.Application.MoveIn
             return new BusinessProcessResult(request.TransactionId, rules);
         }
 
-        private static BusinessProcessResult CheckBusinessRules(Domain.MeteringPoints.AccountingPoint accountingPoint, RequestMoveIn request)
+        private static BusinessProcessResult CheckBusinessRules(global::Processing.Domain.MeteringPoints.AccountingPoint accountingPoint, RequestMoveIn request)
         {
             if (request is null) throw new ArgumentNullException(nameof(request));
 

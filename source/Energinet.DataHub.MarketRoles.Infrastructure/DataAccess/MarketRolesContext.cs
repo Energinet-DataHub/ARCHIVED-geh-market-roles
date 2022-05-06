@@ -13,9 +13,6 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Domain.Consumers;
-using Energinet.DataHub.MarketRoles.Domain.EnergySuppliers;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
 using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.AccountingPoints;
 using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.Consumers;
 using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.EnergySuppliers;
@@ -25,6 +22,9 @@ using Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands;
 using Energinet.DataHub.MarketRoles.Infrastructure.LocalMessageHub;
 using Energinet.DataHub.MarketRoles.Infrastructure.Outbox;
 using Microsoft.EntityFrameworkCore;
+using Processing.Domain.Consumers;
+using Processing.Domain.EnergySuppliers;
+using Processing.Domain.MeteringPoints;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess
 {

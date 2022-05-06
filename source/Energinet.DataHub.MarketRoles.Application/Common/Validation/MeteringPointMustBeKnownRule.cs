@@ -13,8 +13,7 @@
 // limitations under the License.
 
 using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Validation;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
+using Processing.Domain.SeedWork;
 
 namespace Energinet.DataHub.MarketRoles.Application.Common.Validation
 {
@@ -22,7 +21,7 @@ namespace Energinet.DataHub.MarketRoles.Application.Common.Validation
     {
         private readonly string _gsrnNumber;
 
-        public MeteringPointMustBeKnownRule(Domain.MeteringPoints.AccountingPoint? accountingPoint, string gsrnNumber)
+        public MeteringPointMustBeKnownRule(global::Processing.Domain.MeteringPoints.AccountingPoint? accountingPoint, string gsrnNumber)
         {
             _gsrnNumber = gsrnNumber;
             IsBroken = accountingPoint == null;

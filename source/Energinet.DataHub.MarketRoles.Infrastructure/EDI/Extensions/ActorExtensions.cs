@@ -14,7 +14,7 @@
 
 using System;
 using System.Linq;
-using Energinet.DataHub.MarketRoles.Domain.Actors;
+using Processing.Domain.Actors;
 using Actor = Energinet.DataHub.Core.App.Common.Abstractions.Actor.Actor;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.Extensions

@@ -15,8 +15,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
 using MediatR;
+using Processing.Domain.MeteringPoints;
 
 namespace Energinet.DataHub.MarketRoles.Application.Connected
 {

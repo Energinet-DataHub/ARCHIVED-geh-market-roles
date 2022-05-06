@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Domain.Consumers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Processing.Domain.Consumers;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.Consumers
 {

@@ -18,10 +18,10 @@ using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.EndO
 using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
 using Energinet.DataHub.MarketRoles.Application.Common.Commands;
 using Energinet.DataHub.MarketRoles.Application.Common.Processing;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints.Events;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using NodaTime;
+using Processing.Domain.MeteringPoints;
+using Processing.Domain.MeteringPoints.Events;
+using Processing.Domain.SeedWork;
 
 namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing
 {

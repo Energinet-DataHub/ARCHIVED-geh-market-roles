@@ -16,8 +16,8 @@ using System;
 using System.Threading.Tasks;
 using Energinet.DataHub.MarketRoles.Application.MoveIn;
 using Energinet.DataHub.MarketRoles.Application.MoveIn.Processing;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
 using Energinet.DataHub.MarketRoles.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
+using Processing.Domain.MeteringPoints;
 using Xunit;
 using Xunit.Categories;
 

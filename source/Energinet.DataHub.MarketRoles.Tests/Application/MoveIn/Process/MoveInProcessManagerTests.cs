@@ -15,8 +15,8 @@
 using System;
 using System.Linq;
 using Energinet.DataHub.MarketRoles.Application.MoveIn.Processing;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints.Events;
 using NodaTime;
+using Processing.Domain.MeteringPoints.Events;
 using Xunit;
 using Xunit.Categories;
 

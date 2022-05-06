@@ -14,7 +14,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Energinet.DataHub.MarketRoles.Application.EDI;
-using Energinet.DataHub.MarketRoles.Domain.Consumers.Rules;
+using Processing.Domain.Consumers.Rules;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.Errors.Converters
 {

@@ -18,8 +18,8 @@ using System.Text;
 using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier;
 using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Validation;
 using Energinet.DataHub.MarketRoles.Application.Common.Validation;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using NodaTime;
+using Processing.Domain.SeedWork;
 using Xunit;
 using Xunit.Categories;
 

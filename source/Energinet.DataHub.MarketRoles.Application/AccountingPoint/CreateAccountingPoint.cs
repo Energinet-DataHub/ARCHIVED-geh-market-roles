@@ -15,7 +15,6 @@
 using System;
 using Energinet.DataHub.MarketRoles.Application.Common.Commands;
 using Energinet.DataHub.MarketRoles.Application.Common.Transport;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
 
 namespace Energinet.DataHub.MarketRoles.Application.AccountingPoint
 {

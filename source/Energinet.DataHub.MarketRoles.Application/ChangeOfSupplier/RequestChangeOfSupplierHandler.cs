@@ -18,10 +18,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Energinet.DataHub.MarketRoles.Application.Common;
 using Energinet.DataHub.MarketRoles.Application.Common.Validation;
-using Energinet.DataHub.MarketRoles.Domain.EnergySuppliers;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using NodaTime.Text;
+using Processing.Domain.EnergySuppliers;
+using Processing.Domain.MeteringPoints;
+using Processing.Domain.SeedWork;
 
 namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier
 {
@@ -31,7 +31,7 @@ namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier
         private readonly ISystemDateTimeProvider _systemTimeProvider;
         private readonly IEnergySupplierRepository _energySupplierRepository;
         private EnergySupplier? _energySupplier;
-        private Domain.MeteringPoints.AccountingPoint? _accountingPoint;
+        private global::Processing.Domain.MeteringPoints.AccountingPoint? _accountingPoint;
         private RequestChangeOfSupplier? _request;
 
         public RequestChangeOfSupplierHandler(
@@ -94,7 +94,7 @@ namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier
             return new BusinessProcessResult(_request.TransactionId, validationResult.Errors);
         }
 
-        private Task<Domain.MeteringPoints.AccountingPoint?> GetMeteringPointAsync(string gsrnNumber)
+        private Task<global::Processing.Domain.MeteringPoints.AccountingPoint?> GetMeteringPointAsync(string gsrnNumber)
         {
             return _accountingPointRepository.GetByGsrnNumberAsync(GsrnNumber.Create(gsrnNumber));
         }

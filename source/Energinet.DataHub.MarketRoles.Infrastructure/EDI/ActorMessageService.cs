@@ -18,13 +18,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.MarketRoles.Application.EDI;
-using Energinet.DataHub.MarketRoles.Domain.Actors;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Energinet.DataHub.MarketRoles.Infrastructure.EDI.Acknowledgements;
 using Energinet.DataHub.MarketRoles.Infrastructure.EDI.Common;
 using Energinet.DataHub.MarketRoles.Infrastructure.EDI.Extensions;
 using Energinet.DataHub.MarketRoles.Infrastructure.EDI.GenericNotification;
 using NodaTime;
+using Processing.Domain.Actors;
+using Processing.Domain.SeedWork;
 using Actor = Energinet.DataHub.Core.App.Common.Abstractions.Actor.Actor;
 using IdentificationType = Energinet.DataHub.Core.App.Common.Abstractions.Actor.IdentificationType;
 

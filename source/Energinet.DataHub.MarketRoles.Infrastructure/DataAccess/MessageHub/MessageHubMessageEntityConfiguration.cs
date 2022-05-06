@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Energinet.DataHub.MarketRoles.Infrastructure.EDI;
 using Energinet.DataHub.MarketRoles.Infrastructure.LocalMessageHub;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Processing.Domain.SeedWork;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.MessageHub
 {

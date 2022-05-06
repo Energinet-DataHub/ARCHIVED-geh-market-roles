@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Energinet.DataHub.MarketRol
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Energinet.DataHub.MarketRoles.IntegrationTests", "Energinet.DataHub.MarketRoles.IntegrationTests\Energinet.DataHub.MarketRoles.IntegrationTests.csproj", "{3801DF77-3A40-460C-9529-7AD9422037B0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Energinet.DataHub.MarketRoles.Domain", "Energinet.DataHub.MarketRoles.Domain\Energinet.DataHub.MarketRoles.Domain.csproj", "{87D55C95-0790-42A1-B543-AF27BF2E0950}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Processing.Domain", "Processing.Domain\Processing.Domain.csproj", "{87D55C95-0790-42A1-B543-AF27BF2E0950}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Energinet.DataHub.MarketRoles.ApplyDBMigrationsApp", "Energinet.DataHub.MarketRoles.ApplyDBMigrationsApp\Energinet.DataHub.MarketRoles.ApplyDBMigrationsApp.csproj", "{2B806039-5BCF-4768-95FE-56778403E64D}"
 EndProject

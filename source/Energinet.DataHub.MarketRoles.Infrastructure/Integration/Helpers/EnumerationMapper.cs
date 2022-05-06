@@ -14,7 +14,7 @@
 
 using System;
 using System.Globalization;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
+using Processing.Domain.SeedWork;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.Helpers
 {

@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Validation;
-using Energinet.DataHub.MarketRoles.Domain.EnergySuppliers;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
+using Processing.Domain.EnergySuppliers;
+using Processing.Domain.SeedWork;
 
 namespace Energinet.DataHub.MarketRoles.Application.Common.Validation
 {

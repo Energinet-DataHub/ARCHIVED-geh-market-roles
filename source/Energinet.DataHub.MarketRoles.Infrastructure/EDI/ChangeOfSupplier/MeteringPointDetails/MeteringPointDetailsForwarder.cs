@@ -14,7 +14,7 @@
 
 using System.Threading.Tasks;
 using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
+using Processing.Domain.MeteringPoints;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.ChangeOfSupplier.MeteringPointDetails
 {

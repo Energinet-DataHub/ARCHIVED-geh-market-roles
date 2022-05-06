@@ -21,10 +21,9 @@ using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.EndO
 using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
 using Energinet.DataHub.MarketRoles.Application.Common.Commands;
 using Energinet.DataHub.MarketRoles.Application.Common.Processing;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints.Events;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using MediatR;
+using Processing.Domain.MeteringPoints;
+using Processing.Domain.MeteringPoints.Events;
 
 namespace Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing
 {

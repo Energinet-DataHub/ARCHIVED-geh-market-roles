@@ -14,8 +14,8 @@
 
 using System;
 using System.Collections.Generic;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
 using NodaTime;
+using Processing.Domain.MeteringPoints;
 
 namespace Energinet.DataHub.MarketRoles.Application.Common.Processing
 {

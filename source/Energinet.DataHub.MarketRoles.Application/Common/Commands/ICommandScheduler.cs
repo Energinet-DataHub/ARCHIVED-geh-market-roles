@@ -13,8 +13,8 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
 using NodaTime;
+using Processing.Domain.MeteringPoints;
 
 namespace Energinet.DataHub.MarketRoles.Application.Common.Commands
 {

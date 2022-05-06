@@ -27,11 +27,6 @@ using Energinet.DataHub.MarketRoles.Application.Common.Processing;
 using Energinet.DataHub.MarketRoles.Application.EDI;
 using Energinet.DataHub.MarketRoles.Application.MoveIn;
 using Energinet.DataHub.MarketRoles.Application.MoveIn.Validation;
-using Energinet.DataHub.MarketRoles.Domain.Consumers;
-using Energinet.DataHub.MarketRoles.Domain.EnergySuppliers;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints.Events;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Energinet.DataHub.MarketRoles.EntryPoints.Common;
 using Energinet.DataHub.MarketRoles.EntryPoints.Common.MediatR;
 using Energinet.DataHub.MarketRoles.EntryPoints.Common.Telemetry;
@@ -65,6 +60,11 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Processing.Domain.Consumers;
+using Processing.Domain.EnergySuppliers;
+using Processing.Domain.MeteringPoints;
+using Processing.Domain.MeteringPoints.Events;
+using Processing.Domain.SeedWork;
 using SimpleInjector;
 
 [assembly: CLSCompliant(false)]

@@ -15,7 +15,6 @@
 using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Energinet.DataHub.MarketRoles.EntryPoints.Common;
 using Energinet.DataHub.MarketRoles.EntryPoints.Common.MediatR;
 using Energinet.DataHub.MarketRoles.EntryPoints.Outbox.Common;
@@ -35,6 +34,7 @@ using Energinet.DataHub.MessageHub.Client;
 using Energinet.DataHub.MessageHub.Client.SimpleInjector;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Processing.Domain.SeedWork;
 using SimpleInjector;
 
 [assembly: CLSCompliant(false)]

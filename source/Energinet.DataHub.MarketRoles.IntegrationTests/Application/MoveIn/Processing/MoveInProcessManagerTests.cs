@@ -18,7 +18,7 @@ using Energinet.DataHub.MarketRoles.Application.Common.Commands;
 using Energinet.DataHub.MarketRoles.Application.Common.Processing;
 using Energinet.DataHub.MarketRoles.Application.MoveIn;
 using Energinet.DataHub.MarketRoles.Application.MoveIn.Processing;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
+using Processing.Domain.MeteringPoints;
 using Xunit;
 using Xunit.Categories;
 

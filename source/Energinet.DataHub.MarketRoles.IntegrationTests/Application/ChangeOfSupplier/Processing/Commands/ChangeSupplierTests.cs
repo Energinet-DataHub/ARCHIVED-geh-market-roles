@@ -20,15 +20,15 @@ using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing;
 using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.ConsumerDetails;
 using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
 using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
-using Energinet.DataHub.MarketRoles.Domain.Consumers;
-using Energinet.DataHub.MarketRoles.Domain.EnergySuppliers;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
 using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
 using Energinet.DataHub.MarketRoles.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
 using Energinet.DataHub.MarketRoles.Infrastructure.Integration.IntegrationEvents.FutureEnergySupplierChangeRegistered;
 using MediatR;
 using Microsoft.Data.SqlClient;
 using NodaTime;
+using Processing.Domain.Consumers;
+using Processing.Domain.EnergySuppliers;
+using Processing.Domain.MeteringPoints;
 using Xunit;
 using Xunit.Categories;
 

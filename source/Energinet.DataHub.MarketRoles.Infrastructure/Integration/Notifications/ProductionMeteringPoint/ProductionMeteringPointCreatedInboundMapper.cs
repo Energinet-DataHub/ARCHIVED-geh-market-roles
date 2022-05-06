@@ -14,9 +14,9 @@
 
 using System;
 using Energinet.DataHub.MarketRoles.Application.Common.Transport;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
 using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using NotificationContracts;
+using Processing.Domain.MeteringPoints;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.Notifications.ProductionMeteringPoint
 {

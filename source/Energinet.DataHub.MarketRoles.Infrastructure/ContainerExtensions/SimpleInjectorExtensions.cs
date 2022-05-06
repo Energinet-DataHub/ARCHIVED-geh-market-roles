@@ -16,7 +16,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Energinet.DataHub.MarketRoles.Application.EDI;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
+using Processing.Domain.SeedWork;
 using SimpleInjector;
 
 namespace Energinet.DataHub.MarketRoles.Infrastructure.ContainerExtensions

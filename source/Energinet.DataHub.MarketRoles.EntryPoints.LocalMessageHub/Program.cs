@@ -18,7 +18,6 @@ using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.MarketRoles.Contracts;
-using Energinet.DataHub.MarketRoles.Domain.SeedWork;
 using Energinet.DataHub.MarketRoles.EntryPoints.Common;
 using Energinet.DataHub.MarketRoles.EntryPoints.Common.MediatR;
 using Energinet.DataHub.MarketRoles.EntryPoints.Common.Telemetry;
@@ -48,6 +47,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Processing.Domain.SeedWork;
 using SimpleInjector;
 
 namespace Energinet.DataHub.MarketRoles.EntryPoints.LocalMessageHub

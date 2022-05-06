@@ -19,11 +19,11 @@ using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.Cons
 using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
 using Energinet.DataHub.MarketRoles.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
 using Energinet.DataHub.MarketRoles.Application.Common.Processing;
-using Energinet.DataHub.MarketRoles.Domain.EnergySuppliers;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints;
-using Energinet.DataHub.MarketRoles.Domain.MeteringPoints.Events;
 using Energinet.DataHub.MarketRoles.Tests.Domain;
 using NodaTime;
+using Processing.Domain.EnergySuppliers;
+using Processing.Domain.MeteringPoints;
+using Processing.Domain.MeteringPoints.Events;
 using Xunit;
 using Xunit.Categories;
 
