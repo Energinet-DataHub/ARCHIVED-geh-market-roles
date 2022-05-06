@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
+using Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.Helpers
+namespace Processing.Infrastructure.Integration.Helpers
 {
     public static class IntegrationEventTypeFactory
     {

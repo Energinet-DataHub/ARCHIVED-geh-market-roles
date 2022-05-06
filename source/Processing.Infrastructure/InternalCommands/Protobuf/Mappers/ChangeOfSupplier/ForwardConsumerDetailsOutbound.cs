@@ -14,11 +14,11 @@
 
 using System;
 using Energinet.DataHub.MarketRoles.Contracts;
-using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Google.Protobuf;
+using Processing.Infrastructure.Transport.Protobuf;
 using ForwardConsumerDetails = Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails.ForwardConsumerDetails;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSupplier
+namespace Processing.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSupplier
 {
     public class ForwardConsumerDetailsOutbound : ProtobufOutboundMapper<ForwardConsumerDetails>
     {
@@ -27,7 +27,7 @@ namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf
             if (obj == null) throw new ArgumentNullException(nameof(obj));
             return new MarketRolesEnvelope()
             {
-                ForwardConsumerDetails = new Contracts.ForwardConsumerDetails
+                ForwardConsumerDetails = new Energinet.DataHub.MarketRoles.Contracts.ForwardConsumerDetails
                 {
                     Id = obj.Id.ToString(),
                     Transaction = obj.Transaction,

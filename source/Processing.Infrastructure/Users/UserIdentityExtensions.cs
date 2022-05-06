@@ -14,7 +14,7 @@
 
 using Processing.Application.Common.Users;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Users
+namespace Processing.Infrastructure.Users
 {
     public static class UserIdentityExtensions
     {

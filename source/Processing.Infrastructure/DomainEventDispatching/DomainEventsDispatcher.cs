@@ -16,7 +16,7 @@ using System;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DomainEventDispatching
+namespace Processing.Infrastructure.DomainEventDispatching
 {
     public class DomainEventsDispatcher : IDomainEventsDispatcher
     {

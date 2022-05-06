@@ -14,11 +14,11 @@
 
 using System;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.Correlation;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
+using Processing.Infrastructure.Correlation;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands
+namespace Processing.Infrastructure.InternalCommands
 {
     public class InternalCommandDispatcherTelemetryDecorator : IInternalCommandDispatcher
     {

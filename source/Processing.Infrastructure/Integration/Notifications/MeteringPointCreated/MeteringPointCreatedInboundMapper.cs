@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Processing.Application.Common.Transport;
+using Processing.Infrastructure.Transport.Protobuf;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.Notifications.MeteringPointCreated
+namespace Processing.Infrastructure.Integration.Notifications.MeteringPointCreated
 {
     public class MeteringPointCreatedInboundMapper : ProtobufInboundMapper<NotificationContracts.MeteringPointCreated>
     {

@@ -16,7 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Processing.Application.Common.Transport;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Transport
+namespace Processing.Infrastructure.Transport
 {
     /// <summary>
     /// Abstract class for serializing outgoing messages.

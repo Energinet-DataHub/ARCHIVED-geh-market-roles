@@ -14,7 +14,7 @@
 
 using NodaTime;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.ChangeOfSupplier
+namespace Processing.Infrastructure.EDI.ChangeOfSupplier
 {
     public record RequestChangeOfSupplierApproved(
         string MessageId,

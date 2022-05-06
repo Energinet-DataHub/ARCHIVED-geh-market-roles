@@ -16,7 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 using Processing.Application.Common.Validation.Consumers;
 using Processing.Application.EDI;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.Errors.Converters
+namespace Processing.Infrastructure.EDI.Errors.Converters
 {
     public class VATNumberMustBeValidRuleErrorConverter : ErrorConverter<VATNumberMustBeValidRuleError>
     {

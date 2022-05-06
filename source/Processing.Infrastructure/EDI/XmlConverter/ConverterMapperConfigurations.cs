@@ -18,7 +18,7 @@ using System.Linq;
 using Processing.Application.ChangeOfSupplier;
 using Processing.Application.Common;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.XmlConverter
+namespace Processing.Infrastructure.EDI.XmlConverter
 {
     public static class ConverterMapperConfigurations
     {

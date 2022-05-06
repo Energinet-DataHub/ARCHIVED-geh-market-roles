@@ -14,7 +14,7 @@
 
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Outbox
+namespace Processing.Infrastructure.Outbox
 {
     public class OutboxMessageCategory : EnumerationType
     {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.IntegrationEvents.FutureEnergySupplierChangeRegistered
+namespace Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySupplierChangeRegistered
 {
     public record FutureEnergySupplierChangeRegisteredTopic(string Name) : Topic;
 }

@@ -15,7 +15,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.LocalMessageHub
+namespace Processing.Infrastructure.LocalMessageHub
 {
     /// <summary>
     /// Repository for market facing metering points

@@ -14,7 +14,7 @@
 
 using System.Threading.Tasks;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DomainEventDispatching
+namespace Processing.Infrastructure.DomainEventDispatching
 {
     /// <summary>
     /// Service for dispatching all domain events generated during current domain process

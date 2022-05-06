@@ -17,7 +17,7 @@ using System.Linq;
 using System.Reflection;
 using Google.Protobuf;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf
+namespace Processing.Infrastructure.Transport.Protobuf
 {
     internal class ProtobufMessageParserMap
     {

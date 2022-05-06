@@ -15,7 +15,7 @@
 using System.Collections.Generic;
 using System.Xml.Linq;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.XmlConverter
+namespace Processing.Infrastructure.EDI.XmlConverter
 {
     public class XmlElementInfo
     {

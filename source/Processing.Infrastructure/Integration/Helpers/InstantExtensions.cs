@@ -16,7 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 using Google.Protobuf.WellKnownTypes;
 using NodaTime;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.Helpers
+namespace Processing.Infrastructure.Integration.Helpers
 {
     public static class InstantExtensions
     {

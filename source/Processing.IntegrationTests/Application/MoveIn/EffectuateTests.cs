@@ -14,10 +14,10 @@
 
 using System;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
 using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Processing;
 using Processing.Domain.MeteringPoints;
+using Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
 using Xunit;
 using Xunit.Categories;
 

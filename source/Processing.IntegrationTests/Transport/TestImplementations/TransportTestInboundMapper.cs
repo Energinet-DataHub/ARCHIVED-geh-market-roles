@@ -14,8 +14,8 @@
 
 using System;
 using Energinet.DataHub.MarketRoles.Contracts;
-using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Processing.Application.Common.Transport;
+using Processing.Infrastructure.Transport.Protobuf;
 
 namespace Energinet.DataHub.MarketRoles.IntegrationTests.Transport.TestImplementations
 {

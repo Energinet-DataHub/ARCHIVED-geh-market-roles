@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
 using Processing.Domain.MeteringPoints;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.ChangeOfSupplier.MeteringPointDetails
+namespace Processing.Infrastructure.EDI.ChangeOfSupplier.MeteringPointDetails
 {
     public class MeteringPointDetailsForwarder : IMeteringPointDetailsForwarder
     {

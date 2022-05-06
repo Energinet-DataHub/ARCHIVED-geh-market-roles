@@ -15,7 +15,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Transport
+namespace Processing.Infrastructure.Transport
 {
     /// <summary>
     /// Abstract class representing an out-of-process transport channel.

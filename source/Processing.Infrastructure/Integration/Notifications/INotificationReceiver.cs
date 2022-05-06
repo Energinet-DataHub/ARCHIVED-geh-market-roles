@@ -14,7 +14,7 @@
 
 using System.Threading.Tasks;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.Notifications
+namespace Processing.Infrastructure.Integration.Notifications
 {
     /// <summary>
     /// Service for handling incoming notifications (Integration events).

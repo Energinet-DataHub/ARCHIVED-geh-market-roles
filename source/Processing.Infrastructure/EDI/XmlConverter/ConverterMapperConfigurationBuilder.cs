@@ -18,7 +18,7 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.XmlConverter
+namespace Processing.Infrastructure.EDI.XmlConverter
 {
     public class ConverterMapperConfigurationBuilder<T>
     {

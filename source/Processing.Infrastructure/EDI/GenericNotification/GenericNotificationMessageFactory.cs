@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI.Common;
 using NodaTime;
+using Processing.Infrastructure.EDI.Common;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.GenericNotification
+namespace Processing.Infrastructure.EDI.GenericNotification
 {
     public static class GenericNotificationMessageFactory
     {

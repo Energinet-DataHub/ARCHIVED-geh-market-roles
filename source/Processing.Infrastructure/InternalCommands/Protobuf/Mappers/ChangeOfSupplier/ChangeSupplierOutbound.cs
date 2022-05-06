@@ -14,11 +14,11 @@
 
 using System;
 using Energinet.DataHub.MarketRoles.Contracts;
-using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Google.Protobuf;
+using Processing.Infrastructure.Transport.Protobuf;
 using ChangeSupplier = Processing.Application.ChangeOfSupplier.Processing.ChangeSupplier;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSupplier
+namespace Processing.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSupplier
 {
     public class ChangeSupplierOutbound : ProtobufOutboundMapper<ChangeSupplier>
     {
@@ -27,7 +27,7 @@ namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf
             if (obj == null) throw new ArgumentNullException(nameof(obj));
             return new MarketRolesEnvelope()
             {
-                ChangeSupplier = new Contracts.ChangeSupplier
+                ChangeSupplier = new Energinet.DataHub.MarketRoles.Contracts.ChangeSupplier
                 {
                     Id = obj.Id.ToString(),
                     Transaction = obj.Transaction,

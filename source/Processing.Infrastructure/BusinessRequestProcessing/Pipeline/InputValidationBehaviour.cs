@@ -21,7 +21,7 @@ using MediatR;
 using Processing.Application.Common;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.BusinessRequestProcessing.Pipeline
+namespace Processing.Infrastructure.BusinessRequestProcessing.Pipeline
 {
     public class InputValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IBusinessRequest, MediatR.IRequest<TResponse>

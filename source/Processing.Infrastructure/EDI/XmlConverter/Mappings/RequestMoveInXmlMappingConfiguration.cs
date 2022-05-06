@@ -15,7 +15,7 @@
 using System.Linq;
 using Processing.Application.MoveIn;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.XmlConverter.Mappings
+namespace Processing.Infrastructure.EDI.XmlConverter.Mappings
 {
     public class RequestMoveInXmlMappingConfiguration : XmlMappingConfigurationBase
     {

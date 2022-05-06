@@ -15,10 +15,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.DomainEventDispatching;
 using MediatR;
+using Processing.Infrastructure.DomainEventDispatching;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.BusinessRequestProcessing.Pipeline
+namespace Processing.Infrastructure.BusinessRequestProcessing.Pipeline
 {
     public class DomainEventsDispatcherBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>

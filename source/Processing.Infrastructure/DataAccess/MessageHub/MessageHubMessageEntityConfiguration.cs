@@ -13,13 +13,13 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI;
-using Energinet.DataHub.MarketRoles.Infrastructure.LocalMessageHub;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Processing.Domain.SeedWork;
+using Processing.Infrastructure.EDI;
+using Processing.Infrastructure.LocalMessageHub;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.MessageHub
+namespace Processing.Infrastructure.DataAccess.MessageHub
 {
     public class MessageHubMessageEntityConfiguration : IEntityTypeConfiguration<MessageHubMessage>
     {

@@ -16,7 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 using Processing.Application.EDI;
 using Processing.Domain.MeteringPoints.Rules.ChangeEnergySupplier;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.Errors.Converters
+namespace Processing.Infrastructure.EDI.Errors.Converters
 {
     public class ProductionMeteringPointMustBeObligatedRuleErrorConverter : ErrorConverter<ProductionMeteringPointMustBeObligatedRuleError>
     {

@@ -18,11 +18,11 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI.XmlConverter;
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI.XmlConverter.Mappings;
 using FluentAssertions;
 using Processing.Application.ChangeOfSupplier;
 using Processing.Application.MoveIn;
+using Processing.Infrastructure.EDI.XmlConverter;
+using Processing.Infrastructure.EDI.XmlConverter.Mappings;
 using Xunit;
 using Xunit.Categories;
 

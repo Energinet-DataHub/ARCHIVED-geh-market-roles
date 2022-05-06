@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI;
 using NodaTime;
+using Processing.Infrastructure.EDI;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.LocalMessageHub
+namespace Processing.Infrastructure.LocalMessageHub
 {
     public class MessageHubMessage
     {

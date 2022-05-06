@@ -14,7 +14,7 @@
 
 using System.Threading.Tasks;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI
+namespace Processing.Infrastructure.EDI
 {
     /// <summary>
     /// Dispatches messages to message hub

@@ -14,10 +14,10 @@
 
 using System;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
 using Processing.Domain.SeedWork;
+using Processing.Infrastructure.DataAccess;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands
+namespace Processing.Infrastructure.InternalCommands
 {
     public class InternalCommandProcessor : IInternalCommandProcessor
     {

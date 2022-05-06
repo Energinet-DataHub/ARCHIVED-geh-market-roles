@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Processing.Application.Common;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.XmlConverter
+namespace Processing.Infrastructure.EDI.XmlConverter
 {
     public class XmlDeserializer : IXmlDeserializer
     {

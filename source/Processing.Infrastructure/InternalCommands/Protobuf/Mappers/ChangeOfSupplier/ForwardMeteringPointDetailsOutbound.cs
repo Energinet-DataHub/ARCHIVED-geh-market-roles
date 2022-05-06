@@ -14,11 +14,11 @@
 
 using System;
 using Energinet.DataHub.MarketRoles.Contracts;
-using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Google.Protobuf;
+using Processing.Infrastructure.Transport.Protobuf;
 using ForwardMeteringPointDetails = Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails.ForwardMeteringPointDetails;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSupplier
+namespace Processing.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSupplier
 {
     public class ForwardMeteringPointDetailsOutbound : ProtobufOutboundMapper<ForwardMeteringPointDetails>
     {
@@ -27,7 +27,7 @@ namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf
             if (obj == null) throw new ArgumentNullException(nameof(obj));
             return new MarketRolesEnvelope()
             {
-                ForwardMeteringPointDetails = new Contracts.ForwardMeteringPointDetails()
+                ForwardMeteringPointDetails = new Energinet.DataHub.MarketRoles.Contracts.ForwardMeteringPointDetails()
                 {
                     Id = obj.Id.ToString(),
                     Transaction = obj.Transaction,

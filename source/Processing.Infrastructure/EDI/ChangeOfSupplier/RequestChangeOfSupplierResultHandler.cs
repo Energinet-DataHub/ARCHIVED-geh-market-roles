@@ -15,14 +15,12 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.BusinessRequestProcessing;
-using Energinet.DataHub.MarketRoles.Infrastructure.Outbox;
-using Energinet.DataHub.MarketRoles.Infrastructure.Serialization;
 using Processing.Application.ChangeOfSupplier;
 using Processing.Application.Common;
 using Processing.Application.EDI;
+using Processing.Infrastructure.BusinessRequestProcessing;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.ChangeOfSupplier
+namespace Processing.Infrastructure.EDI.ChangeOfSupplier
 {
     public class RequestChangeOfSupplierResultHandler : IBusinessProcessResultHandler<RequestChangeOfSupplier>
     {

@@ -13,20 +13,20 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.AccountingPoints;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.Consumers;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.EnergySuppliers;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.MessageHub;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.ProcessManagers;
-using Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands;
-using Energinet.DataHub.MarketRoles.Infrastructure.LocalMessageHub;
-using Energinet.DataHub.MarketRoles.Infrastructure.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
+using Processing.Infrastructure.DataAccess.AccountingPoints;
+using Processing.Infrastructure.DataAccess.Consumers;
+using Processing.Infrastructure.DataAccess.EnergySuppliers;
+using Processing.Infrastructure.DataAccess.MessageHub;
+using Processing.Infrastructure.DataAccess.ProcessManagers;
+using Processing.Infrastructure.InternalCommands;
+using Processing.Infrastructure.LocalMessageHub;
+using Processing.Infrastructure.Outbox;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess
+namespace Processing.Infrastructure.DataAccess
 {
     public class MarketRolesContext : DbContext
     {

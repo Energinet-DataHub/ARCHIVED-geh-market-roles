@@ -19,7 +19,7 @@ using System.Reflection;
 using Google.Protobuf;
 using SimpleInjector;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf.Integration
+namespace Processing.Infrastructure.Transport.Protobuf.Integration
 {
     public static class SimpleInjectorReceiveProtobufExtensions
     {

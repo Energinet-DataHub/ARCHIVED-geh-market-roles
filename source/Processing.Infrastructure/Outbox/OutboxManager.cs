@@ -13,10 +13,10 @@
 // limitations under the License.
 
 using System.Linq;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
 using Processing.Domain.SeedWork;
+using Processing.Infrastructure.DataAccess;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Outbox
+namespace Processing.Infrastructure.Outbox
 {
     public class OutboxManager : IOutboxManager
     {

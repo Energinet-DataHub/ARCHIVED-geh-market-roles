@@ -16,7 +16,7 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.XmlConverter
+namespace Processing.Infrastructure.EDI.XmlConverter
 {
     public static class PropertyInfoHelper
     {

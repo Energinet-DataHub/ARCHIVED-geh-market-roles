@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
+using Processing.Infrastructure.DataAccess;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Outbox
+namespace Processing.Infrastructure.Outbox
 {
     public class OutboxProvider : IOutbox
     {

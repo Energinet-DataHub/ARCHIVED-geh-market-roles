@@ -15,9 +15,8 @@
 using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.MarketRoles.Infrastructure.Correlation;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration
+namespace Processing.Infrastructure.Integration
 {
     public class TopicSender<TTopic> : IAsyncDisposable, ITopicSender<TTopic>
         where TTopic : Topic

@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Outbox
+namespace Processing.Infrastructure.Outbox
 {
     public class OutboxMessageEntityConfiguration : IEntityTypeConfiguration<OutboxMessage>
     {

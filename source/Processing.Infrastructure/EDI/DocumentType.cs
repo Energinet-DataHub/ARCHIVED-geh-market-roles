@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI.Acknowledgements;
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI.GenericNotification;
 using Processing.Domain.SeedWork;
+using Processing.Infrastructure.EDI.Acknowledgements;
+using Processing.Infrastructure.EDI.GenericNotification;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI
+namespace Processing.Infrastructure.EDI
 {
     public sealed class DocumentType : EnumerationType
     {

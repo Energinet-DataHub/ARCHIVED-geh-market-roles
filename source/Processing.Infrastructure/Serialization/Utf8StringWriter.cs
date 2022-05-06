@@ -15,7 +15,7 @@
 using System.IO;
 using System.Text;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Serialization
+namespace Processing.Infrastructure.Serialization
 {
     public class Utf8StringWriter : StringWriter
     {

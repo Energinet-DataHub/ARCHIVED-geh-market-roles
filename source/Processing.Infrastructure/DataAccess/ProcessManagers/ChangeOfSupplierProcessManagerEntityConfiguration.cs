@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Processing.Application.ChangeOfSupplier.Processing;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.ProcessManagers
+namespace Processing.Infrastructure.DataAccess.ProcessManagers
 {
     public class ChangeOfSupplierProcessManagerEntityConfiguration : IEntityTypeConfiguration<ChangeOfSupplierProcessManager>
     {

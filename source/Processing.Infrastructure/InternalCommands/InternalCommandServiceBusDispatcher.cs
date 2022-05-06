@@ -15,9 +15,8 @@
 using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.MarketRoles.Infrastructure.Correlation;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands
+namespace Processing.Infrastructure.InternalCommands
 {
     public class InternalCommandServiceBusDispatcher : IInternalCommandDispatcher
     {

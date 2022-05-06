@@ -16,7 +16,7 @@ using System;
 using System.Globalization;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.Helpers
+namespace Processing.Infrastructure.Integration.Helpers
 {
     public static class EnumerationMapper
     {

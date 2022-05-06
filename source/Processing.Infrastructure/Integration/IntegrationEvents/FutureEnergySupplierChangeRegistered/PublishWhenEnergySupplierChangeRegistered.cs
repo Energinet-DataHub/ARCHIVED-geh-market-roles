@@ -16,13 +16,13 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
-using Energinet.DataHub.MarketRoles.Infrastructure.Outbox;
 using MediatR;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints.Events;
+using Processing.Infrastructure.DataAccess;
+using Processing.Infrastructure.Outbox;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.IntegrationEvents.FutureEnergySupplierChangeRegistered
+namespace Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySupplierChangeRegistered
 {
     public class
         PublishWhenEnergySupplierChangeRegistered : INotificationHandler<

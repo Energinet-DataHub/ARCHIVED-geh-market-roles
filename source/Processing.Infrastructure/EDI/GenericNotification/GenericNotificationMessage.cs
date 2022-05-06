@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI.Common;
 using NodaTime;
+using Processing.Infrastructure.EDI.Common;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.GenericNotification
+namespace Processing.Infrastructure.EDI.GenericNotification
 {
     // TODO: This is a hack used during the test period and should be removed as soon as the business processes from Market roles are included
     public record GenericNotificationMessage(

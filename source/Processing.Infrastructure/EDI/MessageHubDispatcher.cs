@@ -14,11 +14,11 @@
 
 using System;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.Correlation;
-using Energinet.DataHub.MarketRoles.Infrastructure.Outbox;
-using Energinet.DataHub.MarketRoles.Infrastructure.Serialization;
+using Processing.Infrastructure.Correlation;
+using Processing.Infrastructure.Outbox;
+using Processing.Infrastructure.Serialization;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI
+namespace Processing.Infrastructure.EDI
 {
     public class MessageHubDispatcher : IMessageHubDispatcher
     {

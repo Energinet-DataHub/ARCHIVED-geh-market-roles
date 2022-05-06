@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.Acknowledgements
+namespace Processing.Infrastructure.EDI.Acknowledgements
 {
     public record Reason(
         string Code,

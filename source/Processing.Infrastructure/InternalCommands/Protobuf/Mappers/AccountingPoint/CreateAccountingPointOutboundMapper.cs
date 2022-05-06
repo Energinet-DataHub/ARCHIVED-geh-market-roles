@@ -14,11 +14,11 @@
 
 using System;
 using Energinet.DataHub.MarketRoles.Contracts;
-using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Google.Protobuf;
+using Processing.Infrastructure.Transport.Protobuf;
 using CreateAccountingPoint = Processing.Application.AccountingPoint.CreateAccountingPoint;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf.Mappers.AccountingPoint
+namespace Processing.Infrastructure.InternalCommands.Protobuf.Mappers.AccountingPoint
 {
     public class CreateAccountingPointOutboundMapper : ProtobufOutboundMapper<CreateAccountingPoint>
     {
@@ -28,7 +28,7 @@ namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf
 
             return new MarketRolesEnvelope
             {
-                CreateAccountingPoint = new Contracts.CreateAccountingPoint()
+                CreateAccountingPoint = new Energinet.DataHub.MarketRoles.Contracts.CreateAccountingPoint()
                 {
                     AccountingPointId = obj.AccountingPointId,
                     GsrnNumber = obj.GsrnNumber,

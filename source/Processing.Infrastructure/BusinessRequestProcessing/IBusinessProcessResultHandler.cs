@@ -15,7 +15,7 @@
 using System.Threading.Tasks;
 using Processing.Application.Common;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.BusinessRequestProcessing
+namespace Processing.Infrastructure.BusinessRequestProcessing
 {
     /// <summary>
     /// Generates a client response for completed a business process request

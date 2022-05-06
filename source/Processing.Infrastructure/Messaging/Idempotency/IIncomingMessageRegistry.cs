@@ -14,7 +14,7 @@
 
 using System.Threading.Tasks;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Messaging.Idempotency
+namespace Processing.Infrastructure.Messaging.Idempotency
 {
     /// <summary>
     /// Service for registering coming messages in order to handle message idempotency.

@@ -16,8 +16,8 @@ using System;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.FunctionApp.TestCommon.Database;
 using Energinet.DataHub.MarketRoles.ApplyDBMigrationsApp.Helpers;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Processing.Infrastructure.DataAccess;
 
 namespace Energinet.DataHub.MarketRoles.IntegrationTests.Application
 {

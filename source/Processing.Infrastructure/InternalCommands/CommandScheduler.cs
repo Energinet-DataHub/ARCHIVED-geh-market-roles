@@ -15,16 +15,15 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.Correlation;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
-using Energinet.DataHub.MarketRoles.Infrastructure.Serialization;
-using Energinet.DataHub.MarketRoles.Infrastructure.Transport;
 using NodaTime;
 using Processing.Application.Common.Commands;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
+using Processing.Infrastructure.Correlation;
+using Processing.Infrastructure.DataAccess;
+using Processing.Infrastructure.Transport;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands
+namespace Processing.Infrastructure.InternalCommands
 {
     public class CommandScheduler : ICommandScheduler
     {

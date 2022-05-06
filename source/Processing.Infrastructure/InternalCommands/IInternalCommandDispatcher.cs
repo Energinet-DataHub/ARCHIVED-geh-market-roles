@@ -14,7 +14,7 @@
 
 using System.Threading.Tasks;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands
+namespace Processing.Infrastructure.InternalCommands
 {
     /// <summary>
     /// Service dispatching internal commands to processing queue

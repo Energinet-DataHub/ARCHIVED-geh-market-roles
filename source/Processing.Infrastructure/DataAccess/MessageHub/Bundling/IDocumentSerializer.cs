@@ -14,7 +14,7 @@
 
 using System.Collections.Generic;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.MessageHub.Bundling
+namespace Processing.Infrastructure.DataAccess.MessageHub.Bundling
 {
     /// <summary>
     /// Serialize documents.

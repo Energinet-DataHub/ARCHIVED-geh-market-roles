@@ -14,10 +14,10 @@
 
 using System;
 using Energinet.DataHub.MarketRoles.Contracts;
-using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Processing.Application.Common.Transport;
+using Processing.Infrastructure.Transport.Protobuf;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSupplier
+namespace Processing.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSupplier
 {
     public class ForwardConsumerDetailsInbound : ProtobufInboundMapper<ForwardConsumerDetails>
     {

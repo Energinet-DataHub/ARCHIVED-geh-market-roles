@@ -15,10 +15,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI;
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI.ChangeOfSupplier;
 using NodaTime;
 using Processing.Application.ChangeOfSupplier;
+using Processing.Infrastructure.EDI;
 using Xunit;
 using Xunit.Categories;
 

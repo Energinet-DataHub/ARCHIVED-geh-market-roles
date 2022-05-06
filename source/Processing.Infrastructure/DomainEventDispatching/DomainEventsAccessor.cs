@@ -15,10 +15,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
 using Processing.Domain.SeedWork;
+using Processing.Infrastructure.DataAccess;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DomainEventDispatching
+namespace Processing.Infrastructure.DomainEventDispatching
 {
     public class DomainEventsAccessor : IDomainEventsAccessor
     {

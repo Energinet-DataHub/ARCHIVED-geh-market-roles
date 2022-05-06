@@ -17,18 +17,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI.Acknowledgements;
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI.Common;
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI.Extensions;
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI.GenericNotification;
 using NodaTime;
 using Processing.Application.EDI;
 using Processing.Domain.Actors;
 using Processing.Domain.SeedWork;
+using Processing.Infrastructure.EDI.Acknowledgements;
+using Processing.Infrastructure.EDI.Common;
+using Processing.Infrastructure.EDI.Extensions;
+using Processing.Infrastructure.EDI.GenericNotification;
 using Actor = Energinet.DataHub.Core.App.Common.Abstractions.Actor.Actor;
 using IdentificationType = Energinet.DataHub.Core.App.Common.Abstractions.Actor.IdentificationType;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI
+namespace Processing.Infrastructure.EDI
 {
     public class ActorMessageService : IActorMessageService
     {

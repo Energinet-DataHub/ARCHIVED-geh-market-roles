@@ -19,7 +19,7 @@ using Processing.Application.EDI;
 using Processing.Domain.SeedWork;
 using SimpleInjector;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.ContainerExtensions
+namespace Processing.Infrastructure.ContainerExtensions
 {
     public static class SimpleInjectorExtensions
     {

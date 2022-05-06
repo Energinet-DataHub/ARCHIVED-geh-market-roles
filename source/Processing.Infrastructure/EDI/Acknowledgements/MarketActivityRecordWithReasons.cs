@@ -14,7 +14,7 @@
 
 using System.Collections.Generic;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.Acknowledgements
+namespace Processing.Infrastructure.EDI.Acknowledgements
 {
     public record MarketActivityRecordWithReasons(
             string Id,

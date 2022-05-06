@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Processing.Application.MoveIn.Processing;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.ProcessManagers
+namespace Processing.Infrastructure.DataAccess.ProcessManagers
 {
     public class MoveInProcessManagerEntityConfiguration : IEntityTypeConfiguration<MoveInProcessManager>
     {

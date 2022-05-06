@@ -15,10 +15,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.LocalMessageHub;
 using Microsoft.EntityFrameworkCore;
+using Processing.Infrastructure.LocalMessageHub;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.MessageHub
+namespace Processing.Infrastructure.DataAccess.MessageHub
 {
     public class MessageHubMessageRepository : IMessageHubMessageRepository
     {

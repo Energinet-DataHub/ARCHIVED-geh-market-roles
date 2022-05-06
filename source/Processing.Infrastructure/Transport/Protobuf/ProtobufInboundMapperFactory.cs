@@ -15,7 +15,7 @@
 using System;
 using SimpleInjector;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf
+namespace Processing.Infrastructure.Transport.Protobuf
 {
     /// <summary>
     /// Helper class to find a registered map

@@ -14,7 +14,7 @@
 
 using NodaTime;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.GenericNotification
+namespace Processing.Infrastructure.EDI.GenericNotification
 {
     // TODO: This is a hack used during the test period and should be removed as soon as the business processes from Market roles are included
     public record MarketActivityRecord(

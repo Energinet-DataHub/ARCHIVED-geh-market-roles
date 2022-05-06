@@ -15,7 +15,7 @@
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration
+namespace Processing.Infrastructure.Integration
 {
     /// <summary>
     /// Interface for Topic sender

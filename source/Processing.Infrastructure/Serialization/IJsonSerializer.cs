@@ -17,7 +17,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Serialization
+namespace Processing.Infrastructure.Serialization
 {
     /// <summary>
     /// Contract serialization and deserialization of JSON.

@@ -14,7 +14,7 @@
 
 using System.Threading.Tasks;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess
+namespace Processing.Infrastructure.DataAccess
 {
     /// <summary>
     /// Unit of work for handling database transctions

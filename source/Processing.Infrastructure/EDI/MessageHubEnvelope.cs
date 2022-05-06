@@ -14,7 +14,7 @@
 
 using MediatR;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI
+namespace Processing.Infrastructure.EDI
 {
     public record MessageHubEnvelope(string Recipient, string Content, DocumentType MessageType, string Correlation, string GsrnNumber) : IRequest;
 }

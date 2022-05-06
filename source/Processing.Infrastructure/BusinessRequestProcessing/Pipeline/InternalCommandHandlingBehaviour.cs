@@ -15,12 +15,12 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
 using MediatR;
 using Processing.Application.Common.Commands;
 using Processing.Domain.SeedWork;
+using Processing.Infrastructure.DataAccess;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.BusinessRequestProcessing.Pipeline
+namespace Processing.Infrastructure.BusinessRequestProcessing.Pipeline
 {
     public class InternalCommandHandlingBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
      where TRequest : InternalCommand, MediatR.IRequest<TResponse>

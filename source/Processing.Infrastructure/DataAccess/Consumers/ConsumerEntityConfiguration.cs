@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Processing.Domain.Consumers;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.Consumers
+namespace Processing.Infrastructure.DataAccess.Consumers
 {
     public class ConsumerEntityConfiguration : IEntityTypeConfiguration<Consumer>
     {

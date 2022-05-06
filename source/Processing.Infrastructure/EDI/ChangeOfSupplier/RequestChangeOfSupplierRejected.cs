@@ -14,7 +14,7 @@
 
 using System.Collections.Generic;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.ChangeOfSupplier
+namespace Processing.Infrastructure.EDI.ChangeOfSupplier
 {
     public record RequestChangeOfSupplierRejected(
         string MessageId,

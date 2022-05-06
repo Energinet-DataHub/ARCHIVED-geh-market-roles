@@ -16,9 +16,9 @@ using System;
 using System.Threading.Tasks;
 using Dapper;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
+using Processing.Infrastructure.DataAccess;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure
+namespace Processing.Infrastructure
 {
     public class ActorProvider : IActorProvider
     {

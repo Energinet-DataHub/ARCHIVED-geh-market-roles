@@ -14,11 +14,11 @@
 
 using System;
 using System.Collections.Generic;
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI;
-using Energinet.DataHub.MarketRoles.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
-using Energinet.DataHub.MarketRoles.Infrastructure.Integration.IntegrationEvents.FutureEnergySupplierChangeRegistered;
+using Processing.Infrastructure.EDI;
+using Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
+using Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySupplierChangeRegistered;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.Helpers
+namespace Processing.Infrastructure.Integration.Helpers
 {
     public static class OutboxTypeFactory
     {

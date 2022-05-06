@@ -15,7 +15,7 @@
 using System;
 using NodaTime;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Outbox
+namespace Processing.Infrastructure.Outbox
 {
     public class OutboxMessage
     {

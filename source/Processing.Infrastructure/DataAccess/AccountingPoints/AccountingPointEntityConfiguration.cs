@@ -20,7 +20,7 @@ using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.AccountingPoints
+namespace Processing.Infrastructure.DataAccess.AccountingPoints
 {
     public class AccountingPointEntityConfiguration : IEntityTypeConfiguration<AccountingPoint>
     {

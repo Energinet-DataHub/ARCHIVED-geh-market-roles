@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Processing.Domain.EnergySuppliers;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.EnergySuppliers
+namespace Processing.Infrastructure.DataAccess.EnergySuppliers
 {
     public class EnergySupplierRepository : IEnergySupplierRepository
     {

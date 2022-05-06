@@ -15,7 +15,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.Transport;
+using Processing.Infrastructure.Transport;
 
 namespace Energinet.DataHub.MarketRoles.IntegrationTests.Transport.TestImplementations
 {

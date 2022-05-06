@@ -14,11 +14,11 @@
 
 using System;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.BusinessRequestProcessing;
-using Energinet.DataHub.MarketRoles.Infrastructure.Outbox;
 using Processing.Application.Common;
+using Processing.Infrastructure.BusinessRequestProcessing;
+using Processing.Infrastructure.Outbox;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI
+namespace Processing.Infrastructure.EDI
 {
     public abstract class BusinessProcessResultHandler<TBusinessRequest> : IBusinessProcessResultHandler<TBusinessRequest>
         where TBusinessRequest : IBusinessRequest

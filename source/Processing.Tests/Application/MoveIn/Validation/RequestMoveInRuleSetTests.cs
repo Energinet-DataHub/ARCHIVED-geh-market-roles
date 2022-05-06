@@ -14,7 +14,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using NodaTime;
 using Processing.Application.Common.Validation.Consumers;
 using Processing.Application.MoveIn;

@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Processing.Domain.Consumers;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.Consumers
+namespace Processing.Infrastructure.DataAccess.Consumers
 {
     public class ConsumerRepository : IConsumerRepository
     {

@@ -16,7 +16,7 @@ using System;
 using NotificationContracts;
 using Processing.Domain.MeteringPoints;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.Notifications.ConsumptionMeteringPoint
+namespace Processing.Infrastructure.Integration.Notifications.ConsumptionMeteringPoint
 {
     internal static class ConsumptionMeteringPointCreatedNotificationExtension
     {

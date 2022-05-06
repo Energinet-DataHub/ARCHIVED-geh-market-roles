@@ -17,7 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Processing.Application.Common.Transport;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf
+namespace Processing.Infrastructure.Transport.Protobuf
 {
     /// <summary>
     /// Deserializes a payload with Proto buf format

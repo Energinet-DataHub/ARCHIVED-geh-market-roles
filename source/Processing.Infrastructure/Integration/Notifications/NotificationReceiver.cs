@@ -14,10 +14,10 @@
 
 using System;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
 using MediatR;
+using Processing.Infrastructure.DataAccess;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.Notifications
+namespace Processing.Infrastructure.Integration.Notifications
 {
     public class NotificationReceiver : INotificationReceiver
     {

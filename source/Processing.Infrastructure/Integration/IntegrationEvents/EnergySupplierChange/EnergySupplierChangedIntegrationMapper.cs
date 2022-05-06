@@ -13,17 +13,17 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Google.Protobuf;
+using Processing.Infrastructure.Transport.Protobuf;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange
+namespace Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange
 {
     public class EnergySupplierChangedIntegrationMapper : ProtobufOutboundMapper<EnergySupplierChangedIntegrationEvent>
     {
         protected override IMessage Convert(EnergySupplierChangedIntegrationEvent obj)
         {
             if (obj == null) throw new ArgumentException(null, nameof(obj));
-            return new IntegrationEventContracts.EnergySupplierChanged
+            return new Energinet.DataHub.MarketRoles.IntegrationEventContracts.EnergySupplierChanged
             {
                 AccountingpointId = obj.AccountingPointId.ToString(),
                 EffectiveDate = obj.StartOfSupplyDate.ToString(),

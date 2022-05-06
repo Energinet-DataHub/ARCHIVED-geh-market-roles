@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Outbox
+namespace Processing.Infrastructure.Outbox
 {
     public class OutboxMessageException : Exception
     {

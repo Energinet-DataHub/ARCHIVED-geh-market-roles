@@ -16,7 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.EDI;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.Errors.Converters
+namespace Processing.Infrastructure.EDI.Errors.Converters
 {
     public class MeteringPointMustBeKnownRuleErrorConverter : ErrorConverter<MeteringPointMustBeKnownRuleError>
     {

@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Google.Protobuf;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf
+namespace Processing.Infrastructure.Transport.Protobuf
 {
     public class ProtobufMessageFactory : IProtobufMessageFactory
     {

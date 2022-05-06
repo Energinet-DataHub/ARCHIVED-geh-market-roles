@@ -16,7 +16,7 @@ using System;
 using System.Data;
 using Microsoft.Data.SqlClient;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess
+namespace Processing.Infrastructure.DataAccess
 {
     public class SqlDbConnectionFactory : IDbConnectionFactory, IDisposable
     {

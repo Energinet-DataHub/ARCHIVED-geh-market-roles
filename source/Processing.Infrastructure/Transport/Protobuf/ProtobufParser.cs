@@ -14,7 +14,7 @@
 
 using Google.Protobuf;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf
+namespace Processing.Infrastructure.Transport.Protobuf
 {
     /// <summary>
     /// Parser for protobuf

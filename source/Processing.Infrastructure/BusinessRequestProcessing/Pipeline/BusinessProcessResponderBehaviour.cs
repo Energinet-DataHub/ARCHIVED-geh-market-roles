@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Processing.Application.Common;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.BusinessRequestProcessing.Pipeline
+namespace Processing.Infrastructure.BusinessRequestProcessing.Pipeline
 {
     public class BusinessProcessResponderBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IBusinessRequest, MediatR.IRequest<TResponse>

@@ -16,7 +16,7 @@ using System;
 using Energinet.DataHub.MessageHub.Model.Model;
 using MediatR;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.LocalMessageHub
+namespace Processing.Infrastructure.LocalMessageHub
 {
     public record DataAvailableNotification(Guid Uuid, GlobalLocationNumberDto Recipient, MessageTypeDto MessageType, DomainOrigin Origin, bool SupportsBundling, int RelativeWeight) : IRequest;
 }

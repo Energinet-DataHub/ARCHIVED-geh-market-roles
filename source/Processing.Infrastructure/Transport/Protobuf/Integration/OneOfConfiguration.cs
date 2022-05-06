@@ -15,7 +15,7 @@
 using System;
 using Google.Protobuf;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf.Integration
+namespace Processing.Infrastructure.Transport.Protobuf.Integration
 {
     /// <summary>
     /// Configuration of proto buf

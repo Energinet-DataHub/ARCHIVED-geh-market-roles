@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Energinet.DataHub.MarketRoles.Infrastructure.EDI.Common;
 using NodaTime;
+using Processing.Infrastructure.EDI.Common;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.Acknowledgements
+namespace Processing.Infrastructure.EDI.Acknowledgements
 {
     public record ConfirmMessage(
         string DocumentName,

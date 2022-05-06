@@ -15,12 +15,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Energinet.DataHub.MarketRoles.Infrastructure.Correlation;
-using Energinet.DataHub.MarketRoles.Infrastructure.Transport;
-using Energinet.DataHub.MarketRoles.Infrastructure.Users;
 using Processing.Application.Common.Users;
+using Processing.Infrastructure.Correlation;
+using Processing.Infrastructure.Transport;
+using Processing.Infrastructure.Users;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Ingestion
+namespace Processing.Infrastructure.Ingestion
 {
     public class ProcessingServiceBusChannel : Channel
     {

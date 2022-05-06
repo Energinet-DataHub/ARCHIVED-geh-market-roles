@@ -14,8 +14,8 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.LocalMessageHub;
 using Energinet.DataHub.MarketRoles.Messaging.Bundling;
+using Processing.Infrastructure.LocalMessageHub;
 
 namespace Energinet.DataHub.MarketRoles.Tests.LocalMessageHub.Mocks
 {

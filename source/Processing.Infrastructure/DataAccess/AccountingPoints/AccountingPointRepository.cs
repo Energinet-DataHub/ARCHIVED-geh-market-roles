@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Processing.Domain.MeteringPoints;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess.AccountingPoints
+namespace Processing.Infrastructure.DataAccess.AccountingPoints
 {
     public class AccountingPointRepository : IAccountingPointRepository
     {

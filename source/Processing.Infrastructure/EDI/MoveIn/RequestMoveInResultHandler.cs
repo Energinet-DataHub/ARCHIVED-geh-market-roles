@@ -15,15 +15,14 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.BusinessRequestProcessing;
-using Energinet.DataHub.MarketRoles.Infrastructure.Correlation;
-using Energinet.DataHub.MarketRoles.Infrastructure.Outbox;
 using Processing.Application.Common;
 using Processing.Application.EDI;
 using Processing.Application.MoveIn;
 using Processing.Domain.SeedWork;
+using Processing.Infrastructure.BusinessRequestProcessing;
+using Processing.Infrastructure.Correlation;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.MoveIn
+namespace Processing.Infrastructure.EDI.MoveIn
 {
     public sealed class RequestMoveInResultHandler : IBusinessProcessResultHandler<RequestMoveIn>
     {

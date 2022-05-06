@@ -16,7 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 using Processing.Application.EDI;
 using Processing.Domain.Consumers.Rules;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.Errors.Converters
+namespace Processing.Infrastructure.EDI.Errors.Converters
 {
     public class CvrNumberFormatRuleErrorConverter : ErrorConverter<CvrNumberFormatRuleError>
     {

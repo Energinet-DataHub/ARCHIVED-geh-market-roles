@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using System;
-using Energinet.DataHub.MarketRoles.Infrastructure.Correlation;
-using Energinet.DataHub.MarketRoles.Infrastructure.Serialization;
 using Processing.Domain.SeedWork;
+using Processing.Infrastructure.Correlation;
+using Processing.Infrastructure.Serialization;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Outbox
+namespace Processing.Infrastructure.Outbox
 {
     public class OutboxMessageFactory : IOutboxMessageFactory
     {

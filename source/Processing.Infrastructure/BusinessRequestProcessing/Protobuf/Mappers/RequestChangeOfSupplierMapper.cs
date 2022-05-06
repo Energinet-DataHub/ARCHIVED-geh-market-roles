@@ -14,11 +14,11 @@
 
 using System;
 using Energinet.DataHub.MarketRoles.Contracts;
-using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using NodaTime;
 using Processing.Application.Common.Transport;
+using Processing.Infrastructure.Transport.Protobuf;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.BusinessRequestProcessing.Protobuf.Mappers
+namespace Processing.Infrastructure.BusinessRequestProcessing.Protobuf.Mappers
 {
     public class RequestChangeOfSupplierMapper : ProtobufInboundMapper<RequestChangeOfSupplier>
     {

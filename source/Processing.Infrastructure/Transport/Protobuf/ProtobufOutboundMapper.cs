@@ -15,7 +15,7 @@
 using Google.Protobuf;
 using Processing.Application.Common.Transport;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf
+namespace Processing.Infrastructure.Transport.Protobuf
 {
     /// <summary>
     /// Maps an object to proto buf <see cref="IMessage"/>

@@ -15,7 +15,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess
+namespace Processing.Infrastructure.DataAccess
 {
     public class UnitOfWork : IUnitOfWork
     {

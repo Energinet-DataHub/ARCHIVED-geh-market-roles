@@ -15,9 +15,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Infrastructure.DataAccess;
-using Energinet.DataHub.MarketRoles.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
-using Energinet.DataHub.MarketRoles.Infrastructure.Integration.IntegrationEvents.FutureEnergySupplierChangeRegistered;
 using MediatR;
 using Microsoft.Data.SqlClient;
 using NodaTime;
@@ -29,6 +26,8 @@ using Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
+using Processing.Infrastructure.DataAccess;
+using Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySupplierChangeRegistered;
 using Xunit;
 using Xunit.Categories;
 

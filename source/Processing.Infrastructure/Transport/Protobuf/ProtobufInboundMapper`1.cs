@@ -16,7 +16,7 @@ using System;
 using Google.Protobuf;
 using Processing.Application.Common.Transport;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf
+namespace Processing.Infrastructure.Transport.Protobuf
 {
     /// <summary>
     /// Convert a proto buf contract

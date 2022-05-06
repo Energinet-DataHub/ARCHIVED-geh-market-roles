@@ -16,7 +16,7 @@ using System;
 using Energinet.DataHub.MessageHub.Model.Model;
 using MediatR;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.LocalMessageHub
+namespace Processing.Infrastructure.LocalMessageHub
 {
     public record DataBundleResponse(DataBundleRequestDto DataBundleRequestDto, Uri Path, string SessionId) : IRequest;
 }

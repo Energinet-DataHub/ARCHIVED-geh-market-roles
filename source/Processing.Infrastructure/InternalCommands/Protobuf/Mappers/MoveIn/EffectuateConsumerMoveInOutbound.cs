@@ -14,11 +14,11 @@
 
 using System;
 using Energinet.DataHub.MarketRoles.Contracts;
-using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Google.Protobuf;
+using Processing.Infrastructure.Transport.Protobuf;
 using EffectuateConsumerMoveIn = Processing.Application.MoveIn.Processing.EffectuateConsumerMoveIn;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf.Mappers.MoveIn
+namespace Processing.Infrastructure.InternalCommands.Protobuf.Mappers.MoveIn
 {
     public class EffectuateConsumerMoveInOutbound : ProtobufOutboundMapper<EffectuateConsumerMoveIn>
     {
@@ -27,7 +27,7 @@ namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf
             if (obj == null) throw new ArgumentNullException(nameof(obj));
             return new MarketRolesEnvelope()
             {
-                EffectuateConsumerMoveIn = new Contracts.EffectuateConsumerMoveIn()
+                EffectuateConsumerMoveIn = new Energinet.DataHub.MarketRoles.Contracts.EffectuateConsumerMoveIn()
                 {
                     Id = obj.Id.ToString(),
                     Transaction = obj.Transaction,

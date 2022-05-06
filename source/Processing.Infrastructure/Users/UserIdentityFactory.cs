@@ -17,7 +17,7 @@ using System.Linq;
 using System.Text.Json;
 using Processing.Application.Common.Users;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Users
+namespace Processing.Infrastructure.Users
 {
 #pragma warning disable CA1822 // Could be static, but we keep it non-static for now.
     public class UserIdentityFactory

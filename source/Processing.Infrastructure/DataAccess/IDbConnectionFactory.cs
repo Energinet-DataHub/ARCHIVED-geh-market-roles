@@ -14,7 +14,7 @@
 
 using System.Data;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess
+namespace Processing.Infrastructure.DataAccess
 {
     /// <summary>
     /// Factory for creating database connections

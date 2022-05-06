@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.Common.Address
+namespace Processing.Infrastructure.EDI.Common.Address
 {
     public record StreetDetail(
         string Number,

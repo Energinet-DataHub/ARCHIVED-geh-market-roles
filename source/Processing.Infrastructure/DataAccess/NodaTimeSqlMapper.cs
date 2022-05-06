@@ -18,7 +18,7 @@ using System.Data;
 using Dapper;
 using NodaTime;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.DataAccess
+namespace Processing.Infrastructure.DataAccess
 {
     public class NodaTimeSqlMapper : SqlMapper.TypeHandler<Instant>
     {

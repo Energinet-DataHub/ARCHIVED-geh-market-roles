@@ -16,7 +16,7 @@ using System;
 using Processing.Application.Common.Transport;
 using SimpleInjector;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf
+namespace Processing.Infrastructure.Transport.Protobuf
 {
     /// <summary>
     /// Helper class to locate mapper

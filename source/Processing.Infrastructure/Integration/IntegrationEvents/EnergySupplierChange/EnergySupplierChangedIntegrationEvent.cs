@@ -17,7 +17,7 @@ using MediatR;
 using NodaTime;
 using Processing.Application.Common.Transport;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange
+namespace Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange
 {
     public record EnergySupplierChangedIntegrationEvent(
             Guid AccountingPointId,

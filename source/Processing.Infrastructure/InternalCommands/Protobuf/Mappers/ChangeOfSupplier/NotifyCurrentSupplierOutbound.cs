@@ -14,11 +14,11 @@
 
 using System;
 using Energinet.DataHub.MarketRoles.Contracts;
-using Energinet.DataHub.MarketRoles.Infrastructure.Transport.Protobuf;
 using Google.Protobuf;
+using Processing.Infrastructure.Transport.Protobuf;
 using NotifyCurrentSupplier = Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification.NotifyCurrentSupplier;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSupplier
+namespace Processing.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSupplier
 {
     public class NotifyCurrentSupplierOutbound : ProtobufOutboundMapper<NotifyCurrentSupplier>
     {
@@ -27,7 +27,7 @@ namespace Energinet.DataHub.MarketRoles.Infrastructure.InternalCommands.Protobuf
             if (obj == null) throw new ArgumentNullException(nameof(obj));
             return new MarketRolesEnvelope()
             {
-                NotifyCurrentSupplier = new Contracts.NotifyCurrentSupplier
+                NotifyCurrentSupplier = new Energinet.DataHub.MarketRoles.Contracts.NotifyCurrentSupplier
                 {
                     Id = obj.Id.ToString(),
                     AccountingPointId = obj.AccountingPointId.ToString(),

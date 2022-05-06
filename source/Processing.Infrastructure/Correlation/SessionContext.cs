@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.Correlation
+namespace Processing.Infrastructure.Correlation
 {
     public sealed class SessionContext : ISessionContext
     {

@@ -17,7 +17,7 @@ using System.Linq;
 using Processing.Domain.Actors;
 using Actor = Energinet.DataHub.Core.App.Common.Abstractions.Actor.Actor;
 
-namespace Energinet.DataHub.MarketRoles.Infrastructure.EDI.Extensions
+namespace Processing.Infrastructure.EDI.Extensions
 {
     public static class ActorExtensions
     {
