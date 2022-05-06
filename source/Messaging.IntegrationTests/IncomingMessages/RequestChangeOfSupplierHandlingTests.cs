@@ -58,6 +58,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
         {
             var messageBuilder = new IncomingMessageBuilder();
             var incomingMessage = messageBuilder
+                .WithProcessType("E03")
                 .WithConsumerName(null)
                 .Build();
 

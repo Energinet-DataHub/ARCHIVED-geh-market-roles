@@ -126,7 +126,7 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
         {
             if (string.IsNullOrEmpty(moveInRequest.ConsumerName))
             {
-                return Task.FromResult(BusinessRequestResult.Failure(new ZZValidationError("somecode", "somemessage")));
+                return Task.FromResult(BusinessRequestResult.Failure(new ZZValidationError("999", "somemessage")));
             }
             return Task.FromResult<BusinessRequestResult>(BusinessRequestResult.Succeeded());
         }

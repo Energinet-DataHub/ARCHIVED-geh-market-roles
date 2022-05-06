@@ -20,6 +20,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Messaging.Application.Configuration.DataAccess;
 using Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier;
+using Messaging.Application.OutgoingMessages.RejectRequestChangeOfSupplier;
 
 namespace Messaging.Application.OutgoingMessages
 {
@@ -27,18 +28,21 @@ namespace Messaging.Application.OutgoingMessages
     {
         private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly IMessageDispatcher _messageDispatcher;
-        private readonly MessageFactory _messageFactory;
+        private readonly ConfirmRequestChangeOfSupplierMessageFactory _confirmRequestChangeOfSupplierMessageFactory;
+        private readonly RejectRequestChangeOfSupplierMessageFactory _rejectRequestChangeOfSupplierMessageFactory;
         private readonly IUnitOfWork _unitOfWork;
 
         public MessageRequestHandler(
             IOutgoingMessageStore outgoingMessageStore,
             IMessageDispatcher messageDispatcherSpy,
-            MessageFactory messageFactory,
+            ConfirmRequestChangeOfSupplierMessageFactory confirmRequestChangeOfSupplierMessageFactory,
+            RejectRequestChangeOfSupplierMessageFactory rejectRequestChangeOfSupplierMessageFactory,
             IUnitOfWork unitOfWork)
         {
             _outgoingMessageStore = outgoingMessageStore;
             _messageDispatcher = messageDispatcherSpy;
-            _messageFactory = messageFactory;
+            _confirmRequestChangeOfSupplierMessageFactory = confirmRequestChangeOfSupplierMessageFactory;
+            _rejectRequestChangeOfSupplierMessageFactory = rejectRequestChangeOfSupplierMessageFactory;
             _unitOfWork = unitOfWork;
         }
 
@@ -111,7 +115,10 @@ namespace Messaging.Application.OutgoingMessages
         private Task<Stream> CreateMessageFromAsync(IReadOnlyCollection<OutgoingMessage> outgoingMessages)
         {
             var messageHeader = CreateMessageHeaderFrom(outgoingMessages.First());
-            return _messageFactory.CreateFromAsync(messageHeader, outgoingMessages.Select(message => message.MarketActivityRecordPayload).ToList());
+
+            return outgoingMessages.First().DocumentType == "ConfirmRequestChangeOfSupplier"
+                ? _confirmRequestChangeOfSupplierMessageFactory.CreateFromAsync(messageHeader, outgoingMessages.Select(message => message.MarketActivityRecordPayload).ToList())
+                : _rejectRequestChangeOfSupplierMessageFactory.CreateFromAsync(messageHeader, outgoingMessages.Select(message => message.MarketActivityRecordPayload).ToList());
         }
     }
 }

@@ -30,6 +30,7 @@ using Messaging.Application.IncomingMessages;
 using Messaging.Application.IncomingMessages.RequestChangeOfSupplier;
 using Messaging.Application.OutgoingMessages;
 using Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier;
+using Messaging.Application.OutgoingMessages.RejectRequestChangeOfSupplier;
 using Messaging.Application.Transactions;
 using Messaging.Application.Xml.SchemaStore;
 using Messaging.CimMessageAdapter;
@@ -67,7 +68,8 @@ namespace Messaging.Infrastructure.Configuration
             services.AddScoped<IOutgoingMessageStore, OutgoingMessageStore>();
             services.AddScoped<RequestChangeOfSupplierHandler>();
             services.AddScoped<IMessageDispatcher, MessageDispatcher>();
-            services.AddScoped<MessageFactory>();
+            services.AddScoped<ConfirmRequestChangeOfSupplierMessageFactory>();
+            services.AddScoped<RejectRequestChangeOfSupplierMessageFactory>();
             services.AddScoped<MessageRequestHandler>();
             services.AddScoped<IMarketActivityRecordParser, MarketActivityRecordParser>();
             services.AddScoped<MessageRequestContext>();
@@ -147,7 +149,7 @@ namespace Messaging.Infrastructure.Configuration
 
         public CompositionRoot AddOutgoingMessageDispatcher(IMessageDispatcher messageDispatcher)
         {
-            _services.AddScoped<MessageFactory>();
+            _services.AddScoped<ConfirmRequestChangeOfSupplierMessageFactory>();
             _services.AddScoped<IMessageDispatcher>(_ => messageDispatcher);
             _services.AddScoped<MessageRequestHandler>();
 

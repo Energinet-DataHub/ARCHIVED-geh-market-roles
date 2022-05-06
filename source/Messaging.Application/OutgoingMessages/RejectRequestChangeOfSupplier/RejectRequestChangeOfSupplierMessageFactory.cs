@@ -22,15 +22,15 @@ using System.Xml;
 using Messaging.Application.Common;
 using Processing.Domain.SeedWork;
 
-namespace Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier
+namespace Messaging.Application.OutgoingMessages.RejectRequestChangeOfSupplier
 {
-    public class MessageFactory
+    public class RejectRequestChangeOfSupplierMessageFactory
     {
         private const string Prefix = "cim";
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
         private readonly IMarketActivityRecordParser _marketActivityRecordParser;
 
-        public MessageFactory(ISystemDateTimeProvider systemDateTimeProvider, IMarketActivityRecordParser marketActivityRecordParser)
+        public RejectRequestChangeOfSupplierMessageFactory(ISystemDateTimeProvider systemDateTimeProvider, IMarketActivityRecordParser marketActivityRecordParser)
         {
             _systemDateTimeProvider = systemDateTimeProvider;
             _marketActivityRecordParser = marketActivityRecordParser;
@@ -70,6 +70,14 @@ namespace Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier
                 await writer.WriteAttributeStringAsync(null, "codingScheme", null, "A10").ConfigureAwait(false);
                 writer.WriteValue(marketActivityRecord.MarketEvaluationPointId);
                 await writer.WriteEndElementAsync().ConfigureAwait(false);
+                foreach (var reason in marketActivityRecord.Reasons)
+                {
+                    await writer.WriteStartElementAsync(Prefix, "Reason", null).ConfigureAwait(false);
+                    await writer.WriteElementStringAsync(Prefix, "code", null, reason.Code).ConfigureAwait(false);
+                    await writer.WriteElementStringAsync(Prefix, "text", null, reason.Text).ConfigureAwait(false);
+                    await writer.WriteEndElementAsync().ConfigureAwait(false);
+                }
+
                 await writer.WriteEndElementAsync().ConfigureAwait(false);
             }
         }
@@ -84,15 +92,15 @@ namespace Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier
             await writer.WriteStartDocumentAsync().ConfigureAwait(false);
             await writer.WriteStartElementAsync(
                 Prefix,
-                "ConfirmRequestChangeOfSupplier_MarketDocument",
-                "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1").ConfigureAwait(false);
+                "RejectRequestChangeOfSupplier_MarketDocument",
+                "urn:ediel.org:structure:rejectrequestchangeofsupplier:0:1").ConfigureAwait(false);
             await writer.WriteAttributeStringAsync("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance")
                 .ConfigureAwait(false);
             await writer.WriteAttributeStringAsync(
                     "xsi",
                     "schemaLocation",
                     null,
-                    "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1 urn-ediel-org-structure-confirmrequestchangeofsupplier-0-1.xsd")
+                    "urn:ediel.org:structure:rejectrequestchangeofsupplier:0:1 urn-ediel-org-structure-rejectrequestchangeofsupplier-0-1.xsd")
                 .ConfigureAwait(false);
             await writer.WriteElementStringAsync(Prefix, "mRID", null, GenerateMessageId()).ConfigureAwait(false);
             await writer.WriteElementStringAsync(Prefix, "type", null, "414").ConfigureAwait(false);
@@ -117,7 +125,7 @@ namespace Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier
                 .WriteElementStringAsync(Prefix, "receiver_MarketParticipant.marketRole.type", null, messageHeader.ReceiverRole)
                 .ConfigureAwait(false);
             await writer.WriteElementStringAsync(Prefix, "createdDateTime", null, GetCurrentDateTime()).ConfigureAwait(false);
-            await writer.WriteElementStringAsync(Prefix, "reason.code", null, "A01").ConfigureAwait(false);
+            await writer.WriteElementStringAsync(Prefix, "reason.code", null, "A02").ConfigureAwait(false);
         }
 
         private string GetCurrentDateTime()

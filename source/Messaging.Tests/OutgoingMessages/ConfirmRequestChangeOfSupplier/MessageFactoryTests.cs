@@ -31,7 +31,7 @@ namespace Messaging.Tests.OutgoingMessages.ConfirmRequestChangeOfSupplier
 {
     public class MessageFactoryTests
     {
-        private readonly MessageFactory _messageFactory;
+        private readonly ConfirmRequestChangeOfSupplierMessageFactory _confirmRequestChangeOfSupplierMessageFactory;
         private readonly ISchemaProvider _schemaProvider;
         private readonly IMarketActivityRecordParser _marketActivityRecordParser;
 
@@ -39,7 +39,7 @@ namespace Messaging.Tests.OutgoingMessages.ConfirmRequestChangeOfSupplier
         {
             _schemaProvider = new SchemaProvider(new CimXmlSchemas());
             _marketActivityRecordParser = new MarketActivityRecordParser(new Serializer());
-            _messageFactory = new MessageFactory(
+            _confirmRequestChangeOfSupplierMessageFactory = new ConfirmRequestChangeOfSupplierMessageFactory(
                 new SystemDateTimeProviderStub(),
                 _marketActivityRecordParser);
         }
@@ -54,7 +54,7 @@ namespace Messaging.Tests.OutgoingMessages.ConfirmRequestChangeOfSupplier
                 new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "FakeMarketEvaluationPointId"),
             };
 
-            var message = await _messageFactory.CreateFromAsync(header, marketActivityRecords.Select(record => _marketActivityRecordParser.From(record)).ToList()).ConfigureAwait(false);
+            var message = await _confirmRequestChangeOfSupplierMessageFactory.CreateFromAsync(header, marketActivityRecords.Select(record => _marketActivityRecordParser.From(record)).ToList()).ConfigureAwait(false);
 
             await AssertMessage(message, header, marketActivityRecords).ConfigureAwait(false);
         }
