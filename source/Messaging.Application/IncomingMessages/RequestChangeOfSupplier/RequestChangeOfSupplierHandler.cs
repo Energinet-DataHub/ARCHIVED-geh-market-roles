@@ -51,12 +51,7 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
             var acceptedTransaction = new AcceptedTransaction(incomingMessage.MarketActivityRecord.Id);
             _transactionRepository.Add(acceptedTransaction);
 
-            var businessProcess = new MoveInRequest()
-            {
-                ConsumerName = incomingMessage.MarketActivityRecord.ConsumerName,
-            };
-            var businessProcessResult = await businessProcess.InvokeAsync(businessProcess).ConfigureAwait(false);
-
+            var businessProcessResult = await InvokeBusinessProcessAsync(incomingMessage).ConfigureAwait(false);
             if (businessProcessResult.Success == false)
             {
                 _outgoingMessageStore.Add(RejectMessage(incomingMessage));
@@ -67,6 +62,16 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
             }
 
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
+        }
+
+        private static Task<BusinessRequestResult> InvokeBusinessProcessAsync(IncomingMessage incomingMessage)
+        {
+            var businessProcess = new MoveInRequest()
+            {
+                ConsumerName = incomingMessage.MarketActivityRecord.ConsumerName,
+            };
+
+            return businessProcess.InvokeAsync(businessProcess);
         }
 
         private OutgoingMessage ConfirmMessage(IncomingMessage incomingMessage, string transactionId)
