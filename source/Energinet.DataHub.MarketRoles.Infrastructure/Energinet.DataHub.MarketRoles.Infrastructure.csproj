@@ -49,7 +49,7 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Energinet.DataHub.MarketRoles.Application\Energinet.DataHub.MarketRoles.Application.csproj" />
+    <ProjectReference Include="..\Processing.Application\Processing.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -42,7 +42,7 @@ limitations under the License.
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Energinet.DataHub.MarketRoles.Application\Energinet.DataHub.MarketRoles.Application.csproj" />
+    <ProjectReference Include="..\Processing.Application\Processing.Application.csproj" />
     <ProjectReference Include="..\Energinet.DataHub.MarketRoles.ApplyDBMigrationsApp\Energinet.DataHub.MarketRoles.ApplyDBMigrationsApp.csproj" />
     <ProjectReference Include="..\Energinet.DataHub.MarketRoles.EntryPoints.Ingestion\Energinet.DataHub.MarketRoles.EntryPoints.Ingestion.csproj" />
     <ProjectReference Include="..\Energinet.DataHub.MarketRoles.EntryPoints.Outbox\Energinet.DataHub.MarketRoles.EntryPoints.Outbox.csproj" />

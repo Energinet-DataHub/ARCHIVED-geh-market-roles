@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Energinet.DataHub.MarketRol
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EntryPoints", "EntryPoints", "{FD29AEE1-CB22-41FD-A875-1E99C4D5D81C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Energinet.DataHub.MarketRoles.Application", "Energinet.DataHub.MarketRoles.Application\Energinet.DataHub.MarketRoles.Application.csproj", "{A39FBB1C-52A5-4197-853E-2F97A475C111}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Processing.Application", "Processing.Application\Processing.Application.csproj", "{A39FBB1C-52A5-4197-853E-2F97A475C111}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1E0CD798-F373-475B-AF45-93D02A1D7D2C}"
 EndProject

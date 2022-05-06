@@ -17,6 +17,7 @@ limitations under the License.
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>Energinet.DataHub.MarketRoles.Application</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
