@@ -57,6 +57,24 @@ namespace Messaging.IntegrationTests.IncomingMessages
         }
 
         [Fact]
+        public async Task Confirm_if_business_request_is_valid()
+        {
+            var messageBuilder = new IncomingMessageBuilder();
+            var incomingMessage = messageBuilder
+                .WithProcessType("E03")
+                .WithReceiver("5790001330552")
+                .WithSenderId("123456")
+                .WithConsumerName("John Doe")
+                .Build();
+
+            await _requestChangeOfSupplierHandler.HandleAsync(incomingMessage).ConfigureAwait(false);
+            var confirmMessage = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage.Id)!;
+            await RequestMessage(confirmMessage.Id.ToString()).ConfigureAwait(false);
+
+            await AsserConfirmMessage(confirmMessage).ConfigureAwait(false);
+        }
+
+        [Fact]
         public async Task Reject_if_business_request_is_invalid()
         {
             var messageBuilder = new IncomingMessageBuilder();
@@ -74,7 +92,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
             await AssertRejectMessage(rejectMessage).ConfigureAwait(false);
         }
 
-        private static void AssertHeader(XDocument document, OutgoingMessage message)
+        private static void AssertHeader(XDocument document, OutgoingMessage message, string expectedReasonCode)
         {
             Assert.NotEmpty(AssertXmlMessage.GetMessageHeaderValue(document, "mRID")!);
             AssertXmlMessage.AssertHasHeaderValue(document, "type", "414");
@@ -84,7 +102,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
             AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.marketRole.type", "DDZ");
             AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.mRID", message.RecipientId);
             AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.marketRole.type", message.ReceiverRole);
-            AssertXmlMessage.AssertHasHeaderValue(document, "reason.code", "A02");
+            AssertXmlMessage.AssertHasHeaderValue(document, "reason.code", expectedReasonCode);
         }
 
         private async Task AssertRejectMessage(OutgoingMessage rejectMessage)
@@ -96,7 +114,19 @@ namespace Messaging.IntegrationTests.IncomingMessages
             Assert.True(validationResult.IsValid);
 
             var document = XDocument.Load(messageDispatcher!.DispatchedMessage!);
-            AssertHeader(document, rejectMessage);
+            AssertHeader(document, rejectMessage, "A02");
+        }
+
+        private async Task AsserConfirmMessage(OutgoingMessage message)
+        {
+            var messageDispatcher = GetService<IMessageDispatcher>() as MessageDispatcherSpy;
+            var schema = await GetService<ISchemaProvider>().GetSchemaAsync("confirmrequestchangeofsupplier", "1.0")
+                .ConfigureAwait(false);
+            var validationResult = await MessageValidator.ValidateAsync(messageDispatcher!.DispatchedMessage!, schema!);
+            Assert.True(validationResult.IsValid);
+
+            var document = XDocument.Load(messageDispatcher!.DispatchedMessage!);
+            AssertHeader(document, message, "A01");
         }
 
         private async Task RequestMessage(string id)
