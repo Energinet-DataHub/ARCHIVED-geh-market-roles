@@ -47,7 +47,7 @@ limitations under the License.
     <ProjectReference Include="..\Energinet.DataHub.MarketRoles.EntryPoints.Ingestion\Energinet.DataHub.MarketRoles.EntryPoints.Ingestion.csproj" />
     <ProjectReference Include="..\Energinet.DataHub.MarketRoles.EntryPoints.Outbox\Energinet.DataHub.MarketRoles.EntryPoints.Outbox.csproj" />
     <ProjectReference Include="..\Energinet.DataHub.MarketRoles.EntryPoints.Processing\Energinet.DataHub.MarketRoles.EntryPoints.Processing.csproj" />
-    <ProjectReference Include="..\Energinet.DataHub.MarketRoles.Infrastructure\Energinet.DataHub.MarketRoles.Infrastructure.csproj" />
+    <ProjectReference Include="..\Processing.Infrastructure\Processing.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
