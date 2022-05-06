@@ -66,16 +66,17 @@ namespace Messaging.IntegrationTests.IncomingMessages
                 .Build();
 
             await _requestChangeOfSupplierHandler.HandleAsync(incomingMessage).ConfigureAwait(false);
-            await RequestMessageGeneratedBy(incomingMessage.Id).ConfigureAwait(false);
+            var rejectMessage = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage.Id)!;
+            await RequestMessageGeneratedBy(rejectMessage.Id.ToString()).ConfigureAwait(false);
 
-            await AssertRejectMessage().ConfigureAwait(false);
+            await AssertRejectMessage(rejectMessage).ConfigureAwait(false);
         }
 
-        private static void AssertHeader(XDocument document)
+        private static void AssertHeader(XDocument document, OutgoingMessage message)
         {
             Assert.NotEmpty(AssertXmlMessage.GetMessageHeaderValue(document, "mRID")!);
             AssertXmlMessage.AssertHasHeaderValue(document, "type", "414");
-            // AssertXmlMessage.AssertHasHeaderValue(document, "process.processType", header.ProcessType);
+            AssertXmlMessage.AssertHasHeaderValue(document, "process.processType", message.ProcessType);
             AssertXmlMessage.AssertHasHeaderValue(document, "businessSector.type", "23");
             // AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.mRID", header.SenderId);
             // AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.marketRole.type", "DDZ");
@@ -84,7 +85,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
             AssertXmlMessage.AssertHasHeaderValue(document, "reason.code", "A02");
         }
 
-        private async Task AssertRejectMessage()
+        private async Task AssertRejectMessage(OutgoingMessage rejectMessage)
         {
             var messageDispatcher = GetService<IMessageDispatcher>() as MessageDispatcherSpy;
             var schema = await GetService<ISchemaProvider>().GetSchemaAsync("rejectrequestchangeofsupplier", "1.0")
@@ -93,13 +94,12 @@ namespace Messaging.IntegrationTests.IncomingMessages
             Assert.True(validationResult.IsValid);
 
             var document = XDocument.Load(messageDispatcher!.DispatchedMessage!);
-            AssertHeader(document);
+            AssertHeader(document, rejectMessage);
         }
 
         private async Task RequestMessageGeneratedBy(string id)
         {
-            var rejectMessage = _outgoingMessageStore.GetByOriginalMessageId(id)!;
-            await GetService<MessageRequestHandler>().HandleAsync(new[] { rejectMessage.Id.ToString(), }).ConfigureAwait(false);
+            await GetService<MessageRequestHandler>().HandleAsync(new[] { id }).ConfigureAwait(false);
         }
     }
 }
