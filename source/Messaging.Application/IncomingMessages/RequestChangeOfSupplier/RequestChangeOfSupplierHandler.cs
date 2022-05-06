@@ -20,7 +20,7 @@ using Messaging.Application.Configuration.DataAccess;
 using Messaging.Application.OutgoingMessages;
 using Messaging.Application.Transactions;
 
-namespace Messaging.Application.IncomingMessages
+namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
 {
     public class RequestChangeOfSupplierHandler
     {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Application.IncomingMessages
+namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
 {
     public class MarketActivityRecord
     {

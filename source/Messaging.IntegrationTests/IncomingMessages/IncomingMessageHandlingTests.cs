@@ -14,6 +14,7 @@
 
 using System.Threading.Tasks;
 using Messaging.Application.IncomingMessages;
+using Messaging.Application.IncomingMessages.RequestChangeOfSupplier;
 using Messaging.Application.Transactions;
 using Messaging.IntegrationTests.Fixtures;
 using Xunit;

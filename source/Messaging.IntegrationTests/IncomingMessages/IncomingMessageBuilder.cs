@@ -15,6 +15,7 @@
 using System;
 using Messaging.Application.Configuration;
 using Messaging.Application.IncomingMessages;
+using Messaging.Application.IncomingMessages.RequestChangeOfSupplier;
 
 namespace Messaging.IntegrationTests.IncomingMessages
 {
