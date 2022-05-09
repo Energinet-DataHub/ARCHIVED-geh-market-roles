@@ -20,7 +20,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Messaging.Application.Common;
-using Processing.Domain.SeedWork;
 
 namespace Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier
 {
@@ -30,12 +29,10 @@ namespace Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier
         private const string DocumentType = "ConfirmRequestChangeOfSupplier_MarketDocument";
         private const string XmlNamespace = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
         private const string SchemaLocation = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1 urn-ediel-org-structure-confirmrequestchangeofsupplier-0-1.xsd";
-        private readonly ISystemDateTimeProvider _systemDateTimeProvider;
         private readonly IMarketActivityRecordParser _marketActivityRecordParser;
 
-        public ConfirmRequestChangeOfSupplierMessageFactory(ISystemDateTimeProvider systemDateTimeProvider, IMarketActivityRecordParser marketActivityRecordParser)
+        public ConfirmRequestChangeOfSupplierMessageFactory(IMarketActivityRecordParser marketActivityRecordParser)
         {
-            _systemDateTimeProvider = systemDateTimeProvider;
             _marketActivityRecordParser = marketActivityRecordParser;
         }
 
@@ -80,11 +77,6 @@ namespace Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier
         private static DocumentDetails CreateDocumentDetails()
         {
             return new DocumentDetails(DocumentType, SchemaLocation, XmlNamespace, Prefix);
-        }
-
-        private string GetCurrentDateTime()
-        {
-            return _systemDateTimeProvider.Now().ToString();
         }
 
         private List<MarketActivityRecord> GetMarketActivityRecordsFrom(IReadOnlyCollection<string> marketActivityPayloads)
