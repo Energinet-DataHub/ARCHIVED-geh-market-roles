@@ -81,15 +81,12 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
                 transactionId,
                 incomingMessage.MarketActivityRecord.MarketEvaluationPointId);
 
-            return new OutgoingMessage(
-                "ConfirmRequestChangeOfSupplier",
-                incomingMessage.Message.SenderId,
-                _correlationContext.Id,
+            return CreateOutgoingMessage(
                 incomingMessage.Id,
+                "ConfirmRequestChangeOfSupplier",
                 incomingMessage.Message.ProcessType,
-                "DDQ",
-                incomingMessage.Message.ReceiverId,
-                "DDZ",
+                DataHubDetails.IdentificationNumber,
+                incomingMessage.Message.SenderId,
                 _marketActivityRecordParser.From(marketActivityRecord));
         }
 
@@ -115,12 +112,12 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
         {
             return new OutgoingMessage(
                 documentType,
-                senderId,
+                receiverId,
                 _correlationContext.Id,
                 id,
                 processType,
                 MarketRoles.EnergySupplier,
-                receiverId,
+                senderId,
                 MarketRoles.MeteringPointAdministrator,
                 marketActivityRecordPayload);
         }
