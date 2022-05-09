@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Messaging.Application.Common;
@@ -22,6 +21,7 @@ using Messaging.Application.Configuration.DataAccess;
 using Messaging.Application.OutgoingMessages;
 using Messaging.Application.OutgoingMessages.RejectRequestChangeOfSupplier;
 using Messaging.Application.Transactions;
+using Messaging.Application.Transactions.MoveIn;
 
 namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
 {
@@ -69,12 +69,8 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
 
         private static Task<BusinessRequestResult> InvokeBusinessProcessAsync(IncomingMessage incomingMessage)
         {
-            var businessProcess = new MoveInRequest()
-            {
-                ConsumerName = incomingMessage.MarketActivityRecord.ConsumerName,
-            };
-
-            return businessProcess.InvokeAsync(businessProcess);
+            var businessProcess = new MoveInRequest(incomingMessage.MarketActivityRecord.ConsumerName);
+            return MoveInRequestHandler.InvokeAsync(businessProcess);
         }
 
         private OutgoingMessage ConfirmMessageFrom(IncomingMessage incomingMessage, string transactionId)
@@ -117,59 +113,5 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
                 incomingMessage.Message.ReceiverRole,
                 _marketActivityRecordParser.From(marketActivityRecord));
         }
-    }
-
-    #pragma warning disable
-    public class MoveInRequest
-    {
-        public Task<BusinessRequestResult> InvokeAsync(MoveInRequest moveInRequest)
-        {
-            if (string.IsNullOrEmpty(moveInRequest.ConsumerName))
-            {
-                return Task.FromResult(BusinessRequestResult.Failure(new ZZValidationError("999", "somemessage")));
-            }
-            return Task.FromResult<BusinessRequestResult>(BusinessRequestResult.Succeeded());
-        }
-
-        public string? ConsumerName { get; set; }
-    }
-
-    public class BusinessRequestResult
-    {
-        private BusinessRequestResult()
-        {
-        }
-
-        private BusinessRequestResult(IReadOnlyCollection<ZZValidationError> validationErrors)
-        {
-            ValidationErrors = validationErrors;
-        }
-
-        public bool Success => ValidationErrors.Count == 0;
-
-        public IReadOnlyCollection<ZZValidationError> ValidationErrors { get; } = new List<ZZValidationError>();
-
-        public static BusinessRequestResult Failure(params ZZValidationError[] validationErrors)
-        {
-            return new BusinessRequestResult(validationErrors);
-        }
-
-        public static BusinessRequestResult Succeeded()
-        {
-            return new BusinessRequestResult();
-        }
-    }
-
-    public class ZZValidationError
-    {
-        public ZZValidationError(string code, string message)
-        {
-            Code = code;
-            Message = message;
-        }
-
-        public string Code { get; protected init; } = string.Empty;
-
-        public string Message { get; protected init; } = string.Empty;
     }
 }
