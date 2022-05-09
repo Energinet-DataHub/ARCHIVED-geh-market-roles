@@ -85,7 +85,6 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
                 incomingMessage.Id,
                 "ConfirmRequestChangeOfSupplier",
                 incomingMessage.Message.ProcessType,
-                DataHubDetails.IdentificationNumber,
                 incomingMessage.Message.SenderId,
                 _marketActivityRecordParser.From(marketActivityRecord));
         }
@@ -103,12 +102,11 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
                 incomingMessage.Id,
                 "RejectRequestChangeOfSupplier",
                 incomingMessage.Message.ProcessType,
-                DataHubDetails.IdentificationNumber,
                 incomingMessage.Message.SenderId,
                 _marketActivityRecordParser.From(marketActivityRecord));
         }
 
-        private OutgoingMessage CreateOutgoingMessage(string id, string documentType, string processType, string senderId, string receiverId, string marketActivityRecordPayload)
+        private OutgoingMessage CreateOutgoingMessage(string id, string documentType, string processType, string receiverId, string marketActivityRecordPayload)
         {
             return new OutgoingMessage(
                 documentType,
@@ -117,7 +115,7 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
                 id,
                 processType,
                 MarketRoles.EnergySupplier,
-                senderId,
+                DataHubDetails.IdentificationNumber,
                 MarketRoles.MeteringPointAdministrator,
                 marketActivityRecordPayload);
         }
