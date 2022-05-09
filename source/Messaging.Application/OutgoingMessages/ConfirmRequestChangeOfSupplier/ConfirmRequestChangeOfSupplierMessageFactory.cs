@@ -27,6 +27,9 @@ namespace Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier
     public class ConfirmRequestChangeOfSupplierMessageFactory
     {
         private const string Prefix = "cim";
+        private const string DocumentType = "ConfirmRequestChangeOfSupplier_MarketDocument";
+        private const string XmlNamespace = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1";
+        private const string SchemaLocation = "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1 urn-ediel-org-structure-confirmrequestchangeofsupplier-0-1.xsd";
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
         private readonly IMarketActivityRecordParser _marketActivityRecordParser;
 
@@ -44,7 +47,7 @@ namespace Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier
             var settings = new XmlWriterSettings { OmitXmlDeclaration = false, Encoding = Encoding.UTF8, Async = true };
             var stream = new MemoryStream();
             using var writer = XmlWriter.Create(stream, settings);
-            await WriteMessageHeaderAsync(messageHeader, writer).ConfigureAwait(false);
+            await WriteMessageHeaderAsync(messageHeader, writer, DocumentType, XmlNamespace, SchemaLocation).ConfigureAwait(false);
 
             await WriteMarketActivityRecordsAsync(GetMarketActivityRecordsFrom(marketActivityPayloads), writer).ConfigureAwait(false);
             await writer.WriteEndElementAsync().ConfigureAwait(false);
@@ -79,20 +82,20 @@ namespace Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier
             return MessageIdGenerator.Generate();
         }
 
-        private async Task WriteMessageHeaderAsync(MessageHeader messageHeader, XmlWriter writer)
+        private async Task WriteMessageHeaderAsync(MessageHeader messageHeader, XmlWriter writer, string documentType, string xmlNamespace, string schemaLocation)
         {
             await writer.WriteStartDocumentAsync().ConfigureAwait(false);
             await writer.WriteStartElementAsync(
                 Prefix,
-                "ConfirmRequestChangeOfSupplier_MarketDocument",
-                "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1").ConfigureAwait(false);
+                documentType,
+                xmlNamespace).ConfigureAwait(false);
             await writer.WriteAttributeStringAsync("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance")
                 .ConfigureAwait(false);
             await writer.WriteAttributeStringAsync(
                     "xsi",
                     "schemaLocation",
                     null,
-                    "urn:ediel.org:structure:confirmrequestchangeofsupplier:0:1 urn-ediel-org-structure-confirmrequestchangeofsupplier-0-1.xsd")
+                    schemaLocation)
                 .ConfigureAwait(false);
             await writer.WriteElementStringAsync(Prefix, "mRID", null, GenerateMessageId()).ConfigureAwait(false);
             await writer.WriteElementStringAsync(Prefix, "type", null, "414").ConfigureAwait(false);
