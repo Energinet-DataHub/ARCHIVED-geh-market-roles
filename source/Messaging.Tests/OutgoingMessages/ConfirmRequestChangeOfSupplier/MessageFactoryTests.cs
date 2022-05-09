@@ -24,7 +24,9 @@ using Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier;
 using Messaging.Application.Xml;
 using Messaging.Application.Xml.SchemaStore;
 using Messaging.Infrastructure.Common;
+using Messaging.Infrastructure.Configuration;
 using Messaging.Infrastructure.Configuration.Serialization;
+using Processing.Domain.SeedWork;
 using Xunit;
 
 namespace Messaging.Tests.OutgoingMessages.ConfirmRequestChangeOfSupplier
@@ -34,9 +36,11 @@ namespace Messaging.Tests.OutgoingMessages.ConfirmRequestChangeOfSupplier
         private readonly ConfirmRequestChangeOfSupplierMessageFactory _confirmRequestChangeOfSupplierMessageFactory;
         private readonly ISchemaProvider _schemaProvider;
         private readonly IMarketActivityRecordParser _marketActivityRecordParser;
+        private readonly ISystemDateTimeProvider _systemDateTimeProvider;
 
         public MessageFactoryTests()
         {
+            _systemDateTimeProvider = new SystemDateTimeProvider();
             _schemaProvider = new SchemaProvider(new CimXmlSchemas());
             _marketActivityRecordParser = new MarketActivityRecordParser(new Serializer());
             _confirmRequestChangeOfSupplierMessageFactory = new ConfirmRequestChangeOfSupplierMessageFactory(
@@ -47,7 +51,7 @@ namespace Messaging.Tests.OutgoingMessages.ConfirmRequestChangeOfSupplier
         [Fact]
         public async Task Message_is_valid()
         {
-            var header = new MessageHeader("E03", "SenderId", "DDZ", "ReceiverId", "DDQ");
+            var header = new MessageHeader("E03", "SenderId", "DDZ", "ReceiverId", "DDQ", Guid.NewGuid().ToString(), _systemDateTimeProvider.Now().ToString());
             var marketActivityRecords = new List<MarketActivityRecord>()
             {
                 new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "FakeMarketEvaluationPointId"),

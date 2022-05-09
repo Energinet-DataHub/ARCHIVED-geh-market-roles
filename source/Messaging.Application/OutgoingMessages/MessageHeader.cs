@@ -16,13 +16,15 @@ namespace Messaging.Application.OutgoingMessages
 {
     public class MessageHeader
     {
-        public MessageHeader(string processType, string senderId, string senderRole, string receiverId, string receiverRole)
+        public MessageHeader(string processType, string senderId, string senderRole, string receiverId, string receiverRole, string messageId, string timeStamp)
         {
             ProcessType = processType;
             SenderId = senderId;
             SenderRole = senderRole;
             ReceiverId = receiverId;
             ReceiverRole = receiverRole;
+            MessageId = messageId;
+            TimeStamp = timeStamp;
         }
 
         public string ProcessType { get; }
@@ -34,5 +36,9 @@ namespace Messaging.Application.OutgoingMessages
         public string ReceiverId { get; }
 
         public string ReceiverRole { get; }
+
+        public string MessageId { get; }
+
+        public string TimeStamp { get; }
     }
 }

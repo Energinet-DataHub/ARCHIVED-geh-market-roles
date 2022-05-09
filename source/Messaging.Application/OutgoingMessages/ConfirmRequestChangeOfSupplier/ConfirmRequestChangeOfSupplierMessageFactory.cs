@@ -47,7 +47,7 @@ namespace Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier
             var settings = new XmlWriterSettings { OmitXmlDeclaration = false, Encoding = Encoding.UTF8, Async = true };
             var stream = new MemoryStream();
             using var writer = XmlWriter.Create(stream, settings);
-            await WriteMessageHeaderAsync(messageHeader, writer, DocumentType, XmlNamespace, SchemaLocation).ConfigureAwait(false);
+            await HeaderWriter.WriteAsync(writer, messageHeader, CreateDocumentDetails()).ConfigureAwait(false);
 
             await WriteMarketActivityRecordsAsync(GetMarketActivityRecordsFrom(marketActivityPayloads), writer).ConfigureAwait(false);
             await writer.WriteEndElementAsync().ConfigureAwait(false);
@@ -77,50 +77,9 @@ namespace Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier
             }
         }
 
-        private static string GenerateMessageId()
+        private static DocumentDetails CreateDocumentDetails()
         {
-            return MessageIdGenerator.Generate();
-        }
-
-        private async Task WriteMessageHeaderAsync(MessageHeader messageHeader, XmlWriter writer, string documentType, string xmlNamespace, string schemaLocation)
-        {
-            await writer.WriteStartDocumentAsync().ConfigureAwait(false);
-            await writer.WriteStartElementAsync(
-                Prefix,
-                documentType,
-                xmlNamespace).ConfigureAwait(false);
-            await writer.WriteAttributeStringAsync("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance")
-                .ConfigureAwait(false);
-            await writer.WriteAttributeStringAsync(
-                    "xsi",
-                    "schemaLocation",
-                    null,
-                    schemaLocation)
-                .ConfigureAwait(false);
-            await writer.WriteElementStringAsync(Prefix, "mRID", null, GenerateMessageId()).ConfigureAwait(false);
-            await writer.WriteElementStringAsync(Prefix, "type", null, "414").ConfigureAwait(false);
-            await writer.WriteElementStringAsync(Prefix, "process.processType", null, messageHeader.ProcessType)
-                .ConfigureAwait(false);
-            await writer.WriteElementStringAsync(Prefix, "businessSector.type", null, "23").ConfigureAwait(false);
-
-            await writer.WriteStartElementAsync(Prefix, "sender_MarketParticipant.mRID", null).ConfigureAwait(false);
-            await writer.WriteAttributeStringAsync(null, "codingScheme", null, "A10").ConfigureAwait(false);
-            writer.WriteValue(messageHeader.SenderId);
-            await writer.WriteEndElementAsync().ConfigureAwait(false);
-
-            await writer.WriteElementStringAsync(Prefix, "sender_MarketParticipant.marketRole.type", null, "DDZ")
-                .ConfigureAwait(false);
-
-            await writer.WriteStartElementAsync(Prefix, "receiver_MarketParticipant.mRID", null).ConfigureAwait(false);
-            await writer.WriteAttributeStringAsync(null, "codingScheme", null, "A10").ConfigureAwait(false);
-            writer.WriteValue(messageHeader.ReceiverId);
-            await writer.WriteEndElementAsync().ConfigureAwait(false);
-
-            await writer
-                .WriteElementStringAsync(Prefix, "receiver_MarketParticipant.marketRole.type", null, messageHeader.ReceiverRole)
-                .ConfigureAwait(false);
-            await writer.WriteElementStringAsync(Prefix, "createdDateTime", null, GetCurrentDateTime()).ConfigureAwait(false);
-            await writer.WriteElementStringAsync(Prefix, "reason.code", null, "A01").ConfigureAwait(false);
+            return new DocumentDetails(DocumentType, SchemaLocation, XmlNamespace, Prefix);
         }
 
         private string GetCurrentDateTime()
