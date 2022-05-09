@@ -111,18 +111,17 @@ namespace Messaging.Application.OutgoingMessages
             return messages.All(message => message.ProcessType.Equals(expectedProcessType, StringComparison.OrdinalIgnoreCase));
         }
 
-        private MessageHeader CreateMessageHeaderFrom(OutgoingMessage message)
+        private MessageHeader CreateMessageHeaderFrom(OutgoingMessage message, string reasonCode)
         {
-            return new MessageHeader(message.ProcessType, message.SenderId, message.SenderRole, message.RecipientId, message.ReceiverRole, MessageIdGenerator.Generate(), _systemDateTimeProvider.Now());
+            return new MessageHeader(message.ProcessType, message.SenderId, message.SenderRole, message.RecipientId, message.ReceiverRole, MessageIdGenerator.Generate(), _systemDateTimeProvider.Now(), reasonCode);
         }
 
         private Task<Stream> CreateMessageFromAsync(IReadOnlyCollection<OutgoingMessage> outgoingMessages)
         {
-            var messageHeader = CreateMessageHeaderFrom(outgoingMessages.First());
-
+            var firstMessageInList = outgoingMessages.First();
             return outgoingMessages.First().DocumentType == "ConfirmRequestChangeOfSupplier"
-                ? _confirmRequestChangeOfSupplierMessageFactory.CreateFromAsync(messageHeader, outgoingMessages.Select(message => message.MarketActivityRecordPayload).ToList())
-                : _rejectRequestChangeOfSupplierMessageFactory.CreateFromAsync(messageHeader, outgoingMessages.Select(message => message.MarketActivityRecordPayload).ToList());
+                ? _confirmRequestChangeOfSupplierMessageFactory.CreateFromAsync(CreateMessageHeaderFrom(firstMessageInList, "A01"), outgoingMessages.Select(message => message.MarketActivityRecordPayload).ToList())
+                : _rejectRequestChangeOfSupplierMessageFactory.CreateFromAsync(CreateMessageHeaderFrom(firstMessageInList, "A02"), outgoingMessages.Select(message => message.MarketActivityRecordPayload).ToList());
         }
     }
 }

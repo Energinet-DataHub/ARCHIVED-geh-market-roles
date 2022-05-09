@@ -27,6 +27,9 @@ namespace Messaging.Application.OutgoingMessages.RejectRequestChangeOfSupplier
     public class RejectRequestChangeOfSupplierMessageFactory
     {
         private const string Prefix = "cim";
+        private const string DocumentType = "RejectRequestChangeOfSupplier_MarketDocument";
+        private const string XmlNamespace = "urn:ediel.org:structure:rejectrequestchangeofsupplier:0:1";
+        private const string SchemaLocation = "urn:ediel.org:structure:rejectrequestchangeofsupplier:0:1 urn-ediel-org-structure-rejectrequestchangeofsupplier-0-1.xsd";
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
         private readonly IMarketActivityRecordParser _marketActivityRecordParser;
 
@@ -44,7 +47,7 @@ namespace Messaging.Application.OutgoingMessages.RejectRequestChangeOfSupplier
             var settings = new XmlWriterSettings { OmitXmlDeclaration = false, Encoding = Encoding.UTF8, Async = true };
             var stream = new MemoryStream();
             using var writer = XmlWriter.Create(stream, settings);
-            await WriteMessageHeaderAsync(messageHeader, writer).ConfigureAwait(false);
+            await HeaderWriter.WriteAsync(writer, messageHeader, CreateDocumentDetails()).ConfigureAwait(false);
 
             await WriteMarketActivityRecordsAsync(GetMarketActivityRecordsFrom(marketActivityPayloads), writer).ConfigureAwait(false);
             await writer.WriteEndElementAsync().ConfigureAwait(false);
@@ -80,6 +83,11 @@ namespace Messaging.Application.OutgoingMessages.RejectRequestChangeOfSupplier
 
                 await writer.WriteEndElementAsync().ConfigureAwait(false);
             }
+        }
+
+        private static DocumentDetails CreateDocumentDetails()
+        {
+            return new DocumentDetails(DocumentType, SchemaLocation, XmlNamespace, Prefix);
         }
 
         private static string GenerateMessageId()
