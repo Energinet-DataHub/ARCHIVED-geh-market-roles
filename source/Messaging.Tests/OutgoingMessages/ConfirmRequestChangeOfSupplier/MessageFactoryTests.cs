@@ -43,9 +43,7 @@ namespace Messaging.Tests.OutgoingMessages.ConfirmRequestChangeOfSupplier
             _systemDateTimeProvider = new SystemDateTimeProvider();
             _schemaProvider = new SchemaProvider(new CimXmlSchemas());
             _marketActivityRecordParser = new MarketActivityRecordParser(new Serializer());
-            _confirmRequestChangeOfSupplierMessageFactory = new ConfirmRequestChangeOfSupplierMessageFactory(
-                new SystemDateTimeProviderStub(),
-                _marketActivityRecordParser);
+            _confirmRequestChangeOfSupplierMessageFactory = new ConfirmRequestChangeOfSupplierMessageFactory(_marketActivityRecordParser);
         }
 
         [Fact]
