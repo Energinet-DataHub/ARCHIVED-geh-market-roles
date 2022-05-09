@@ -40,15 +40,11 @@ limitations under the License.
   <ItemGroup>
     <ProjectReference Include="..\Processing.Application\Processing.Application.csproj" />
     <ProjectReference Include="..\Processing.Domain\Processing.Domain.csproj" />
-    <ProjectReference Include="..\Energinet.DataHub.MarketRoles.EntryPoints.Ingestion\Energinet.DataHub.MarketRoles.EntryPoints.Ingestion.csproj" />
-    <ProjectReference Include="..\Energinet.DataHub.MarketRoles.Messaging\Energinet.DataHub.MarketRoles.Messaging.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="EDI\ChangeOfSupplierCimXml.xml" />
-    <EmbeddedResource Include="EDI\ChangeOfSupplierCimXml.xml" />
     <None Remove="EDI\MoveInCimXml.xml" />
-    <EmbeddedResource Include="EDI\MoveInCimXml.xml" />
   </ItemGroup>
 
 </Project>
