@@ -113,7 +113,7 @@ namespace Messaging.Application.OutgoingMessages
 
         private MessageHeader CreateMessageHeaderFrom(OutgoingMessage message)
         {
-            return new MessageHeader(message.ProcessType, message.SenderId, message.SenderRole, message.RecipientId, message.ReceiverRole, MessageIdGenerator.Generate(), _systemDateTimeProvider.Now().ToString());
+            return new MessageHeader(message.ProcessType, message.SenderId, message.SenderRole, message.RecipientId, message.ReceiverRole, MessageIdGenerator.Generate(), _systemDateTimeProvider.Now());
         }
 
         private Task<Stream> CreateMessageFromAsync(IReadOnlyCollection<OutgoingMessage> outgoingMessages)
