@@ -15,6 +15,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Messaging.Application.Common;
 using Messaging.Application.IncomingMessages.RequestChangeOfSupplier;
 using Messaging.Application.OutgoingMessages;
 using Messaging.Application.Transactions;
@@ -102,7 +103,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
             AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.mRID", message.SenderId);
             AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.marketRole.type", message.SenderRole);
             AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.mRID", message.RecipientId);
-            AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.marketRole.type", "DDQ");
+            AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.marketRole.type", MarketRoles.EnergySupplier);
             AssertXmlMessage.AssertHasHeaderValue(document, "reason.code", expectedReasonCode);
         }
 
