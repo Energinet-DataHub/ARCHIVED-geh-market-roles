@@ -87,9 +87,9 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
                 _correlationContext.Id,
                 incomingMessage.Id,
                 incomingMessage.Message.ProcessType,
-                incomingMessage.Message.SenderRole,
+                "DDQ",
                 incomingMessage.Message.ReceiverId,
-                incomingMessage.Message.ReceiverRole,
+                "DDZ",
                 _marketActivityRecordParser.From(marketActivityRecord));
         }
 
@@ -108,9 +108,9 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
                 _correlationContext.Id,
                 incomingMessage.Id,
                 incomingMessage.Message.ProcessType,
-                incomingMessage.Message.SenderRole,
+                "DDQ",
                 incomingMessage.Message.ReceiverId,
-                incomingMessage.Message.ReceiverRole,
+                "DDZ",
                 _marketActivityRecordParser.From(marketActivityRecord));
         }
     }
