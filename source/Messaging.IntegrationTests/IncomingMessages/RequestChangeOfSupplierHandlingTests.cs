@@ -103,7 +103,7 @@ namespace Messaging.IntegrationTests.IncomingMessages
             AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.mRID", message.SenderId);
             AssertXmlMessage.AssertHasHeaderValue(document, "sender_MarketParticipant.marketRole.type", message.SenderRole);
             AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.mRID", message.RecipientId);
-            AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.marketRole.type", MarketRoles.EnergySupplier);
+            AssertXmlMessage.AssertHasHeaderValue(document, "receiver_MarketParticipant.marketRole.type", message.ReceiverRole);
             AssertXmlMessage.AssertHasHeaderValue(document, "reason.code", expectedReasonCode);
         }
 

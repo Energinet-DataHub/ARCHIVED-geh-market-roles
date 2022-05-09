@@ -102,16 +102,27 @@ namespace Messaging.Application.IncomingMessages.RequestChangeOfSupplier
                 incomingMessage.MarketActivityRecord.MarketEvaluationPointId,
                 businessRequestResult.ValidationErrors.Select(validationError => new Reason(validationError.Message, validationError.Code)));
 
-            return new OutgoingMessage(
-                "RejectRequestChangeOfSupplier",
-                incomingMessage.Message.SenderId,
-                _correlationContext.Id,
+            return CreateOutgoingMessage(
                 incomingMessage.Id,
+                "RejectRequestChangeOfSupplier",
                 incomingMessage.Message.ProcessType,
-                "DDQ",
-                incomingMessage.Message.ReceiverId,
-                "DDZ",
+                DataHubDetails.IdentificationNumber,
+                incomingMessage.Message.SenderId,
                 _marketActivityRecordParser.From(marketActivityRecord));
+        }
+
+        private OutgoingMessage CreateOutgoingMessage(string id, string documentType, string processType, string senderId, string receiverId, string marketActivityRecordPayload)
+        {
+            return new OutgoingMessage(
+                documentType,
+                senderId,
+                _correlationContext.Id,
+                id,
+                processType,
+                MarketRoles.EnergySupplier,
+                receiverId,
+                MarketRoles.MeteringPointAdministrator,
+                marketActivityRecordPayload);
         }
     }
 }
