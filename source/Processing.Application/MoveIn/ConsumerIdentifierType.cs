@@ -12,17 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Processing.Application.Common;
+namespace Processing.Application.MoveIn;
 
-namespace Processing.Application.MoveIn
+public static class ConsumerIdentifierType
 {
-    public record MoveInRequest(
-        Consumer Consumer,
-        string TransactionId = "",
-        string EnergySupplierGlnNumber = "",
-        string AccountingPointGsrnNumber = "",
-        string MoveInDate = "")
-        : IBusinessRequest;
-
-    public record Consumer(string Name = "", string Identifier = "", string Type = "");
+    public const string CPR = nameof(CPR);
+    public const string CVR = nameof(CVR);
 }

@@ -21,9 +21,9 @@ using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers.Errors;
 using Processing.Domain.MeteringPoints.Errors;
-using Processing.Domain.SeedWork;
 using Xunit;
 using Xunit.Categories;
+using Consumer = Processing.Application.MoveIn.Consumer;
 
 namespace Processing.IntegrationTests.Application.MoveIn
 {
@@ -38,7 +38,10 @@ namespace Processing.IntegrationTests.Application.MoveIn
         [Fact]
         public async Task Consumer_name_is_required()
         {
-            var request = CreateRequest() with { ConsumerName = string.Empty, };
+            var request = CreateRequest() with
+            {
+                Consumer = new Consumer(),
+            };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
@@ -83,7 +86,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest();
             await SendRequestAsync(request).ConfigureAwait(false);
 
-            var consumer = await GetService<IConsumerRepository>().GetBySSNAsync(CprNumber.Create(request.SocialSecurityNumber)).ConfigureAwait(false);
+            var consumer = await GetService<IConsumerRepository>().GetBySSNAsync(CprNumber.Create(request.Consumer.Identifier)).ConfigureAwait(false);
             Assert.NotNull(consumer);
         }
 
@@ -97,7 +100,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest(false);
             await SendRequestAsync(request).ConfigureAwait(false);
 
-            var consumer = await GetService<IConsumerRepository>().GetByVATNumberAsync(CvrNumber.Create(request.VATNumber)).ConfigureAwait(false);
+            var consumer = await GetService<IConsumerRepository>().GetByVATNumberAsync(CvrNumber.Create(request.Consumer.Identifier)).ConfigureAwait(false);
             Assert.NotNull(consumer);
         }
 
@@ -120,16 +123,15 @@ namespace Processing.IntegrationTests.Application.MoveIn
             Assert.Equal(errorExpected, hasError);
         }
 
-        private MoveInRequest CreateRequest(bool registerConsumerBySSN = true)
+        private static MoveInRequest CreateRequest(bool registerConsumerBySSN = true)
         {
-            var consumerSsn = SampleData.ConsumerSSN;
-            var moveInDate = GetService<ISystemDateTimeProvider>().Now();
+            var consumerIdType = registerConsumerBySSN ? ConsumerIdentifierType.CPR : ConsumerIdentifierType.CVR;
+            var consumerId = consumerIdType == ConsumerIdentifierType.CPR ? SampleData.ConsumerSSN : SampleData.ConsumerVAT;
+
             return new MoveInRequest(
+                new Consumer(SampleData.ConsumerName, consumerId, consumerIdType),
                 SampleData.Transaction,
                 SampleData.GlnNumber,
-                registerConsumerBySSN ? consumerSsn : string.Empty,
-                registerConsumerBySSN == false ? SampleData.ConsumerVAT : string.Empty,
-                SampleData.ConsumerName,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);
         }
