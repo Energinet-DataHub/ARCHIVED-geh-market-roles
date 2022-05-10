@@ -20,9 +20,9 @@ using Processing.Infrastructure.BusinessRequestProcessing;
 
 namespace Processing.Infrastructure.EDI.MoveIn
 {
-    public sealed class RequestMoveInResultHandler : IBusinessProcessResultHandler<RequestMoveIn>
+    public sealed class RequestMoveInResultHandler : IBusinessProcessResultHandler<MoveInRequest>
     {
-        public Task HandleAsync(RequestMoveIn request, BusinessProcessResult result)
+        public Task HandleAsync(MoveInRequest request, BusinessProcessResult result)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (result == null) throw new ArgumentNullException(nameof(result));

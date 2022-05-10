@@ -18,7 +18,7 @@ using Processing.Application.Common.Validation.Consumers;
 
 namespace Processing.Application.MoveIn.Validation
 {
-    public class RequestMoveInRuleSet : AbstractValidator<RequestMoveIn>
+    public class RequestMoveInRuleSet : AbstractValidator<MoveInRequest>
     {
         public RequestMoveInRuleSet()
         {

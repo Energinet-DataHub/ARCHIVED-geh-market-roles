@@ -26,7 +26,7 @@ namespace Processing.Infrastructure.BusinessRequestProcessing.Protobuf.Mappers
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-            return new Processing.Application.MoveIn.RequestMoveIn
+            return new Processing.Application.MoveIn.MoveInRequest
             {
                 TransactionId = obj.TransactionId,
                 EnergySupplierGlnNumber = obj.EnergySupplierGlnNumber,

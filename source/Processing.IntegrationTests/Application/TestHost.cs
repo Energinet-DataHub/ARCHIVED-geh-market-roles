@@ -43,6 +43,7 @@ using Processing.Application.Common.Commands;
 using Processing.Application.Common.DomainEvents;
 using Processing.Application.Common.Processing;
 using Processing.Application.EDI;
+using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Validation;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
@@ -75,7 +76,6 @@ using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using Xunit;
 using RequestChangeOfSupplier = Processing.Application.ChangeOfSupplier.RequestChangeOfSupplier;
-using RequestMoveIn = Processing.Application.MoveIn.RequestMoveIn;
 
 namespace Processing.IntegrationTests.Application
 {
@@ -134,17 +134,17 @@ namespace Processing.IntegrationTests.Application
 
             // Business process responders
             _container.Register<IBusinessProcessResultHandler<RequestChangeOfSupplier>, RequestChangeOfSupplierResultHandler>(Lifestyle.Scoped);
-            _container.Register<IBusinessProcessResultHandler<RequestMoveIn>, RequestMoveInResultHandler>(Lifestyle.Scoped);
+            _container.Register<IBusinessProcessResultHandler<MoveInRequest>, RequestMoveInResultHandler>(Lifestyle.Scoped);
             _container.Register<IActorMessageService, ActorMessageService>(Lifestyle.Scoped);
             _container.Register<IMessageHubDispatcher, MessageHubDispatcher>(Lifestyle.Scoped);
             _container.Register<IActorContext>(() => new ActorContext { CurrentActor = new Actor(Guid.NewGuid(), "GLN", "8200000001409", "GridAccessProvider") }, Lifestyle.Singleton);
 
             // Input validation(
             _container.Register<IValidator<RequestChangeOfSupplier>, RequestChangeOfSupplierRuleSet>(Lifestyle.Scoped);
-            _container.Register<IValidator<RequestMoveIn>, RequestMoveInRuleSet>(Lifestyle.Scoped);
+            _container.Register<IValidator<MoveInRequest>, RequestMoveInRuleSet>(Lifestyle.Scoped);
             _container.AddValidationErrorConversion(
                 validateRegistrations: false,
-                typeof(RequestMoveIn).Assembly, // Application
+                typeof(MoveInRequest).Assembly, // Application
                 typeof(ConsumerMovedIn).Assembly, // Domain
                 typeof(DocumentType).Assembly); // Infrastructure
 

@@ -17,7 +17,7 @@ using Processing.Application.Common.Transport;
 
 namespace Processing.Application.MoveIn
 {
-    public record RequestMoveIn(
+    public record MoveInRequest(
         string TransactionId = "",
         string EnergySupplierGlnNumber = "",
         string SocialSecurityNumber = "",

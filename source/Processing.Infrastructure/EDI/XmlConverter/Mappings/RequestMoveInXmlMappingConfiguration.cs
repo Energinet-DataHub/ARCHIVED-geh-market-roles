@@ -21,7 +21,7 @@ namespace Processing.Infrastructure.EDI.XmlConverter.Mappings
     {
         public RequestMoveInXmlMappingConfiguration()
         {
-            CreateMapping<RequestMoveIn>("MktActivityRecord", mapper => mapper
+            CreateMapping<MoveInRequest>("MktActivityRecord", mapper => mapper
                 .AddProperty(x => x.AccountingPointGsrnNumber, "marketEvaluationPoint.mRID")
                 .AddProperty(x => x.MoveInDate, "start_DateAndOrTime.date")
                 .AddProperty(x => x.EnergySupplierGlnNumber, "marketEvaluationPoint.energySupplier_MarketParticipant.mRID")

@@ -109,11 +109,11 @@ namespace Processing.IntegrationTests.Application.MoveIn
             Assert.Equal(errorExpected, hasError);
         }
 
-        private RequestMoveIn CreateRequest(bool registerConsumerBySSN = true)
+        private MoveInRequest CreateRequest(bool registerConsumerBySSN = true)
         {
             var consumerSsn = SampleData.ConsumerSSN;
             var moveInDate = GetService<ISystemDateTimeProvider>().Now();
-            return new RequestMoveIn(
+            return new MoveInRequest(
                 SampleData.Transaction,
                 SampleData.GlnNumber,
                 registerConsumerBySSN ? consumerSsn : string.Empty,

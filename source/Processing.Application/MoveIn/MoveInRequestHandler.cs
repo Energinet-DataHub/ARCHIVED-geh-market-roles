@@ -27,7 +27,7 @@ using Processing.Domain.MeteringPoints.Errors;
 
 namespace Processing.Application.MoveIn
 {
-    public class MoveInRequestHandler : IBusinessRequestHandler<RequestMoveIn>
+    public class MoveInRequestHandler : IBusinessRequestHandler<MoveInRequest>
     {
         private readonly IAccountingPointRepository _accountingPointRepository;
         private readonly IEnergySupplierRepository _energySupplierRepository;
@@ -43,7 +43,7 @@ namespace Processing.Application.MoveIn
             _consumerRepository = consumerRepository ?? throw new ArgumentNullException(nameof(consumerRepository));
         }
 
-        public async Task<BusinessProcessResult> Handle(RequestMoveIn request, CancellationToken cancellationToken)
+        public async Task<BusinessProcessResult> Handle(MoveInRequest request, CancellationToken cancellationToken)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
@@ -73,38 +73,38 @@ namespace Processing.Application.MoveIn
             return BusinessProcessResult.Ok(request.TransactionId);
         }
 
-        private static BusinessProcessResult CheckBusinessRules(global::Processing.Domain.MeteringPoints.AccountingPoint accountingPoint, RequestMoveIn request)
+        private static BusinessProcessResult CheckBusinessRules(global::Processing.Domain.MeteringPoints.AccountingPoint accountingPoint, MoveInRequest moveInRequest)
         {
-            if (request is null) throw new ArgumentNullException(nameof(request));
+            if (moveInRequest is null) throw new ArgumentNullException(nameof(moveInRequest));
 
-            var moveInDate = InstantPattern.General.Parse(request.MoveInDate).Value;
+            var moveInDate = InstantPattern.General.Parse(moveInRequest.MoveInDate).Value;
 
             var validationResult = accountingPoint.ConsumerMoveInAcceptable(moveInDate);
 
-            return new BusinessProcessResult(request.TransactionId, validationResult.Errors);
+            return new BusinessProcessResult(moveInRequest.TransactionId, validationResult.Errors);
         }
 
-        private async Task<Consumer> GetOrCreateConsumerAsync(RequestMoveIn request)
+        private async Task<Consumer> GetOrCreateConsumerAsync(MoveInRequest moveInRequest)
         {
             Consumer? consumer;
-            if (string.IsNullOrWhiteSpace(request.SocialSecurityNumber) == false)
+            if (string.IsNullOrWhiteSpace(moveInRequest.SocialSecurityNumber) == false)
             {
-                consumer = await _consumerRepository.GetBySSNAsync(CprNumber.Create(request.SocialSecurityNumber)).ConfigureAwait(false);
+                consumer = await _consumerRepository.GetBySSNAsync(CprNumber.Create(moveInRequest.SocialSecurityNumber)).ConfigureAwait(false);
             }
             else
             {
-                consumer = await _consumerRepository.GetByVATNumberAsync(CvrNumber.Create(request.VATNumber)).ConfigureAwait(false);
+                consumer = await _consumerRepository.GetByVATNumberAsync(CvrNumber.Create(moveInRequest.VATNumber)).ConfigureAwait(false);
             }
 
-            return consumer ?? CreateConsumer(request);
+            return consumer ?? CreateConsumer(moveInRequest);
         }
 
-        private Consumer CreateConsumer(RequestMoveIn request)
+        private Consumer CreateConsumer(MoveInRequest moveInRequest)
         {
-            var consumerName = ConsumerName.Create(request.ConsumerName);
-            Consumer consumer = string.IsNullOrWhiteSpace(request.SocialSecurityNumber) == false
-                ? new Consumer(ConsumerId.New(), CprNumber.Create(request.SocialSecurityNumber), consumerName)
-                : new Consumer(ConsumerId.New(), CvrNumber.Create(request.VATNumber), consumerName);
+            var consumerName = ConsumerName.Create(moveInRequest.ConsumerName);
+            Consumer consumer = string.IsNullOrWhiteSpace(moveInRequest.SocialSecurityNumber) == false
+                ? new Consumer(ConsumerId.New(), CprNumber.Create(moveInRequest.SocialSecurityNumber), consumerName)
+                : new Consumer(ConsumerId.New(), CvrNumber.Create(moveInRequest.VATNumber), consumerName);
             _consumerRepository.Add(consumer);
             return consumer;
         }

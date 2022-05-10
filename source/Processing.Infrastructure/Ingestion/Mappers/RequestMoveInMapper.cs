@@ -16,14 +16,14 @@ using System;
 using System.Globalization;
 using Energinet.DataHub.MarketRoles.Contracts;
 using Google.Protobuf;
+using Processing.Application.MoveIn;
 using Processing.Infrastructure.Transport.Protobuf;
-using RequestMoveIn = Processing.Application.MoveIn.RequestMoveIn;
 
 namespace Processing.Infrastructure.Ingestion.Mappers
 {
-    public class RequestMoveInMapper : ProtobufOutboundMapper<RequestMoveIn>
+    public class RequestMoveInMapper : ProtobufOutboundMapper<MoveInRequest>
     {
-        protected override IMessage Convert(RequestMoveIn obj)
+        protected override IMessage Convert(MoveInRequest obj)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
