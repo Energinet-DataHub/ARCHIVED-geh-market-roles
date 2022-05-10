@@ -23,6 +23,7 @@ using Processing.Application.Common;
 using Processing.Application.Common.Validation;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
+using Processing.Domain.EnergySuppliers.Errors;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.MeteringPoints.Errors;
 using Processing.Domain.SeedWork;
@@ -56,6 +57,10 @@ namespace Processing.Application.MoveIn
             }
 
             var energySupplier = await _energySupplierRepository.GetByGlnNumberAsync(new GlnNumber(request.EnergySupplierGlnNumber)).ConfigureAwait(false);
+            if (energySupplier is null)
+            {
+                return BusinessProcessResult.Fail(request.TransactionId, new UnknownEnergySupplier(request.EnergySupplierGlnNumber));
+            }
 
             var validationResult = Validate(energySupplier!, accountingPoint!, request);
             if (validationResult.Success == false)

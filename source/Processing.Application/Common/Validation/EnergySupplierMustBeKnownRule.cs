@@ -30,6 +30,6 @@ namespace Processing.Application.Common.Validation
 
         public bool IsBroken { get; }
 
-        public ValidationError ValidationError => new UnknownEnergySupplier();
+        public ValidationError ValidationError => new UnknownEnergySupplier(_glnNumber);
     }
 }
