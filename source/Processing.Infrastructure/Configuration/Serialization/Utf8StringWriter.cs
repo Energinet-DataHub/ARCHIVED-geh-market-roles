@@ -15,7 +15,7 @@
 using System.IO;
 using System.Text;
 
-namespace Processing.Infrastructure.Serialization
+namespace Processing.Infrastructure.Configuration.Serialization
 {
     public class Utf8StringWriter : StringWriter
     {

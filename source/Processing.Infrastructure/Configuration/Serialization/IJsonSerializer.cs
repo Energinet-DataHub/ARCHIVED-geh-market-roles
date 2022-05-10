@@ -17,7 +17,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Processing.Infrastructure.Serialization
+namespace Processing.Infrastructure.Configuration.Serialization
 {
     /// <summary>
     /// Contract serialization and deserialization of JSON.

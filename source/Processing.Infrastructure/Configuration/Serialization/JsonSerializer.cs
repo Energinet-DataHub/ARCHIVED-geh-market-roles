@@ -17,9 +17,9 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using NodaTime.Serialization.SystemTextJson;
-using Processing.Infrastructure.Serialization.Converters;
+using Processing.Infrastructure.Configuration.Serialization.Converters;
 
-namespace Processing.Infrastructure.Serialization
+namespace Processing.Infrastructure.Configuration.Serialization
 {
     /// <summary>
     /// JSON serializer that specifically support NodaTime's <see cref="NodaTime.Instant"/>.
