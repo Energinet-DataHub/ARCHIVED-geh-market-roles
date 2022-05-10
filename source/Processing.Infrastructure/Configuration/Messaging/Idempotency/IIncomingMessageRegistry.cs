@@ -14,7 +14,7 @@
 
 using System.Threading.Tasks;
 
-namespace Processing.Infrastructure.Messaging.Idempotency
+namespace Processing.Infrastructure.Configuration.Messaging.Idempotency
 {
     /// <summary>
     /// Service for registering coming messages in order to handle message idempotency.
