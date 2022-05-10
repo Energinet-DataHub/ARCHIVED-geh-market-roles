@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using Processing.Domain.SeedWork;
+namespace Messaging.CimMessageAdapter.Messages;
 
-namespace Processing.Api.Dtos;
-
-public class MoveInResponseDto
+internal record RootElement
 {
-    public MoveInResponseDto(IReadOnlyCollection<ValidationError> validationErrors)
+    internal RootElement(string rootElementName, string defaultNamespace)
     {
-        ValidationErrors = validationErrors;
+        RootElementName = rootElementName;
+        DefaultNamespace = defaultNamespace;
     }
 
-    public IReadOnlyCollection<ValidationError> ValidationErrors { get; }
+    public string RootElementName { get; init; }
+
+    public string DefaultNamespace { get; init; }
 }
