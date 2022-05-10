@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
-using Processing.Infrastructure.Messaging.Idempotency;
+using Processing.Infrastructure.Configuration.Messaging.Idempotency;
 
 namespace Processing.Api
 {

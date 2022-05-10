@@ -17,7 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Processing.Domain.SeedWork;
-using Processing.Infrastructure.DataAccess;
+using Processing.Infrastructure.Configuration.DataAccess;
 
 namespace Processing.Infrastructure.BusinessRequestProcessing.Pipeline
 {
