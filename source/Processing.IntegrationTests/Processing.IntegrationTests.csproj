@@ -44,7 +44,7 @@ limitations under the License.
   <ItemGroup>
     <ProjectReference Include="..\Processing.Application\Processing.Application.csproj" />
     <ProjectReference Include="..\Energinet.DataHub.MarketRoles.ApplyDBMigrationsApp\Energinet.DataHub.MarketRoles.ApplyDBMigrationsApp.csproj" />
-    <ProjectReference Include="..\Energinet.DataHub.MarketRoles.EntryPoints.Processing\Energinet.DataHub.MarketRoles.EntryPoints.Processing.csproj" />
+    <ProjectReference Include="..\Processing.Api\Processing.Api.csproj" />
     <ProjectReference Include="..\Processing.Infrastructure\Processing.Infrastructure.csproj" />
   </ItemGroup>
 
