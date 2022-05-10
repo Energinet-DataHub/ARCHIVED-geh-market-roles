@@ -20,10 +20,8 @@ using Processing.Domain.MeteringPoints;
 using Processing.Infrastructure.DataAccess.AccountingPoints;
 using Processing.Infrastructure.DataAccess.Consumers;
 using Processing.Infrastructure.DataAccess.EnergySuppliers;
-using Processing.Infrastructure.DataAccess.MessageHub;
 using Processing.Infrastructure.DataAccess.ProcessManagers;
 using Processing.Infrastructure.InternalCommands;
-using Processing.Infrastructure.LocalMessageHub;
 using Processing.Infrastructure.Outbox;
 
 namespace Processing.Infrastructure.DataAccess
@@ -50,8 +48,6 @@ namespace Processing.Infrastructure.DataAccess
 
         public DbSet<QueuedInternalCommand> QueuedInternalCommands { get; private set; }
 
-        public DbSet<MessageHubMessage> MessageHubMessages { get; private set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));
@@ -64,7 +60,6 @@ namespace Processing.Infrastructure.DataAccess
             modelBuilder.ApplyConfiguration(new ChangeOfSupplierProcessManagerEntityConfiguration());
             modelBuilder.ApplyConfiguration(new MoveInProcessManagerEntityConfiguration());
             modelBuilder.ApplyConfiguration(new QueuedInternalCommandEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new MessageHubMessageEntityConfiguration());
         }
     }
 }
