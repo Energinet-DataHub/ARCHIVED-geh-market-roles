@@ -27,14 +27,14 @@ using Processing.Infrastructure.Serialization;
 
 namespace Processing.Api;
 
-public class MoveIn
+public class MoveInHttpTrigger
 {
-    private readonly ILogger<MoveIn> _logger;
+    private readonly ILogger<MoveInHttpTrigger> _logger;
     private readonly IJsonSerializer _jsonSerializer;
     private readonly IMediator _mediator;
 
-    public MoveIn(
-        ILogger<MoveIn> logger,
+    public MoveInHttpTrigger(
+        ILogger<MoveInHttpTrigger> logger,
         IJsonSerializer jsonSerializer,
         IMediator mediator)
     {
@@ -48,7 +48,7 @@ public class MoveIn
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")]
         HttpRequestData request)
     {
-        _logger.LogInformation($"Received {nameof(MoveIn)} request");
+        _logger.LogInformation($"Received {nameof(MoveInHttpTrigger)} request");
 
         var dto = _jsonSerializer.Deserialize<MoveInRequestDto>(request?.Body.ToString() ?? throw new InvalidOperationException());
         _logger.LogInformation($"Deserialized into move in request dto with transactionId: {dto.TransactionId}");
