@@ -28,13 +28,13 @@ using Processing.Domain.SeedWork;
 
 namespace Processing.Application.MoveIn
 {
-    public class RequestMoveInHandler : IBusinessRequestHandler<RequestMoveIn>
+    public class MoveInRequestHandler : IBusinessRequestHandler<RequestMoveIn>
     {
         private readonly IAccountingPointRepository _accountingPointRepository;
         private readonly IEnergySupplierRepository _energySupplierRepository;
         private readonly IConsumerRepository _consumerRepository;
 
-        public RequestMoveInHandler(
+        public MoveInRequestHandler(
             IAccountingPointRepository accountingPointRepository,
             IEnergySupplierRepository energySupplierRepository,
             IConsumerRepository consumerRepository)
