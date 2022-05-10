@@ -13,11 +13,13 @@
 // limitations under the License.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Processing.Application.ChangeOfSupplier.Validation;
+using Processing.Application.Common;
 using Processing.Application.MoveIn;
 using Processing.Domain.Consumers;
 using Processing.Domain.SeedWork;
-using Processing.Infrastructure.EDI;
 using Xunit;
 using Xunit.Categories;
 
@@ -32,7 +34,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         }
 
         [Fact]
-        public async Task Accept_WhenEnergySupplierDoesNotExists_IsRejected()
+        public async Task Energy_supplier_must_be_known()
         {
             CreateAccountingPoint();
             SaveChanges();
@@ -41,6 +43,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
+            AssertValidationError<EnergySupplierMustBeKnownRuleError>(result);
             Assert.False(result.Success);
         }
 
@@ -95,6 +98,13 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest(false);
             await SendRequestAsync(request).ConfigureAwait(false);
             await SendRequestAsync(request).ConfigureAwait(false);
+        }
+
+        private static void AssertValidationError<TRuleError>(BusinessProcessResult rulesValidationResult, bool errorExpected = true)
+        {
+            if (rulesValidationResult == null) throw new ArgumentNullException(nameof(rulesValidationResult));
+            var hasError = rulesValidationResult.ValidationErrors.Any(error => error is TRuleError);
+            Assert.Equal(errorExpected, hasError);
         }
 
         private RequestMoveIn CreateRequest(bool registerConsumerBySSN = true)
