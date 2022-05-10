@@ -23,7 +23,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Processing.Api.Dtos;
 using Processing.Application.MoveIn;
-using Processing.Infrastructure.Serialization;
+using Processing.Infrastructure.Configuration.Serialization;
 
 namespace Processing.Api;
 
@@ -63,8 +63,6 @@ public class MoveInHttpTrigger
 
         var businessProcessResult = await _mediator.Send(command).ConfigureAwait(false);
         var responseBodyDto = new MoveInResponseDto(
-            businessProcessResult.Success,
-            businessProcessResult.TransactionId,
             businessProcessResult.ValidationErrors);
 
         var response = request.CreateResponse(HttpStatusCode.OK);

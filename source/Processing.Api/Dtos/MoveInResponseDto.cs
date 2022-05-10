@@ -19,16 +19,10 @@ namespace Processing.Api.Dtos;
 
 public class MoveInResponseDto
 {
-    public MoveInResponseDto(bool success, string transactionId, IReadOnlyCollection<ValidationError> validationErrors)
+    public MoveInResponseDto(IReadOnlyCollection<ValidationError> validationErrors)
     {
-        Success = success;
-        TransactionId = transactionId;
         ValidationErrors = validationErrors;
     }
-
-    public bool Success { get; }
-
-    public string TransactionId { get; }
 
     public IReadOnlyCollection<ValidationError> ValidationErrors { get; }
 }
