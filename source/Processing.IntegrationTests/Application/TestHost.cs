@@ -43,6 +43,7 @@ using Processing.Application.Common.Commands;
 using Processing.Application.Common.DomainEvents;
 using Processing.Application.Common.Processing;
 using Processing.Application.EDI;
+using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Validation;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
@@ -51,14 +52,16 @@ using Processing.Domain.MeteringPoints.Events;
 using Processing.Domain.SeedWork;
 using Processing.Infrastructure.BusinessRequestProcessing;
 using Processing.Infrastructure.BusinessRequestProcessing.Pipeline;
+using Processing.Infrastructure.Configuration.Correlation;
+using Processing.Infrastructure.Configuration.DataAccess;
+using Processing.Infrastructure.Configuration.DataAccess.AccountingPoints;
+using Processing.Infrastructure.Configuration.DataAccess.Consumers;
+using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
+using Processing.Infrastructure.Configuration.DataAccess.ProcessManagers;
+using Processing.Infrastructure.Configuration.DomainEventDispatching;
+using Processing.Infrastructure.Configuration.Outbox;
+using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
-using Processing.Infrastructure.Correlation;
-using Processing.Infrastructure.DataAccess;
-using Processing.Infrastructure.DataAccess.AccountingPoints;
-using Processing.Infrastructure.DataAccess.Consumers;
-using Processing.Infrastructure.DataAccess.EnergySuppliers;
-using Processing.Infrastructure.DataAccess.ProcessManagers;
-using Processing.Infrastructure.DomainEventDispatching;
 using Processing.Infrastructure.EDI;
 using Processing.Infrastructure.EDI.ChangeOfSupplier;
 using Processing.Infrastructure.EDI.ChangeOfSupplier.ConsumerDetails;
@@ -67,15 +70,12 @@ using Processing.Infrastructure.EDI.ChangeOfSupplier.MeteringPointDetails;
 using Processing.Infrastructure.EDI.MoveIn;
 using Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
 using Processing.Infrastructure.InternalCommands;
-using Processing.Infrastructure.Outbox;
-using Processing.Infrastructure.Serialization;
 using Processing.Infrastructure.Transport;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using Xunit;
 using RequestChangeOfSupplier = Processing.Application.ChangeOfSupplier.RequestChangeOfSupplier;
-using RequestMoveIn = Processing.Application.MoveIn.RequestMoveIn;
 
 namespace Processing.IntegrationTests.Application
 {
@@ -134,17 +134,17 @@ namespace Processing.IntegrationTests.Application
 
             // Business process responders
             _container.Register<IBusinessProcessResultHandler<RequestChangeOfSupplier>, RequestChangeOfSupplierResultHandler>(Lifestyle.Scoped);
-            _container.Register<IBusinessProcessResultHandler<RequestMoveIn>, RequestMoveInResultHandler>(Lifestyle.Scoped);
+            _container.Register<IBusinessProcessResultHandler<MoveInRequest>, RequestMoveInResultHandler>(Lifestyle.Scoped);
             _container.Register<IActorMessageService, ActorMessageService>(Lifestyle.Scoped);
             _container.Register<IMessageHubDispatcher, MessageHubDispatcher>(Lifestyle.Scoped);
             _container.Register<IActorContext>(() => new ActorContext { CurrentActor = new Actor(Guid.NewGuid(), "GLN", "8200000001409", "GridAccessProvider") }, Lifestyle.Singleton);
 
             // Input validation(
             _container.Register<IValidator<RequestChangeOfSupplier>, RequestChangeOfSupplierRuleSet>(Lifestyle.Scoped);
-            _container.Register<IValidator<RequestMoveIn>, RequestMoveInRuleSet>(Lifestyle.Scoped);
+            _container.Register<IValidator<MoveInRequest>, InputValidationSet>(Lifestyle.Scoped);
             _container.AddValidationErrorConversion(
                 validateRegistrations: false,
-                typeof(RequestMoveIn).Assembly, // Application
+                typeof(MoveInRequest).Assembly, // Application
                 typeof(ConsumerMovedIn).Assembly, // Domain
                 typeof(DocumentType).Assembly); // Infrastructure
 

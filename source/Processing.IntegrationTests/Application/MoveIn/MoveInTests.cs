@@ -13,11 +13,15 @@
 // limitations under the License.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Processing.Application.Common;
 using Processing.Application.MoveIn;
+using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 using Processing.Domain.Consumers;
+using Processing.Domain.EnergySuppliers.Errors;
+using Processing.Domain.MeteringPoints.Errors;
 using Processing.Domain.SeedWork;
-using Processing.Infrastructure.EDI;
 using Xunit;
 using Xunit.Categories;
 
@@ -32,22 +36,17 @@ namespace Processing.IntegrationTests.Application.MoveIn
         }
 
         [Fact]
-        public async Task Accept_WhenConsumerIsRegistered_AcceptMessageIsPublished()
+        public async Task Consumer_name_is_required()
         {
-            CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
-            CreateAccountingPoint();
-            SaveChanges();
-
-            var request = CreateRequest();
+            var request = CreateRequest() with { ConsumerName = string.Empty, };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
-            Assert.True(result.Success);
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.ConfirmMoveIn);
+            AssertValidationError<ConsumerNameIsRequired>(result);
         }
 
         [Fact]
-        public async Task Accept_WhenEnergySupplierDoesNotExists_IsRejected()
+        public async Task Energy_supplier_must_be_known()
         {
             CreateAccountingPoint();
             SaveChanges();
@@ -56,12 +55,12 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
+            AssertValidationError<UnknownEnergySupplier>(result);
             Assert.False(result.Success);
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectMoveIn);
         }
 
         [Fact]
-        public async Task Accept_WhenAccountingPointDoesNotExists_IsRejected()
+        public async Task Accounting_point_must_exist()
         {
             CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
             SaveChanges();
@@ -71,7 +70,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
             Assert.False(result.Success);
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectMoveIn);
+            AssertValidationError<UnknownAccountingPoint>(result);
         }
 
         [Fact]
@@ -112,16 +111,20 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest(false);
             await SendRequestAsync(request).ConfigureAwait(false);
             await SendRequestAsync(request).ConfigureAwait(false);
-
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.ConfirmMoveIn);
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectMoveIn);
         }
 
-        private RequestMoveIn CreateRequest(bool registerConsumerBySSN = true)
+        private static void AssertValidationError<TRuleError>(BusinessProcessResult rulesValidationResult, bool errorExpected = true)
+        {
+            if (rulesValidationResult == null) throw new ArgumentNullException(nameof(rulesValidationResult));
+            var hasError = rulesValidationResult.ValidationErrors.Any(error => error is TRuleError);
+            Assert.Equal(errorExpected, hasError);
+        }
+
+        private MoveInRequest CreateRequest(bool registerConsumerBySSN = true)
         {
             var consumerSsn = SampleData.ConsumerSSN;
             var moveInDate = GetService<ISystemDateTimeProvider>().Now();
-            return new RequestMoveIn(
+            return new MoveInRequest(
                 SampleData.Transaction,
                 SampleData.GlnNumber,
                 registerConsumerBySSN ? consumerSsn : string.Empty,
