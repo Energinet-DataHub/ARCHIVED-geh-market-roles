@@ -17,6 +17,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Processing.Application.Common;
 using Processing.Application.MoveIn;
+using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers.Errors;
 using Processing.Domain.MeteringPoints.Errors;
@@ -32,6 +33,16 @@ namespace Processing.IntegrationTests.Application.MoveIn
         public MoveInTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
+        }
+
+        [Fact]
+        public async Task Consumer_name_is_required()
+        {
+            var request = CreateRequest() with { ConsumerName = string.Empty, };
+
+            var result = await SendRequestAsync(request).ConfigureAwait(false);
+
+            AssertValidationError<ConsumerNameIsRequired>(result);
         }
 
         [Fact]

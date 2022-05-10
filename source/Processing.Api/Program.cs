@@ -178,7 +178,7 @@ namespace Processing.Api
 
             // Input validation(
             container.Register<IValidator<RequestChangeOfSupplier>, RequestChangeOfSupplierRuleSet>(Lifestyle.Scoped);
-            container.Register<IValidator<MoveInRequest>, RequestMoveInRuleSet>(Lifestyle.Scoped);
+            container.Register<IValidator<MoveInRequest>, InputValidationSet>(Lifestyle.Scoped);
             container.AddValidationErrorConversion(
                 validateRegistrations: false,
                 typeof(MoveInRequest).Assembly, // Application

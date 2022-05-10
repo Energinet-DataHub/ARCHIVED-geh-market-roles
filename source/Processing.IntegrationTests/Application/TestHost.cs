@@ -141,7 +141,7 @@ namespace Processing.IntegrationTests.Application
 
             // Input validation(
             _container.Register<IValidator<RequestChangeOfSupplier>, RequestChangeOfSupplierRuleSet>(Lifestyle.Scoped);
-            _container.Register<IValidator<MoveInRequest>, RequestMoveInRuleSet>(Lifestyle.Scoped);
+            _container.Register<IValidator<MoveInRequest>, InputValidationSet>(Lifestyle.Scoped);
             _container.AddValidationErrorConversion(
                 validateRegistrations: false,
                 typeof(MoveInRequest).Assembly, // Application

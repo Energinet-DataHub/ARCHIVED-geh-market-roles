@@ -120,7 +120,7 @@ namespace Processing.Tests.Application.MoveIn.Validation
 
         private static List<ValidationError> GetValidationErrors(MoveInRequest moveInRequest)
         {
-            var ruleSet = new RequestMoveInRuleSet();
+            var ruleSet = new InputValidationSet();
             var validationResult = ruleSet.Validate(moveInRequest);
             return validationResult.Errors
                 .Select(error => (ValidationError)error.CustomState)

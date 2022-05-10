@@ -15,13 +15,17 @@
 using FluentValidation;
 using Processing.Application.Common.Validation;
 using Processing.Application.Common.Validation.Consumers;
+using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 
 namespace Processing.Application.MoveIn.Validation
 {
-    public class RequestMoveInRuleSet : AbstractValidator<MoveInRequest>
+    public class InputValidationSet : AbstractValidator<MoveInRequest>
     {
-        public RequestMoveInRuleSet()
+        public InputValidationSet()
         {
+            RuleFor(request => request.ConsumerName)
+                .NotEmpty()
+                .WithState(_ => new ConsumerNameIsRequired());
             RuleFor(request => request.AccountingPointGsrnNumber).SetValidator(new GsrnNumberMustBeValidRule());
             RuleFor(request => request.SocialSecurityNumber)
                 .SetValidator(new SocialSecurityNumberMustBeValid())
