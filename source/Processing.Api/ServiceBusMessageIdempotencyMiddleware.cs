@@ -19,7 +19,7 @@ using Microsoft.Azure.Functions.Worker.Middleware;
 using Microsoft.Extensions.Logging;
 using Processing.Infrastructure.Messaging.Idempotency;
 
-namespace Energinet.DataHub.MarketRoles.EntryPoints.Processing
+namespace Processing.Api
 {
     public class ServiceBusMessageIdempotencyMiddleware : IFunctionsWorkerMiddleware
     {

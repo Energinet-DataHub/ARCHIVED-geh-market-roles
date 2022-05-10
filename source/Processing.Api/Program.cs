@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 using System;
 using System.Threading.Tasks;
 using Energinet.DataHub.Core.App.Common;
@@ -69,7 +70,7 @@ using SimpleInjector;
 
 [assembly: CLSCompliant(false)]
 
-namespace Energinet.DataHub.MarketRoles.EntryPoints.Processing
+namespace Processing.Api
 {
     public class Program : EntryPoint
     {
@@ -159,10 +160,10 @@ namespace Energinet.DataHub.MarketRoles.EntryPoints.Processing
                     typeof(BusinessProcessResponderBehaviour<,>),
                 });
 
-            container.ReceiveProtobuf<Contracts.MarketRolesEnvelope>(
+            container.ReceiveProtobuf<Energinet.DataHub.MarketRoles.Contracts.MarketRolesEnvelope>(
                 config => config
                     .FromOneOf(envelope => envelope.MarketRolesMessagesCase)
-                    .WithParser(() => Contracts.MarketRolesEnvelope.Parser));
+                    .WithParser(() => Energinet.DataHub.MarketRoles.Contracts.MarketRolesEnvelope.Parser));
 
             container.SendProtobuf<Energinet.DataHub.MarketRoles.IntegrationEventContracts.EnergySupplierChanged>();
 
