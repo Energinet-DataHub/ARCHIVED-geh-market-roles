@@ -111,7 +111,6 @@ namespace Energinet.DataHub.MarketRoles.EntryPoints.Processing
                 throw new ArgumentNullException(nameof(container));
             base.ConfigureContainer(container);
 
-            container.Register<QueueSubscriber>(Lifestyle.Scoped);
             container.Register<CorrelationIdMiddleware>(Lifestyle.Scoped);
             container.Register<ICorrelationContext, CorrelationContext>(Lifestyle.Scoped);
             container.Register<EntryPointTelemetryScopeMiddleware>(Lifestyle.Scoped);
