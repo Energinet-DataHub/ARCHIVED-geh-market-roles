@@ -106,7 +106,7 @@ namespace Processing.Tests.Application.MoveIn.Validation
             Assert.Contains(errors, error => error is VATNumberMustBeValidRuleError);
         }
 
-        private static RequestMoveIn CreateRequest(string socialSecurityNumber, string vatNumber)
+        private static MoveInRequest CreateRequest(string socialSecurityNumber, string vatNumber)
         {
             return new(
                 SampleData.Transaction,
@@ -118,10 +118,10 @@ namespace Processing.Tests.Application.MoveIn.Validation
                 SampleData.StartDate);
         }
 
-        private static List<ValidationError> GetValidationErrors(RequestMoveIn request)
+        private static List<ValidationError> GetValidationErrors(MoveInRequest moveInRequest)
         {
-            var ruleSet = new RequestMoveInRuleSet();
-            var validationResult = ruleSet.Validate(request);
+            var ruleSet = new InputValidationSet();
+            var validationResult = ruleSet.Validate(moveInRequest);
             return validationResult.Errors
                 .Select(error => (ValidationError)error.CustomState)
                 .ToList();

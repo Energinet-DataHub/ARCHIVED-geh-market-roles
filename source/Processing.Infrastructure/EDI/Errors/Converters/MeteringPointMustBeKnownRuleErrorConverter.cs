@@ -15,12 +15,13 @@
 using System.Diagnostics.CodeAnalysis;
 using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.EDI;
+using Processing.Domain.MeteringPoints.Errors;
 
 namespace Processing.Infrastructure.EDI.Errors.Converters
 {
-    public class MeteringPointMustBeKnownRuleErrorConverter : ErrorConverter<MeteringPointMustBeKnownRuleError>
+    public class MeteringPointMustBeKnownRuleErrorConverter : ErrorConverter<UnknownAccountingPoint>
     {
-        protected override ErrorMessage Convert([NotNull] MeteringPointMustBeKnownRuleError validationError)
+        protected override ErrorMessage Convert([NotNull] UnknownAccountingPoint validationError)
         {
             return new("E10", $"GSRN-code {validationError.GsrnNumber} unknown: The specified metering point has not been registered in the system.");
         }
