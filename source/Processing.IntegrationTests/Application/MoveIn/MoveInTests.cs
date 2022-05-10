@@ -123,12 +123,25 @@ namespace Processing.IntegrationTests.Application.MoveIn
             Assert.Equal(errorExpected, hasError);
         }
 
-        private MoveInRequest CreateRequest(bool registerConsumerBySSN = true)
+        private static MoveInRequest CreateRequest(bool registerConsumerBySSN = true)
         {
             var consumerSsn = SampleData.ConsumerSSN;
-            var moveInDate = GetService<ISystemDateTimeProvider>().Now();
+
+            var consumerId = string.Empty;
+            var consumerIdType = string.Empty;
+            if (registerConsumerBySSN)
+            {
+                consumerId = SampleData.ConsumerSSN;
+                consumerIdType = "CPR";
+            }
+            else
+            {
+                consumerId = SampleData.ConsumerVAT;
+                consumerIdType = "CVR";
+            }
+
             return new MoveInRequest(
-                new XConsumer(SampleData.ConsumerName),
+                new XConsumer(SampleData.ConsumerName, consumerId, consumerIdType),
                 SampleData.Transaction,
                 SampleData.GlnNumber,
                 registerConsumerBySSN ? consumerSsn : string.Empty,
