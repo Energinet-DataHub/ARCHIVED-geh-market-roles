@@ -13,20 +13,17 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
 using NodaTime.Text;
 using Processing.Application.Common;
-using Processing.Application.Common.Validation;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.EnergySuppliers.Errors;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.MeteringPoints.Errors;
-using Processing.Domain.SeedWork;
 
 namespace Processing.Application.MoveIn
 {
@@ -62,13 +59,7 @@ namespace Processing.Application.MoveIn
                 return BusinessProcessResult.Fail(request.TransactionId, new UnknownEnergySupplier(request.EnergySupplierGlnNumber));
             }
 
-            var validationResult = Validate(energySupplier!, accountingPoint!, request);
-            if (validationResult.Success == false)
-            {
-                return validationResult;
-            }
-
-            var businessRulesResult = CheckBusinessRules(accountingPoint!, request);
+            var businessRulesResult = CheckBusinessRules(accountingPoint, request);
             if (!businessRulesResult.Success)
             {
                 return businessRulesResult;
@@ -80,17 +71,6 @@ namespace Processing.Application.MoveIn
 
             accountingPoint.AcceptConsumerMoveIn(consumer.ConsumerId, energySupplier!.EnergySupplierId, startDate, Transaction.Create(request.TransactionId));
             return BusinessProcessResult.Ok(request.TransactionId);
-        }
-
-        private static BusinessProcessResult Validate(EnergySupplier energySupplier, global::Processing.Domain.MeteringPoints.AccountingPoint accountingPoint, RequestMoveIn request)
-        {
-            var rules = new List<IBusinessRule>()
-            {
-                new EnergySupplierMustBeKnownRule(energySupplier, request.EnergySupplierGlnNumber),
-                new MeteringPointMustBeKnownRule(accountingPoint, request.AccountingPointGsrnNumber),
-            };
-
-            return new BusinessProcessResult(request.TransactionId, rules);
         }
 
         private static BusinessProcessResult CheckBusinessRules(global::Processing.Domain.MeteringPoints.AccountingPoint accountingPoint, RequestMoveIn request)
