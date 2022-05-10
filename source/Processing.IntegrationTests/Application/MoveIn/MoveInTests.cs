@@ -32,21 +32,6 @@ namespace Processing.IntegrationTests.Application.MoveIn
         }
 
         [Fact]
-        public async Task Accept_WhenConsumerIsRegistered_AcceptMessageIsPublished()
-        {
-            CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
-            CreateAccountingPoint();
-            SaveChanges();
-
-            var request = CreateRequest();
-
-            var result = await SendRequestAsync(request).ConfigureAwait(false);
-
-            Assert.True(result.Success);
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.ConfirmMoveIn);
-        }
-
-        [Fact]
         public async Task Accept_WhenEnergySupplierDoesNotExists_IsRejected()
         {
             CreateAccountingPoint();
@@ -57,7 +42,6 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
             Assert.False(result.Success);
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectMoveIn);
         }
 
         [Fact]
@@ -71,7 +55,6 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
             Assert.False(result.Success);
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectMoveIn);
         }
 
         [Fact]
@@ -112,9 +95,6 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest(false);
             await SendRequestAsync(request).ConfigureAwait(false);
             await SendRequestAsync(request).ConfigureAwait(false);
-
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.ConfirmMoveIn);
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectMoveIn);
         }
 
         private RequestMoveIn CreateRequest(bool registerConsumerBySSN = true)
