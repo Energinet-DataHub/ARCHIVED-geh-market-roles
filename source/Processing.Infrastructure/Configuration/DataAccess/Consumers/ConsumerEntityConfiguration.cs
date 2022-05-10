@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Processing.Domain.Consumers;
 
-namespace Processing.Infrastructure.DataAccess.Consumers
+namespace Processing.Infrastructure.Configuration.DataAccess.Consumers
 {
     public class ConsumerEntityConfiguration : IEntityTypeConfiguration<Consumer>
     {

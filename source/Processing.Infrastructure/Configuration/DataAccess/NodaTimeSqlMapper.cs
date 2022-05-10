@@ -18,7 +18,7 @@ using System.Data;
 using Dapper;
 using NodaTime;
 
-namespace Processing.Infrastructure.DataAccess
+namespace Processing.Infrastructure.Configuration.DataAccess
 {
     public class NodaTimeSqlMapper : SqlMapper.TypeHandler<Instant>
     {

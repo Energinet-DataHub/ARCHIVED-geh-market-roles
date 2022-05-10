@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Processing.Domain.Consumers;
 
-namespace Processing.Infrastructure.DataAccess.Consumers
+namespace Processing.Infrastructure.Configuration.DataAccess.Consumers
 {
     public class ConsumerRepository : IConsumerRepository
     {

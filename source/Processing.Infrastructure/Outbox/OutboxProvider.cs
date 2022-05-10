@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System;
-using Processing.Infrastructure.DataAccess;
+using Processing.Infrastructure.Configuration.DataAccess;
 
 namespace Processing.Infrastructure.Outbox
 {

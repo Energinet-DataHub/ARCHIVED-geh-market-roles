@@ -19,7 +19,7 @@ using Dapper;
 using MediatR;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints.Events;
-using Processing.Infrastructure.DataAccess;
+using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Outbox;
 
 namespace Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange

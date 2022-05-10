@@ -16,7 +16,7 @@ using System;
 using System.Data;
 using Microsoft.Data.SqlClient;
 
-namespace Processing.Infrastructure.DataAccess
+namespace Processing.Infrastructure.Configuration.DataAccess
 {
     public class SqlDbConnectionFactory : IDbConnectionFactory, IDisposable
     {

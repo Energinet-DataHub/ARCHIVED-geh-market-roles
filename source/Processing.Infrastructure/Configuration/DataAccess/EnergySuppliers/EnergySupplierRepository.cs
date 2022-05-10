@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Processing.Domain.EnergySuppliers;
 
-namespace Processing.Infrastructure.DataAccess.EnergySuppliers
+namespace Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers
 {
     public class EnergySupplierRepository : IEnergySupplierRepository
     {

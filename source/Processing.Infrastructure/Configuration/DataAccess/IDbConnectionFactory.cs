@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
+using System.Data;
 
-namespace Processing.Infrastructure.DataAccess
+namespace Processing.Infrastructure.Configuration.DataAccess
 {
     /// <summary>
-    /// Unit of work for handling database transctions
+    /// Factory for creating database connections
     /// </summary>
-    public interface IUnitOfWork
+    public interface IDbConnectionFactory
     {
         /// <summary>
-        /// Commits the transaction
+        /// Returns and existing open connection if any, or creates a new open connection
         /// </summary>
-        /// <returns><see cref="Task"/></returns>
-        Task CommitAsync();
+        /// <returns><see cref="IDbConnection"/></returns>
+        IDbConnection GetOpenConnection();
     }
 }

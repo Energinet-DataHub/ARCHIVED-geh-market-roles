@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Processing.Domain.MeteringPoints;
 
-namespace Processing.Infrastructure.DataAccess.AccountingPoints
+namespace Processing.Infrastructure.Configuration.DataAccess.AccountingPoints
 {
     public class AccountingPointRepository : IAccountingPointRepository
     {

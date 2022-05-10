@@ -15,20 +15,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Processing.Application.MoveIn.Processing;
+using Processing.Application.ChangeOfSupplier.Processing;
 
-namespace Processing.Infrastructure.DataAccess.ProcessManagers
+namespace Processing.Infrastructure.Configuration.DataAccess.ProcessManagers
 {
-    public class MoveInProcessManagerEntityConfiguration : IEntityTypeConfiguration<MoveInProcessManager>
+    public class ChangeOfSupplierProcessManagerEntityConfiguration : IEntityTypeConfiguration<ChangeOfSupplierProcessManager>
     {
-        public void Configure(EntityTypeBuilder<MoveInProcessManager> builder)
+        public void Configure(EntityTypeBuilder<ChangeOfSupplierProcessManager> builder)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
-            builder.Property<MoveInProcessManager.State>("_state")
+            builder.Property<ChangeOfSupplierProcessManager.State>("_state")
                 .HasColumnName("State")
                 .HasConversion(
                     toDbValue => toDbValue,
-                    fromDbValue => Enum.Parse<MoveInProcessManager.State>(fromDbValue.ToString()));
+                    fromDbValue => Enum.Parse<ChangeOfSupplierProcessManager.State>(fromDbValue.ToString()));
         }
     }
 }

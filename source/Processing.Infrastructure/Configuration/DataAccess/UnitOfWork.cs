@@ -15,7 +15,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Processing.Infrastructure.DataAccess
+namespace Processing.Infrastructure.Configuration.DataAccess
 {
     public class UnitOfWork : IUnitOfWork
     {

@@ -17,14 +17,14 @@ using Microsoft.EntityFrameworkCore;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
-using Processing.Infrastructure.DataAccess.AccountingPoints;
-using Processing.Infrastructure.DataAccess.Consumers;
-using Processing.Infrastructure.DataAccess.EnergySuppliers;
-using Processing.Infrastructure.DataAccess.ProcessManagers;
+using Processing.Infrastructure.Configuration.DataAccess.AccountingPoints;
+using Processing.Infrastructure.Configuration.DataAccess.Consumers;
+using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
+using Processing.Infrastructure.Configuration.DataAccess.ProcessManagers;
 using Processing.Infrastructure.InternalCommands;
 using Processing.Infrastructure.Outbox;
 
-namespace Processing.Infrastructure.DataAccess
+namespace Processing.Infrastructure.Configuration.DataAccess
 {
     public class MarketRolesContext : DbContext
     {

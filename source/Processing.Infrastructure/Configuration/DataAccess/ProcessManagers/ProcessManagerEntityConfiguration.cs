@@ -18,7 +18,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Processing.Application.Common.Processing;
 using Processing.Domain.MeteringPoints;
 
-namespace Processing.Infrastructure.DataAccess.ProcessManagers
+namespace Processing.Infrastructure.Configuration.DataAccess.ProcessManagers
 {
     public class ProcessManagerEntityConfiguration : IEntityTypeConfiguration<ProcessManager>
     {

@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Processing.Domain.EnergySuppliers;
 
-namespace Processing.Infrastructure.DataAccess.EnergySuppliers
+namespace Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers
 {
     internal class EnergySupplierEntityConfiguration : IEntityTypeConfiguration<EnergySupplier>
     {
