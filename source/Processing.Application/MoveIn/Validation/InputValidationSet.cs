@@ -28,12 +28,16 @@ namespace Processing.Application.MoveIn.Validation
                 .NotEmpty()
                 .WithState(_ => new ConsumerNameIsRequired());
             RuleFor(request => request.AccountingPointGsrnNumber).SetValidator(new GsrnNumberMustBeValidRule());
-            RuleFor(request => request.Consumer.Identifier)
-                .SetValidator(new SocialSecurityNumberMustBeValid())
-                .When(x => x.Consumer.Type.Equals("CPR", StringComparison.OrdinalIgnoreCase));
-            RuleFor(request => request.Consumer.Identifier)
-                .SetValidator(new VATNumberMustBeValidRule())
-                .When(x => x.Consumer.Type.Equals("CVR", StringComparison.OrdinalIgnoreCase));
+            When(request => request.Consumer.Type.Equals(ConsumerIdentifierType.CPR, StringComparison.OrdinalIgnoreCase), () =>
+            {
+                RuleFor(request => request.Consumer.Identifier)
+                    .SetValidator(new SocialSecurityNumberMustBeValid());
+            });
+            When(request => request.Consumer.Type.Equals(ConsumerIdentifierType.CVR, StringComparison.OrdinalIgnoreCase), () =>
+            {
+                RuleFor(request => request.Consumer.Identifier)
+                    .SetValidator(new VATNumberMustBeValidRule());
+            });
         }
     }
 }
