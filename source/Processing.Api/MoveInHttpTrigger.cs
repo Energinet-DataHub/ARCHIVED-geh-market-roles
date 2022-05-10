@@ -53,21 +53,8 @@ public class MoveInHttpTrigger
         var dto = _jsonSerializer.Deserialize<MoveInRequestDto>(request?.Body.ToString() ?? throw new InvalidOperationException());
         _logger.LogInformation($"Deserialized into move in request dto with transactionId: {dto.TransactionId}");
 
-        var consumerId = string.Empty;
-        var consumerIdType = string.Empty;
-        if (string.IsNullOrEmpty(dto.SocialSecurityNumber) == false)
-        {
-            consumerId = dto.SocialSecurityNumber;
-            consumerIdType = ConsumerIdentifierType.CPR;
-        }
-        else
-        {
-            consumerId = dto.VATNumber;
-            consumerIdType = ConsumerIdentifierType.CVR;
-        }
-
         var command = new MoveInRequest(
-            new XConsumer(dto.ConsumerName ?? string.Empty, consumerId ?? string.Empty, consumerIdType),
+            ExtractConsumerFrom(dto),
             dto.TransactionId,
             dto.EnergySupplierGlnNumber ?? string.Empty,
             dto.AccountingPointGsrnNumber,
@@ -84,5 +71,23 @@ public class MoveInHttpTrigger
         var response = request.CreateResponse(HttpStatusCode.OK);
         response.Body = new MemoryStream(Encoding.UTF8.GetBytes(_jsonSerializer.Serialize(responseBodyDto)));
         return response;
+    }
+
+    private static XConsumer ExtractConsumerFrom(MoveInRequestDto request)
+    {
+        var consumerId = string.Empty;
+        var consumerIdType = string.Empty;
+        if (string.IsNullOrEmpty(request.SocialSecurityNumber) == false)
+        {
+            consumerId = request.SocialSecurityNumber;
+            consumerIdType = ConsumerIdentifierType.CPR;
+        }
+        else
+        {
+            consumerId = request.VATNumber;
+            consumerIdType = ConsumerIdentifierType.CVR;
+        }
+
+        return new XConsumer(request.ConsumerName ?? string.Empty, consumerId ?? string.Empty, consumerIdType);
     }
 }
