@@ -61,9 +61,9 @@ namespace Processing.Application.Common
             return new BusinessProcessResult(transactionId, true);
         }
 
-        public static BusinessProcessResult Fail(string transactionId)
+        public static BusinessProcessResult Fail(string transactionId, params ValidationError[] validationErrors)
         {
-            return new BusinessProcessResult(transactionId, false);
+            return new BusinessProcessResult(transactionId, validationErrors);
         }
 
         private void SetValidationErrors(IEnumerable<IBusinessRule> rules)

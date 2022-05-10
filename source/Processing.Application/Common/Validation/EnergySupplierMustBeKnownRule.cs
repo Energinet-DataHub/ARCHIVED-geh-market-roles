@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Domain.EnergySuppliers;
+using Processing.Domain.EnergySuppliers.Errors;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Application.Common.Validation
@@ -30,6 +30,6 @@ namespace Processing.Application.Common.Validation
 
         public bool IsBroken { get; }
 
-        public ValidationError ValidationError => new EnergySupplierMustBeKnownRuleError();
+        public ValidationError ValidationError => new UnknownEnergySupplier(_glnNumber);
     }
 }

@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using Processing.Application.Common;
-using Processing.Application.Common.Transport;
 
 namespace Processing.Application.MoveIn
 {
-    public record RequestMoveIn(
+    public record MoveInRequest(
         string TransactionId = "",
         string EnergySupplierGlnNumber = "",
         string SocialSecurityNumber = "",
@@ -25,5 +24,5 @@ namespace Processing.Application.MoveIn
         string ConsumerName = "",
         string AccountingPointGsrnNumber = "",
         string MoveInDate = "")
-        : IBusinessRequest, IOutboundMessage, IInboundMessage;
+        : IBusinessRequest;
 }

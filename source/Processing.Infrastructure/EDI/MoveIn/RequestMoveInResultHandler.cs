@@ -13,66 +13,21 @@
 // limitations under the License.
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Processing.Application.Common;
-using Processing.Application.EDI;
 using Processing.Application.MoveIn;
-using Processing.Domain.SeedWork;
 using Processing.Infrastructure.BusinessRequestProcessing;
-using Processing.Infrastructure.Correlation;
 
 namespace Processing.Infrastructure.EDI.MoveIn
 {
-    public sealed class RequestMoveInResultHandler : IBusinessProcessResultHandler<RequestMoveIn>
+    public sealed class RequestMoveInResultHandler : IBusinessProcessResultHandler<MoveInRequest>
     {
-        private readonly IActorMessageService _actorMessageService;
-        private readonly ErrorMessageFactory _errorMessageFactory;
-        private readonly ICorrelationContext _correlationContext;
-        private readonly ISystemDateTimeProvider _dateTimeProvider;
-
-        public RequestMoveInResultHandler(
-            IActorMessageService actorMessageService,
-            ErrorMessageFactory errorMessageFactory,
-            ICorrelationContext correlationContext,
-            ISystemDateTimeProvider dateTimeProvider)
-        {
-            _actorMessageService = actorMessageService;
-            _errorMessageFactory = errorMessageFactory;
-            _correlationContext = correlationContext;
-            _dateTimeProvider = dateTimeProvider;
-        }
-
-        public Task HandleAsync(RequestMoveIn request, BusinessProcessResult result)
+        public Task HandleAsync(MoveInRequest request, BusinessProcessResult result)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (result == null) throw new ArgumentNullException(nameof(result));
 
-            return result.Success
-                ? CreateAcceptResponseAsync(request)
-                : CreateRejectResponseAsync(request, result);
-        }
-
-        private async Task CreateAcceptResponseAsync(RequestMoveIn request)
-        {
-            if (request == null) throw new ArgumentNullException(nameof(request));
-
-            await _actorMessageService
-                .SendMoveInConfirmAsync(
-                    request.TransactionId,
-                    request.AccountingPointGsrnNumber)
-                .ConfigureAwait(false);
-        }
-
-        private async Task CreateRejectResponseAsync(RequestMoveIn request, BusinessProcessResult result)
-        {
-            var errors = result.ValidationErrors
-                .Select(error => _errorMessageFactory.GetErrorMessage(error))
-                .AsEnumerable();
-
-            await _actorMessageService
-                .SendMoveInRejectAsync(request.TransactionId, request.AccountingPointGsrnNumber, errors)
-                .ConfigureAwait(false);
+            return Task.CompletedTask;
         }
     }
 }
