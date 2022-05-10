@@ -19,8 +19,8 @@ using Dapper;
 using MediatR;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints.Events;
-using Processing.Infrastructure.DataAccess;
-using Processing.Infrastructure.Outbox;
+using Processing.Infrastructure.Configuration.DataAccess;
+using Processing.Infrastructure.Configuration.Outbox;
 
 namespace Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySupplierChangeRegistered
 {
