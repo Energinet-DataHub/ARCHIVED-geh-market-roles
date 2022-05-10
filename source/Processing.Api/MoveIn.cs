@@ -21,9 +21,7 @@ using MediatR;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using Processing.Api.DTO;
 using Processing.Api.Dtos;
-using Processing.Application.ChangeOfSupplier;
 using Processing.Application.MoveIn;
 using Processing.Infrastructure.Serialization;
 
@@ -53,6 +51,7 @@ public class MoveIn
         _logger.LogInformation($"Received {nameof(MoveIn)} request");
 
         var dto = _jsonSerializer.Deserialize<MoveInRequestDto>(request?.Body.ToString() ?? throw new InvalidOperationException());
+        _logger.LogInformation($"Deserialized into move in request dto with transactionId: {dto.TransactionId}");
         var command = new MoveInRequest(
             dto.TransactionId,
             dto.EnergySupplierGlnNumber ?? string.Empty,
@@ -62,9 +61,14 @@ public class MoveIn
             dto.AccountingPointGsrnNumber,
             dto.StartDate);
 
-        var responseBody = _jsonSerializer.Serialize(await _mediator.Send(command).ConfigureAwait(false));
+        var businessProcessResult = await _mediator.Send(command).ConfigureAwait(false);
+        var responseBodyDto = new MoveInResponseDto(
+            businessProcessResult.Success,
+            businessProcessResult.TransactionId,
+            businessProcessResult.ValidationErrors);
+
         var response = request.CreateResponse(HttpStatusCode.OK);
-        response.Body = new MemoryStream(Encoding.UTF8.GetBytes(responseBody));
-        return await Task.FromResult(response).ConfigureAwait(false);
+        response.Body = new MemoryStream(Encoding.UTF8.GetBytes(_jsonSerializer.Serialize(responseBodyDto)));
+        return response;
     }
 }
