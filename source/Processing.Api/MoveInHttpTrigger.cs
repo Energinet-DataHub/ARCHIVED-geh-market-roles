@@ -62,8 +62,12 @@ public class MoveInHttpTrigger
             dto.StartDate);
 
         var businessProcessResult = await _mediator.Send(command).ConfigureAwait(false);
-        var responseBodyDto = new MoveInResponseDto(
-            businessProcessResult.ValidationErrors);
+
+        var responseBodyDto = new ResponseDto();
+        foreach (var error in businessProcessResult.ValidationErrors)
+        {
+            responseBodyDto.ValidationErrors.Add(new ValidationErrorDto(error.Code, error.Message));
+        }
 
         var response = request.CreateResponse(HttpStatusCode.OK);
         response.Body = new MemoryStream(Encoding.UTF8.GetBytes(_jsonSerializer.Serialize(responseBodyDto)));
