@@ -58,12 +58,12 @@ public class MoveInHttpTrigger
         if (string.IsNullOrEmpty(dto.SocialSecurityNumber) == false)
         {
             consumerId = dto.SocialSecurityNumber;
-            consumerIdType = "CPR";
+            consumerIdType = ConsumerIdentifierType.CPR;
         }
         else
         {
             consumerId = dto.VATNumber;
-            consumerIdType = "CVR";
+            consumerIdType = ConsumerIdentifierType.CVR;
         }
 
         var command = new MoveInRequest(
