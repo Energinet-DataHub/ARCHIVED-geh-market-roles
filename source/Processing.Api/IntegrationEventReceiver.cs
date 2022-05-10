@@ -13,9 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -23,7 +20,7 @@ using Processing.Infrastructure.Integration.Notifications;
 using Processing.Infrastructure.Serialization;
 using Processing.Infrastructure.Transport.Protobuf;
 
-namespace Energinet.DataHub.MarketRoles.EntryPoints.Processing
+namespace Processing.Api
 {
     public class IntegrationEventReceiver
     {

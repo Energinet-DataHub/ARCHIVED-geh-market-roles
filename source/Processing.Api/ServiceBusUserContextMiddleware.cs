@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 using Processing.Infrastructure.Users;
 using IUserContext = Processing.Application.Common.Users.IUserContext;
 
-namespace Energinet.DataHub.MarketRoles.EntryPoints.Processing
+namespace Processing.Api
 {
     public sealed class ServiceBusUserContextMiddleware : IFunctionsWorkerMiddleware
     {
