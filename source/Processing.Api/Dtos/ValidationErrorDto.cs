@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using Processing.Domain.SeedWork;
-
 namespace Processing.Api.Dtos;
 
-public class MoveInResponseDto
+public class ValidationErrorDto
 {
-    public MoveInResponseDto(IReadOnlyCollection<ValidationError> validationErrors)
+    public ValidationErrorDto(string code, string message)
     {
-        ValidationErrors = validationErrors;
+        Code = code;
+        Message = message;
     }
 
-    public IReadOnlyCollection<ValidationError> ValidationErrors { get; }
+    public string Code { get; protected init; } = string.Empty;
+
+    public string Message { get; protected init; } = string.Empty;
 }
