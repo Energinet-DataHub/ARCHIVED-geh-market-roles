@@ -125,6 +125,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var consumerSsn = SampleData.ConsumerSSN;
             var moveInDate = GetService<ISystemDateTimeProvider>().Now();
             return new MoveInRequest(
+                new XConsumer(),
                 SampleData.Transaction,
                 SampleData.GlnNumber,
                 registerConsumerBySSN ? consumerSsn : string.Empty,
