@@ -15,11 +15,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.Common;
 using Processing.Application.MoveIn;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers.Errors;
+using Processing.Domain.MeteringPoints.Errors;
 using Processing.Domain.SeedWork;
 using Xunit;
 using Xunit.Categories;
@@ -59,7 +59,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
             Assert.False(result.Success);
-            AssertValidationError<MeteringPointMustBeKnownRuleError>(result);
+            AssertValidationError<UnknownAccountingPoint>(result);
         }
 
         [Fact]
