@@ -24,6 +24,7 @@ using Processing.Application.Common.Validation;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
+using Processing.Domain.MeteringPoints.Errors;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Application.MoveIn
@@ -48,8 +49,13 @@ namespace Processing.Application.MoveIn
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            var energySupplier = await _energySupplierRepository.GetByGlnNumberAsync(new GlnNumber(request.EnergySupplierGlnNumber)).ConfigureAwait(false);
             var accountingPoint = await _accountingPointRepository.GetByGsrnNumberAsync(GsrnNumber.Create(request.AccountingPointGsrnNumber)).ConfigureAwait(false);
+            if (accountingPoint is null)
+            {
+                return BusinessProcessResult.Fail(request.TransactionId, new UnknownAccountingPoint(request.AccountingPointGsrnNumber));
+            }
+
+            var energySupplier = await _energySupplierRepository.GetByGlnNumberAsync(new GlnNumber(request.EnergySupplierGlnNumber)).ConfigureAwait(false);
 
             var validationResult = Validate(energySupplier!, accountingPoint!, request);
             if (validationResult.Success == false)
@@ -67,7 +73,7 @@ namespace Processing.Application.MoveIn
 
             var startDate = Instant.FromDateTimeOffset(DateTimeOffset.Parse(request.MoveInDate, CultureInfo.InvariantCulture));
 
-            accountingPoint?.AcceptConsumerMoveIn(consumer.ConsumerId, energySupplier!.EnergySupplierId, startDate, Transaction.Create(request.TransactionId));
+            accountingPoint.AcceptConsumerMoveIn(consumer.ConsumerId, energySupplier!.EnergySupplierId, startDate, Transaction.Create(request.TransactionId));
             return BusinessProcessResult.Ok(request.TransactionId);
         }
 
