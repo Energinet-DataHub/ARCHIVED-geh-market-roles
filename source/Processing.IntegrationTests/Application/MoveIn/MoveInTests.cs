@@ -86,7 +86,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest();
             await SendRequestAsync(request).ConfigureAwait(false);
 
-            var consumer = await GetService<IConsumerRepository>().GetBySSNAsync(CprNumber.Create(request.SocialSecurityNumber)).ConfigureAwait(false);
+            var consumer = await GetService<IConsumerRepository>().GetBySSNAsync(CprNumber.Create(request.Consumer.Identifier)).ConfigureAwait(false);
             Assert.NotNull(consumer);
         }
 
@@ -100,7 +100,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest(false);
             await SendRequestAsync(request).ConfigureAwait(false);
 
-            var consumer = await GetService<IConsumerRepository>().GetByVATNumberAsync(CvrNumber.Create(request.VATNumber)).ConfigureAwait(false);
+            var consumer = await GetService<IConsumerRepository>().GetByVATNumberAsync(CvrNumber.Create(request.Consumer.Identifier)).ConfigureAwait(false);
             Assert.NotNull(consumer);
         }
 
@@ -144,8 +144,6 @@ namespace Processing.IntegrationTests.Application.MoveIn
                 new XConsumer(SampleData.ConsumerName, consumerId, consumerIdType),
                 SampleData.Transaction,
                 SampleData.GlnNumber,
-                registerConsumerBySSN ? consumerSsn : string.Empty,
-                registerConsumerBySSN == false ? SampleData.ConsumerVAT : string.Empty,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);
         }

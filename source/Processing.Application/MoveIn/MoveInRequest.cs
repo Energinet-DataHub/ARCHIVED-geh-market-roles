@@ -20,8 +20,8 @@ namespace Processing.Application.MoveIn
         XConsumer Consumer,
         string TransactionId = "",
         string EnergySupplierGlnNumber = "",
-        string SocialSecurityNumber = "",
-        string VATNumber = "",
+        // string SocialSecurityNumber = "",
+        // string VATNumber = "",
         string AccountingPointGsrnNumber = "",
         string MoveInDate = "")
         : IBusinessRequest;

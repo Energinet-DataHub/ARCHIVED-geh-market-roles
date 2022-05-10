@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using FluentValidation;
 using Processing.Application.Common.Validation;
 using Processing.Application.Common.Validation.Consumers;
@@ -27,12 +28,12 @@ namespace Processing.Application.MoveIn.Validation
                 .NotEmpty()
                 .WithState(_ => new ConsumerNameIsRequired());
             RuleFor(request => request.AccountingPointGsrnNumber).SetValidator(new GsrnNumberMustBeValidRule());
-            RuleFor(request => request.SocialSecurityNumber)
+            RuleFor(request => request.Consumer.Identifier)
                 .SetValidator(new SocialSecurityNumberMustBeValid())
-                .When(x => !string.IsNullOrEmpty(x.SocialSecurityNumber));
-            RuleFor(request => request.VATNumber)
+                .When(x => x.Consumer.Type.Equals("CPR", StringComparison.OrdinalIgnoreCase));
+            RuleFor(request => request.Consumer.Identifier)
                 .SetValidator(new VATNumberMustBeValidRule())
-                .When(x => !string.IsNullOrEmpty(x.VATNumber));
+                .When(x => x.Consumer.Type.Equals("CVR", StringComparison.OrdinalIgnoreCase));
         }
     }
 }
