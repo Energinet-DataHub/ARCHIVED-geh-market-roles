@@ -36,6 +36,19 @@ namespace Processing.IntegrationTests.Application.MoveIn
         }
 
         [Fact]
+        public async Task Consumer_identifier_is_required()
+        {
+            var request = CreateRequest() with
+            {
+                Consumer = new Consumer("ConsumerName", string.Empty),
+            };
+
+            var result = await SendRequestAsync(request).ConfigureAwait(false);
+
+            AssertValidationError<ConsumerIdentifierIsRequired>(result);
+        }
+
+        [Fact]
         public async Task Consumer_name_is_required()
         {
             var request = CreateRequest() with
