@@ -14,9 +14,9 @@
 
 using Processing.Domain.SeedWork;
 
-namespace Processing.Application.ChangeOfSupplier.Validation
+namespace Processing.Domain.EnergySuppliers.Errors
 {
-    public class EnergySupplierMustBeKnownRuleError : ValidationError
+    public class UnknownEnergySupplier : ValidationError
     {
     }
 }

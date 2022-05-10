@@ -15,12 +15,13 @@
 using System.Diagnostics.CodeAnalysis;
 using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.EDI;
+using Processing.Domain.EnergySuppliers.Errors;
 
 namespace Processing.Infrastructure.EDI.Errors.Converters
 {
-    public class EnergySupplierMustBeKnownRuleErrorConverter : ErrorConverter<EnergySupplierMustBeKnownRuleError>
+    public class EnergySupplierMustBeKnownRuleErrorConverter : ErrorConverter<UnknownEnergySupplier>
     {
-        protected override ErrorMessage Convert([NotNull] EnergySupplierMustBeKnownRuleError validationError)
+        protected override ErrorMessage Convert([NotNull] UnknownEnergySupplier validationError)
         {
             return new("D02", $"Only registered and active market parties are allowed.");
         }
