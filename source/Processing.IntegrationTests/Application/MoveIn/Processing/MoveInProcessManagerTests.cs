@@ -67,7 +67,7 @@ namespace Processing.IntegrationTests.Application.MoveIn.Processing
 
             var transaction = CreateTransaction();
 
-            await SendRequestAsync(new RequestMoveIn(
+            await SendRequestAsync(new MoveInRequest(
                 transaction.Value,
                 SampleData.GlnNumber,
                 SampleData.ConsumerSSN,

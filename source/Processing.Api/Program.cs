@@ -174,14 +174,14 @@ namespace Processing.Api
 
             // Business process responders
             container.Register<IBusinessProcessResultHandler<RequestChangeOfSupplier>, RequestChangeOfSupplierResultHandler>(Lifestyle.Scoped);
-            container.Register<IBusinessProcessResultHandler<RequestMoveIn>, RequestMoveInResultHandler>(Lifestyle.Scoped);
+            container.Register<IBusinessProcessResultHandler<MoveInRequest>, RequestMoveInResultHandler>(Lifestyle.Scoped);
 
             // Input validation(
             container.Register<IValidator<RequestChangeOfSupplier>, RequestChangeOfSupplierRuleSet>(Lifestyle.Scoped);
-            container.Register<IValidator<RequestMoveIn>, RequestMoveInRuleSet>(Lifestyle.Scoped);
+            container.Register<IValidator<MoveInRequest>, InputValidationSet>(Lifestyle.Scoped);
             container.AddValidationErrorConversion(
                 validateRegistrations: false,
-                typeof(RequestMoveIn).Assembly, // Application
+                typeof(MoveInRequest).Assembly, // Application
                 typeof(ConsumerMovedIn).Assembly, // Domain
                 typeof(ErrorMessageFactory).Assembly); // Infrastructure
         }

@@ -12,21 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Xml.Linq;
+using Processing.Domain.SeedWork;
 
-namespace Processing.Infrastructure.EDI.XmlConverter
+namespace Processing.Domain.BusinessProcesses.MoveIn.Errors
 {
-    public class XmlElementInfo
+    public class ConsumerNameIsRequired : ValidationError
     {
-        public XmlElementInfo(string sourceValue, IEnumerable<XAttribute> attributes)
+        public ConsumerNameIsRequired()
         {
-            SourceValue = sourceValue;
-            Attributes = attributes;
+            Message = "Consumer name is required";
+            Code = "999";
         }
-
-        public string SourceValue { get; }
-
-        public IEnumerable<XAttribute> Attributes { get; }
     }
 }

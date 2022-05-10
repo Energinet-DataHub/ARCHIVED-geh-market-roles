@@ -12,7 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Processing.Infrastructure.EDI.XmlConverter
+using Processing.Domain.SeedWork;
+
+namespace Processing.Domain.EnergySuppliers.Errors
 {
-    public record XmlHeaderData(string Mrid, string Type, string ProcessType);
+    public class UnknownEnergySupplier : ValidationError
+    {
+        public UnknownEnergySupplier(string glnNumberOfEnergySupplier)
+        {
+            Message = $"Energy supplier {glnNumberOfEnergySupplier} is not known.";
+        }
+    }
 }

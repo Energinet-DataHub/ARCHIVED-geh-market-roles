@@ -14,11 +14,11 @@
 
 using Processing.Domain.SeedWork;
 
-namespace Processing.Application.ChangeOfSupplier.Validation
+namespace Processing.Domain.MeteringPoints.Errors
 {
-    public class MeteringPointMustBeKnownRuleError : ValidationError
+    public class UnknownAccountingPoint : ValidationError
     {
-        public MeteringPointMustBeKnownRuleError(string gsrnNumber)
+        public UnknownAccountingPoint(string gsrnNumber)
         {
             GsrnNumber = gsrnNumber;
         }
