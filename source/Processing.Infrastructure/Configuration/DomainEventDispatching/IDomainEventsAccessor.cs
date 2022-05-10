@@ -15,7 +15,7 @@
 using System.Collections.Generic;
 using Processing.Domain.SeedWork;
 
-namespace Processing.Infrastructure.DomainEventDispatching
+namespace Processing.Infrastructure.Configuration.DomainEventDispatching
 {
     /// <summary>
     /// Provides access to all generated domain events in the current business process scope

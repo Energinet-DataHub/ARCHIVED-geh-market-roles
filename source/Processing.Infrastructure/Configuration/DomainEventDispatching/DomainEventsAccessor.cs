@@ -18,7 +18,7 @@ using System.Linq;
 using Processing.Domain.SeedWork;
 using Processing.Infrastructure.Configuration.DataAccess;
 
-namespace Processing.Infrastructure.DomainEventDispatching
+namespace Processing.Infrastructure.Configuration.DomainEventDispatching
 {
     public class DomainEventsAccessor : IDomainEventsAccessor
     {

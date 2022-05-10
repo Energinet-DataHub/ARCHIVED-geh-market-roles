@@ -16,7 +16,7 @@ using System;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace Processing.Infrastructure.DomainEventDispatching
+namespace Processing.Infrastructure.Configuration.DomainEventDispatching
 {
     public class DomainEventsDispatcher : IDomainEventsDispatcher
     {

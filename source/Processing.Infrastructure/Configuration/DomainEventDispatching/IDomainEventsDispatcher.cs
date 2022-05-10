@@ -14,7 +14,7 @@
 
 using System.Threading.Tasks;
 
-namespace Processing.Infrastructure.DomainEventDispatching
+namespace Processing.Infrastructure.Configuration.DomainEventDispatching
 {
     /// <summary>
     /// Service for dispatching all domain events generated during current domain process

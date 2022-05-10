@@ -18,7 +18,7 @@ using MediatR;
 using Processing.Application.Common.DomainEvents;
 using Processing.Domain.SeedWork;
 
-namespace Processing.Infrastructure.DomainEventDispatching
+namespace Processing.Infrastructure.Configuration.DomainEventDispatching
 {
     public class DomainEventPublisher : IDomainEventPublisher
     {
