@@ -38,7 +38,10 @@ namespace Processing.IntegrationTests.Application.MoveIn
         [Fact]
         public async Task Consumer_name_is_required()
         {
-            var request = CreateRequest() with { ConsumerName = string.Empty, };
+            var request = CreateRequest() with
+            {
+                Consumer = new XConsumer(),
+            };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
@@ -125,12 +128,11 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var consumerSsn = SampleData.ConsumerSSN;
             var moveInDate = GetService<ISystemDateTimeProvider>().Now();
             return new MoveInRequest(
-                new XConsumer(),
+                new XConsumer(SampleData.ConsumerName),
                 SampleData.Transaction,
                 SampleData.GlnNumber,
                 registerConsumerBySSN ? consumerSsn : string.Empty,
                 registerConsumerBySSN == false ? SampleData.ConsumerVAT : string.Empty,
-                SampleData.ConsumerName,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);
         }

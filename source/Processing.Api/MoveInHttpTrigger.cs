@@ -53,12 +53,11 @@ public class MoveInHttpTrigger
         var dto = _jsonSerializer.Deserialize<MoveInRequestDto>(request?.Body.ToString() ?? throw new InvalidOperationException());
         _logger.LogInformation($"Deserialized into move in request dto with transactionId: {dto.TransactionId}");
         var command = new MoveInRequest(
-            new XConsumer(),
+            new XConsumer(dto.ConsumerName ?? string.Empty),
             dto.TransactionId,
             dto.EnergySupplierGlnNumber ?? string.Empty,
             dto.SocialSecurityNumber ?? string.Empty,
             dto.VATNumber ?? string.Empty,
-            dto.ConsumerName ?? string.Empty,
             dto.AccountingPointGsrnNumber,
             dto.StartDate);
 

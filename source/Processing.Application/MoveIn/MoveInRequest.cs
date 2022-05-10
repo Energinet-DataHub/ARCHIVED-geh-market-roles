@@ -22,7 +22,6 @@ namespace Processing.Application.MoveIn
         string EnergySupplierGlnNumber = "",
         string SocialSecurityNumber = "",
         string VATNumber = "",
-        string ConsumerName = "",
         string AccountingPointGsrnNumber = "",
         string MoveInDate = "")
         : IBusinessRequest;

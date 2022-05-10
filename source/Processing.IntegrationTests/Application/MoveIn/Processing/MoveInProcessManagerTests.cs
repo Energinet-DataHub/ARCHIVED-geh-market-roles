@@ -68,12 +68,11 @@ namespace Processing.IntegrationTests.Application.MoveIn.Processing
             var transaction = CreateTransaction();
 
             await SendRequestAsync(new MoveInRequest(
-                new XConsumer(),
+                new XConsumer(SampleData.ConsumerName),
                 transaction.Value,
                 SampleData.GlnNumber,
                 SampleData.ConsumerSSN,
                 string.Empty,
-                SampleData.ConsumerName,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate)).ConfigureAwait(false);
 

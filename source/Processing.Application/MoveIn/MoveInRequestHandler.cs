@@ -101,7 +101,7 @@ namespace Processing.Application.MoveIn
 
         private Consumer CreateConsumer(MoveInRequest moveInRequest)
         {
-            var consumerName = ConsumerName.Create(moveInRequest.ConsumerName);
+            var consumerName = ConsumerName.Create(moveInRequest.Consumer.Name);
             Consumer consumer = string.IsNullOrWhiteSpace(moveInRequest.SocialSecurityNumber) == false
                 ? new Consumer(ConsumerId.New(), CprNumber.Create(moveInRequest.SocialSecurityNumber), consumerName)
                 : new Consumer(ConsumerId.New(), CvrNumber.Create(moveInRequest.VATNumber), consumerName);

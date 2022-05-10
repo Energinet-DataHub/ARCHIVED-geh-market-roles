@@ -23,7 +23,7 @@ namespace Processing.Application.MoveIn.Validation
     {
         public InputValidationSet()
         {
-            RuleFor(request => request.ConsumerName)
+            RuleFor(request => request.Consumer.Name)
                 .NotEmpty()
                 .WithState(_ => new ConsumerNameIsRequired());
             RuleFor(request => request.AccountingPointGsrnNumber).SetValidator(new GsrnNumberMustBeValidRule());
