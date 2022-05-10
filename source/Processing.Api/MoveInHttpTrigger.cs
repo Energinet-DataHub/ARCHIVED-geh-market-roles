@@ -48,7 +48,7 @@ public class MoveInHttpTrigger
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")]
         HttpRequestData request)
     {
-        _logger.LogInformation($"Received {nameof(MoveInHttpTrigger)} request");
+        _logger.LogInformation($"Received move in request");
 
         var dto = _jsonSerializer.Deserialize<MoveInRequestDto>(request?.Body.ToString() ?? throw new InvalidOperationException());
         _logger.LogInformation($"Deserialized into move in request dto with transactionId: {dto.TransactionId}");
