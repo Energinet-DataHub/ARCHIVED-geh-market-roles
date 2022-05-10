@@ -75,6 +75,7 @@ using Processing.Infrastructure.Transport.Protobuf.Integration;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using Xunit;
+using Consumer = Processing.Domain.Consumers.Consumer;
 using RequestChangeOfSupplier = Processing.Application.ChangeOfSupplier.RequestChangeOfSupplier;
 
 namespace Processing.IntegrationTests.Application
