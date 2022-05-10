@@ -16,8 +16,8 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.Integration.Notifications;
-using Processing.Infrastructure.Serialization;
 using Processing.Infrastructure.Transport.Protobuf;
 
 namespace Processing.Api
