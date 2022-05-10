@@ -21,7 +21,6 @@ using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers.Errors;
 using Processing.Domain.MeteringPoints.Errors;
-using Processing.Domain.SeedWork;
 using Xunit;
 using Xunit.Categories;
 
@@ -125,20 +124,8 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
         private static MoveInRequest CreateRequest(bool registerConsumerBySSN = true)
         {
-            var consumerSsn = SampleData.ConsumerSSN;
-
-            var consumerId = string.Empty;
-            var consumerIdType = string.Empty;
-            if (registerConsumerBySSN)
-            {
-                consumerId = SampleData.ConsumerSSN;
-                consumerIdType = "CPR";
-            }
-            else
-            {
-                consumerId = SampleData.ConsumerVAT;
-                consumerIdType = "CVR";
-            }
+            var consumerIdType = registerConsumerBySSN ? ConsumerIdentifierType.CPR : ConsumerIdentifierType.CVR;
+            var consumerId = consumerIdType == ConsumerIdentifierType.CPR ? SampleData.ConsumerSSN : SampleData.ConsumerVAT;
 
             return new MoveInRequest(
                 new XConsumer(SampleData.ConsumerName, consumerId, consumerIdType),
