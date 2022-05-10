@@ -12,20 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Processing.Infrastructure.Outbox
+namespace Processing.Infrastructure.Configuration.Outbox
 {
     /// <summary>
-    ///  Creates an outbox message containing the serialized message/payload
+    /// Transactional outbox
     /// </summary>
-    public interface IOutboxMessageFactory
+    public interface IOutbox
     {
         /// <summary>
-        /// Creates outbox message
+        /// Add message to outbox
         /// </summary>
-        /// <param name="message">Message payload</param>
-        /// <param name="category">Message category <see cref="OutboxMessageCategory"/></param>
-        /// <typeparam name="T">Type of message payload to wrap in outbox message</typeparam>
-        /// <returns><see cref="OutboxMessage"/></returns>
-        OutboxMessage CreateFrom<T>(T message, OutboxMessageCategory category);
+        /// <param name="message"></param>
+        void Add(OutboxMessage message);
     }
 }

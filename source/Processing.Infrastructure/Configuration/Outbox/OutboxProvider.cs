@@ -15,7 +15,7 @@
 using System;
 using Processing.Infrastructure.Configuration.DataAccess;
 
-namespace Processing.Infrastructure.Outbox
+namespace Processing.Infrastructure.Configuration.Outbox
 {
     public class OutboxProvider : IOutbox
     {

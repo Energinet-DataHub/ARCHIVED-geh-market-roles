@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Processing.Infrastructure.Outbox
+namespace Processing.Infrastructure.Configuration.Outbox
 {
     public class OutboxMessageException : Exception
     {

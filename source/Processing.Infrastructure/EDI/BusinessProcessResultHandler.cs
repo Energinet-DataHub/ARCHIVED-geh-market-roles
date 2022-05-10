@@ -16,7 +16,7 @@ using System;
 using System.Threading.Tasks;
 using Processing.Application.Common;
 using Processing.Infrastructure.BusinessRequestProcessing;
-using Processing.Infrastructure.Outbox;
+using Processing.Infrastructure.Configuration.Outbox;
 
 namespace Processing.Infrastructure.EDI
 {

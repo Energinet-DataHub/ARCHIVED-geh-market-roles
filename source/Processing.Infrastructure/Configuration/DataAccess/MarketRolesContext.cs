@@ -21,8 +21,8 @@ using Processing.Infrastructure.Configuration.DataAccess.AccountingPoints;
 using Processing.Infrastructure.Configuration.DataAccess.Consumers;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
 using Processing.Infrastructure.Configuration.DataAccess.ProcessManagers;
+using Processing.Infrastructure.Configuration.Outbox;
 using Processing.Infrastructure.InternalCommands;
-using Processing.Infrastructure.Outbox;
 
 namespace Processing.Infrastructure.Configuration.DataAccess
 {

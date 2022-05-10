@@ -15,7 +15,7 @@
 using System;
 using System.Threading.Tasks;
 using Processing.Infrastructure.Configuration.Correlation;
-using Processing.Infrastructure.Outbox;
+using Processing.Infrastructure.Configuration.Outbox;
 using Processing.Infrastructure.Serialization;
 
 namespace Processing.Infrastructure.EDI

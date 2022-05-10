@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Processing.Infrastructure.Outbox
+namespace Processing.Infrastructure.Configuration.Outbox
 {
     /// <summary>
     /// Transactional outbox manipulation

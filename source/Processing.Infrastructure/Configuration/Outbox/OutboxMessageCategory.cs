@@ -12,17 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Processing.Infrastructure.Outbox
+using Processing.Domain.SeedWork;
+
+namespace Processing.Infrastructure.Configuration.Outbox
 {
-    /// <summary>
-    /// Transactional outbox
-    /// </summary>
-    public interface IOutbox
+    public class OutboxMessageCategory : EnumerationType
     {
-        /// <summary>
-        /// Add message to outbox
-        /// </summary>
-        /// <param name="message"></param>
-        void Add(OutboxMessage message);
+        public static readonly OutboxMessageCategory IntegrationEvent = new OutboxMessageCategory(0, nameof(IntegrationEvent));
+        public static readonly OutboxMessageCategory ActorMessage = new OutboxMessageCategory(1, nameof(ActorMessage));
+        public static readonly OutboxMessageCategory MessageHub = new(2, nameof(MessageHub));
+
+        public OutboxMessageCategory(int id, string name)
+            : base(id, name)
+        {
+        }
     }
 }

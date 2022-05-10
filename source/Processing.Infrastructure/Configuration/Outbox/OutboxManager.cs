@@ -16,7 +16,7 @@ using System.Linq;
 using Processing.Domain.SeedWork;
 using Processing.Infrastructure.Configuration.DataAccess;
 
-namespace Processing.Infrastructure.Outbox
+namespace Processing.Infrastructure.Configuration.Outbox
 {
     public class OutboxManager : IOutboxManager
     {

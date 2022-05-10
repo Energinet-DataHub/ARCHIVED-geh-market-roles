@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Processing.Domain.SeedWork;
 
-namespace Processing.Infrastructure.Outbox
+namespace Processing.Infrastructure.Configuration.Outbox
 {
     public class OutboxMessageEntityConfiguration : IEntityTypeConfiguration<OutboxMessage>
     {

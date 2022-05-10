@@ -17,7 +17,7 @@ using Processing.Domain.SeedWork;
 using Processing.Infrastructure.Configuration.Correlation;
 using Processing.Infrastructure.Serialization;
 
-namespace Processing.Infrastructure.Outbox
+namespace Processing.Infrastructure.Configuration.Outbox
 {
     public class OutboxMessageFactory : IOutboxMessageFactory
     {
