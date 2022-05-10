@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Processing.Infrastructure.Correlation
+namespace Processing.Infrastructure.Configuration.Correlation
 {
     /// <summary>
     /// Context for the current scope identified by a correlation id.

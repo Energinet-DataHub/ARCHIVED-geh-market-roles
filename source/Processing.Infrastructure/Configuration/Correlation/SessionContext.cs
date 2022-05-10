@@ -14,36 +14,17 @@
 
 using System;
 
-namespace Processing.Infrastructure.Correlation
+namespace Processing.Infrastructure.Configuration.Correlation
 {
-    public sealed class CorrelationContext : ICorrelationContext
+    public sealed class SessionContext : ISessionContext
     {
         private string? _id;
 
-        private string? _parentId;
-
-        public string Id => _id ?? throw new InvalidOperationException("Correlation id not set");
-
-        public string? ParentId => _parentId;
+        public string Id => _id ?? throw new InvalidOperationException("Session id not set");
 
         public void SetId(string id)
         {
             _id = id;
-        }
-
-        public void SetParentId(string parentId)
-        {
-            _parentId = parentId;
-        }
-
-        public string AsTraceContext()
-        {
-            if (string.IsNullOrEmpty(_id) || string.IsNullOrEmpty(_parentId))
-            {
-                return string.Empty;
-            }
-
-            return $"00-{_id}-{_parentId}-00";
         }
     }
 }

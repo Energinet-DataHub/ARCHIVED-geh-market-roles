@@ -14,7 +14,7 @@
 
 using System;
 using Processing.Domain.SeedWork;
-using Processing.Infrastructure.Correlation;
+using Processing.Infrastructure.Configuration.Correlation;
 using Processing.Infrastructure.Serialization;
 
 namespace Processing.Infrastructure.Outbox

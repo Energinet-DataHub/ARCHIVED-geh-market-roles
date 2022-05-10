@@ -19,8 +19,8 @@ using NodaTime;
 using Processing.Application.Common.Commands;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
+using Processing.Infrastructure.Configuration.Correlation;
 using Processing.Infrastructure.Configuration.DataAccess;
-using Processing.Infrastructure.Correlation;
 using Processing.Infrastructure.Transport;
 
 namespace Processing.Infrastructure.InternalCommands

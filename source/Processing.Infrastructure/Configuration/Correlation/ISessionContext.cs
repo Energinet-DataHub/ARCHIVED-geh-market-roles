@@ -12,19 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
-namespace Processing.Infrastructure.Correlation
+namespace Processing.Infrastructure.Configuration.Correlation
 {
-    public sealed class SessionContext : ISessionContext
+    /// <summary>
+    /// Context for the session.
+    /// </summary>
+    public interface ISessionContext
     {
-        private string? _id;
+        /// <summary>
+        /// Get the current session id.
+        /// </summary>
+        string Id { get; }
 
-        public string Id => _id ?? throw new InvalidOperationException("Session id not set");
-
-        public void SetId(string id)
-        {
-            _id = id;
-        }
+        /// <summary>
+        /// Set the current session id.
+        /// </summary>
+        void SetId(string id);
     }
 }

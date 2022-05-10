@@ -14,7 +14,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Processing.Infrastructure.Correlation;
+using Processing.Infrastructure.Configuration.Correlation;
 using Processing.Infrastructure.Outbox;
 using Processing.Infrastructure.Serialization;
 

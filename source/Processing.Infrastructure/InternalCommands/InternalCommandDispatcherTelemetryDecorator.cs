@@ -16,7 +16,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
-using Processing.Infrastructure.Correlation;
+using Processing.Infrastructure.Configuration.Correlation;
 
 namespace Processing.Infrastructure.InternalCommands
 {

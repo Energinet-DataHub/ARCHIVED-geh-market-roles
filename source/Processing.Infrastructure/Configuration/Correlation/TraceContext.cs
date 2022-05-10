@@ -14,7 +14,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace Processing.Infrastructure.Correlation
+namespace Processing.Infrastructure.Configuration.Correlation
 {
     /// <summary>
     /// Implementation of w3c trace context
