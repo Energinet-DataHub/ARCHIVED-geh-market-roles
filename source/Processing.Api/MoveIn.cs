@@ -21,19 +21,22 @@ using MediatR;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
+using Processing.Api.DTO;
+using Processing.Api.Dtos;
 using Processing.Application.ChangeOfSupplier;
+using Processing.Application.MoveIn;
 using Processing.Infrastructure.Serialization;
 
 namespace Processing.Api;
 
-public class MoveInProcess
+public class MoveIn
 {
-    private readonly ILogger<MoveInProcess> _logger;
+    private readonly ILogger<MoveIn> _logger;
     private readonly IJsonSerializer _jsonSerializer;
     private readonly IMediator _mediator;
 
-    public MoveInProcess(
-        ILogger<MoveInProcess> logger,
+    public MoveIn(
+        ILogger<MoveIn> logger,
         IJsonSerializer jsonSerializer,
         IMediator mediator)
     {
@@ -42,14 +45,23 @@ public class MoveInProcess
         _mediator = mediator;
     }
 
-    [Function("MoveInProcess")]
+    [Function("MoveIn")]
     public async Task<HttpResponseData> RunAsync(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")]
         HttpRequestData request)
     {
-        _logger.LogInformation($"Received {nameof(MoveInProcess)} request");
+        _logger.LogInformation($"Received {nameof(MoveIn)} request");
 
-        var command = _jsonSerializer.Deserialize<RequestChangeOfSupplier>(request?.Body.ToString() ?? throw new InvalidOperationException());
+        var dto = _jsonSerializer.Deserialize<MoveInRequestDto>(request?.Body.ToString() ?? throw new InvalidOperationException());
+        var command = new MoveInRequest(
+            dto.TransactionId,
+            dto.EnergySupplierGlnNumber ?? string.Empty,
+            dto.SocialSecurityNumber ?? string.Empty,
+            dto.VATNumber ?? string.Empty,
+            dto.ConsumerName ?? string.Empty,
+            dto.AccountingPointGsrnNumber,
+            dto.StartDate);
+
         var responseBody = _jsonSerializer.Serialize(await _mediator.Send(command).ConfigureAwait(false));
         var response = request.CreateResponse(HttpStatusCode.OK);
         response.Body = new MemoryStream(Encoding.UTF8.GetBytes(responseBody));
