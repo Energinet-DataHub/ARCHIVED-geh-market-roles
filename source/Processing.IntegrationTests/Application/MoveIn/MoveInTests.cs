@@ -23,6 +23,7 @@ using Processing.Domain.EnergySuppliers.Errors;
 using Processing.Domain.MeteringPoints.Errors;
 using Xunit;
 using Xunit.Categories;
+using Consumer = Processing.Application.MoveIn.Consumer;
 
 namespace Processing.IntegrationTests.Application.MoveIn
 {
@@ -39,7 +40,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         {
             var request = CreateRequest() with
             {
-                Consumer = new XConsumer(),
+                Consumer = new Consumer(),
             };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
@@ -128,7 +129,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var consumerId = consumerIdType == ConsumerIdentifierType.CPR ? SampleData.ConsumerSSN : SampleData.ConsumerVAT;
 
             return new MoveInRequest(
-                new XConsumer(SampleData.ConsumerName, consumerId, consumerIdType),
+                new Consumer(SampleData.ConsumerName, consumerId, consumerIdType),
                 SampleData.Transaction,
                 SampleData.GlnNumber,
                 SampleData.GsrnNumber,

@@ -84,9 +84,9 @@ namespace Processing.Application.MoveIn
             return new BusinessProcessResult(moveInRequest.TransactionId, validationResult.Errors);
         }
 
-        private async Task<Consumer> GetOrCreateConsumerAsync(MoveInRequest moveInRequest)
+        private async Task<Domain.Consumers.Consumer> GetOrCreateConsumerAsync(MoveInRequest moveInRequest)
         {
-            Consumer? consumer;
+            Domain.Consumers.Consumer? consumer;
             if (moveInRequest.Consumer.Type.Equals("CPR", StringComparison.OrdinalIgnoreCase))
             {
                 consumer = await _consumerRepository.GetBySSNAsync(CprNumber.Create(moveInRequest.Consumer.Identifier)).ConfigureAwait(false);
@@ -99,12 +99,12 @@ namespace Processing.Application.MoveIn
             return consumer ?? CreateConsumer(moveInRequest);
         }
 
-        private Consumer CreateConsumer(MoveInRequest moveInRequest)
+        private Domain.Consumers.Consumer CreateConsumer(MoveInRequest moveInRequest)
         {
             var consumerName = ConsumerName.Create(moveInRequest.Consumer.Name);
-            Consumer consumer = moveInRequest.Consumer.Type.Equals("CPR", StringComparison.OrdinalIgnoreCase)
-                ? new Consumer(ConsumerId.New(), CprNumber.Create(moveInRequest.Consumer.Identifier), consumerName)
-                : new Consumer(ConsumerId.New(), CvrNumber.Create(moveInRequest.Consumer.Identifier), consumerName);
+            Domain.Consumers.Consumer consumer = moveInRequest.Consumer.Type.Equals("CPR", StringComparison.OrdinalIgnoreCase)
+                ? new Domain.Consumers.Consumer(ConsumerId.New(), CprNumber.Create(moveInRequest.Consumer.Identifier), consumerName)
+                : new Domain.Consumers.Consumer(ConsumerId.New(), CvrNumber.Create(moveInRequest.Consumer.Identifier), consumerName);
             _consumerRepository.Add(consumer);
             return consumer;
         }

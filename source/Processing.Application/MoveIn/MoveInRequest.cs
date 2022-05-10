@@ -17,12 +17,12 @@ using Processing.Application.Common;
 namespace Processing.Application.MoveIn
 {
     public record MoveInRequest(
-        XConsumer Consumer,
+        Consumer Consumer,
         string TransactionId = "",
         string EnergySupplierGlnNumber = "",
         string AccountingPointGsrnNumber = "",
         string MoveInDate = "")
         : IBusinessRequest;
 
-    public record XConsumer(string Name = "", string Identifier = "", string Type = "");
+    public record Consumer(string Name = "", string Identifier = "", string Type = "");
 }

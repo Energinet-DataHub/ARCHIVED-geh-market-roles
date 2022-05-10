@@ -73,7 +73,7 @@ public class MoveInHttpTrigger
         return response;
     }
 
-    private static XConsumer ExtractConsumerFrom(MoveInRequestDto request)
+    private static Consumer ExtractConsumerFrom(MoveInRequestDto request)
     {
         var consumerId = string.Empty;
         var consumerIdType = string.Empty;
@@ -88,6 +88,6 @@ public class MoveInHttpTrigger
             consumerIdType = ConsumerIdentifierType.CVR;
         }
 
-        return new XConsumer(request.ConsumerName ?? string.Empty, consumerId ?? string.Empty, consumerIdType);
+        return new Consumer(request.ConsumerName ?? string.Empty, consumerId ?? string.Empty, consumerIdType);
     }
 }
