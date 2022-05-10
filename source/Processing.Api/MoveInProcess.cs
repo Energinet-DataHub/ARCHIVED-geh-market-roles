@@ -20,22 +20,22 @@ using Microsoft.Extensions.Logging;
 
 namespace Processing.Api;
 
-public class Process
+public class MoveInProcess
 {
-    private readonly ILogger<Process> _logger;
+    private readonly ILogger<MoveInProcess> _logger;
 
-    public Process(
-        ILogger<Process> logger)
+    public MoveInProcess(
+        ILogger<MoveInProcess> logger)
     {
         _logger = logger;
     }
 
-    [Function("Process")]
+    [Function("MoveInProcess")]
     public Task<HttpResponseData> RunAsync(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")]
         HttpRequestData request)
     {
-        _logger.LogInformation($"Received {nameof(Process)} request");
+        _logger.LogInformation($"Received {nameof(MoveInProcess)} request");
 
         var response = request.CreateResponse(HttpStatusCode.OK);
         return Task.FromResult<HttpResponseData>(response);
