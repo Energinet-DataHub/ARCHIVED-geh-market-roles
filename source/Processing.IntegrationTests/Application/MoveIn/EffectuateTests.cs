@@ -49,7 +49,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             SaveChanges();
 
             var requestMoveIn = new MoveInRequest(
-                new XConsumer(SampleData.ConsumerName, SampleData.ConsumerSSN, "CPR"),
+                new XConsumer(SampleData.ConsumerName, SampleData.ConsumerSSN, ConsumerIdentifierType.CPR),
                 SampleData.Transaction,
                 SampleData.GlnNumber,
                 SampleData.GsrnNumber,
