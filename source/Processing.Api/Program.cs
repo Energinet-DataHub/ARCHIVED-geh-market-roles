@@ -44,6 +44,7 @@ using Processing.Domain.SeedWork;
 using Processing.Infrastructure;
 using Processing.Infrastructure.BusinessRequestProcessing;
 using Processing.Infrastructure.BusinessRequestProcessing.Pipeline;
+using Processing.Infrastructure.Configuration;
 using Processing.Infrastructure.Configuration.Correlation;
 using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.DataAccess.AccountingPoints;

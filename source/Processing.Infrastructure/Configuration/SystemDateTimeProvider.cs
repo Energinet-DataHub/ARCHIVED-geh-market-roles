@@ -15,7 +15,7 @@
 using NodaTime;
 using Processing.Domain.SeedWork;
 
-namespace Processing.Infrastructure
+namespace Processing.Infrastructure.Configuration
 {
     public class SystemDateTimeProvider : ISystemDateTimeProvider
     {
