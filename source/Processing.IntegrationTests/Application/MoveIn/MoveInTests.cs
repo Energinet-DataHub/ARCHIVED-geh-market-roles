@@ -49,7 +49,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         }
 
         [Fact]
-        public async Task Accept_WhenAccountingPointDoesNotExists_IsRejected()
+        public async Task Accounting_point_must_exist()
         {
             CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
             SaveChanges();
@@ -59,6 +59,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
             Assert.False(result.Success);
+            AssertValidationError<MeteringPointMustBeKnownRuleError>(result);
         }
 
         [Fact]
