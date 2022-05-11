@@ -25,6 +25,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Processing.Api.MoveIn;
 using Processing.Application.ChangeOfSupplier;
 using Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails;
 using Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
@@ -138,6 +139,7 @@ namespace Processing.Api
             container.Register<IntegrationEventReceiver>(Lifestyle.Scoped);
             container.Register<IActorMessageService, ActorMessageService>(Lifestyle.Scoped);
             container.Register<IMessageHubDispatcher, MessageHubDispatcher>(Lifestyle.Scoped);
+            container.Register<MoveInHttpTrigger>(Lifestyle.Scoped);
 
             var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING")
                                    ?? throw new InvalidOperationException(
