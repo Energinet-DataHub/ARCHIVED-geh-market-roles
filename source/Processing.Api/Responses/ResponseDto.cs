@@ -18,11 +18,10 @@ namespace Processing.Api.Responses;
 
 public class ResponseDto
 {
-    private readonly ICollection<ValidationErrorDto> _validationErrors = new List<ValidationErrorDto>();
-
-    public ResponseDto()
+    public ResponseDto(IEnumerable<string> validationErrors)
     {
+        ValidationErrors = validationErrors;
     }
 
-    public ICollection<ValidationErrorDto> ValidationErrors => _validationErrors;
+    public IEnumerable<string> ValidationErrors { get; }
 }

@@ -14,6 +14,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -62,11 +63,7 @@ public class MoveInHttpTrigger
 
         var businessProcessResult = await _mediator.Send(command).ConfigureAwait(false);
 
-        var responseBodyDto = new ResponseDto();
-        foreach (var error in businessProcessResult.ValidationErrors)
-        {
-            responseBodyDto.ValidationErrors.Add(new ValidationErrorDto(error.Code, error.Message));
-        }
+        var responseBodyDto = new ResponseDto(businessProcessResult.ValidationErrors.Select(error => error.GetType().Name).ToList());
 
         var response = request.CreateResponse(HttpStatusCode.OK);
         response.Body = new MemoryStream(Encoding.UTF8.GetBytes(_jsonSerializer.Serialize(responseBodyDto)));
