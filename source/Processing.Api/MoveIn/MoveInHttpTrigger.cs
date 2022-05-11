@@ -72,19 +72,6 @@ public class MoveInHttpTrigger
 
     private static Consumer ExtractConsumerFrom(MoveInRequestDto request)
     {
-        var consumerId = string.Empty;
-        var consumerIdType = string.Empty;
-        if (string.IsNullOrEmpty(request.SocialSecurityNumber) == false)
-        {
-            consumerId = request.SocialSecurityNumber;
-            consumerIdType = ConsumerIdentifierType.CPR;
-        }
-        else
-        {
-            consumerId = request.VATNumber;
-            consumerIdType = ConsumerIdentifierType.CVR;
-        }
-
-        return new Consumer(request.ConsumerName ?? string.Empty, consumerId ?? string.Empty, consumerIdType);
+        return new Consumer(request.ConsumerName ?? string.Empty, request.ConsumerId ?? string.Empty, request.ConsumerIdType ?? string.Empty);
     }
 }
