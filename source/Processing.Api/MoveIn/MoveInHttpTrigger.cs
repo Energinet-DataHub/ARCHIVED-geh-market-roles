@@ -21,11 +21,11 @@ using MediatR;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using Processing.Api.Dtos;
+using Processing.Api.Responses;
 using Processing.Application.MoveIn;
 using Processing.Infrastructure.Configuration.Serialization;
 
-namespace Processing.Api;
+namespace Processing.Api.MoveIn;
 
 public class MoveInHttpTrigger
 {

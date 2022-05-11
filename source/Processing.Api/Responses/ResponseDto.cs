@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Processing.Api.Dtos;
+using System.Collections.Generic;
 
-public class ValidationErrorDto
+namespace Processing.Api.Responses;
+
+public class ResponseDto
 {
-    public ValidationErrorDto(string code, string message)
+    private readonly ICollection<ValidationErrorDto> _validationErrors = new List<ValidationErrorDto>();
+
+    public ResponseDto()
     {
-        Code = code;
-        Message = message;
     }
 
-    public string Code { get; protected init; } = string.Empty;
-
-    public string Message { get; protected init; } = string.Empty;
+    public ICollection<ValidationErrorDto> ValidationErrors => _validationErrors;
 }
