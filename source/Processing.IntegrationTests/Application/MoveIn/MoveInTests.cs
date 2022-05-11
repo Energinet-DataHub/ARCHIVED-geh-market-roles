@@ -13,13 +13,17 @@
 // limitations under the License.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Processing.Application.Common;
 using Processing.Application.MoveIn;
+using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 using Processing.Domain.Consumers;
-using Processing.Domain.SeedWork;
-using Processing.Infrastructure.EDI;
+using Processing.Domain.EnergySuppliers.Errors;
+using Processing.Domain.MeteringPoints.Errors;
 using Xunit;
 using Xunit.Categories;
+using Consumer = Processing.Application.MoveIn.Consumer;
 
 namespace Processing.IntegrationTests.Application.MoveIn
 {
@@ -32,9 +36,34 @@ namespace Processing.IntegrationTests.Application.MoveIn
         }
 
         [Fact]
-        public async Task Accept_WhenConsumerIsRegistered_AcceptMessageIsPublished()
+        public async Task Consumer_identifier_is_required()
         {
-            CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
+            var request = CreateRequest() with
+            {
+                Consumer = new Consumer("ConsumerName", string.Empty),
+            };
+
+            var result = await SendRequestAsync(request).ConfigureAwait(false);
+
+            AssertValidationError<ConsumerIdentifierIsRequired>(result);
+        }
+
+        [Fact]
+        public async Task Consumer_name_is_required()
+        {
+            var request = CreateRequest() with
+            {
+                Consumer = new Consumer(),
+            };
+
+            var result = await SendRequestAsync(request).ConfigureAwait(false);
+
+            AssertValidationError<ConsumerNameIsRequired>(result);
+        }
+
+        [Fact]
+        public async Task Energy_supplier_must_be_known()
+        {
             CreateAccountingPoint();
             SaveChanges();
 
@@ -42,26 +71,12 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
-            Assert.True(result.Success);
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.ConfirmMoveIn);
-        }
-
-        [Fact]
-        public async Task Accept_WhenEnergySupplierDoesNotExists_IsRejected()
-        {
-            CreateAccountingPoint();
-            SaveChanges();
-
-            var request = CreateRequest();
-
-            var result = await SendRequestAsync(request).ConfigureAwait(false);
-
+            AssertValidationError<UnknownEnergySupplier>(result);
             Assert.False(result.Success);
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectMoveIn);
         }
 
         [Fact]
-        public async Task Accept_WhenAccountingPointDoesNotExists_IsRejected()
+        public async Task Accounting_point_must_exist()
         {
             CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
             SaveChanges();
@@ -71,7 +86,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
             Assert.False(result.Success);
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectMoveIn);
+            AssertValidationError<UnknownAccountingPoint>(result);
         }
 
         [Fact]
@@ -84,7 +99,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest();
             await SendRequestAsync(request).ConfigureAwait(false);
 
-            var consumer = await GetService<IConsumerRepository>().GetBySSNAsync(CprNumber.Create(request.SocialSecurityNumber)).ConfigureAwait(false);
+            var consumer = await GetService<IConsumerRepository>().GetBySSNAsync(CprNumber.Create(request.Consumer.Identifier)).ConfigureAwait(false);
             Assert.NotNull(consumer);
         }
 
@@ -98,7 +113,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest(false);
             await SendRequestAsync(request).ConfigureAwait(false);
 
-            var consumer = await GetService<IConsumerRepository>().GetByVATNumberAsync(CvrNumber.Create(request.VATNumber)).ConfigureAwait(false);
+            var consumer = await GetService<IConsumerRepository>().GetByVATNumberAsync(CvrNumber.Create(request.Consumer.Identifier)).ConfigureAwait(false);
             Assert.NotNull(consumer);
         }
 
@@ -112,21 +127,24 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest(false);
             await SendRequestAsync(request).ConfigureAwait(false);
             await SendRequestAsync(request).ConfigureAwait(false);
-
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.ConfirmMoveIn);
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectMoveIn);
         }
 
-        private RequestMoveIn CreateRequest(bool registerConsumerBySSN = true)
+        private static void AssertValidationError<TRuleError>(BusinessProcessResult rulesValidationResult, bool errorExpected = true)
         {
-            var consumerSsn = SampleData.ConsumerSSN;
-            var moveInDate = GetService<ISystemDateTimeProvider>().Now();
-            return new RequestMoveIn(
+            if (rulesValidationResult == null) throw new ArgumentNullException(nameof(rulesValidationResult));
+            var hasError = rulesValidationResult.ValidationErrors.Any(error => error is TRuleError);
+            Assert.Equal(errorExpected, hasError);
+        }
+
+        private static MoveInRequest CreateRequest(bool registerConsumerBySSN = true)
+        {
+            var consumerIdType = registerConsumerBySSN ? ConsumerIdentifierType.CPR : ConsumerIdentifierType.CVR;
+            var consumerId = consumerIdType == ConsumerIdentifierType.CPR ? SampleData.ConsumerSSN : SampleData.ConsumerVAT;
+
+            return new MoveInRequest(
+                new Consumer(SampleData.ConsumerName, consumerId, consumerIdType),
                 SampleData.Transaction,
                 SampleData.GlnNumber,
-                registerConsumerBySSN ? consumerSsn : string.Empty,
-                registerConsumerBySSN == false ? SampleData.ConsumerVAT : string.Empty,
-                SampleData.ConsumerName,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);
         }

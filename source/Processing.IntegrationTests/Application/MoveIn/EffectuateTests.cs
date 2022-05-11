@@ -48,12 +48,10 @@ namespace Processing.IntegrationTests.Application.MoveIn
             CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
             SaveChanges();
 
-            var requestMoveIn = new RequestMoveIn(
+            var requestMoveIn = new MoveInRequest(
+                new Consumer(SampleData.ConsumerName, SampleData.ConsumerSSN, ConsumerIdentifierType.CPR),
                 SampleData.Transaction,
                 SampleData.GlnNumber,
-                SampleData.ConsumerSSN,
-                string.Empty,
-                SampleData.ConsumerName,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);
 

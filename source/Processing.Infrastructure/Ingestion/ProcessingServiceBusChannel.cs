@@ -16,7 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Processing.Application.Common.Users;
-using Processing.Infrastructure.Correlation;
+using Processing.Infrastructure.Configuration.Correlation;
 using Processing.Infrastructure.Transport;
 using Processing.Infrastructure.Users;
 

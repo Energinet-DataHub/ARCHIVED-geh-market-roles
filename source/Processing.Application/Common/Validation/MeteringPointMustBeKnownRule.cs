@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Processing.Application.ChangeOfSupplier.Validation;
+using Processing.Domain.MeteringPoints.Errors;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Application.Common.Validation
@@ -29,6 +30,6 @@ namespace Processing.Application.Common.Validation
 
         public bool IsBroken { get; }
 
-        public ValidationError ValidationError => new MeteringPointMustBeKnownRuleError(_gsrnNumber);
+        public ValidationError ValidationError => new UnknownAccountingPoint(_gsrnNumber);
     }
 }

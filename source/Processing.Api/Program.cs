@@ -44,14 +44,17 @@ using Processing.Domain.SeedWork;
 using Processing.Infrastructure;
 using Processing.Infrastructure.BusinessRequestProcessing;
 using Processing.Infrastructure.BusinessRequestProcessing.Pipeline;
+using Processing.Infrastructure.Configuration;
+using Processing.Infrastructure.Configuration.Correlation;
+using Processing.Infrastructure.Configuration.DataAccess;
+using Processing.Infrastructure.Configuration.DataAccess.AccountingPoints;
+using Processing.Infrastructure.Configuration.DataAccess.Consumers;
+using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
+using Processing.Infrastructure.Configuration.DataAccess.ProcessManagers;
+using Processing.Infrastructure.Configuration.DomainEventDispatching;
+using Processing.Infrastructure.Configuration.Outbox;
+using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
-using Processing.Infrastructure.Correlation;
-using Processing.Infrastructure.DataAccess;
-using Processing.Infrastructure.DataAccess.AccountingPoints;
-using Processing.Infrastructure.DataAccess.Consumers;
-using Processing.Infrastructure.DataAccess.EnergySuppliers;
-using Processing.Infrastructure.DataAccess.ProcessManagers;
-using Processing.Infrastructure.DomainEventDispatching;
 using Processing.Infrastructure.EDI;
 using Processing.Infrastructure.EDI.ChangeOfSupplier;
 using Processing.Infrastructure.EDI.ChangeOfSupplier.ConsumerDetails;
@@ -61,8 +64,6 @@ using Processing.Infrastructure.EDI.MoveIn;
 using Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
 using Processing.Infrastructure.Integration.Notifications;
 using Processing.Infrastructure.InternalCommands;
-using Processing.Infrastructure.Outbox;
-using Processing.Infrastructure.Serialization;
 using Processing.Infrastructure.Transport.Protobuf;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
 using Processing.Infrastructure.Users;
@@ -174,14 +175,14 @@ namespace Processing.Api
 
             // Business process responders
             container.Register<IBusinessProcessResultHandler<RequestChangeOfSupplier>, RequestChangeOfSupplierResultHandler>(Lifestyle.Scoped);
-            container.Register<IBusinessProcessResultHandler<RequestMoveIn>, RequestMoveInResultHandler>(Lifestyle.Scoped);
+            container.Register<IBusinessProcessResultHandler<MoveInRequest>, RequestMoveInResultHandler>(Lifestyle.Scoped);
 
             // Input validation(
             container.Register<IValidator<RequestChangeOfSupplier>, RequestChangeOfSupplierRuleSet>(Lifestyle.Scoped);
-            container.Register<IValidator<RequestMoveIn>, RequestMoveInRuleSet>(Lifestyle.Scoped);
+            container.Register<IValidator<MoveInRequest>, InputValidationSet>(Lifestyle.Scoped);
             container.AddValidationErrorConversion(
                 validateRegistrations: false,
-                typeof(RequestMoveIn).Assembly, // Application
+                typeof(MoveInRequest).Assembly, // Application
                 typeof(ConsumerMovedIn).Assembly, // Domain
                 typeof(ErrorMessageFactory).Assembly); // Infrastructure
         }
