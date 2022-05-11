@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Infrastructure.Transactions.MoveIn.Dtos;
+using System.Collections.Generic;
 
-public class ValidationErrorDto
+namespace Processing.Api.Responses;
+
+public class ResponseDto
 {
-    public ValidationErrorDto(string code, string message)
+    public ResponseDto(IEnumerable<string> validationErrors)
     {
-        Code = code;
-        Message = message;
+        ValidationErrors = validationErrors;
     }
 
-    public string Code { get; }
-
-    public string Message { get; }
+    public IEnumerable<string> ValidationErrors { get; }
 }
