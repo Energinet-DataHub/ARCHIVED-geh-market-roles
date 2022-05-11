@@ -16,12 +16,4 @@ using System.Collections.Generic;
 
 namespace Processing.Api.Responses;
 
-public class ResponseDto
-{
-    public ResponseDto(IEnumerable<string> validationErrors)
-    {
-        ValidationErrors = validationErrors;
-    }
-
-    public IEnumerable<string> ValidationErrors { get; }
-}
+public record ResponseDto(IEnumerable<string> ValidationErrors);
