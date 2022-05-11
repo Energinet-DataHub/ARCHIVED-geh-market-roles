@@ -16,7 +16,7 @@ namespace Processing.Api.MoveIn;
 
 public class MoveInRequestDto
 {
-    public MoveInRequestDto(string? consumerName, string? energySupplierGlnNumber, string? socialSecurityNumber, string? vatNumber, string accountingPointGsrnNumber, string startDate, string transactionId)
+    public MoveInRequestDto(string? consumerName, string? energySupplierGlnNumber, string? socialSecurityNumber, string? vatNumber, string accountingPointGsrnNumber, string startDate, string transactionId, string? consumerId, string? consumerIdType)
     {
         ConsumerName = consumerName;
         EnergySupplierGlnNumber = energySupplierGlnNumber;
@@ -25,6 +25,8 @@ public class MoveInRequestDto
         AccountingPointGsrnNumber = accountingPointGsrnNumber;
         StartDate = startDate;
         TransactionId = transactionId;
+        ConsumerId = consumerId;
+        ConsumerIdType = consumerIdType;
     }
 
     public string TransactionId { get; }
@@ -40,4 +42,8 @@ public class MoveInRequestDto
     public string AccountingPointGsrnNumber { get; }
 
     public string StartDate { get; }
+
+    public string? ConsumerId { get; }
+
+    public string? ConsumerIdType { get; }
 }
