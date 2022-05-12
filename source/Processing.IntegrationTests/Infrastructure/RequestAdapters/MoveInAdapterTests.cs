@@ -44,9 +44,10 @@ namespace Processing.IntegrationTests.Infrastructure.RequestAdapters
                 string.Empty,
                 string.Empty);
 
-            var response = await _adapter.ReceiveAsync(SerializeToStream(request)).ConfigureAwait(false);
+            var result = await _adapter.ReceiveAsync(SerializeToStream(request)).ConfigureAwait(false);
 
-            Assert.NotNull(response);
+            Assert.NotNull(result);
+            Assert.NotNull(result.Content);
         }
 
         private static MemoryStream SerializeToStream(object request)

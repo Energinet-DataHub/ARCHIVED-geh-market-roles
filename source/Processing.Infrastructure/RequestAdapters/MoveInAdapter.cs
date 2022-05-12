@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 using Processing.Application.MoveIn;
@@ -34,7 +35,7 @@ namespace Processing.Infrastructure.RequestAdapters
             _mediator = mediator;
         }
 
-        public async Task<ResponseDto> ReceiveAsync(Stream request)
+        public async Task<Result> ReceiveAsync(Stream request)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
             var requestDto = await ExtractRequestFromAsync(request).ConfigureAwait(false);
@@ -42,7 +43,9 @@ namespace Processing.Infrastructure.RequestAdapters
 
             var businessProcessResult = await _mediator.Send(command).ConfigureAwait(false);
 
-            return new ResponseDto(businessProcessResult.ValidationErrors.Select(error => error.GetType().Name).ToList());
+            var response = new ResponseDto(businessProcessResult.ValidationErrors.Select(error => error.GetType().Name).ToList());
+            var content = new MemoryStream(Encoding.UTF8.GetBytes(_serializer.Serialize(response)));
+            return new Result(content);
         }
 
         private static MoveInRequest MapToCommandFrom(MoveInRequestDto requestDto)
