@@ -18,11 +18,9 @@ namespace Processing.Domain.MeteringPoints.Errors
 {
     public class UnknownAccountingPoint : ValidationError
     {
-        public UnknownAccountingPoint(string gsrnNumber)
+        public UnknownAccountingPoint()
         {
-            GsrnNumber = gsrnNumber;
+            Code = "UnknownAccountingPoint";
         }
-
-        public string GsrnNumber { get; }
     }
 }

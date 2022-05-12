@@ -87,7 +87,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
             Assert.False(result.Success);
-            AssertValidationError<UnknownAccountingPoint>(result);
+            AssertValidationError<UnknownAccountingPoint>(result, "UnknownAccountingPoint");
         }
 
         [Fact]
