@@ -72,7 +72,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
-            AssertValidationError<UnknownEnergySupplier>(result);
+            AssertValidationError<UnknownEnergySupplier>(result, "UnknownEnergySupplier");
             Assert.False(result.Success);
         }
 

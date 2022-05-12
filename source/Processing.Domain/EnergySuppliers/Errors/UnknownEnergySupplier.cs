@@ -20,7 +20,7 @@ namespace Processing.Domain.EnergySuppliers.Errors
     {
         public UnknownEnergySupplier(string glnNumberOfEnergySupplier)
         {
-            Message = $"Energy supplier {glnNumberOfEnergySupplier} is not known.";
+            Code = "UnknownEnergySupplier";
         }
     }
 }
