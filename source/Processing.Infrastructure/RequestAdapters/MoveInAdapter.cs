@@ -21,7 +21,7 @@ using MediatR;
 using Processing.Application.MoveIn;
 using Processing.Infrastructure.Configuration.Serialization;
 
-namespace Processing.IntegrationTests.Infrastructure.BusinessRequests
+namespace Processing.Infrastructure.RequestAdapters
 {
     public class MoveInAdapter
     {
@@ -37,7 +37,7 @@ namespace Processing.IntegrationTests.Infrastructure.BusinessRequests
         public async Task<ResponseDto> ReceiveAsync(Stream request)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
-            var requestDto = await ExtractRequestFromAsync(request);
+            var requestDto = await ExtractRequestFromAsync(request).ConfigureAwait(false);
             var command = MapToCommandFrom(requestDto);
 
             var businessProcessResult = await _mediator.Send(command).ConfigureAwait(false);
@@ -69,7 +69,7 @@ namespace Processing.IntegrationTests.Infrastructure.BusinessRequests
 
         private async Task<MoveInRequestDto> ExtractRequestFromAsync(Stream request)
         {
-            var json = await ExtractJsonFromAsync(request);
+            var json = await ExtractJsonFromAsync(request).ConfigureAwait(false);
             var requestDto = DeserializeToRequest(json);
             return requestDto;
         }
@@ -79,16 +79,16 @@ namespace Processing.IntegrationTests.Infrastructure.BusinessRequests
             var requestDto = _serializer.Deserialize<MoveInRequestDto>(json);
             return requestDto;
         }
-
-        internal record MoveInRequestDto(
-            string? ConsumerName,
-            string? EnergySupplierGlnNumber,
-            string AccountingPointGsrnNumber,
-            string StartDate,
-            string TransactionId,
-            string? ConsumerId,
-            string? ConsumerIdType);
     }
+
+    public record MoveInRequestDto(
+        string? ConsumerName,
+        string? EnergySupplierGlnNumber,
+        string AccountingPointGsrnNumber,
+        string StartDate,
+        string TransactionId,
+        string? ConsumerId,
+        string? ConsumerIdType);
 
     public record ResponseDto(IEnumerable<string> ValidationErrors);
 }

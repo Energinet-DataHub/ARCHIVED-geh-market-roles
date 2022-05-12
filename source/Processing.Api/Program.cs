@@ -65,6 +65,7 @@ using Processing.Infrastructure.EDI.MoveIn;
 using Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
 using Processing.Infrastructure.Integration.Notifications;
 using Processing.Infrastructure.InternalCommands;
+using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Transport.Protobuf;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
 using Processing.Infrastructure.Users;
@@ -140,6 +141,7 @@ namespace Processing.Api
             container.Register<IActorMessageService, ActorMessageService>(Lifestyle.Scoped);
             container.Register<IMessageHubDispatcher, MessageHubDispatcher>(Lifestyle.Scoped);
             container.Register<MoveInHttpTrigger>(Lifestyle.Scoped);
+            container.Register<MoveInAdapter>(Lifestyle.Scoped);
 
             var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING")
                                    ?? throw new InvalidOperationException(

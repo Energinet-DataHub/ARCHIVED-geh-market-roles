@@ -15,13 +15,12 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using MediatR;
 using Newtonsoft.Json;
-using Processing.Infrastructure.Configuration.Serialization;
+using Processing.Infrastructure.RequestAdapters;
 using Processing.IntegrationTests.Application;
 using Xunit;
 
-namespace Processing.IntegrationTests.Infrastructure.BusinessRequests
+namespace Processing.IntegrationTests.Infrastructure.RequestAdapters
 {
     public class MoveInAdapterTests : TestHost
     {
@@ -30,13 +29,13 @@ namespace Processing.IntegrationTests.Infrastructure.BusinessRequests
         public MoveInAdapterTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
-            _adapter = new MoveInAdapter(GetService<IJsonSerializer>(), GetService<IMediator>());
+            _adapter = GetService<MoveInAdapter>();
         }
 
         [Fact]
         public async Task Can_handle()
         {
-            var request = new MoveInAdapter.MoveInRequestDto(
+            var request = new MoveInRequestDto(
                 "ConsumerName",
                 string.Empty,
                 string.Empty,
