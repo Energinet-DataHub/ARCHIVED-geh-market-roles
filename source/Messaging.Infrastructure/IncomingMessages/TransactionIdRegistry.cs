@@ -31,7 +31,7 @@ namespace Messaging.Infrastructure.IncomingMessages
 
         public async Task<bool> TryStoreAsync(string transactionId)
         {
-            var connection = _connectionFactory.GetOpenConnection();
+            using var connection = _connectionFactory.CreateSqlClientConnection();
 
             var result = await connection.ExecuteAsync(
                     $"IF NOT EXISTS (SELECT * FROM b2b.TransactionIds WHERE TransactionId = @TransactionId)" +

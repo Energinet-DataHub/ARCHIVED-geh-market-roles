@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Data.Common;
 using System.Net.Http;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.Logging.RequestResponseMiddleware.Storage;
@@ -46,6 +47,7 @@ using Messaging.Infrastructure.Configuration.Serialization;
 using Messaging.Infrastructure.IncomingMessages;
 using Messaging.Infrastructure.OutgoingMessages;
 using Messaging.Infrastructure.Transactions;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -114,6 +116,7 @@ namespace Messaging.Infrastructure.Configuration
         public CompositionRoot AddDatabaseConnectionFactory(string connectionString)
         {
             if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
+            DbProviderFactories.RegisterFactory("Microsoft.Data.SqlClient", typeof(SqlClientFactory));
             _services.AddSingleton<IDbConnectionFactory>(_ => new SqlDbConnectionFactory(connectionString));
             return this;
         }

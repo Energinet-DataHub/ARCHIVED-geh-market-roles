@@ -77,7 +77,7 @@ namespace Messaging.Infrastructure.Configuration.InternalCommands
 
         private Task MarkAsFailedAsync(QueuedInternalCommand queuedCommand, string exception)
         {
-            var connection = _connectionFactory.GetOpenConnection();
+            using var connection = _connectionFactory.CreateSqlClientConnection();
             return connection.ExecuteScalarAsync(
                 "UPDATE [b2b].[QueuedInternalCommands] " +
                 "SET ProcessedDate = @NowDate, " +
@@ -93,7 +93,7 @@ namespace Messaging.Infrastructure.Configuration.InternalCommands
 
         private Task MarkAsProcessedAsync(QueuedInternalCommand queuedCommand)
         {
-            var connection = _connectionFactory.GetOpenConnection();
+            using var connection = _connectionFactory.CreateSqlClientConnection();
             return connection.ExecuteScalarAsync(
                 "UPDATE [b2b].[QueuedInternalCommands] " +
                 "SET ProcessedDate = @NowDate " +

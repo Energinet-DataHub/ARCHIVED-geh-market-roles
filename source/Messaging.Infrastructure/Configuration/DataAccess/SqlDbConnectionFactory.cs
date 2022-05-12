@@ -14,52 +14,30 @@
 
 using System;
 using System.Data;
+using System.Data.Common;
 using Messaging.Application.Configuration.DataAccess;
 using Microsoft.Data.SqlClient;
 
 namespace Messaging.Infrastructure.Configuration.DataAccess
 {
-    public class SqlDbConnectionFactory : IDbConnectionFactory, IDisposable
+    public class SqlDbConnectionFactory : IDbConnectionFactory
     {
         private readonly string _connectionString;
-        private IDbConnection _connection = null!;
-        private bool _disposed;
 
         public SqlDbConnectionFactory(string connectionString)
         {
             _connectionString = connectionString;
         }
 
-        public IDbConnection GetOpenConnection()
+        public IDbConnection CreateSqlClientConnection()
         {
-            if (_connection is null || _connection.State == ConnectionState.Broken)
-            {
-                _connection = new SqlConnection(_connectionString);
-            }
+            // Details on using DbProviderFactories see - https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/obtaining-a-dbproviderfactory
+            var factory = DbProviderFactories.GetFactory("Microsoft.Data.SqlClient");
+            var connection = factory.CreateConnection();
+            if (connection == null) throw new InvalidOperationException("No provider setup for Microsoft.Data.SqlClient");
 
-            if (_connection.State != ConnectionState.Closed)
-            {
-                _connection.Open();
-            }
-
-            return _connection;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            _connection?.Dispose();
-            _disposed = true;
+            connection.ConnectionString = _connectionString;
+            return connection;
         }
     }
 }

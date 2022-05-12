@@ -109,8 +109,8 @@ namespace Messaging.Api.Configuration.Middleware.Authentication.Bearer
         {
             var sql = "SELECT TOP 1 [Id] AS ActorId,[IdentificationType],[IdentificationNumber] AS Identifier,[Roles] FROM [dbo].[Actor] WHERE Id = @ActorId";
 
-            var result = await connectionFactory
-                .GetOpenConnection()
+            using var connection = connectionFactory.CreateSqlClientConnection();
+            var result = await connection
                 .QuerySingleOrDefaultAsync<Actor>(sql, new { ActorId = actorId })
                 .ConfigureAwait(false);
 

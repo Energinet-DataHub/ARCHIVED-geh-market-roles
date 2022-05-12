@@ -25,6 +25,6 @@ namespace Messaging.Application.Configuration.DataAccess
         /// Returns and existing open connection if any, or creates a new open connection
         /// </summary>
         /// <returns><see cref="IDbConnection"/></returns>
-        IDbConnection GetOpenConnection();
+        IDbConnection CreateSqlClientConnection();
     }
 }

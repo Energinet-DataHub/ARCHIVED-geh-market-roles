@@ -44,7 +44,7 @@ public class InternalCommandProcessorTests : TestBase
         _connectionFactory = GetService<IDbConnectionFactory>();
     }
 
-    private IDbConnection Connection => _connectionFactory.GetOpenConnection();
+    private IDbConnection Connection => _connectionFactory.CreateSqlClientConnection();
 
     [Fact]
     public async Task Scheduled_commands_are_processed()
