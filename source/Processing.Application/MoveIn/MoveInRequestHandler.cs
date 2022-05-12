@@ -94,7 +94,7 @@ namespace Processing.Application.MoveIn
         private Domain.Consumers.Consumer CreateConsumer(MoveInRequest moveInRequest)
         {
             var consumerName = ConsumerName.Create(moveInRequest.Consumer.Name);
-            Domain.Consumers.Consumer consumer = moveInRequest.Consumer.Type.Equals("CPR", StringComparison.OrdinalIgnoreCase)
+            var consumer = moveInRequest.Consumer.Type.Equals("CPR", StringComparison.OrdinalIgnoreCase)
                 ? new Domain.Consumers.Consumer(ConsumerId.New(), CprNumber.Create(moveInRequest.Consumer.Identifier), consumerName)
                 : new Domain.Consumers.Consumer(ConsumerId.New(), CvrNumber.Create(moveInRequest.Consumer.Identifier), consumerName);
             _consumerRepository.Add(consumer);
