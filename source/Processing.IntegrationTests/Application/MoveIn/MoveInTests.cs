@@ -59,7 +59,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
-            AssertValidationError<ConsumerNameIsRequired>(result);
+            AssertValidationError<ConsumerNameIsRequired>(result, "ConsumerNameIsRequired");
         }
 
         [Fact]
