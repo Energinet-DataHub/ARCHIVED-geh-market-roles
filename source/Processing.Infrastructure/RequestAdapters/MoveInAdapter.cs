@@ -19,6 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
+using Processing.Application.Common;
 using Processing.Application.MoveIn;
 using Processing.Infrastructure.Configuration.Serialization;
 
@@ -43,9 +44,7 @@ namespace Processing.Infrastructure.RequestAdapters
 
             var businessProcessResult = await _mediator.Send(command).ConfigureAwait(false);
 
-            var response = new ResponseDto(businessProcessResult.ValidationErrors.Select(error => error.GetType().Name).ToList());
-            var content = new MemoryStream(Encoding.UTF8.GetBytes(_serializer.Serialize(response)));
-            return new Result(content);
+            return CreateResult(businessProcessResult);
         }
 
         private static MoveInRequest MapToCommandFrom(MoveInRequestDto requestDto)
@@ -81,6 +80,13 @@ namespace Processing.Infrastructure.RequestAdapters
         {
             var requestDto = _serializer.Deserialize<MoveInRequestDto>(json);
             return requestDto;
+        }
+
+        private Result CreateResult(BusinessProcessResult businessProcessResult)
+        {
+            var response = new ResponseDto(businessProcessResult.ValidationErrors.Select(error => error.GetType().Name).ToList());
+            var content = new MemoryStream(Encoding.UTF8.GetBytes(_serializer.Serialize(response)));
+            return new Result(content);
         }
     }
 
