@@ -14,11 +14,13 @@
 
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
 using NodaTime.Text;
 using Processing.Application.Common;
+using Processing.Domain.BusinessProcesses.MoveIn;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.EnergySuppliers.Errors;
@@ -59,10 +61,13 @@ namespace Processing.Application.MoveIn
                 return BusinessProcessResult.Fail(request.TransactionId, new UnknownEnergySupplier(request.EnergySupplierGlnNumber));
             }
 
-            var businessRulesResult = CheckBusinessRules(accountingPoint, request);
-            if (!businessRulesResult.Success)
+            var consumerMovesInOn = Instant.FromDateTimeOffset(DateTimeOffset.Parse(request.MoveInDate, CultureInfo.InvariantCulture));
+            var process = new ConsumerMoveIn();
+            var checkResult = process.CheckRules(accountingPoint, consumerMovesInOn);
+
+            if (!checkResult.Success)
             {
-                return businessRulesResult;
+                return BusinessProcessResult.Fail(request.TransactionId, checkResult.Errors.ToArray());
             }
 
             var consumer = await GetOrCreateConsumerAsync(request).ConfigureAwait(false);
