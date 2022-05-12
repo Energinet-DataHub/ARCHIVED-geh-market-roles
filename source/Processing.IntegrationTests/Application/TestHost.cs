@@ -134,7 +134,7 @@ namespace Processing.IntegrationTests.Application
             _container.Register<IDbConnectionFactory>(() => new SqlDbConnectionFactory(_connectionString));
             _container.Register<ICorrelationContext, CorrelationContext>(Lifestyle.Scoped);
 
-            _container.Register<MoveInAdapter>(Lifestyle.Scoped);
+            _container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
 
             // Business process responders
             _container.Register<IBusinessProcessResultHandler<RequestChangeOfSupplier>, RequestChangeOfSupplierResultHandler>(Lifestyle.Scoped);

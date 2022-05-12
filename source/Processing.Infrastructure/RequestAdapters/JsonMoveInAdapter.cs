@@ -25,12 +25,12 @@ using Processing.Infrastructure.Configuration.Serialization;
 
 namespace Processing.Infrastructure.RequestAdapters
 {
-    public class MoveInAdapter
+    public class JsonMoveInAdapter
     {
         private readonly IJsonSerializer _serializer;
         private readonly IMediator _mediator;
 
-        public MoveInAdapter(IJsonSerializer serializer, IMediator mediator)
+        public JsonMoveInAdapter(IJsonSerializer serializer, IMediator mediator)
         {
             _serializer = serializer;
             _mediator = mediator;

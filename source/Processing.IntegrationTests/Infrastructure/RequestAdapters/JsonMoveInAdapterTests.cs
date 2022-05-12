@@ -22,14 +22,14 @@ using Xunit;
 
 namespace Processing.IntegrationTests.Infrastructure.RequestAdapters
 {
-    public class MoveInAdapterTests : TestHost
+    public class JsonMoveInAdapterTests : TestHost
     {
-        private readonly MoveInAdapter _adapter;
+        private readonly JsonMoveInAdapter _adapter;
 
-        public MoveInAdapterTests(DatabaseFixture databaseFixture)
+        public JsonMoveInAdapterTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
-            _adapter = GetService<MoveInAdapter>();
+            _adapter = GetService<JsonMoveInAdapter>();
         }
 
         [Fact]

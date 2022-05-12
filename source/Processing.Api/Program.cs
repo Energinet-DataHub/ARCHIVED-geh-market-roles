@@ -141,7 +141,7 @@ namespace Processing.Api
             container.Register<IActorMessageService, ActorMessageService>(Lifestyle.Scoped);
             container.Register<IMessageHubDispatcher, MessageHubDispatcher>(Lifestyle.Scoped);
             container.Register<MoveInHttpTrigger>(Lifestyle.Scoped);
-            container.Register<MoveInAdapter>(Lifestyle.Scoped);
+            container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
 
             var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING")
                                    ?? throw new InvalidOperationException(
