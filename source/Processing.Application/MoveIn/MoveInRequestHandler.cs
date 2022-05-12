@@ -18,7 +18,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
-using NodaTime.Text;
 using Processing.Application.Common;
 using Processing.Domain.BusinessProcesses.MoveIn;
 using Processing.Domain.Consumers;
@@ -72,21 +71,9 @@ namespace Processing.Application.MoveIn
 
             var consumer = await GetOrCreateConsumerAsync(request).ConfigureAwait(false);
 
-            var startDate = Instant.FromDateTimeOffset(DateTimeOffset.Parse(request.MoveInDate, CultureInfo.InvariantCulture));
+            process.StartProcess(accountingPoint, consumer, energySupplier, consumerMovesInOn, Transaction.Create(request.TransactionId));
 
-            accountingPoint.AcceptConsumerMoveIn(consumer.ConsumerId, energySupplier!.EnergySupplierId, startDate, Transaction.Create(request.TransactionId));
             return BusinessProcessResult.Ok(request.TransactionId);
-        }
-
-        private static BusinessProcessResult CheckBusinessRules(global::Processing.Domain.MeteringPoints.AccountingPoint accountingPoint, MoveInRequest moveInRequest)
-        {
-            if (moveInRequest is null) throw new ArgumentNullException(nameof(moveInRequest));
-
-            var moveInDate = InstantPattern.General.Parse(moveInRequest.MoveInDate).Value;
-
-            var validationResult = accountingPoint.ConsumerMoveInAcceptable(moveInDate);
-
-            return new BusinessProcessResult(moveInRequest.TransactionId, validationResult.Errors);
         }
 
         private async Task<Domain.Consumers.Consumer> GetOrCreateConsumerAsync(MoveInRequest moveInRequest)

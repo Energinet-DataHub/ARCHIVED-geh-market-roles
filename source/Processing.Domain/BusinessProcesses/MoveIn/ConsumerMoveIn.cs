@@ -13,6 +13,8 @@
 // limitations under the License.
 
 using NodaTime;
+using Processing.Domain.Consumers;
+using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
 
@@ -24,6 +26,11 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
         public BusinessRulesValidationResult CheckRules(AccountingPoint accountingPoint, Instant consumerMovesInOn)
         {
             return accountingPoint.ConsumerMoveInAcceptable(consumerMovesInOn);
+        }
+
+        public void StartProcess(AccountingPoint accountingPoint, Consumer consumer, EnergySupplier energySupplier, Instant consumerMovesInOn, Transaction transaction)
+        {
+            accountingPoint.AcceptConsumerMoveIn(consumer.ConsumerId, energySupplier!.EnergySupplierId, consumerMovesInOn, transaction);
         }
     }
 }
