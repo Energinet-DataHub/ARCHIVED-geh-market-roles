@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
@@ -39,6 +40,7 @@ public class MoveInHttpTrigger
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")]
         HttpRequestData request)
     {
+        if (request == null) throw new ArgumentNullException(nameof(request));
         _logger.LogInformation($"Received move in request");
         var result = await _adapter.ReceiveAsync(request.Body).ConfigureAwait(false);
         var response = request.CreateResponse(HttpStatusCode.OK);
