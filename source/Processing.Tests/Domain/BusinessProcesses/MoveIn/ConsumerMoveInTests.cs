@@ -74,10 +74,10 @@ public class ConsumerMoveInTests
     public void Cannot_register_a_move_in_on_a_date_where_a_move_in_is_already_effectuated()
     {
         var moveInDate = _systemDateTimeProvider.Now();
-        _accountingPoint.AcceptConsumerMoveIn(_consumer.ConsumerId, _energySupplier.EnergySupplierId, moveInDate, _transaction);
+        _consumerMoveIn.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, _transaction);
         _accountingPoint.EffectuateConsumerMoveIn(_transaction, _systemDateTimeProvider);
 
-        var result = _accountingPoint.ConsumerMoveInAcceptable(moveInDate);
+        var result = _consumerMoveIn.CheckRules(_accountingPoint, moveInDate);
 
         Assert.Contains(result.Errors, error => error is MoveInRegisteredOnSameDateIsNotAllowedRuleError);
     }
