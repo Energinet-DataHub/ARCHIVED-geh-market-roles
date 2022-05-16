@@ -18,5 +18,9 @@ namespace Processing.Domain.BusinessProcesses.MoveIn.Errors
 {
     public class ConsumerIdentifierIsRequired : ValidationError
     {
+        public ConsumerIdentifierIsRequired()
+        {
+            Code = "ConsumerIdentifierIsRequired";
+        }
     }
 }
