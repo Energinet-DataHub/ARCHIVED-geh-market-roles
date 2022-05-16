@@ -21,6 +21,7 @@ using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers.Errors;
 using Processing.Domain.MeteringPoints.Errors;
+using Processing.Domain.SeedWork;
 using Xunit;
 using Xunit.Categories;
 using Consumer = Processing.Application.MoveIn.Consumer;
@@ -45,7 +46,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
-            AssertValidationError<ConsumerIdentifierIsRequired>(result);
+            AssertValidationError<ConsumerIdentifierIsRequired>(result, "ConsumerIdentifierIsRequired");
         }
 
         [Fact]
@@ -58,7 +59,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
-            AssertValidationError<ConsumerNameIsRequired>(result);
+            AssertValidationError<ConsumerNameIsRequired>(result, "ConsumerNameIsRequired");
         }
 
         [Fact]
@@ -71,7 +72,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
-            AssertValidationError<UnknownEnergySupplier>(result);
+            AssertValidationError<UnknownEnergySupplier>(result, "UnknownEnergySupplier");
             Assert.False(result.Success);
         }
 
@@ -86,7 +87,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
             Assert.False(result.Success);
-            AssertValidationError<UnknownAccountingPoint>(result);
+            AssertValidationError<UnknownAccountingPoint>(result, "UnknownAccountingPoint");
         }
 
         [Fact]
@@ -129,11 +130,16 @@ namespace Processing.IntegrationTests.Application.MoveIn
             await SendRequestAsync(request).ConfigureAwait(false);
         }
 
-        private static void AssertValidationError<TRuleError>(BusinessProcessResult rulesValidationResult, bool errorExpected = true)
+        private static void AssertValidationError<TRuleError>(BusinessProcessResult rulesValidationResult, string? expectedErrorCode = null, bool errorExpected = true)
+        where TRuleError : ValidationError
         {
             if (rulesValidationResult == null) throw new ArgumentNullException(nameof(rulesValidationResult));
-            var hasError = rulesValidationResult.ValidationErrors.Any(error => error is TRuleError);
-            Assert.Equal(errorExpected, hasError);
+            var error = rulesValidationResult.ValidationErrors.FirstOrDefault(error => error is TRuleError);
+            Assert.NotNull(error);
+            if (expectedErrorCode is not null)
+            {
+                Assert.Equal(expectedErrorCode, error?.Code);
+            }
         }
 
         private static MoveInRequest CreateRequest(bool registerConsumerBySSN = true)

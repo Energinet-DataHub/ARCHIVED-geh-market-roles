@@ -70,6 +70,7 @@ using Processing.Infrastructure.EDI.ChangeOfSupplier.MeteringPointDetails;
 using Processing.Infrastructure.EDI.MoveIn;
 using Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
 using Processing.Infrastructure.InternalCommands;
+using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Transport;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
 using SimpleInjector;
@@ -132,6 +133,8 @@ namespace Processing.IntegrationTests.Application
             _container.Register<ICommandScheduler, CommandScheduler>(Lifestyle.Scoped);
             _container.Register<IDbConnectionFactory>(() => new SqlDbConnectionFactory(_connectionString));
             _container.Register<ICorrelationContext, CorrelationContext>(Lifestyle.Scoped);
+
+            _container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
 
             // Business process responders
             _container.Register<IBusinessProcessResultHandler<RequestChangeOfSupplier>, RequestChangeOfSupplierResultHandler>(Lifestyle.Scoped);

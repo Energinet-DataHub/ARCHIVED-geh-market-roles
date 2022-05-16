@@ -12,15 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Processing.Domain.SeedWork;
+using System.IO;
 
-namespace Processing.Domain.MeteringPoints.Errors
+namespace Processing.Infrastructure.RequestAdapters
 {
-    public class UnknownAccountingPoint : ValidationError
+    public class Result
     {
-        public UnknownAccountingPoint()
+        public Result(Stream content)
         {
-            Code = "UnknownAccountingPoint";
+            Content = content;
         }
+
+        public Stream Content { get; }
     }
 }

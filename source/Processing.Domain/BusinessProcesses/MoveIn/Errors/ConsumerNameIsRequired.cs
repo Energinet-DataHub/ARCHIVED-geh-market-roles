@@ -20,8 +20,7 @@ namespace Processing.Domain.BusinessProcesses.MoveIn.Errors
     {
         public ConsumerNameIsRequired()
         {
-            Message = "Consumer name is required";
-            Code = "999";
+            Code = "ConsumerNameIsRequired";
         }
     }
 }
