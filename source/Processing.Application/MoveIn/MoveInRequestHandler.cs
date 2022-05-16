@@ -25,6 +25,7 @@ using Processing.Domain.EnergySuppliers;
 using Processing.Domain.EnergySuppliers.Errors;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.MeteringPoints.Errors;
+using Processing.Domain.SeedWork;
 
 namespace Processing.Application.MoveIn
 {
@@ -33,15 +34,18 @@ namespace Processing.Application.MoveIn
         private readonly IAccountingPointRepository _accountingPointRepository;
         private readonly IEnergySupplierRepository _energySupplierRepository;
         private readonly IConsumerRepository _consumerRepository;
+        private readonly ISystemDateTimeProvider _systemDateTimeProvider;
 
         public MoveInRequestHandler(
             IAccountingPointRepository accountingPointRepository,
             IEnergySupplierRepository energySupplierRepository,
-            IConsumerRepository consumerRepository)
+            IConsumerRepository consumerRepository,
+            ISystemDateTimeProvider systemDateTimeProvider)
         {
             _accountingPointRepository = accountingPointRepository ?? throw new ArgumentNullException(nameof(accountingPointRepository));
             _energySupplierRepository = energySupplierRepository ?? throw new ArgumentNullException(nameof(energySupplierRepository));
             _consumerRepository = consumerRepository ?? throw new ArgumentNullException(nameof(consumerRepository));
+            _systemDateTimeProvider = systemDateTimeProvider;
         }
 
         public async Task<BusinessProcessResult> Handle(MoveInRequest request, CancellationToken cancellationToken)
@@ -61,8 +65,8 @@ namespace Processing.Application.MoveIn
             }
 
             var consumerMovesInOn = Instant.FromDateTimeOffset(DateTimeOffset.Parse(request.MoveInDate, CultureInfo.InvariantCulture));
-            var process = new ConsumerMoveIn();
-            var checkResult = process.CanStartProcess(accountingPoint, consumerMovesInOn);
+            var process = new ConsumerMoveIn(new EffectiveDatePolicy());
+            var checkResult = process.CanStartProcess(accountingPoint, consumerMovesInOn, _systemDateTimeProvider.Now());
 
             if (!checkResult.Success)
             {

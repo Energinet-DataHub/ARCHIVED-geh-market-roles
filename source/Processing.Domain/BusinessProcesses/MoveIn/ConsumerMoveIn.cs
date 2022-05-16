@@ -23,13 +23,24 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
 {
     public class ConsumerMoveIn
     {
+        private readonly EffectiveDatePolicy _policy;
+
         public ConsumerMoveIn(EffectiveDatePolicy policy)
         {
+            _policy = policy;
         }
+
 #pragma warning disable CA1822 // Methods should not be static
-        public BusinessRulesValidationResult CanStartProcess(AccountingPoint accountingPoint, Instant consumerMovesInOn)
+        public BusinessRulesValidationResult CanStartProcess(AccountingPoint accountingPoint, Instant consumerMovesInOn, Instant today)
         {
             if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
+
+            var timePolicyCheckResult = _policy.Check(today, consumerMovesInOn);
+            if (timePolicyCheckResult.Success == false)
+            {
+                return timePolicyCheckResult;
+            }
+
             return accountingPoint.ConsumerMoveInAcceptable(consumerMovesInOn);
         }
 

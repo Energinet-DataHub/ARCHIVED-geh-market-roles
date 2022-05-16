@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Linq;
 using NodaTime;
 using Processing.Domain.BusinessProcesses.MoveIn;
+using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
@@ -35,7 +38,7 @@ public class ConsumerMoveInTests
 
     public ConsumerMoveInTests()
     {
-        _consumerMoveInProcess = new ConsumerMoveIn();
+        _consumerMoveInProcess = new ConsumerMoveIn(new EffectiveDatePolicy());
         _systemDateTimeProvider = new SystemDateTimeProviderStub();
         _accountingPoint = AccountingPoint.CreateProduction(GsrnNumber.Create(SampleData.GsrnNumber), true);
         _consumer = new Consumer(ConsumerId.New(), CprNumber.Create(SampleData.ConsumerSocialSecurityNumber), ConsumerName.Create(SampleData.ConsumerName));
@@ -66,7 +69,7 @@ public class ConsumerMoveInTests
 
         _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, _transaction);
 
-        var result = _consumerMoveInProcess.CanStartProcess(_accountingPoint, moveInDate);
+        var result = _consumerMoveInProcess.CanStartProcess(_accountingPoint, moveInDate, _systemDateTimeProvider.Now());
         Assert.Contains(result.Errors, error => error is MoveInRegisteredOnSameDateIsNotAllowedRuleError);
     }
 
@@ -77,7 +80,7 @@ public class ConsumerMoveInTests
         _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, _transaction);
         _accountingPoint.EffectuateConsumerMoveIn(_transaction, _systemDateTimeProvider);
 
-        var result = _consumerMoveInProcess.CanStartProcess(_accountingPoint, moveInDate);
+        var result = _consumerMoveInProcess.CanStartProcess(_accountingPoint, moveInDate, _systemDateTimeProvider.Now());
 
         Assert.Contains(result.Errors, error => error is MoveInRegisteredOnSameDateIsNotAllowedRuleError);
     }
@@ -90,8 +93,20 @@ public class ConsumerMoveInTests
         var moveProcess = new ConsumerMoveIn(policy);
 
         var moveInDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(10));
-        var result = moveProcess.CanStartProcess(_accountingPoint, moveInDate);
+        var result = moveProcess.CanStartProcess(_accountingPoint, moveInDate, _systemDateTimeProvider.Now());
 
+        AssertValidationError<EffectiveDateIsNotWithinAllowedTimePeriod>(result);
+    }
 
+    private static void AssertValidationError<TRuleError>(BusinessRulesValidationResult rulesValidationResult, string? expectedErrorCode = null, bool errorExpected = true)
+        where TRuleError : ValidationError
+    {
+        if (rulesValidationResult == null) throw new ArgumentNullException(nameof(rulesValidationResult));
+        var error = rulesValidationResult.Errors.FirstOrDefault(error => error is TRuleError);
+        Assert.NotNull(error);
+        if (expectedErrorCode is not null)
+        {
+            Assert.Equal(expectedErrorCode, error?.Code);
+        }
     }
 }
