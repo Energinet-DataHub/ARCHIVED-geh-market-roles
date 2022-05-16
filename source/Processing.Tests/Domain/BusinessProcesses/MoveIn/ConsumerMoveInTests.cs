@@ -17,6 +17,7 @@ using System.Linq;
 using NodaTime;
 using Processing.Domain.BusinessProcesses.MoveIn;
 using Processing.Domain.BusinessProcesses.MoveIn.Errors;
+using Processing.Domain.Common;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
@@ -49,15 +50,15 @@ public class ConsumerMoveInTests
     [Fact]
     public void Throw_if_any_business_rules_are_broken()
     {
-        _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, SystemClock.Instance.GetCurrentInstant(), _transaction);
+        _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, AsOfToday(), _transaction);
 
-        Assert.Throws<BusinessProcessException>(() => _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, SystemClock.Instance.GetCurrentInstant(), _transaction));
+        Assert.Throws<BusinessProcessException>(() => _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, AsOfToday(), _transaction));
     }
 
     [Fact]
     public void Consumer_move_in_is_accepted()
     {
-        _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, SystemClock.Instance.GetCurrentInstant(), _transaction);
+        _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, AsOfToday(), _transaction);
 
         Assert.Contains(_accountingPoint.DomainEvents, e => e is ConsumerMoveInAccepted);
     }
@@ -65,7 +66,7 @@ public class ConsumerMoveInTests
     [Fact]
     public void Cannot_move_in_on_a_date_where_a_move_in_is_already_registered()
     {
-        var moveInDate = _systemDateTimeProvider.Now();
+        var moveInDate = AsOfToday();
 
         _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, _transaction);
 
@@ -76,7 +77,7 @@ public class ConsumerMoveInTests
     [Fact]
     public void Cannot_register_a_move_in_on_a_date_where_a_move_in_is_already_effectuated()
     {
-        var moveInDate = _systemDateTimeProvider.Now();
+        var moveInDate = AsOfToday();
         _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, _transaction);
         _accountingPoint.EffectuateConsumerMoveIn(_transaction, _systemDateTimeProvider);
 
@@ -92,7 +93,7 @@ public class ConsumerMoveInTests
         var policy = new EffectiveDatePolicy(maxNumberOfDaysAheadOfcurrentDate);
         var moveProcess = new ConsumerMoveIn(policy);
 
-        var moveInDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(10));
+        var moveInDate = AsOf(_systemDateTimeProvider.Now().Plus(Duration.FromDays(10)));
         var result = moveProcess.CanStartProcess(_accountingPoint, moveInDate, _systemDateTimeProvider.Now());
 
         AssertValidationError<EffectiveDateIsNotWithinAllowedTimePeriod>(result);
@@ -110,8 +111,22 @@ public class ConsumerMoveInTests
         }
     }
 
-    private BusinessRulesValidationResult CanStartProcess(Instant moveInDate)
+    private static EffectiveDate AsOf(Instant date)
+    {
+        var today = date.ToDateTimeUtc();
+        var parsed = new DateTime(today.Year, today.Month, today.Day, 22, 0, 0);
+        return EffectiveDate.Create(parsed);
+    }
+
+    private BusinessRulesValidationResult CanStartProcess(EffectiveDate moveInDate)
     {
         return _consumerMoveInProcess.CanStartProcess(_accountingPoint, moveInDate, _systemDateTimeProvider.Now());
+    }
+
+    private EffectiveDate AsOfToday()
+    {
+        var today = _systemDateTimeProvider.Now().ToDateTimeUtc();
+        var parsed = new DateTime(today.Year, today.Month, today.Day, 22, 0, 0);
+        return EffectiveDate.Create(parsed);
     }
 }

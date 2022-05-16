@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using NodaTime;
 using Processing.Application.Common;
 using Processing.Domain.BusinessProcesses.MoveIn;
+using Processing.Domain.Common;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.EnergySuppliers.Errors;
@@ -64,7 +65,7 @@ namespace Processing.Application.MoveIn
                 return BusinessProcessResult.Fail(request.TransactionId, new UnknownEnergySupplier());
             }
 
-            var consumerMovesInOn = Instant.FromDateTimeOffset(DateTimeOffset.Parse(request.MoveInDate, CultureInfo.InvariantCulture));
+            var consumerMovesInOn = EffectiveDate.Create(request.MoveInDate);
             var process = new ConsumerMoveIn(new EffectiveDatePolicy());
             var checkResult = process.CanStartProcess(accountingPoint, consumerMovesInOn, _systemDateTimeProvider.Now());
 

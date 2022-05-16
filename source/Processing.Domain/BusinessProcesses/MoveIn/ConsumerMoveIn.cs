@@ -14,6 +14,7 @@
 
 using System;
 using NodaTime;
+using Processing.Domain.Common;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
@@ -31,7 +32,7 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
         }
 
 #pragma warning disable CA1822 // Methods should not be static
-        public BusinessRulesValidationResult CanStartProcess(AccountingPoint accountingPoint, Instant consumerMovesInOn, Instant today)
+        public BusinessRulesValidationResult CanStartProcess(AccountingPoint accountingPoint, EffectiveDate consumerMovesInOn, Instant today)
         {
             if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
 
@@ -41,15 +42,16 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
                 return timePolicyCheckResult;
             }
 
-            return accountingPoint.ConsumerMoveInAcceptable(consumerMovesInOn);
+            return accountingPoint.ConsumerMoveInAcceptable(consumerMovesInOn.DateInUtc);
         }
 
-        public void StartProcess(AccountingPoint accountingPoint, Consumer consumer, EnergySupplier energySupplier, Instant consumerMovesInOn, Transaction transaction)
+        public void StartProcess(AccountingPoint accountingPoint, Consumer consumer, EnergySupplier energySupplier, EffectiveDate consumerMovesInOn, Transaction transaction)
         {
             if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
             if (consumer == null) throw new ArgumentNullException(nameof(consumer));
             if (energySupplier == null) throw new ArgumentNullException(nameof(energySupplier));
-            accountingPoint.AcceptConsumerMoveIn(consumer.ConsumerId, energySupplier.EnergySupplierId, consumerMovesInOn, transaction);
+            if (consumerMovesInOn == null) throw new ArgumentNullException(nameof(consumerMovesInOn));
+            accountingPoint.AcceptConsumerMoveIn(consumer.ConsumerId, energySupplier.EnergySupplierId, consumerMovesInOn.DateInUtc, transaction);
         }
     }
 }

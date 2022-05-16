@@ -15,6 +15,7 @@
 using System;
 using NodaTime;
 using Processing.Domain.BusinessProcesses.MoveIn.Errors;
+using Processing.Domain.Common;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.BusinessProcesses.MoveIn
@@ -30,8 +31,9 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
             _allowedNumberOfDaysAfterToday = allowedNumberOfDaysAfterToday;
         }
 
-        public BusinessRulesValidationResult Check(Instant today, Instant effectiveDate)
+        public BusinessRulesValidationResult Check(Instant today, EffectiveDate effectiveDate)
         {
+            if (effectiveDate == null) throw new ArgumentNullException(nameof(effectiveDate));
             var maxDifferenceInDays = EffectiveDateIsBeforeToday(today, effectiveDate)
                 ? _allowedNumberOfDaysBeforeToday
                 : _allowedNumberOfDaysAfterToday;
@@ -44,20 +46,20 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
             return BusinessRulesValidationResult.Succeeded();
         }
 
-        private static bool EffectiveDateIsBeforeToday(Instant today, Instant effectiveDate)
+        private static bool EffectiveDateIsBeforeToday(Instant today, EffectiveDate effectiveDate)
         {
-            return ToDate(effectiveDate) < ToDate(today);
+            return ToDate(effectiveDate.DateInUtc) < ToDate(today);
         }
 
-        private static bool EffectiveDateIsWithinAllowedTimePeriod(Instant today, Instant effectiveDate, int maxDifferenceInDays)
+        private static bool EffectiveDateIsWithinAllowedTimePeriod(Instant today, EffectiveDate effectiveDate, int maxDifferenceInDays)
         {
             return !(DifferenceInDays(today, effectiveDate) > maxDifferenceInDays);
         }
 
-        private static int DifferenceInDays(Instant today, Instant effectiveDate)
+        private static int DifferenceInDays(Instant today, EffectiveDate effectiveDate)
         {
             var todayDatetime = ToDate(today);
-            var effectiveDateTime = ToDate(effectiveDate);
+            var effectiveDateTime = ToDate(effectiveDate.DateInUtc);
 
             if (todayDatetime > effectiveDateTime)
             {
