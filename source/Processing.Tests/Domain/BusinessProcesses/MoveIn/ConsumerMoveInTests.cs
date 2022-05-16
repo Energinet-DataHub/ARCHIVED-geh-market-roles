@@ -71,7 +71,7 @@ public class ConsumerMoveInTests
     }
 
     [Fact]
-    public void Should_return_error_when_a_completed_movein_with_the_same_movein_date_exists()
+    public void Cannot_register_a_move_in_on_a_date_where_a_move_in_is_already_effectuated()
     {
         var moveInDate = _systemDateTimeProvider.Now();
         _accountingPoint.AcceptConsumerMoveIn(_consumer.ConsumerId, _energySupplier.EnergySupplierId, moveInDate, _transaction);
