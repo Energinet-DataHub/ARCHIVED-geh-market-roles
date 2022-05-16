@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Domain.MeteringPoints.Errors;
 using Processing.Domain.SeedWork;
 
@@ -30,6 +29,6 @@ namespace Processing.Application.Common.Validation
 
         public bool IsBroken { get; }
 
-        public ValidationError ValidationError => new UnknownAccountingPoint(_gsrnNumber);
+        public ValidationError ValidationError => new UnknownAccountingPoint();
     }
 }

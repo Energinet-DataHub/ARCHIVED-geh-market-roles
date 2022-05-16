@@ -84,7 +84,7 @@ namespace Processing.Infrastructure.RequestAdapters
 
         private Result CreateResult(BusinessProcessResult businessProcessResult)
         {
-            var response = new ResponseDto(businessProcessResult.ValidationErrors.Select(error => error.GetType().Name).ToList());
+            var response = new ResponseDto(businessProcessResult.ValidationErrors.Select(error => error.Code).ToList());
             var content = new MemoryStream(Encoding.UTF8.GetBytes(_serializer.Serialize(response)));
             return new Result(content);
         }

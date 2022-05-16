@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Diagnostics.CodeAnalysis;
-using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.EDI;
 using Processing.Domain.MeteringPoints.Errors;
 
@@ -23,7 +22,7 @@ namespace Processing.Infrastructure.EDI.Errors.Converters
     {
         protected override ErrorMessage Convert([NotNull] UnknownAccountingPoint validationError)
         {
-            return new("E10", $"GSRN-code {validationError.GsrnNumber} unknown: The specified metering point has not been registered in the system.");
+            return new("E10", $"The specified metering point has not been registered in the system.");
         }
     }
 }
