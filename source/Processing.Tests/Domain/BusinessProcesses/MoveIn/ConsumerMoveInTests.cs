@@ -30,12 +30,12 @@ public class ConsumerMoveInTests
     private readonly Consumer _consumer;
     private readonly EnergySupplier _energySupplier;
     private readonly ISystemDateTimeProvider _systemDateTimeProvider;
-    private readonly ConsumerMoveIn _consumerMoveIn;
+    private readonly ConsumerMoveIn _consumerMoveInProcess;
     private readonly Transaction _transaction;
 
     public ConsumerMoveInTests()
     {
-        _consumerMoveIn = new ConsumerMoveIn();
+        _consumerMoveInProcess = new ConsumerMoveIn();
         _systemDateTimeProvider = new SystemDateTimeProviderStub();
         _accountingPoint = AccountingPoint.CreateProduction(GsrnNumber.Create(SampleData.GsrnNumber), true);
         _consumer = new Consumer(ConsumerId.New(), CprNumber.Create(SampleData.ConsumerSocialSecurityNumber), ConsumerName.Create(SampleData.ConsumerName));
@@ -46,15 +46,15 @@ public class ConsumerMoveInTests
     [Fact]
     public void Throw_if_any_business_rules_are_broken()
     {
-        _consumerMoveIn.StartProcess(_accountingPoint, _consumer, _energySupplier, SystemClock.Instance.GetCurrentInstant(), _transaction);
+        _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, SystemClock.Instance.GetCurrentInstant(), _transaction);
 
-        Assert.Throws<BusinessProcessException>(() => _consumerMoveIn.StartProcess(_accountingPoint, _consumer, _energySupplier, SystemClock.Instance.GetCurrentInstant(), _transaction));
+        Assert.Throws<BusinessProcessException>(() => _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, SystemClock.Instance.GetCurrentInstant(), _transaction));
     }
 
     [Fact]
     public void Consumer_move_in_is_accepted()
     {
-        _consumerMoveIn.StartProcess(_accountingPoint, _consumer, _energySupplier, SystemClock.Instance.GetCurrentInstant(), _transaction);
+        _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, SystemClock.Instance.GetCurrentInstant(), _transaction);
 
         Assert.Contains(_accountingPoint.DomainEvents, e => e is ConsumerMoveInAccepted);
     }
@@ -64,9 +64,9 @@ public class ConsumerMoveInTests
     {
         var moveInDate = _systemDateTimeProvider.Now();
 
-        _consumerMoveIn.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, _transaction);
+        _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, _transaction);
 
-        var result = _consumerMoveIn.CheckRules(_accountingPoint, moveInDate);
+        var result = _consumerMoveInProcess.CheckRules(_accountingPoint, moveInDate);
         Assert.Contains(result.Errors, error => error is MoveInRegisteredOnSameDateIsNotAllowedRuleError);
     }
 
@@ -74,10 +74,10 @@ public class ConsumerMoveInTests
     public void Cannot_register_a_move_in_on_a_date_where_a_move_in_is_already_effectuated()
     {
         var moveInDate = _systemDateTimeProvider.Now();
-        _consumerMoveIn.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, _transaction);
+        _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, _transaction);
         _accountingPoint.EffectuateConsumerMoveIn(_transaction, _systemDateTimeProvider);
 
-        var result = _consumerMoveIn.CheckRules(_accountingPoint, moveInDate);
+        var result = _consumerMoveInProcess.CheckRules(_accountingPoint, moveInDate);
 
         Assert.Contains(result.Errors, error => error is MoveInRegisteredOnSameDateIsNotAllowedRuleError);
     }
