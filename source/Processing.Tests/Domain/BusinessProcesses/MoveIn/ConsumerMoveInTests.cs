@@ -81,4 +81,17 @@ public class ConsumerMoveInTests
 
         Assert.Contains(result.Errors, error => error is MoveInRegisteredOnSameDateIsNotAllowedRuleError);
     }
+
+    [Fact]
+    public void Effective_date_must_be_within_allowed_time_range()
+    {
+        var maxNumberOfDaysAheadOfcurrentDate = 5;
+        var policy = new EffectiveDatePolicy(maxNumberOfDaysAheadOfcurrentDate);
+        var moveProcess = new ConsumerMoveIn(policy);
+
+        var moveInDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(10));
+        var result = moveProcess.CanStartProcess(_accountingPoint, moveInDate);
+
+
+    }
 }
