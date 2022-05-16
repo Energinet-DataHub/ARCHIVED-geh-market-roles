@@ -13,35 +13,26 @@
 // limitations under the License.
 
 using System;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
-using MediatR;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
-using Processing.Api.Responses;
-using Processing.Application.MoveIn;
-using Processing.Infrastructure.Configuration.Serialization;
+using Processing.Infrastructure.RequestAdapters;
 
 namespace Processing.Api.MoveIn;
 
 public class MoveInHttpTrigger
 {
     private readonly ILogger<MoveInHttpTrigger> _logger;
-    private readonly IJsonSerializer _jsonSerializer;
-    private readonly IMediator _mediator;
+    private readonly JsonMoveInAdapter _adapter;
 
     public MoveInHttpTrigger(
         ILogger<MoveInHttpTrigger> logger,
-        IJsonSerializer jsonSerializer,
-        IMediator mediator)
+        JsonMoveInAdapter adapter)
     {
         _logger = logger;
-        _jsonSerializer = jsonSerializer;
-        _mediator = mediator;
+        _adapter = adapter;
     }
 
     [Function("MoveIn")]
@@ -49,29 +40,11 @@ public class MoveInHttpTrigger
         [HttpTrigger(AuthorizationLevel.Anonymous, "post")]
         HttpRequestData request)
     {
+        if (request == null) throw new ArgumentNullException(nameof(request));
         _logger.LogInformation($"Received move in request");
-
-        var dto = _jsonSerializer.Deserialize<MoveInRequestDto>(request?.Body.ToString() ?? throw new InvalidOperationException());
-        _logger.LogInformation($"Deserialized into move in request dto with transactionId: {dto.TransactionId}");
-
-        var command = new MoveInRequest(
-            ExtractConsumerFrom(dto),
-            dto.TransactionId,
-            dto.EnergySupplierGlnNumber ?? string.Empty,
-            dto.AccountingPointGsrnNumber,
-            dto.StartDate);
-
-        var businessProcessResult = await _mediator.Send(command).ConfigureAwait(false);
-
-        var responseBodyDto = new ResponseDto(businessProcessResult.ValidationErrors.Select(error => error.GetType().Name).ToList());
-
+        var result = await _adapter.ReceiveAsync(request.Body).ConfigureAwait(false);
         var response = request.CreateResponse(HttpStatusCode.OK);
-        response.Body = new MemoryStream(Encoding.UTF8.GetBytes(_jsonSerializer.Serialize(responseBodyDto)));
+        response.Body = result.Content;
         return response;
-    }
-
-    private static Consumer ExtractConsumerFrom(MoveInRequestDto request)
-    {
-        return new Consumer(request.ConsumerName ?? string.Empty, request.ConsumerId ?? string.Empty, request.ConsumerIdType ?? string.Empty);
     }
 }

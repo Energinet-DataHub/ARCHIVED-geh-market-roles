@@ -50,13 +50,13 @@ namespace Processing.Application.MoveIn
             var accountingPoint = await _accountingPointRepository.GetByGsrnNumberAsync(GsrnNumber.Create(request.AccountingPointGsrnNumber)).ConfigureAwait(false);
             if (accountingPoint is null)
             {
-                return BusinessProcessResult.Fail(request.TransactionId, new UnknownAccountingPoint(request.AccountingPointGsrnNumber));
+                return BusinessProcessResult.Fail(request.TransactionId, new UnknownAccountingPoint());
             }
 
             var energySupplier = await _energySupplierRepository.GetByGlnNumberAsync(new GlnNumber(request.EnergySupplierGlnNumber)).ConfigureAwait(false);
             if (energySupplier is null)
             {
-                return BusinessProcessResult.Fail(request.TransactionId, new UnknownEnergySupplier(request.EnergySupplierGlnNumber));
+                return BusinessProcessResult.Fail(request.TransactionId, new UnknownEnergySupplier());
             }
 
             var businessRulesResult = CheckBusinessRules(accountingPoint, request);
