@@ -62,7 +62,7 @@ namespace Processing.Application.MoveIn
 
             var consumerMovesInOn = Instant.FromDateTimeOffset(DateTimeOffset.Parse(request.MoveInDate, CultureInfo.InvariantCulture));
             var process = new ConsumerMoveIn();
-            var checkResult = process.CheckRules(accountingPoint, consumerMovesInOn);
+            var checkResult = process.CanStartProcess(accountingPoint, consumerMovesInOn);
 
             if (!checkResult.Success)
             {

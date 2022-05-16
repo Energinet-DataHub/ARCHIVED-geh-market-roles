@@ -24,7 +24,7 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
     public class ConsumerMoveIn
     {
         #pragma warning disable CA1822 // Methods should not be static
-        public BusinessRulesValidationResult CheckRules(AccountingPoint accountingPoint, Instant consumerMovesInOn)
+        public BusinessRulesValidationResult CanStartProcess(AccountingPoint accountingPoint, Instant consumerMovesInOn)
         {
             if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
             return accountingPoint.ConsumerMoveInAcceptable(consumerMovesInOn);

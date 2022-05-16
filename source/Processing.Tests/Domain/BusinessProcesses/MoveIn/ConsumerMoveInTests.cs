@@ -66,7 +66,7 @@ public class ConsumerMoveInTests
 
         _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, _transaction);
 
-        var result = _consumerMoveInProcess.CheckRules(_accountingPoint, moveInDate);
+        var result = _consumerMoveInProcess.CanStartProcess(_accountingPoint, moveInDate);
         Assert.Contains(result.Errors, error => error is MoveInRegisteredOnSameDateIsNotAllowedRuleError);
     }
 
@@ -77,7 +77,7 @@ public class ConsumerMoveInTests
         _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, _transaction);
         _accountingPoint.EffectuateConsumerMoveIn(_transaction, _systemDateTimeProvider);
 
-        var result = _consumerMoveInProcess.CheckRules(_accountingPoint, moveInDate);
+        var result = _consumerMoveInProcess.CanStartProcess(_accountingPoint, moveInDate);
 
         Assert.Contains(result.Errors, error => error is MoveInRegisteredOnSameDateIsNotAllowedRuleError);
     }
