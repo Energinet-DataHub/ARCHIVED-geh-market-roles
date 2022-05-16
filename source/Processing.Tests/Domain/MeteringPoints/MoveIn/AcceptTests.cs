@@ -40,14 +40,6 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         }
 
         [Fact]
-        public void Should_raise_event_when_consumer_move_in_is_accepted()
-        {
-            _accountingPoint.AcceptConsumerMoveIn(ConsumerId.New(), new EnergySupplierId(Guid.NewGuid()), _systemDateTimeProvider.Now(), Transaction.Create(Guid.NewGuid().ToString()));
-
-            Assert.Contains(_accountingPoint.DomainEvents, e => e is ConsumerMoveInAccepted);
-        }
-
-        [Fact]
         public void Should_return_error_when_a_pending_movein_with_the_same_movein_date_exists()
         {
             var moveInDate = _systemDateTimeProvider.Now();

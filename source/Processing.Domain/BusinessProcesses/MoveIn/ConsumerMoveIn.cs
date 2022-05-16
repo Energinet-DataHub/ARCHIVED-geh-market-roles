@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using NodaTime;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
@@ -22,15 +23,19 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
 {
     public class ConsumerMoveIn
     {
-        #pragma warning disable
+        #pragma warning disable CA1822 // Methods should not be static
         public BusinessRulesValidationResult CheckRules(AccountingPoint accountingPoint, Instant consumerMovesInOn)
         {
+            if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
             return accountingPoint.ConsumerMoveInAcceptable(consumerMovesInOn);
         }
 
         public void StartProcess(AccountingPoint accountingPoint, Consumer consumer, EnergySupplier energySupplier, Instant consumerMovesInOn, Transaction transaction)
         {
-            accountingPoint.AcceptConsumerMoveIn(consumer.ConsumerId, energySupplier!.EnergySupplierId, consumerMovesInOn, transaction);
+            if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
+            if (consumer == null) throw new ArgumentNullException(nameof(consumer));
+            if (energySupplier == null) throw new ArgumentNullException(nameof(energySupplier));
+            accountingPoint.AcceptConsumerMoveIn(consumer.ConsumerId, energySupplier.EnergySupplierId, consumerMovesInOn, transaction);
         }
     }
 }
