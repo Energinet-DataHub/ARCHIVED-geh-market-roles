@@ -52,9 +52,7 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
                 return BusinessRulesValidationResult.Failed(new EffectiveDateIsNotWithinAllowedTimePeriod());
             }
 
-            var zonedDatetime = effectiveDate.DateInUtc.InZone(_timeZone);
-            if (zonedDatetime.TimeOfDay.ToString()
-                    .Equals(_requiredTimeOfDayInLocalTime, StringComparison.OrdinalIgnoreCase) == false)
+            if (TimeOfDayIsValid(effectiveDate) == false)
             {
               return BusinessRulesValidationResult.Failed(new InvalidEffectiveDateTimeOfDay());
             }
@@ -88,6 +86,12 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
         private static DateTime ToDate(Instant instant)
         {
             return instant.ToDateTimeUtc().Date;
+        }
+
+        private bool TimeOfDayIsValid(EffectiveDate effectiveDate)
+        {
+            var zonedDatetime = effectiveDate.DateInUtc.InZone(_timeZone);
+            return zonedDatetime.TimeOfDay.ToString().Equals(_requiredTimeOfDayInLocalTime, StringComparison.OrdinalIgnoreCase);
         }
     }
 }
