@@ -90,10 +90,8 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
 
         private bool TimeOfDayIsValid(EffectiveDate effectiveDate)
         {
-            var zonedDatetime = effectiveDate.DateInUtc.InZone(_timeZone);
-            return zonedDatetime.TimeOfDay.Hour.Equals(_requiredTimeOfDayInLocalTime.Hour) &&
-                   zonedDatetime.TimeOfDay.Minute.Equals(_requiredTimeOfDayInLocalTime.Minute) &&
-                   zonedDatetime.TimeOfDay.Second.Equals(_requiredTimeOfDayInLocalTime.Second);
+            var timeOfDay = TimeOfDay.Create(effectiveDate, _timeZone);
+            return timeOfDay.Equals(_requiredTimeOfDayInLocalTime);
         }
     }
 }

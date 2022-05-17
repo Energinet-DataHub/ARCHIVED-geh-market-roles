@@ -12,9 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using NodaTime;
+using Processing.Domain.Common;
+using Processing.Domain.SeedWork;
+
 namespace Processing.Domain.BusinessProcesses.MoveIn
 {
-    public class TimeOfDay
+    public class TimeOfDay : ValueObject
     {
         private TimeOfDay(int hour, int minute, int second)
         {
@@ -32,6 +37,13 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
         public static TimeOfDay Create(int hour, int minute, int second)
         {
             return new TimeOfDay(hour, minute, second);
+        }
+
+        public static TimeOfDay Create(EffectiveDate effectiveDate, DateTimeZone dateTimeZone)
+        {
+            if (effectiveDate == null) throw new ArgumentNullException(nameof(effectiveDate));
+            var zonedDatetime = effectiveDate.DateInUtc.InZone(dateTimeZone);
+            return new TimeOfDay(zonedDatetime.Hour, zonedDatetime.Minute, zonedDatetime.Minute);
         }
     }
 }
