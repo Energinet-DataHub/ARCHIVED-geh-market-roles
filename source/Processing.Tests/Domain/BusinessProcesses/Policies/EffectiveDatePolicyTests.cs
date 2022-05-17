@@ -32,7 +32,7 @@ namespace Processing.Tests.Domain.BusinessProcesses.Policies
         public EffectiveDatePolicyTests()
         {
             var systemDateTimeProvider = new SystemDateTimeProviderStub();
-            systemDateTimeProvider.SetNow(Instant.FromUtc(2022, 5, 1, 10, 0, 0));
+            CurrentSystemTimeIsSummertime(systemDateTimeProvider);
             _systemDateTimeProvider = systemDateTimeProvider;
         }
 
@@ -89,6 +89,11 @@ namespace Processing.Tests.Domain.BusinessProcesses.Policies
             var result = policy.Check(_systemDateTimeProvider.Now(), effectiveDate);
 
             AssertError<InvalidEffectiveDateTimeOfDay>(result, "InvalidEffectiveDateTimeOfDay", !isValid);
+        }
+
+        private static void CurrentSystemTimeIsSummertime(SystemDateTimeProviderStub systemDateTimeProvider)
+        {
+            systemDateTimeProvider.SetNow(Instant.FromUtc(2022, 5, 1, 10, 0, 0));
         }
 
         private EffectiveDate WithTimeOfDay(int hour, int minute, int second)
