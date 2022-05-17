@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using NodaTime;
 using Processing.Domain.BusinessProcesses.MoveIn;
 using SimpleInjector;
 
@@ -20,10 +21,11 @@ namespace Processing.Infrastructure.Configuration
 {
     public static class MoveInProcessRegistrations
     {
-        public static void ConfigureMoveInProcessTimePolicy(this Container container, int allowedNumberOfDaysBeforeToday, int allowedNumberOfDaysAfterToday)
+        public static void ConfigureMoveInProcessTimePolicy(this Container container, int allowedNumberOfDaysBeforeToday, int allowedNumberOfDaysAfterToday, TimeOfDay requiredTimeOfDayInLocalTime)
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
-            container.RegisterInstance<EffectiveDatePolicy>(new EffectiveDatePolicy(allowedNumberOfDaysBeforeToday, allowedNumberOfDaysAfterToday));
+            container.RegisterInstance<EffectiveDatePolicy>(
+                new EffectiveDatePolicy(allowedNumberOfDaysBeforeToday, allowedNumberOfDaysAfterToday, requiredTimeOfDayInLocalTime, DateTimeZoneProviders.Tzdb["Europe/Copenhagen"]));
         }
     }
 }
