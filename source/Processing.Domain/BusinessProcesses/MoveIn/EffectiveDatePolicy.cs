@@ -22,13 +22,17 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
 {
     public class EffectiveDatePolicy
     {
+        private readonly TimeOfDay _requiredTimeOfDayInLocalTime;
+        private readonly DateTimeZone _timeZone;
         private readonly int _allowedNumberOfDaysBeforeToday;
         private readonly int _allowedNumberOfDaysAfterToday;
 
-        public EffectiveDatePolicy(int allowedNumberOfDaysBeforeToday = 0, int allowedNumberOfDaysAfterToday = 0)
+        public EffectiveDatePolicy(int allowedNumberOfDaysBeforeToday, int allowedNumberOfDaysAfterToday, TimeOfDay requiredTimeOfDayInLocalTime, DateTimeZone timeZone)
         {
             _allowedNumberOfDaysBeforeToday = allowedNumberOfDaysBeforeToday;
             _allowedNumberOfDaysAfterToday = allowedNumberOfDaysAfterToday;
+            _requiredTimeOfDayInLocalTime = requiredTimeOfDayInLocalTime;
+            _timeZone = timeZone;
         }
 
         public BusinessRulesValidationResult Check(Instant today, EffectiveDate effectiveDate)
@@ -41,6 +45,11 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
             if (EffectiveDateIsWithinAllowedTimePeriod(today, effectiveDate, maxDifferenceInDays) == false)
             {
                 return BusinessRulesValidationResult.Failed(new EffectiveDateIsNotWithinAllowedTimePeriod());
+            }
+
+            if (TimeOfDayIsValid(effectiveDate) == false)
+            {
+              return BusinessRulesValidationResult.Failed(new InvalidEffectiveDateTimeOfDay());
             }
 
             return BusinessRulesValidationResult.Succeeded();
@@ -72,6 +81,12 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
         private static DateTime ToDate(Instant instant)
         {
             return instant.ToDateTimeUtc().Date;
+        }
+
+        private bool TimeOfDayIsValid(EffectiveDate effectiveDate)
+        {
+            var timeOfDay = TimeOfDay.Create(effectiveDate, _timeZone);
+            return timeOfDay.Equals(_requiredTimeOfDayInLocalTime);
         }
     }
 }
