@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Globalization;
+using NodaTime;
 using NodaTime.Text;
 using Processing.Domain.BusinessProcesses.MoveIn;
 using Processing.Domain.BusinessProcesses.MoveIn.Errors;
@@ -64,6 +67,26 @@ namespace Processing.Tests.Domain.BusinessProcesses.Policies
             var result = policy.Check(today, effective);
 
             AssertError<EffectiveDateIsNotWithinAllowedTimePeriod>(result, null, false);
+        }
+
+        [Theory]
+        [InlineData("22:00:00", true)]
+        [InlineData("21:00:00", false)]
+        public void Time_of_day_must_adhere_to_defined_local_time(string timeOfDay, bool isValid)
+        {
+            var policy = new EffectiveDatePolicy(0, 0, "00.00.00");
+            var now = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
+            int hour = int.Parse(timeOfDay.AsSpan(0, 2), NumberStyles.None, CultureInfo.InvariantCulture);
+            int minute = int.Parse(timeOfDay.AsSpan(3, 2), NumberStyles.None, CultureInfo.InvariantCulture);
+            int second = int.Parse(timeOfDay.AsSpan(6, 2), NumberStyles.None, CultureInfo.InvariantCulture);
+
+            var dateTime = new DateTime(now.Year, now.Month, now.Day, hour, minute, second);
+            var effective = EffectiveDate.Create(dateTime);
+            var today = SystemClock.Instance.GetCurrentInstant();
+
+            var result = policy.Check(today, effective);
+
+            AssertError<InvalidEffectiveDateTimeOfDay>(result, "InvalidEffectiveDateTimeOfDay", !isValid);
         }
     }
 }

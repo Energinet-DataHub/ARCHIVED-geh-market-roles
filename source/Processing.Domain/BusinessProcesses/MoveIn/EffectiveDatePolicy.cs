@@ -22,6 +22,7 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
 {
     public class EffectiveDatePolicy
     {
+        private readonly string _requiredTimeOfDayInLocalTime = "00.00.00";
         private readonly int _allowedNumberOfDaysBeforeToday;
         private readonly int _allowedNumberOfDaysAfterToday;
 
@@ -29,6 +30,12 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
         {
             _allowedNumberOfDaysBeforeToday = allowedNumberOfDaysBeforeToday;
             _allowedNumberOfDaysAfterToday = allowedNumberOfDaysAfterToday;
+        }
+
+        public EffectiveDatePolicy(int allowedNumberOfDaysBeforeToday, int allowedNumberOfDaysAfterToday, string requiredTimeOfDayInLocalTime)
+        : this(allowedNumberOfDaysBeforeToday, allowedNumberOfDaysAfterToday)
+        {
+            _requiredTimeOfDayInLocalTime = requiredTimeOfDayInLocalTime;
         }
 
         public BusinessRulesValidationResult Check(Instant today, EffectiveDate effectiveDate)
@@ -43,6 +50,16 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
                 return BusinessRulesValidationResult.Failed(new EffectiveDateIsNotWithinAllowedTimePeriod());
             }
 
+            var info = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
+            var timeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
+            var zonedDatetime = effectiveDate.DateInUtc.InZone(timeZone);
+            if (zonedDatetime.TimeOfDay.ToString()
+                    .Equals(_requiredTimeOfDayInLocalTime, StringComparison.OrdinalIgnoreCase) == false)
+            {
+              return BusinessRulesValidationResult.Failed(new InvalidEffectiveDateTimeOfDay());
+            }
+
+            //var isDaylightSavingTime = info.IsDaylightSavingTime(date);
             return BusinessRulesValidationResult.Succeeded();
         }
 

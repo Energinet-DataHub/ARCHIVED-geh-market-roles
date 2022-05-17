@@ -27,10 +27,17 @@ public class TestBase
     {
         if (rulesValidationResult == null) throw new ArgumentNullException(nameof(rulesValidationResult));
         var error = rulesValidationResult.Errors.FirstOrDefault(error => error is TRuleError);
-        if (errorExpected) Assert.NotNull(error);
-        if (expectedErrorCode is not null)
+        if (errorExpected)
         {
-            Assert.Equal(expectedErrorCode, error?.Code);
+            Assert.NotNull(error);
+            if (expectedErrorCode is not null)
+            {
+                Assert.Equal(expectedErrorCode, error?.Code);
+            }
+        }
+        else
+        {
+            Assert.Null(error);
         }
     }
 }
