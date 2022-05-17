@@ -74,7 +74,7 @@ namespace Processing.Tests.Domain.BusinessProcesses.Policies
         [InlineData("21:00:00", false)]
         public void Time_of_day_must_adhere_to_defined_local_time(string timeOfDay, bool isValid)
         {
-            var policy = new EffectiveDatePolicy(0, 0, "00.00.00");
+            var policy = new EffectiveDatePolicy(0, 0, "00.00.00", DateTimeZoneProviders.Tzdb["Europe/Copenhagen"]);
             var now = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
             int hour = int.Parse(timeOfDay.AsSpan(0, 2), NumberStyles.None, CultureInfo.InvariantCulture);
             int minute = int.Parse(timeOfDay.AsSpan(3, 2), NumberStyles.None, CultureInfo.InvariantCulture);

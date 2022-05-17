@@ -23,6 +23,7 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
     public class EffectiveDatePolicy
     {
         private readonly string _requiredTimeOfDayInLocalTime = "00.00.00";
+        private readonly DateTimeZone _timeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
         private readonly int _allowedNumberOfDaysBeforeToday;
         private readonly int _allowedNumberOfDaysAfterToday;
 
@@ -32,10 +33,11 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
             _allowedNumberOfDaysAfterToday = allowedNumberOfDaysAfterToday;
         }
 
-        public EffectiveDatePolicy(int allowedNumberOfDaysBeforeToday, int allowedNumberOfDaysAfterToday, string requiredTimeOfDayInLocalTime)
+        public EffectiveDatePolicy(int allowedNumberOfDaysBeforeToday, int allowedNumberOfDaysAfterToday, string requiredTimeOfDayInLocalTime, DateTimeZone timeZone)
         : this(allowedNumberOfDaysBeforeToday, allowedNumberOfDaysAfterToday)
         {
             _requiredTimeOfDayInLocalTime = requiredTimeOfDayInLocalTime;
+            _timeZone = timeZone;
         }
 
         public BusinessRulesValidationResult Check(Instant today, EffectiveDate effectiveDate)
@@ -50,16 +52,13 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
                 return BusinessRulesValidationResult.Failed(new EffectiveDateIsNotWithinAllowedTimePeriod());
             }
 
-            var info = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
-            var timeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
-            var zonedDatetime = effectiveDate.DateInUtc.InZone(timeZone);
+            var zonedDatetime = effectiveDate.DateInUtc.InZone(_timeZone);
             if (zonedDatetime.TimeOfDay.ToString()
                     .Equals(_requiredTimeOfDayInLocalTime, StringComparison.OrdinalIgnoreCase) == false)
             {
               return BusinessRulesValidationResult.Failed(new InvalidEffectiveDateTimeOfDay());
             }
 
-            //var isDaylightSavingTime = info.IsDaylightSavingTime(date);
             return BusinessRulesValidationResult.Succeeded();
         }
 
