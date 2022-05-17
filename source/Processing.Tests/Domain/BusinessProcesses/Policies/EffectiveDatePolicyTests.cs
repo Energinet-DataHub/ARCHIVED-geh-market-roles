@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using NodaTime;
 using NodaTime.Text;
 using Processing.Domain.BusinessProcesses.MoveIn;
 using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 using Processing.Domain.Common;
-using Processing.Domain.SeedWork;
 using Xunit;
 using Xunit.Categories;
 
@@ -27,13 +24,9 @@ namespace Processing.Tests.Domain.BusinessProcesses.Policies
     [UnitTest]
     public class EffectiveDatePolicyTests : TestBase
     {
-        private readonly ISystemDateTimeProvider _systemDateTimeProvider;
-
         public EffectiveDatePolicyTests()
         {
-            var systemDateTimeProvider = new SystemDateTimeProviderStub();
-            CurrentSystemTimeIsSummertime(systemDateTimeProvider);
-            _systemDateTimeProvider = systemDateTimeProvider;
+            CurrentSystemTimeIsSummertime();
         }
 
         [Theory]
@@ -84,16 +77,11 @@ namespace Processing.Tests.Domain.BusinessProcesses.Policies
         public void Time_of_day_must_adhere_to_defined_local_time(int hourOfDay, int minuteOfDay, int secondOfDay, bool isValid)
         {
             var policy = EffectiveDatePolicyFactory.CreateEffectiveDatePolicy(TimeOfDay.Create(0, 0, 0));
-            var effectiveDate = EffectiveDateFactory.WithTimeOfDay(_systemDateTimeProvider.Now().ToDateTimeUtc(), hourOfDay, minuteOfDay, secondOfDay);
+            var effectiveDate = EffectiveDateFactory.WithTimeOfDay(SystemDateTimeProvider.Now().ToDateTimeUtc(), hourOfDay, minuteOfDay, secondOfDay);
 
-            var result = policy.Check(_systemDateTimeProvider.Now(), effectiveDate);
+            var result = policy.Check(SystemDateTimeProvider.Now(), effectiveDate);
 
             AssertError<InvalidEffectiveDateTimeOfDay>(result, "InvalidEffectiveDateTimeOfDay", !isValid);
-        }
-
-        private static void CurrentSystemTimeIsSummertime(SystemDateTimeProviderStub systemDateTimeProvider)
-        {
-            systemDateTimeProvider.SetNow(Instant.FromUtc(2022, 5, 1, 10, 0, 0));
         }
     }
 }

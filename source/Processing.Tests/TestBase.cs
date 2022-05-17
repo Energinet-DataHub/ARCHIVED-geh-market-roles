@@ -14,14 +14,23 @@
 
 using System;
 using System.Linq;
+using NodaTime;
 using Processing.Domain.SeedWork;
+using Processing.Tests.Domain;
 using Xunit;
 
 namespace Processing.Tests;
 
 public class TestBase
 {
-    #pragma warning disable
+    public TestBase()
+    {
+        SystemDateTimeProvider = new SystemDateTimeProviderStub();
+    }
+
+    protected ISystemDateTimeProvider SystemDateTimeProvider { get; }
+
+#pragma warning disable
     public void AssertError<TRuleError>(BusinessRulesValidationResult rulesValidationResult, string? expectedErrorCode = null, bool errorExpected = true)
         where TRuleError : ValidationError
     {
@@ -39,5 +48,10 @@ public class TestBase
         {
             Assert.Null(error);
         }
+    }
+
+    protected void CurrentSystemTimeIsSummertime()
+    {
+        (SystemDateTimeProvider as SystemDateTimeProviderStub).SetNow(Instant.FromUtc(2022, 5, 1, 10, 0, 0));
     }
 }
