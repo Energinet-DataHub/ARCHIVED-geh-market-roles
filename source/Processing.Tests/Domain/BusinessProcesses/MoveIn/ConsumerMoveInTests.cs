@@ -96,7 +96,7 @@ public class ConsumerMoveInTests
         var moveInDate = AsOf(_systemDateTimeProvider.Now().Plus(Duration.FromDays(10)));
         var result = moveProcess.CanStartProcess(_accountingPoint, moveInDate, _systemDateTimeProvider.Now());
 
-        AssertValidationError<EffectiveDateIsNotWithinAllowedTimePeriod>(result);
+        AssertValidationError<EffectiveDateIsNotWithinAllowedTimePeriod>(result, "EffectiveDateIsNotWithinAllowedTimePeriod");
     }
 
     private static void AssertValidationError<TRuleError>(BusinessRulesValidationResult rulesValidationResult, string? expectedErrorCode = null, bool errorExpected = true)
@@ -104,10 +104,17 @@ public class ConsumerMoveInTests
     {
         if (rulesValidationResult == null) throw new ArgumentNullException(nameof(rulesValidationResult));
         var error = rulesValidationResult.Errors.FirstOrDefault(error => error is TRuleError);
-        Assert.NotNull(error);
-        if (expectedErrorCode is not null)
+        if (errorExpected)
         {
-            Assert.Equal(expectedErrorCode, error?.Code);
+            Assert.NotNull(error);
+            if (expectedErrorCode is not null)
+            {
+                Assert.Equal(expectedErrorCode, error?.Code);
+            }
+        }
+        else
+        {
+            Assert.Null(error);
         }
     }
 
