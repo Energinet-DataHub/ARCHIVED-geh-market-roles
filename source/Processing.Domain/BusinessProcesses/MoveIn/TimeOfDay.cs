@@ -21,18 +21,16 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
 {
     public class TimeOfDay : ValueObject
     {
+        private readonly int _hour;
+        private readonly int _minute;
+        private readonly int _second;
+
         private TimeOfDay(int hour, int minute, int second)
         {
-            Hour = hour;
-            Minute = minute;
-            Second = second;
+            _hour = hour;
+            _minute = minute;
+            _second = second;
         }
-
-        public int Hour { get; }
-
-        public int Minute { get; }
-
-        public int Second { get; }
 
         public static TimeOfDay Create(int hour, int minute, int second)
         {
