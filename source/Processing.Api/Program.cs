@@ -37,6 +37,7 @@ using Processing.Application.Common.Processing;
 using Processing.Application.EDI;
 using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Validation;
+using Processing.Domain.BusinessProcesses.MoveIn;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
@@ -143,7 +144,7 @@ namespace Processing.Api
             container.Register<MoveInHttpTrigger>(Lifestyle.Scoped);
             container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
 
-            container.ConfigureMoveInProcessTimePolicy(7, 60);
+            container.ConfigureMoveInProcessTimePolicy(7, 60, TimeOfDay.Create(0, 0, 0));
 
             var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING")
                                    ?? throw new InvalidOperationException(
