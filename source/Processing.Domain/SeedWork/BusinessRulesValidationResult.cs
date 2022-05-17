@@ -14,6 +14,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 
 namespace Processing.Domain.SeedWork
 {
@@ -24,9 +25,28 @@ namespace Processing.Domain.SeedWork
             SetValidationErrors(rules);
         }
 
+        private BusinessRulesValidationResult()
+        {
+        }
+
+        private BusinessRulesValidationResult(IReadOnlyCollection<ValidationError> validationErrors)
+        {
+            Errors = validationErrors;
+        }
+
         public bool Success => !Errors.Any();
 
         public IReadOnlyCollection<ValidationError> Errors { get; private set; } = new List<ValidationError>();
+
+        public static BusinessRulesValidationResult Succeeded()
+        {
+            return new BusinessRulesValidationResult();
+        }
+
+        public static BusinessRulesValidationResult Failed(params ValidationError[] validationErrors)
+        {
+            return new BusinessRulesValidationResult(validationErrors);
+        }
 
         private void SetValidationErrors(IEnumerable<IBusinessRule> rules)
         {

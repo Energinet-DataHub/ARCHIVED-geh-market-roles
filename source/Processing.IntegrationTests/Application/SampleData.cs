@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Globalization;
 using NodaTime;
 
 namespace Processing.IntegrationTests.Application
@@ -31,6 +32,14 @@ namespace Processing.IntegrationTests.Application
 
         public static string ConsumerName => "Test Testesen";
 
-        internal static string MoveInDate => Instant.FromDateTimeUtc(DateTime.UtcNow.AddHours(1)).ToString();
+        public static string MoveInDate
+        {
+            get
+            {
+                var today = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
+                var parsed = new DateTime(today.Year, today.Month, today.Day, 22, 0, 0);
+                return parsed.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", CultureInfo.InvariantCulture);
+            }
+        }
     }
 }
