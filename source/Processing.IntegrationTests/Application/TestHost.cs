@@ -45,6 +45,7 @@ using Processing.Application.Common.Processing;
 using Processing.Application.EDI;
 using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Validation;
+using Processing.Domain.BusinessProcesses.MoveIn;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
@@ -136,7 +137,7 @@ namespace Processing.IntegrationTests.Application
             _container.Register<ICorrelationContext, CorrelationContext>(Lifestyle.Scoped);
 
             _container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
-            _container.ConfigureMoveInProcessTimePolicy(0, 0);
+            _container.ConfigureMoveInProcessTimePolicy(0, 0, TimeOfDay.Create(0, 0, 0));
 
             // Business process responders
             _container.Register<IBusinessProcessResultHandler<RequestChangeOfSupplier>, RequestChangeOfSupplierResultHandler>(Lifestyle.Scoped);

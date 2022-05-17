@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Linq;
 using NodaTime;
 using Processing.Domain.BusinessProcesses.MoveIn;
 using Processing.Domain.BusinessProcesses.MoveIn.Errors;
@@ -28,19 +26,18 @@ using Xunit;
 
 namespace Processing.Tests.Domain.BusinessProcesses.MoveIn;
 
-public class ConsumerMoveInTests
+public class ConsumerMoveInTests : TestBase
 {
     private readonly AccountingPoint _accountingPoint;
     private readonly Consumer _consumer;
     private readonly EnergySupplier _energySupplier;
-    private readonly ISystemDateTimeProvider _systemDateTimeProvider;
     private readonly ConsumerMoveIn _consumerMoveInProcess;
     private readonly Transaction _transaction;
 
     public ConsumerMoveInTests()
     {
-        _consumerMoveInProcess = new ConsumerMoveIn(new EffectiveDatePolicy());
-        _systemDateTimeProvider = new SystemDateTimeProviderStub();
+        CurrentSystemTimeIsSummertime();
+        _consumerMoveInProcess = new ConsumerMoveIn(EffectiveDatePolicyFactory.CreateEffectiveDatePolicy());
         _accountingPoint = AccountingPoint.CreateProduction(GsrnNumber.Create(SampleData.GsrnNumber), true);
         _consumer = new Consumer(ConsumerId.New(), CprNumber.Create(SampleData.ConsumerSocialSecurityNumber), ConsumerName.Create(SampleData.ConsumerName));
         _energySupplier = new EnergySupplier(EnergySupplierId.New(), GlnNumber.Create(SampleData.GlnNumber));
@@ -71,7 +68,8 @@ public class ConsumerMoveInTests
         _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, _transaction);
 
         var result = CanStartProcess(moveInDate);
-        Assert.Contains(result.Errors, error => error is MoveInRegisteredOnSameDateIsNotAllowedRuleError);
+
+        AssertError<MoveInRegisteredOnSameDateIsNotAllowedRuleError>(result);
     }
 
     [Fact]
@@ -79,61 +77,38 @@ public class ConsumerMoveInTests
     {
         var moveInDate = AsOfToday();
         _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, _transaction);
-        _accountingPoint.EffectuateConsumerMoveIn(_transaction, _systemDateTimeProvider);
+        _accountingPoint.EffectuateConsumerMoveIn(_transaction, SystemDateTimeProvider);
 
         var result = CanStartProcess(moveInDate);
 
-        Assert.Contains(result.Errors, error => error is MoveInRegisteredOnSameDateIsNotAllowedRuleError);
+        AssertError<MoveInRegisteredOnSameDateIsNotAllowedRuleError>(result);
     }
 
     [Fact]
     public void Effective_date_must_be_within_allowed_time_range()
     {
         var maxNumberOfDaysAheadOfcurrentDate = 5;
-        var policy = new EffectiveDatePolicy(maxNumberOfDaysAheadOfcurrentDate);
+        var policy = EffectiveDatePolicyFactory.CreateEffectiveDatePolicy(maxNumberOfDaysAheadOfcurrentDate);
         var moveProcess = new ConsumerMoveIn(policy);
 
-        var moveInDate = AsOf(_systemDateTimeProvider.Now().Plus(Duration.FromDays(10)));
-        var result = moveProcess.CanStartProcess(_accountingPoint, moveInDate, _systemDateTimeProvider.Now());
+        var moveInDate = AsOf(SystemDateTimeProvider.Now().Plus(Duration.FromDays(10)));
+        var result = moveProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now());
 
-        AssertValidationError<EffectiveDateIsNotWithinAllowedTimePeriod>(result, "EffectiveDateIsNotWithinAllowedTimePeriod");
-    }
-
-    private static void AssertValidationError<TRuleError>(BusinessRulesValidationResult rulesValidationResult, string? expectedErrorCode = null, bool errorExpected = true)
-        where TRuleError : ValidationError
-    {
-        if (rulesValidationResult == null) throw new ArgumentNullException(nameof(rulesValidationResult));
-        var error = rulesValidationResult.Errors.FirstOrDefault(error => error is TRuleError);
-        if (errorExpected)
-        {
-            Assert.NotNull(error);
-            if (expectedErrorCode is not null)
-            {
-                Assert.Equal(expectedErrorCode, error?.Code);
-            }
-        }
-        else
-        {
-            Assert.Null(error);
-        }
+        AssertError<EffectiveDateIsNotWithinAllowedTimePeriod>(result, "EffectiveDateIsNotWithinAllowedTimePeriod");
     }
 
     private static EffectiveDate AsOf(Instant date)
     {
-        var today = date.ToDateTimeUtc();
-        var parsed = new DateTime(today.Year, today.Month, today.Day, 22, 0, 0);
-        return EffectiveDate.Create(parsed);
+        return EffectiveDateFactory.WithTimeOfDay(date.ToDateTimeUtc(), 22, 0, 0);
     }
 
     private BusinessRulesValidationResult CanStartProcess(EffectiveDate moveInDate)
     {
-        return _consumerMoveInProcess.CanStartProcess(_accountingPoint, moveInDate, _systemDateTimeProvider.Now());
+        return _consumerMoveInProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now());
     }
 
     private EffectiveDate AsOfToday()
     {
-        var today = _systemDateTimeProvider.Now().ToDateTimeUtc();
-        var parsed = new DateTime(today.Year, today.Month, today.Day, 22, 0, 0);
-        return EffectiveDate.Create(parsed);
+        return EffectiveDateFactory.WithTimeOfDay(SystemDateTimeProvider.Now().ToDateTimeUtc(), 22, 0, 0);
     }
 }
