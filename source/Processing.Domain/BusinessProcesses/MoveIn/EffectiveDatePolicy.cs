@@ -22,7 +22,7 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
 {
     public class EffectiveDatePolicy
     {
-        private readonly string _requiredTimeOfDayInLocalTime = "00.00.00";
+        private readonly TimeOfDay _requiredTimeOfDayInLocalTime = TimeOfDay.Create(0, 0, 0);
         private readonly DateTimeZone _timeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
         private readonly int _allowedNumberOfDaysBeforeToday;
         private readonly int _allowedNumberOfDaysAfterToday;
@@ -33,7 +33,7 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
             _allowedNumberOfDaysAfterToday = allowedNumberOfDaysAfterToday;
         }
 
-        public EffectiveDatePolicy(int allowedNumberOfDaysBeforeToday, int allowedNumberOfDaysAfterToday, string requiredTimeOfDayInLocalTime, DateTimeZone timeZone)
+        public EffectiveDatePolicy(int allowedNumberOfDaysBeforeToday, int allowedNumberOfDaysAfterToday, TimeOfDay requiredTimeOfDayInLocalTime, DateTimeZone timeZone)
         : this(allowedNumberOfDaysBeforeToday, allowedNumberOfDaysAfterToday)
         {
             _requiredTimeOfDayInLocalTime = requiredTimeOfDayInLocalTime;
@@ -91,7 +91,9 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
         private bool TimeOfDayIsValid(EffectiveDate effectiveDate)
         {
             var zonedDatetime = effectiveDate.DateInUtc.InZone(_timeZone);
-            return zonedDatetime.TimeOfDay.ToString().Equals(_requiredTimeOfDayInLocalTime, StringComparison.OrdinalIgnoreCase);
+            return zonedDatetime.TimeOfDay.Hour.Equals(_requiredTimeOfDayInLocalTime.Hour) &&
+                   zonedDatetime.TimeOfDay.Minute.Equals(_requiredTimeOfDayInLocalTime.Minute) &&
+                   zonedDatetime.TimeOfDay.Second.Equals(_requiredTimeOfDayInLocalTime.Second);
         }
     }
 }
