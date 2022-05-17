@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Text.RegularExpressions;
 using Processing.Domain.SeedWork;
 
@@ -20,29 +19,13 @@ namespace Processing.Domain.Common
 {
     public class DateFormatMustBeUTCRule : IBusinessRule
     {
-        private const string FormatRegExSummer = @"\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[1-2]\d|3[0-1])T22:00:00(.000)?Z$";
-        private const string FormatRegExWinter = @"\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[1-2]\d|3[0-1])T23:00:00(.000)?Z$";
+        private const string UtcFormat = @"\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[1-2]\d|3[0-1])T(?:[0-1]\d|2[0-3]):[0-5]\d:[0-5]\dZ$";
         private readonly string _date;
 
         public DateFormatMustBeUTCRule(string date)
         {
+            IsBroken = !Regex.IsMatch(date, UtcFormat);
             _date = date;
-            var canParse = DateTimeOffset.TryParse(
-                date,
-                out var dateParsed);
-
-            if (!canParse)
-            {
-                IsBroken = true;
-                return;
-            }
-
-            var info = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time");
-            var isDaylightSavingTime = info.IsDaylightSavingTime(dateParsed);
-
-            IsBroken = isDaylightSavingTime
-                ? !Regex.IsMatch(date, FormatRegExSummer)
-                : !Regex.IsMatch(date, FormatRegExWinter);
         }
 
         public bool IsBroken { get; }
