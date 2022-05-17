@@ -31,7 +31,7 @@ public class TestBase
     protected ISystemDateTimeProvider SystemDateTimeProvider { get; }
 
 #pragma warning disable
-    public void AssertError<TRuleError>(BusinessRulesValidationResult rulesValidationResult, string? expectedErrorCode = null, bool errorExpected = true)
+    protected void AssertError<TRuleError>(BusinessRulesValidationResult rulesValidationResult, string? expectedErrorCode = null, bool errorExpected = true)
         where TRuleError : ValidationError
     {
         if (rulesValidationResult == null) throw new ArgumentNullException(nameof(rulesValidationResult));

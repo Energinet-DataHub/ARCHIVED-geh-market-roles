@@ -70,7 +70,8 @@ public class ConsumerMoveInTests : TestBase
         _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, _transaction);
 
         var result = CanStartProcess(moveInDate);
-        Assert.Contains(result.Errors, error => error is MoveInRegisteredOnSameDateIsNotAllowedRuleError);
+
+        AssertError<MoveInRegisteredOnSameDateIsNotAllowedRuleError>(result);
     }
 
     [Fact]
@@ -82,7 +83,7 @@ public class ConsumerMoveInTests : TestBase
 
         var result = CanStartProcess(moveInDate);
 
-        Assert.Contains(result.Errors, error => error is MoveInRegisteredOnSameDateIsNotAllowedRuleError);
+        AssertError<MoveInRegisteredOnSameDateIsNotAllowedRuleError>(result);
     }
 
     [Fact]
@@ -95,26 +96,7 @@ public class ConsumerMoveInTests : TestBase
         var moveInDate = AsOf(SystemDateTimeProvider.Now().Plus(Duration.FromDays(10)));
         var result = moveProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now());
 
-        AssertValidationError<EffectiveDateIsNotWithinAllowedTimePeriod>(result, "EffectiveDateIsNotWithinAllowedTimePeriod");
-    }
-
-    private static void AssertValidationError<TRuleError>(BusinessRulesValidationResult rulesValidationResult, string? expectedErrorCode = null, bool errorExpected = true)
-        where TRuleError : ValidationError
-    {
-        if (rulesValidationResult == null) throw new ArgumentNullException(nameof(rulesValidationResult));
-        var error = rulesValidationResult.Errors.FirstOrDefault(error => error is TRuleError);
-        if (errorExpected)
-        {
-            Assert.NotNull(error);
-            if (expectedErrorCode is not null)
-            {
-                Assert.Equal(expectedErrorCode, error?.Code);
-            }
-        }
-        else
-        {
-            Assert.Null(error);
-        }
+        AssertError<EffectiveDateIsNotWithinAllowedTimePeriod>(result, "EffectiveDateIsNotWithinAllowedTimePeriod");
     }
 
     private static EffectiveDate AsOf(Instant date)
