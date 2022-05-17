@@ -39,7 +39,7 @@ public class ConsumerMoveInTests
 
     public ConsumerMoveInTests()
     {
-        _consumerMoveInProcess = new ConsumerMoveIn(new EffectiveDatePolicy());
+        _consumerMoveInProcess = new ConsumerMoveIn(EffectiveDatePolicyFactory.CreateEffectiveDatePolicy());
         _systemDateTimeProvider = new SystemDateTimeProviderStub();
         _accountingPoint = AccountingPoint.CreateProduction(GsrnNumber.Create(SampleData.GsrnNumber), true);
         _consumer = new Consumer(ConsumerId.New(), CprNumber.Create(SampleData.ConsumerSocialSecurityNumber), ConsumerName.Create(SampleData.ConsumerName));
@@ -90,7 +90,7 @@ public class ConsumerMoveInTests
     public void Effective_date_must_be_within_allowed_time_range()
     {
         var maxNumberOfDaysAheadOfcurrentDate = 5;
-        var policy = new EffectiveDatePolicy(maxNumberOfDaysAheadOfcurrentDate);
+        var policy = EffectiveDatePolicyFactory.CreateEffectiveDatePolicy(maxNumberOfDaysAheadOfcurrentDate);
         var moveProcess = new ConsumerMoveIn(policy);
 
         var moveInDate = AsOf(_systemDateTimeProvider.Now().Plus(Duration.FromDays(10)));

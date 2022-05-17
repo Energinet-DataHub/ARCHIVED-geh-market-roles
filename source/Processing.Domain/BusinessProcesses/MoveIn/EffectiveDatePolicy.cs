@@ -22,20 +22,15 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
 {
     public class EffectiveDatePolicy
     {
-        private readonly TimeOfDay _requiredTimeOfDayInLocalTime = TimeOfDay.Create(0, 0, 0);
-        private readonly DateTimeZone _timeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
+        private readonly TimeOfDay _requiredTimeOfDayInLocalTime;
+        private readonly DateTimeZone _timeZone;
         private readonly int _allowedNumberOfDaysBeforeToday;
         private readonly int _allowedNumberOfDaysAfterToday;
 
-        public EffectiveDatePolicy(int allowedNumberOfDaysBeforeToday = 0, int allowedNumberOfDaysAfterToday = 0)
+        public EffectiveDatePolicy(int allowedNumberOfDaysBeforeToday, int allowedNumberOfDaysAfterToday, TimeOfDay requiredTimeOfDayInLocalTime, DateTimeZone timeZone)
         {
             _allowedNumberOfDaysBeforeToday = allowedNumberOfDaysBeforeToday;
             _allowedNumberOfDaysAfterToday = allowedNumberOfDaysAfterToday;
-        }
-
-        public EffectiveDatePolicy(int allowedNumberOfDaysBeforeToday, int allowedNumberOfDaysAfterToday, TimeOfDay requiredTimeOfDayInLocalTime, DateTimeZone timeZone)
-        : this(allowedNumberOfDaysBeforeToday, allowedNumberOfDaysAfterToday)
-        {
             _requiredTimeOfDayInLocalTime = requiredTimeOfDayInLocalTime;
             _timeZone = timeZone;
         }
