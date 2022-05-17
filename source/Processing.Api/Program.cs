@@ -143,6 +143,8 @@ namespace Processing.Api
             container.Register<MoveInHttpTrigger>(Lifestyle.Scoped);
             container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
 
+            container.ConfigureMoveInProcessTimePolicy(7, 60);
+
             var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING")
                                    ?? throw new InvalidOperationException(
                                        "database connection string not found.");
