@@ -31,6 +31,11 @@ internal static class EffectiveDatePolicyFactory
         return new EffectiveDatePolicy(0, 0, CreateDefaultTimeOfDay(), _dateTimeZone);
     }
 
+    internal static EffectiveDatePolicy CreateEffectiveDatePolicy(TimeOfDay timeOfDay)
+    {
+        return new EffectiveDatePolicy(0, 0, timeOfDay, _dateTimeZone);
+    }
+
     internal static EffectiveDatePolicy CreateEffectiveDatePolicy(int allowedNumberOfDaysBeforeToday, int allowedNumberOfDaysAfterToday = 0)
     {
         return new EffectiveDatePolicy(allowedNumberOfDaysBeforeToday, allowedNumberOfDaysAfterToday, CreateDefaultTimeOfDay(), _dateTimeZone);
