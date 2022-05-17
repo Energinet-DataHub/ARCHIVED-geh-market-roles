@@ -84,7 +84,7 @@ namespace Processing.Tests.Domain.BusinessProcesses.Policies
         public void Time_of_day_must_adhere_to_defined_local_time(int hourOfDay, int minuteOfDay, int secondOfDay, bool isValid)
         {
             var policy = EffectiveDatePolicyFactory.CreateEffectiveDatePolicy(TimeOfDay.Create(0, 0, 0));
-            var effectiveDate = WithTimeOfDay(hourOfDay, minuteOfDay, secondOfDay);
+            var effectiveDate = EffectiveDateFactory.WithTimeOfDay(_systemDateTimeProvider.Now().ToDateTimeUtc(), hourOfDay, minuteOfDay, secondOfDay);
 
             var result = policy.Check(_systemDateTimeProvider.Now(), effectiveDate);
 
@@ -94,13 +94,6 @@ namespace Processing.Tests.Domain.BusinessProcesses.Policies
         private static void CurrentSystemTimeIsSummertime(SystemDateTimeProviderStub systemDateTimeProvider)
         {
             systemDateTimeProvider.SetNow(Instant.FromUtc(2022, 5, 1, 10, 0, 0));
-        }
-
-        private EffectiveDate WithTimeOfDay(int hour, int minute, int second)
-        {
-            var now = _systemDateTimeProvider.Now().ToDateTimeUtc();
-            var dateTime = new DateTime(now.Year, now.Month, now.Day, hour, minute, second);
-            return EffectiveDate.Create(dateTime);
         }
     }
 }
