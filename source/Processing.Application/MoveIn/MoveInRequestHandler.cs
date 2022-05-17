@@ -36,17 +36,20 @@ namespace Processing.Application.MoveIn
         private readonly IEnergySupplierRepository _energySupplierRepository;
         private readonly IConsumerRepository _consumerRepository;
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
+        private readonly ConsumerMoveIn _consumerMoveInProcess;
 
         public MoveInRequestHandler(
             IAccountingPointRepository accountingPointRepository,
             IEnergySupplierRepository energySupplierRepository,
             IConsumerRepository consumerRepository,
-            ISystemDateTimeProvider systemDateTimeProvider)
+            ISystemDateTimeProvider systemDateTimeProvider,
+            EffectiveDatePolicy effectiveDatePolicy)
         {
             _accountingPointRepository = accountingPointRepository ?? throw new ArgumentNullException(nameof(accountingPointRepository));
             _energySupplierRepository = energySupplierRepository ?? throw new ArgumentNullException(nameof(energySupplierRepository));
             _consumerRepository = consumerRepository ?? throw new ArgumentNullException(nameof(consumerRepository));
             _systemDateTimeProvider = systemDateTimeProvider;
+            _consumerMoveInProcess = new ConsumerMoveIn(effectiveDatePolicy);
         }
 
         public async Task<BusinessProcessResult> Handle(MoveInRequest request, CancellationToken cancellationToken)
@@ -66,8 +69,7 @@ namespace Processing.Application.MoveIn
             }
 
             var consumerMovesInOn = EffectiveDate.Create(request.MoveInDate);
-            var process = new ConsumerMoveIn(new EffectiveDatePolicy());
-            var checkResult = process.CanStartProcess(accountingPoint, consumerMovesInOn, _systemDateTimeProvider.Now());
+            var checkResult = _consumerMoveInProcess.CanStartProcess(accountingPoint, consumerMovesInOn, _systemDateTimeProvider.Now());
 
             if (!checkResult.Success)
             {
@@ -76,7 +78,7 @@ namespace Processing.Application.MoveIn
 
             var consumer = await GetOrCreateConsumerAsync(request).ConfigureAwait(false);
 
-            process.StartProcess(accountingPoint, consumer, energySupplier, consumerMovesInOn, Transaction.Create(request.TransactionId));
+            _consumerMoveInProcess.StartProcess(accountingPoint, consumer, energySupplier, consumerMovesInOn, Transaction.Create(request.TransactionId));
 
             return BusinessProcessResult.Ok(request.TransactionId);
         }

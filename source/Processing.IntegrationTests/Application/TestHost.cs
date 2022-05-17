@@ -52,6 +52,7 @@ using Processing.Domain.MeteringPoints.Events;
 using Processing.Domain.SeedWork;
 using Processing.Infrastructure.BusinessRequestProcessing;
 using Processing.Infrastructure.BusinessRequestProcessing.Pipeline;
+using Processing.Infrastructure.Configuration;
 using Processing.Infrastructure.Configuration.Correlation;
 using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.DataAccess.AccountingPoints;
@@ -135,6 +136,7 @@ namespace Processing.IntegrationTests.Application
             _container.Register<ICorrelationContext, CorrelationContext>(Lifestyle.Scoped);
 
             _container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
+            _container.ConfigureMoveInProcessTimePolicy(0, 0);
 
             // Business process responders
             _container.Register<IBusinessProcessResultHandler<RequestChangeOfSupplier>, RequestChangeOfSupplierResultHandler>(Lifestyle.Scoped);
