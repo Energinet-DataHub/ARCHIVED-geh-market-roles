@@ -27,7 +27,9 @@ namespace Processing.Application.MoveIn.Validation
             RuleFor(request => request.Consumer.Name)
                 .NotEmpty()
                 .WithState(_ => new ConsumerNameIsRequired());
-            RuleFor(request => request.AccountingPointGsrnNumber).SetValidator(new GsrnNumberMustBeValidRule());
+            RuleFor(request => request.AccountingPointGsrnNumber)
+                .NotEmpty()
+                .WithState(_ => new GsrnNumberIsRequired());
             RuleFor(request => request.Consumer.Identifier)
                 .NotEmpty()
                 .WithState(_ => new ConsumerIdentifierIsRequired());

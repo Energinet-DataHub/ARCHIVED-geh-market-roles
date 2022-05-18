@@ -37,6 +37,19 @@ namespace Processing.IntegrationTests.Application.MoveIn
         }
 
         [Fact]
+        public async Task Accounting_point_gsrn_number_is_required()
+        {
+            var request = CreateRequest() with
+            {
+                AccountingPointGsrnNumber = string.Empty,
+            };
+
+            var result = await SendRequestAsync(request).ConfigureAwait(false);
+
+            AssertValidationError<GsrnNumberIsRequired>(result, "GsrnNumberIsRequired");
+        }
+
+        [Fact]
         public async Task Consumer_identifier_is_required()
         {
             var request = CreateRequest() with
