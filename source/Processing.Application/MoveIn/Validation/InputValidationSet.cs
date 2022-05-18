@@ -17,6 +17,7 @@ using FluentValidation;
 using Processing.Application.Common.Validation;
 using Processing.Application.Common.Validation.Consumers;
 using Processing.Domain.BusinessProcesses.MoveIn.Errors;
+using Processing.Domain.MeteringPoints;
 
 namespace Processing.Application.MoveIn.Validation
 {
@@ -27,7 +28,13 @@ namespace Processing.Application.MoveIn.Validation
             RuleFor(request => request.Consumer.Name)
                 .NotEmpty()
                 .WithState(_ => new ConsumerNameIsRequired());
-            RuleFor(request => request.AccountingPointGsrnNumber).SetValidator(new GsrnNumberMustBeValidRule());
+            RuleFor(request => request.AccountingPointGsrnNumber)
+                .Cascade(CascadeMode.Stop)
+                .NotEmpty()
+                .WithState(_ => new GsrnNumberIsRequired());
+            RuleFor(request => GsrnNumber.CheckRules(request.AccountingPointGsrnNumber))
+                .Must(x => x.Success)
+                .WithState(_ => new InvalidGsrnNumber());
             RuleFor(request => request.Consumer.Identifier)
                 .NotEmpty()
                 .WithState(_ => new ConsumerIdentifierIsRequired());
