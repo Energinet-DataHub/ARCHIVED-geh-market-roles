@@ -24,5 +24,7 @@ namespace Processing.Application.Common.Validation.Consumers
         }
 
         public string SocialSecurityNumber { get; }
+
+        public override string Code { get; protected set; } = "InvalidSocialSecurityNumber";
     }
 }

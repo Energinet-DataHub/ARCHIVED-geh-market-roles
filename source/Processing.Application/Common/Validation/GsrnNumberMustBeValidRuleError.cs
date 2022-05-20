@@ -24,5 +24,7 @@ namespace Processing.Application.Common.Validation
         }
 
         public string GsrnNumber { get; }
+
+        public override string Code { get; protected set; } = "InvalidGsrnNumber";
     }
 }

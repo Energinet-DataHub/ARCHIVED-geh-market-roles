@@ -24,5 +24,7 @@ namespace Processing.Domain.Consumers.Rules
         }
 
         public string CvrNumber { get; }
+
+        public override string Code { get; protected set; } = "InvalidCvrNumber";
     }
 }

@@ -18,5 +18,6 @@ namespace Processing.Domain.MeteringPoints.Rules
 {
     public class GsrnNumberMustBeValidRuleError : ValidationError
     {
+        public override string Code { get; protected set; } = "InvalidGsrnNumber";
     }
 }

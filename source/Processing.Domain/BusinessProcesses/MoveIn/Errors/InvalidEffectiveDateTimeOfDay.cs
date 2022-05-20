@@ -18,9 +18,6 @@ namespace Processing.Domain.BusinessProcesses.MoveIn.Errors
 {
     public class InvalidEffectiveDateTimeOfDay : ValidationError
     {
-        public InvalidEffectiveDateTimeOfDay()
-        {
-            Code = "InvalidEffectiveDateTimeOfDay";
-        }
+        public override string Code { get; protected set; } = "InvalidEffectiveDateTimeOfDay";
     }
 }

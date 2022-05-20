@@ -18,5 +18,6 @@ namespace Processing.Domain.MeteringPoints.Rules.ChangeEnergySupplier
 {
     public class CannotBeCurrentSupplierRuleError : ValidationError
     {
+        public override string Code { get; protected set; } = "CannotBeCurrentSupplier";
     }
 }

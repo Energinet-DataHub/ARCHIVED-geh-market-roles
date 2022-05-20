@@ -14,19 +14,18 @@
 
 namespace Processing.Domain.SeedWork
 {
-    public class ValidationError
+    public abstract class ValidationError
     {
-        public ValidationError()
+        protected ValidationError()
         {
         }
 
-        public ValidationError(string code, string message)
+        protected ValidationError(string message)
         {
-            Code = code;
             Message = message;
         }
 
-        public string Code { get; protected init; } = string.Empty;
+        public abstract string Code { get; protected set; }
 
         public string Message { get; protected init; } = string.Empty;
     }

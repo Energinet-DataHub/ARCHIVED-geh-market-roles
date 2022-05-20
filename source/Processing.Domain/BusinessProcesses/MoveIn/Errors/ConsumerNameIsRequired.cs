@@ -18,9 +18,6 @@ namespace Processing.Domain.BusinessProcesses.MoveIn.Errors
 {
     public class ConsumerNameIsRequired : ValidationError
     {
-        public ConsumerNameIsRequired()
-        {
-            Code = "ConsumerNameIsRequired";
-        }
+        public override string Code { get; protected set; } = "ConsumerNameIsRequired";
     }
 }
