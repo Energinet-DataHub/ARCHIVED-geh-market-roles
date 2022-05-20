@@ -18,5 +18,6 @@ namespace Processing.Domain.MeteringPoints.Rules.ChangeEnergySupplier
 {
     public class ProductionMeteringPointMustBeObligatedRuleError : ValidationError
     {
+        public override string Code { get; protected set; } = "ProductionMeteringPointMustBeObligated";
     }
 }

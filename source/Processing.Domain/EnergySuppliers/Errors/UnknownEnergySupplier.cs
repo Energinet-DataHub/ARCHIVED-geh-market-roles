@@ -18,9 +18,6 @@ namespace Processing.Domain.EnergySuppliers.Errors
 {
     public class UnknownEnergySupplier : ValidationError
     {
-        public UnknownEnergySupplier()
-        {
-            Code = "UnknownEnergySupplier";
-        }
+        public override string Code { get; protected set; } = "UnknownEnergySupplier";
     }
 }

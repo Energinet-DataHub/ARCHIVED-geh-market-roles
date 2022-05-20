@@ -25,5 +25,7 @@ namespace Processing.Domain.MeteringPoints.Rules.ChangeEnergySupplier
         }
 
         public Instant EffectiveDate { get; }
+
+        public override string Code { get; protected set; } = "EffectiveDateCannotBeInThePast";
     }
 }

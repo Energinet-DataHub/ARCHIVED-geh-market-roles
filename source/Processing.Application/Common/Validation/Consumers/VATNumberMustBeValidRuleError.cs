@@ -24,5 +24,7 @@ namespace Processing.Application.Common.Validation.Consumers
         }
 
         public string VATNumber { get; }
+
+        public override string Code { get; protected set; } = "InvalidVATNumber";
     }
 }

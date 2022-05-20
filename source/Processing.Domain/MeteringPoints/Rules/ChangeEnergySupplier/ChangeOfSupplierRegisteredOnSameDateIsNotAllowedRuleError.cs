@@ -25,5 +25,7 @@ namespace Processing.Domain.MeteringPoints.Rules.ChangeEnergySupplier
         }
 
         public Instant SupplyStartDate { get; }
+
+        public override string Code { get; protected set; } = "ChangeOfSupplierRegisteredOnSameDateIsNotAllowed";
     }
 }
