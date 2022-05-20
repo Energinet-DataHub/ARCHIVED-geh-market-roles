@@ -20,8 +20,9 @@ namespace Processing.Domain.Common
     {
         public DateFormatMustBeUTCRuleError(string date)
         {
-            Code = "E86";
             Message = $"Date time {date} must have UTC+0 format 'YYYY-MM-DD HH:MI:SS'";
         }
+
+        public override string Code { get; protected set; } = "E86";
     }
 }
