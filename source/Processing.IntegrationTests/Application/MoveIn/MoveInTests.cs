@@ -17,11 +17,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Processing.Application.Common;
 using Processing.Application.MoveIn;
+using Processing.Application.MoveIn.Processing;
 using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers.Errors;
+using Processing.Domain.MeteringPoints;
 using Processing.Domain.MeteringPoints.Errors;
 using Processing.Domain.SeedWork;
+using Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
 using Xunit;
 using Xunit.Categories;
 using Consumer = Processing.Application.MoveIn.Consumer;
@@ -156,6 +159,17 @@ namespace Processing.IntegrationTests.Application.MoveIn
             await SendRequestAsync(request).ConfigureAwait(false);
         }
 
+        [Fact]
+        public async Task Integration_event_is_published_when_move_in_is_effectuated()
+        {
+            var (accountingPoint, transaction) = await SetupScenarioAsync().ConfigureAwait(false);
+            var command = new EffectuateConsumerMoveIn(accountingPoint.Id.Value, transaction.Value);
+
+            await InvokeCommandAsync(command).ConfigureAwait(false);
+
+            AssertOutboxMessage<EnergySupplierChangedIntegrationEvent>();
+        }
+
         private static void AssertValidationError<TRuleError>(BusinessProcessResult rulesValidationResult, string? expectedErrorCode = null, bool errorExpected = true)
         where TRuleError : ValidationError
         {
@@ -179,6 +193,24 @@ namespace Processing.IntegrationTests.Application.MoveIn
                 SampleData.GlnNumber,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);
+        }
+
+        private async Task<(AccountingPoint AccountingPoint, Transaction Transaction)> SetupScenarioAsync()
+        {
+            var accountingPoint = CreateAccountingPoint();
+            CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
+            SaveChanges();
+
+            var requestMoveIn = new MoveInRequest(
+                new Consumer(SampleData.ConsumerName, SampleData.ConsumerSSN, ConsumerIdentifierType.CPR),
+                SampleData.Transaction,
+                SampleData.GlnNumber,
+                SampleData.GsrnNumber,
+                SampleData.MoveInDate);
+
+            var result = await SendRequestAsync(requestMoveIn).ConfigureAwait(false);
+
+            return (accountingPoint, Transaction.Create(result.TransactionId));
         }
     }
 }
