@@ -15,6 +15,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Contracts.IntegrationEvents;
 using Processing.Application.Common;
 using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Processing;
@@ -167,7 +168,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
             await InvokeCommandAsync(command).ConfigureAwait(false);
 
-            AssertOutboxMessage<EnergySupplierChangedIntegrationEvent>();
+            AssertOutboxMessage<ConsumerMovedIn>();
         }
 
         private static void AssertValidationError<TRuleError>(BusinessProcessResult rulesValidationResult, string? expectedErrorCode = null, bool errorExpected = true)
