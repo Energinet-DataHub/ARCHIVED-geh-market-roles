@@ -31,6 +31,7 @@ using Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails;
 using Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
 using Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
 using Processing.Application.ChangeOfSupplier.Validation;
+using Processing.Application.Common;
 using Processing.Application.Common.Commands;
 using Processing.Application.Common.DomainEvents;
 using Processing.Application.Common.Processing;
@@ -54,6 +55,7 @@ using Processing.Infrastructure.Configuration.DataAccess.Consumers;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
 using Processing.Infrastructure.Configuration.DataAccess.ProcessManagers;
 using Processing.Infrastructure.Configuration.DomainEventDispatching;
+using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.Outbox;
 using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
@@ -191,6 +193,9 @@ namespace Processing.Api
                 typeof(MoveInRequest).Assembly, // Application
                 typeof(ConsumerMovedIn).Assembly, // Domain
                 typeof(ErrorMessageFactory).Assembly); // Infrastructure
+
+            // Integration event publishing
+            container.Register<IEventPublisher, EventPublisher>();
         }
     }
 }
