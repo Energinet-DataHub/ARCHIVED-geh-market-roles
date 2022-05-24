@@ -12,9 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Contracts.IntegrationEvents;
 using Google.Protobuf;
+using Google.Protobuf.Reflection;
 using MediatR;
 using Processing.Infrastructure.Configuration.Outbox;
 using Processing.Infrastructure.Configuration.SystemTime;
@@ -38,9 +42,31 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
             OutboxMessage? message;
             while ((message = _outboxManager.GetNext(OutboxMessageCategory.IntegrationEvent)) != null)
             {
-                var integrationEvent = Google.Protobuf.JsonParser.Default.Parse<Contracts.IntegrationEvents.ConsumerMovedIn>(message.Data);
+                var integrationEvent = ParseIntegrationEventFrom(message);
+
                 await _serviceBusMessagePublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
+                await _outboxManager.MarkProcessedAsync(message).ConfigureAwait(false);
             }
+        }
+
+        private static IMessage ParseIntegrationEventFrom(OutboxMessage message)
+        {
+            var eventType = typeof(ConsumerMovedIn).Assembly.GetType(message.Type);
+            if (eventType is null)
+            {
+                throw new InvalidOperationException($"Could not get type '{message.Type}'");
+            }
+
+            var descriptor = (MessageDescriptor)eventType
+                .GetProperty("Descriptor", BindingFlags.Public | BindingFlags.Static)!
+                    .GetValue(null, null)!;
+
+            if (descriptor is null)
+            {
+                throw new InvalidOperationException($"The property 'Descriptor' does not exist on type {eventType.Name}");
+            }
+
+            return descriptor.Parser.ParseJson(message.Data);
         }
     }
 }

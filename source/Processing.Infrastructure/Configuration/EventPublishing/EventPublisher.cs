@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading.Tasks;
-using Contracts.IntegrationEvents;
 using Processing.Application.Common;
 using Processing.Infrastructure.Configuration.Outbox;
 
@@ -32,7 +32,11 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
 
         public Task PublishAsync<TEvent>(TEvent integrationEvent)
         {
-            _outbox.Add(_outboxMessageFactory.CreateFrom(integrationEvent, OutboxMessageCategory.IntegrationEvent));
+            if (integrationEvent == null) throw new ArgumentNullException(nameof(integrationEvent));
+            var message = integrationEvent.ToString() ?? throw new InvalidCastException("Message cannot be empty.");
+            var messageType = integrationEvent.GetType().FullName ?? throw new InvalidCastException("Message type cannot be empty.");
+
+            _outbox.Add(_outboxMessageFactory.CreateFrom(message, messageType, OutboxMessageCategory.IntegrationEvent));
             return Task.CompletedTask;
         }
     }
