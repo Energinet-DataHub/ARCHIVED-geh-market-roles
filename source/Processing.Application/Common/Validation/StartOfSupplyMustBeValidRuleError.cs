@@ -24,5 +24,7 @@ namespace Processing.Application.Common.Validation
         }
 
         public string StartOfSupplyDate { get; }
+
+        public override string Code { get; protected set; } = "InvalidStartOfSupplyDate";
     }
 }

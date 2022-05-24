@@ -24,5 +24,7 @@ namespace Processing.Domain.Consumers.Rules
         }
 
         public string CprNumber { get; }
+
+        public override string Code { get; protected set; } = "InvalidCprNumber";
     }
 }

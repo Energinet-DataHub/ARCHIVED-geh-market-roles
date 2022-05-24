@@ -18,9 +18,6 @@ namespace Processing.Domain.BusinessProcesses.MoveIn.Errors
 {
     public class EffectiveDateIsNotWithinAllowedTimePeriod : ValidationError
     {
-        public EffectiveDateIsNotWithinAllowedTimePeriod()
-        {
-            Code = "EffectiveDateIsNotWithinAllowedTimePeriod";
-        }
+        public override string Code { get; protected set; } = "EffectiveDateIsNotWithinAllowedTimePeriod";
     }
 }
