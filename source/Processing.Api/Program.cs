@@ -25,6 +25,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Processing.Api.Configuration;
 using Processing.Api.MoveIn;
 using Processing.Application.ChangeOfSupplier;
 using Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails;
@@ -145,6 +146,7 @@ namespace Processing.Api
             container.Register<IMessageHubDispatcher, MessageHubDispatcher>(Lifestyle.Scoped);
             container.Register<MoveInHttpTrigger>(Lifestyle.Scoped);
             container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
+            container.Register<SystemTimer>();
 
             container.ConfigureMoveInProcessTimePolicy(7, 60, TimeOfDay.Create(0, 0, 0));
 
