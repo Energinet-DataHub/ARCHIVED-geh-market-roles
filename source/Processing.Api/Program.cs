@@ -14,6 +14,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
@@ -148,6 +149,11 @@ namespace Processing.Api
             container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
             container.Register<SystemTimer>();
 
+            var serviceBusConnectionStringForIntegrationEvents =
+                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_INTEGRATION_EVENTS");
+
+            container.RegisterSingleton<ServiceBusClient>(() => new ServiceBusClient(serviceBusConnectionStringForIntegrationEvents));
+
             container.ConfigureMoveInProcessTimePolicy(7, 60, TimeOfDay.Create(0, 0, 0));
 
             var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING")
@@ -198,6 +204,7 @@ namespace Processing.Api
 
             // Integration event publishing
             container.Register<IEventPublisher, EventPublisher>();
+            container.Register<IMessagePublisher, ServiceBusMessagePublisher>();
         }
     }
 }

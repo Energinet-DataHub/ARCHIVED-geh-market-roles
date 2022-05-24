@@ -76,6 +76,7 @@ using Processing.Infrastructure.InternalCommands;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Transport;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
+using Processing.IntegrationTests.TestDoubles;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using Xunit;
@@ -142,6 +143,7 @@ namespace Processing.IntegrationTests.Application
 
             // Integration event publishing
             _container.Register<IEventPublisher, EventPublisher>();
+            _container.Register<IMessagePublisher, MessagePublisherStub>();
 
             // Business process responders
             _container.Register<IBusinessProcessResultHandler<RequestChangeOfSupplier>, RequestChangeOfSupplierResultHandler>(Lifestyle.Scoped);
