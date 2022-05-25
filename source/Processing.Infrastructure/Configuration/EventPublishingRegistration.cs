@@ -23,13 +23,13 @@ namespace Processing.Infrastructure.Configuration
 {
     public static class EventPublishingRegistration
     {
-        public static void AddEventPublishing(this Container container, IMessagePublisher messagePublisher)
+        public static void AddEventPublishing(this Container container, IMessageDispatcher messageDispatcher)
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
-            if (messagePublisher == null) throw new ArgumentNullException(nameof(messagePublisher));
+            if (messageDispatcher == null) throw new ArgumentNullException(nameof(messageDispatcher));
 
             RegisterCommonServices(container);
-            container.Register<IMessagePublisher>(() => messagePublisher, Lifestyle.Singleton);
+            container.Register<IMessageDispatcher>(() => messageDispatcher, Lifestyle.Singleton);
         }
 
         public static void AddEventPublishing(this Container container, string serviceBusConnectionStringForIntegrationEvents)
@@ -37,7 +37,7 @@ namespace Processing.Infrastructure.Configuration
             if (container == null) throw new ArgumentNullException(nameof(container));
 
             RegisterCommonServices(container);
-            container.Register<IMessagePublisher, ServiceBusMessagePublisher>(Lifestyle.Singleton);
+            container.Register<IMessageDispatcher, ServiceBusMessageDispatcher>(Lifestyle.Singleton);
             container.RegisterSingleton<ServiceBusClient>(() => new ServiceBusClient(serviceBusConnectionStringForIntegrationEvents));
         }
 

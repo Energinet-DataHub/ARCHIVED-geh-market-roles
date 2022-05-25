@@ -19,16 +19,16 @@ using Google.Protobuf;
 
 namespace Processing.Infrastructure.Configuration.EventPublishing
 {
-    public class ServiceBusMessagePublisher : IMessagePublisher
+    public class ServiceBusMessageDispatcher : IMessageDispatcher
     {
         private readonly ServiceBusClient _serviceBusClient;
 
-        public ServiceBusMessagePublisher(ServiceBusClient serviceBusClient)
+        public ServiceBusMessageDispatcher(ServiceBusClient serviceBusClient)
         {
             _serviceBusClient = serviceBusClient;
         }
 
-        public async Task PublishAsync(IMessage integrationEvent)
+        public async Task DispatchAsync(IMessage integrationEvent)
         {
             if (integrationEvent == null) throw new ArgumentNullException(nameof(integrationEvent));
             var sender = _serviceBusClient.CreateSender(integrationEvent.GetType().Name);

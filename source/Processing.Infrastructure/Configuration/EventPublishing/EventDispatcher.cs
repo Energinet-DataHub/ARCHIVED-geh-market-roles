@@ -26,12 +26,12 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
     {
         private readonly IOutboxManager _outboxManager;
 
-        private readonly IMessagePublisher _serviceBusMessagePublisher;
+        private readonly IMessageDispatcher _serviceBusMessageDispatcher;
 
-        public EventDispatcher(IOutboxManager outboxManager, IMessagePublisher serviceBusMessagePublisher)
+        public EventDispatcher(IOutboxManager outboxManager, IMessageDispatcher serviceBusMessageDispatcher)
         {
             _outboxManager = outboxManager;
-            _serviceBusMessagePublisher = serviceBusMessagePublisher;
+            _serviceBusMessageDispatcher = serviceBusMessageDispatcher;
         }
 
         public async Task DispatchAsync()
@@ -41,7 +41,7 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
             {
                 var integrationEvent = ParseIntegrationEventFrom(message);
 
-                await _serviceBusMessagePublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
+                await _serviceBusMessageDispatcher.DispatchAsync(integrationEvent).ConfigureAwait(false);
                 await _outboxManager.MarkProcessedAsync(message).ConfigureAwait(false);
             }
         }

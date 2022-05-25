@@ -12,20 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Google.Protobuf;
+using Processing.Infrastructure.Configuration.EventPublishing;
 
-namespace Processing.Infrastructure.Configuration.EventPublishing
+namespace Processing.IntegrationTests.TestDoubles
 {
-    /// <summary>
-    /// Protobuf message publisher interface
-    /// </summary>
-    public interface IMessagePublisher
+    public class MessageDispatcherStub : IMessageDispatcher
     {
-        /// <summary>
-        /// Publish ProtoBuf message
-        /// </summary>
-        /// <param name="integrationEvent"></param>
-        Task PublishAsync(IMessage integrationEvent);
+        private readonly List<IMessage> _publishedMessages = new();
+
+        public ReadOnlyCollection<IMessage> PublishedMessages => _publishedMessages.AsReadOnly();
+
+        public Task DispatchAsync(IMessage integrationEvent)
+        {
+            _publishedMessages.Add(integrationEvent);
+            return Task.CompletedTask;
+        }
     }
 }

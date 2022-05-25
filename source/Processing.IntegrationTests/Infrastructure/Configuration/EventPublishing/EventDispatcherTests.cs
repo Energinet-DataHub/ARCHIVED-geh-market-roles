@@ -29,7 +29,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
     {
         private readonly IEventPublisher _eventPublisher;
         private readonly EventDispatcher _eventDispatcher;
-        private readonly IMessagePublisher _messagePublisher;
+        private readonly IMessageDispatcher _messageDispatcher;
         private readonly IUnitOfWork _unitOfWork;
 
         public EventDispatcherTests(DatabaseFixture databaseFixture)
@@ -37,7 +37,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
         {
             _eventPublisher = GetService<IEventPublisher>();
             _eventDispatcher = GetService<EventDispatcher>();
-            _messagePublisher = GetService<IMessagePublisher>();
+            _messageDispatcher = GetService<IMessageDispatcher>();
             _unitOfWork = GetService<IUnitOfWork>();
         }
 
@@ -50,7 +50,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
 
             await _eventDispatcher.DispatchAsync().ConfigureAwait(false);
 
-            var publishedMessages = (_messagePublisher as MessagePublisherStub)!.PublishedMessages;
+            var publishedMessages = (_messageDispatcher as MessageDispatcherStub)!.PublishedMessages;
             Assert.Equal(integrationEvent, publishedMessages.First());
         }
     }
