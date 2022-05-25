@@ -19,7 +19,7 @@ using Google.Protobuf;
 using Processing.Domain.SeedWork;
 using Processing.Infrastructure.Configuration.Correlation;
 
-namespace Processing.Infrastructure.Configuration.EventPublishing
+namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus
 {
     public class ServiceBusMessageDispatcher
     {

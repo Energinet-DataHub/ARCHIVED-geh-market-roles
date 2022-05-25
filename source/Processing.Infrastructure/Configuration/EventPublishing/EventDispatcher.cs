@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Contracts.IntegrationEvents;
 using Google.Protobuf;
 using Google.Protobuf.Reflection;
+using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 using Processing.Infrastructure.Configuration.Outbox;
 
 namespace Processing.Infrastructure.Configuration.EventPublishing
@@ -39,31 +40,11 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
             OutboxMessage? message;
             while ((message = _outboxManager.GetNext(OutboxMessageCategory.IntegrationEvent)) != null)
             {
-                var integrationEvent = ParseIntegrationEventFrom(message);
+                var integrationEvent = Protobuf.MessageParser.GetFrom(message.Type, message.Data);
 
                 await _messageDispatcher.DispatchAsync(integrationEvent).ConfigureAwait(false);
                 await _outboxManager.MarkProcessedAsync(message).ConfigureAwait(false);
             }
-        }
-
-        private static IMessage ParseIntegrationEventFrom(OutboxMessage message)
-        {
-            var eventType = typeof(ConsumerMovedIn).Assembly.GetType(message.Type);
-            if (eventType is null)
-            {
-                throw new InvalidOperationException($"Could not get type '{message.Type}'");
-            }
-
-            var descriptor = (MessageDescriptor)eventType
-                .GetProperty("Descriptor", BindingFlags.Public | BindingFlags.Static)!
-                .GetValue(null, null)!;
-
-            if (descriptor is null)
-            {
-                throw new InvalidOperationException($"The property 'Descriptor' does not exist on type {eventType.Name}");
-            }
-
-            return descriptor.Parser.ParseJson(message.Data);
         }
     }
 }

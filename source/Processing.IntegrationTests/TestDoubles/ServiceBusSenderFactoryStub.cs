@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Processing.Infrastructure.Configuration.EventPublishing;
+using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 
 namespace Processing.IntegrationTests.TestDoubles
 {

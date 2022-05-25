@@ -14,7 +14,7 @@
 
 using Azure.Messaging.ServiceBus;
 
-namespace Processing.Infrastructure.Configuration.EventPublishing
+namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus
 {
     public class ServiceBusSenderFactory : IServiceBusSenderFactory
     {

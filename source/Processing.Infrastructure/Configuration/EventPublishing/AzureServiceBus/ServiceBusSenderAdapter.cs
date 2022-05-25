@@ -16,7 +16,7 @@ using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 
-namespace Processing.Infrastructure.Configuration.EventPublishing
+namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus
 {
     public class ServiceBusSenderAdapter : IServiceBusSenderAdapter, IAsyncDisposable
     {

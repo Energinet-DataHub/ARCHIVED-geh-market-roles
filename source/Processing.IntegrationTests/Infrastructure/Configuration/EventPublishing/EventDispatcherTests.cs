@@ -19,6 +19,7 @@ using Contracts.IntegrationEvents;
 using Processing.Application.Common;
 using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.EventPublishing;
+using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 using Processing.Infrastructure.Configuration.Outbox;
 using Processing.IntegrationTests.Application;
 using Processing.IntegrationTests.TestDoubles;

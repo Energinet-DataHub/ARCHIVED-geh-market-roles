@@ -15,6 +15,7 @@
 using System;
 using System.Threading.Tasks;
 using Processing.Infrastructure.Configuration.EventPublishing;
+using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 using Processing.IntegrationTests.Application;
 using Processing.IntegrationTests.TestDoubles;
 using Xunit;

@@ -10,20 +10,27 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License
+// limitations under the License.
 
-namespace Processing.Infrastructure.Configuration.EventPublishing
+using System.Threading.Tasks;
+using Azure.Messaging.ServiceBus;
+
+namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus
 {
     /// <summary>
-    /// Factory for Azure Service Bus client sender adapters
+    /// Azure Service Bus Client sender adapter
     /// </summary>
-    public interface IServiceBusSenderFactory
+    public interface IServiceBusSenderAdapter
     {
         /// <summary>
-        /// Get sender for specified topic
+        /// Topic name
         /// </summary>
-        /// <param name="topicName"></param>
-        /// <returns><see cref="IServiceBusSenderAdapter"/></returns>
-        IServiceBusSenderAdapter GetSender(string topicName);
+        string TopicName { get; }
+
+        /// <summary>
+        /// Send integration event to topic
+        /// </summary>
+        /// <param name="message"></param>
+        Task SendAsync(ServiceBusMessage message);
     }
 }

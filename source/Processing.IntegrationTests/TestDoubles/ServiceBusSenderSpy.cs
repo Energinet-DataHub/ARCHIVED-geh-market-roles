@@ -15,6 +15,7 @@
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Processing.Infrastructure.Configuration.EventPublishing;
+using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 
 namespace Processing.IntegrationTests.TestDoubles
 {
