@@ -45,6 +45,7 @@ namespace Processing.Infrastructure.Configuration
         {
             RegisterIntegrationEvents(container);
             container.Register<IEventPublisher, EventPublisher>(Lifestyle.Scoped);
+            container.Register<EventDispatcher>(Lifestyle.Scoped);
         }
 
         private static void RegisterIntegrationEvents(Container container)

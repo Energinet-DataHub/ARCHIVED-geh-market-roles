@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Processing.Infrastructure.Configuration.EventPublishing;
@@ -20,8 +22,13 @@ namespace Processing.IntegrationTests.TestDoubles
 {
     public class MessagePublisherStub : IMessagePublisher
     {
+        private readonly List<IMessage> _publishedMessages = new();
+
+        public ReadOnlyCollection<IMessage> PublishedMessages => _publishedMessages.AsReadOnly();
+
         public Task PublishAsync(IMessage integrationEvent)
         {
+            _publishedMessages.Add(integrationEvent);
             return Task.CompletedTask;
         }
     }

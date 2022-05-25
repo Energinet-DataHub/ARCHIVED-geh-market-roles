@@ -12,61 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Contracts.IntegrationEvents;
-using Google.Protobuf;
-using Google.Protobuf.Reflection;
 using MediatR;
-using Processing.Infrastructure.Configuration.Outbox;
 using Processing.Infrastructure.Configuration.SystemTime;
 
 namespace Processing.Infrastructure.Configuration.EventPublishing
 {
     public class PublishEventsOnTimeHasPassed : INotificationHandler<TimeHasPassed>
     {
-        private readonly IOutboxManager _outboxManager;
+        private readonly EventDispatcher _eventDispatcher;
 
-        private readonly IMessagePublisher _serviceBusMessagePublisher;
-
-        public PublishEventsOnTimeHasPassed(IOutboxManager outboxManager, IMessagePublisher serviceBusMessagePublisher)
+        public PublishEventsOnTimeHasPassed(EventDispatcher eventDispatcher)
         {
-            _outboxManager = outboxManager;
-            _serviceBusMessagePublisher = serviceBusMessagePublisher;
+            _eventDispatcher = eventDispatcher;
         }
 
-        public async Task Handle(TimeHasPassed notification, CancellationToken cancellationToken)
+        public Task Handle(TimeHasPassed notification, CancellationToken cancellationToken)
         {
-            OutboxMessage? message;
-            while ((message = _outboxManager.GetNext(OutboxMessageCategory.IntegrationEvent)) != null)
-            {
-                var integrationEvent = ParseIntegrationEventFrom(message);
-
-                await _serviceBusMessagePublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
-                await _outboxManager.MarkProcessedAsync(message).ConfigureAwait(false);
-            }
-        }
-
-        private static IMessage ParseIntegrationEventFrom(OutboxMessage message)
-        {
-            var eventType = typeof(ConsumerMovedIn).Assembly.GetType(message.Type);
-            if (eventType is null)
-            {
-                throw new InvalidOperationException($"Could not get type '{message.Type}'");
-            }
-
-            var descriptor = (MessageDescriptor)eventType
-                .GetProperty("Descriptor", BindingFlags.Public | BindingFlags.Static)!
-                    .GetValue(null, null)!;
-
-            if (descriptor is null)
-            {
-                throw new InvalidOperationException($"The property 'Descriptor' does not exist on type {eventType.Name}");
-            }
-
-            return descriptor.Parser.ParseJson(message.Data);
+            return _eventDispatcher.DispatchAsync();
         }
     }
 }
