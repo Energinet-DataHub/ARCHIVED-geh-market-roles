@@ -14,28 +14,29 @@
 
 using System;
 using System.Reflection;
-using Contracts.IntegrationEvents;
 using Google.Protobuf;
 
 namespace Processing.Infrastructure.Configuration.EventPublishing.Protobuf
 {
-    internal static class MessageParser
+    public class MessageParser
     {
-        internal static IMessage GetFrom(string integrationEventTypeName, string payload)
-        {
-            var eventType = typeof(ConsumerMovedIn).Assembly.GetType(integrationEventTypeName);
-            if (eventType is null)
-            {
-                throw new InvalidOperationException($"Could not get type '{integrationEventTypeName}'");
-            }
+        private readonly IntegrationEventMapper _integrationEventMapper;
 
-            var descriptor = (Google.Protobuf.Reflection.MessageDescriptor)eventType
+        public MessageParser(IntegrationEventMapper integrationEventMapper)
+        {
+            _integrationEventMapper = integrationEventMapper;
+        }
+
+        internal IMessage GetFrom(string integrationEventTypeName, string payload)
+        {
+            var eventMetadata = _integrationEventMapper.GetByName(integrationEventTypeName);
+            var descriptor = (Google.Protobuf.Reflection.MessageDescriptor)eventMetadata.EventType
                 .GetProperty("Descriptor", BindingFlags.Public | BindingFlags.Static)!
                 .GetValue(null, null)!;
 
             if (descriptor is null)
             {
-                throw new InvalidOperationException($"The property 'Descriptor' does not exist on type {eventType.Name}");
+                throw new InvalidOperationException($"The property 'Descriptor' does not exist on type {eventMetadata.EventType.Name}");
             }
 
             return descriptor.Parser.ParseJson(payload);

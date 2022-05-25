@@ -12,13 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Reflection;
 using System.Threading.Tasks;
-using Contracts.IntegrationEvents;
-using Google.Protobuf;
-using Google.Protobuf.Reflection;
 using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
+using Processing.Infrastructure.Configuration.EventPublishing.Protobuf;
 using Processing.Infrastructure.Configuration.Outbox;
 
 namespace Processing.Infrastructure.Configuration.EventPublishing
@@ -26,13 +22,14 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
     public class EventDispatcher
     {
         private readonly IOutboxManager _outboxManager;
-
         private readonly ServiceBusMessageDispatcher _messageDispatcher;
+        private readonly MessageParser _messageParser;
 
-        public EventDispatcher(IOutboxManager outboxManager, ServiceBusMessageDispatcher messageDispatcher)
+        public EventDispatcher(IOutboxManager outboxManager, ServiceBusMessageDispatcher messageDispatcher, MessageParser messageParser)
         {
             _outboxManager = outboxManager;
             _messageDispatcher = messageDispatcher;
+            _messageParser = messageParser;
         }
 
         public async Task DispatchAsync()
@@ -40,7 +37,7 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
             OutboxMessage? message;
             while ((message = _outboxManager.GetNext(OutboxMessageCategory.IntegrationEvent)) != null)
             {
-                var integrationEvent = Protobuf.MessageParser.GetFrom(message.Type, message.Data);
+                var integrationEvent = _messageParser.GetFrom(message.Type, message.Data);
 
                 await _messageDispatcher.DispatchAsync(integrationEvent).ConfigureAwait(false);
                 await _outboxManager.MarkProcessedAsync(message).ConfigureAwait(false);

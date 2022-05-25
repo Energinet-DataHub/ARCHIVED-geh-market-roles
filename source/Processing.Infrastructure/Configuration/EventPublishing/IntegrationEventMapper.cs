@@ -27,16 +27,20 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
             _values.Add(new EventMetadata(eventName, eventType, version, topicName));
         }
 
-        public EventMetadata? GetByName(string eventName)
+        public EventMetadata GetByName(string eventName)
         {
             return _values
-                .FirstOrDefault(metadata => metadata.EventName.Equals(eventName, StringComparison.OrdinalIgnoreCase));
+                .FirstOrDefault(metadata => metadata.EventName.Equals(eventName, StringComparison.OrdinalIgnoreCase)) ?? throw new InvalidOperationException(
+                $"No event metadata is registered for event {eventName}");
         }
 
-        public EventMetadata? GetByType(Type eventType)
+        public EventMetadata GetByType(Type eventType)
         {
+            if (eventType == null) throw new ArgumentNullException(nameof(eventType));
             return _values
-                .FirstOrDefault(metadata => metadata.EventType == eventType);
+                       .FirstOrDefault(metadata => metadata.EventType == eventType) ??
+                   throw new InvalidOperationException(
+                       $"No event metadata is registered for type {eventType.FullName}");
         }
     }
 

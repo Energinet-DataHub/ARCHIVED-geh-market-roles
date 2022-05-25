@@ -411,7 +411,7 @@ namespace Processing.IntegrationTests.Application
             var jsonSerializer = GetService<IJsonSerializer>();
             var context = GetService<MarketRolesContext>();
             return context.OutboxMessages
-                .Where(message => message.Type == typeof(TMessage).FullName)
+                .Where(message => message.Type == typeof(TMessage).Name)
                 .Select(message => jsonSerializer.Deserialize<TMessage>(message.Data));
         }
 

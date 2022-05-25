@@ -18,6 +18,7 @@ using Contracts.IntegrationEvents;
 using Processing.Application.Common;
 using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
+using Processing.Infrastructure.Configuration.EventPublishing.Protobuf;
 using SimpleInjector;
 
 namespace Processing.Infrastructure.Configuration
@@ -46,6 +47,7 @@ namespace Processing.Infrastructure.Configuration
             container.Register<IEventPublisher, EventPublisher>(Lifestyle.Scoped);
             container.Register<EventDispatcher>(Lifestyle.Scoped);
             container.Register<ServiceBusMessageDispatcher>(Lifestyle.Scoped);
+            container.Register<MessageParser>(Lifestyle.Singleton);
         }
 
         private static void RegisterIntegrationEvents(Container container)

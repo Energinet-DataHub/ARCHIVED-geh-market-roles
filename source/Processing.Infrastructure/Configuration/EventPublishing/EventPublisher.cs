@@ -23,18 +23,21 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
     {
         private readonly IOutbox _outbox;
         private readonly IOutboxMessageFactory _outboxMessageFactory;
+        private readonly IntegrationEventMapper _integrationEventMapper;
 
-        public EventPublisher(IOutbox outbox, IOutboxMessageFactory outboxMessageFactory)
+        public EventPublisher(IOutbox outbox, IOutboxMessageFactory outboxMessageFactory, IntegrationEventMapper integrationEventMapper)
         {
             _outbox = outbox;
             _outboxMessageFactory = outboxMessageFactory;
+            _integrationEventMapper = integrationEventMapper;
         }
 
         public Task PublishAsync<TEvent>(TEvent integrationEvent)
         {
             if (integrationEvent == null) throw new ArgumentNullException(nameof(integrationEvent));
+            var eventMetadata = _integrationEventMapper.GetByType(integrationEvent.GetType());
             var message = integrationEvent.ToString() ?? throw new InvalidCastException("Message cannot be empty.");
-            var messageType = integrationEvent.GetType().FullName ?? throw new InvalidCastException("Message type cannot be empty.");
+            var messageType = eventMetadata.EventName;
 
             _outbox.Add(_outboxMessageFactory.CreateFrom(message, messageType, OutboxMessageCategory.IntegrationEvent));
             return Task.CompletedTask;

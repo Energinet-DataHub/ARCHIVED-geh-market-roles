@@ -40,11 +40,6 @@ namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBu
         {
             if (integrationEvent == null) throw new ArgumentNullException(nameof(integrationEvent));
             var eventMetadata = _integrationEventMapper.GetByType(integrationEvent.GetType());
-            if (eventMetadata == null)
-            {
-                throw new InvalidOperationException($"Could not find metadata for integration event type {integrationEvent.GetType().Name}");
-            }
-
             return _serviceBusSenderFactory.GetSender(eventMetadata.TopicName).SendAsync(CreateMessage(integrationEvent, eventMetadata));
         }
 
