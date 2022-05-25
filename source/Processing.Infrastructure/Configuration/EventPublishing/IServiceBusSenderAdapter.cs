@@ -13,19 +13,24 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
-using Google.Protobuf;
+using Azure.Messaging.ServiceBus;
 
 namespace Processing.Infrastructure.Configuration.EventPublishing
 {
     /// <summary>
-    /// Protobuf message publisher interface
+    /// Azure Service Bus Client sender adapter
     /// </summary>
-    public interface IMessageDispatcher
+    public interface IServiceBusSenderAdapter
     {
         /// <summary>
-        /// Publish ProtoBuf message
+        /// Topic name
         /// </summary>
-        /// <param name="integrationEvent"></param>
-        Task DispatchAsync(IMessage integrationEvent);
+        string TopicName { get; }
+
+        /// <summary>
+        /// Send integration event to topic
+        /// </summary>
+        /// <param name="message"></param>
+        Task SendAsync(ServiceBusMessage message);
     }
 }

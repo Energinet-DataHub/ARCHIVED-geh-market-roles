@@ -26,9 +26,9 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
     {
         private readonly IOutboxManager _outboxManager;
 
-        private readonly IMessageDispatcher _messageDispatcher;
+        private readonly ServiceBusMessageDispatcher _messageDispatcher;
 
-        public EventDispatcher(IOutboxManager outboxManager, IMessageDispatcher messageDispatcher)
+        public EventDispatcher(IOutboxManager outboxManager, ServiceBusMessageDispatcher messageDispatcher)
         {
             _outboxManager = outboxManager;
             _messageDispatcher = messageDispatcher;

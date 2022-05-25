@@ -142,7 +142,7 @@ namespace Processing.IntegrationTests.Application
             _container.ConfigureMoveInProcessTimePolicy(0, 0, TimeOfDay.Create(0, 0, 0));
 
             // Integration event publishing
-            _container.AddEventPublishing(new MessageDispatcherStub());
+            _container.AddEventPublishing(new ServiceBusSenderFactoryStub());
 
             // Business process responders
             _container.Register<IBusinessProcessResultHandler<RequestChangeOfSupplier>, RequestChangeOfSupplierResultHandler>(Lifestyle.Scoped);

@@ -12,23 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using Google.Protobuf;
+using Azure.Messaging.ServiceBus;
 using Processing.Infrastructure.Configuration.EventPublishing;
 
 namespace Processing.IntegrationTests.TestDoubles
 {
-    public class MessageDispatcherStub : IMessageDispatcher
+    public class ServiceBusSenderSpy : IServiceBusSenderAdapter
     {
-        private readonly List<IMessage> _publishedMessages = new();
-
-        public ReadOnlyCollection<IMessage> PublishedMessages => _publishedMessages.AsReadOnly();
-
-        public Task DispatchAsync(IMessage integrationEvent)
+        public ServiceBusSenderSpy(string topicName)
         {
-            _publishedMessages.Add(integrationEvent);
+            TopicName = topicName;
+        }
+
+        public string TopicName { get; }
+
+        public ServiceBusMessage? Message { get; private set; }
+
+        public Task SendAsync(ServiceBusMessage message)
+        {
+            Message = message;
             return Task.CompletedTask;
         }
     }

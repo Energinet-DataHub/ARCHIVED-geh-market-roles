@@ -19,6 +19,7 @@ using Contracts.IntegrationEvents;
 using Processing.Application.Common;
 using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.EventPublishing;
+using Processing.Infrastructure.Configuration.Outbox;
 using Processing.IntegrationTests.Application;
 using Processing.IntegrationTests.TestDoubles;
 using Xunit;
@@ -29,29 +30,37 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
     {
         private readonly IEventPublisher _eventPublisher;
         private readonly EventDispatcher _eventDispatcher;
-        private readonly IMessageDispatcher _messageDispatcher;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IOutboxManager _outbox;
 
         public EventDispatcherTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
             _eventPublisher = GetService<IEventPublisher>();
             _eventDispatcher = GetService<EventDispatcher>();
-            _messageDispatcher = GetService<IMessageDispatcher>();
             _unitOfWork = GetService<IUnitOfWork>();
+            _outbox = GetService<IOutboxManager>();
         }
 
         [Fact]
         public async Task Event_is_dispatched()
         {
-            var integrationEvent = new ConsumerMovedIn() { AccountingPointId = Guid.NewGuid().ToString(), };
-            await _eventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
-            await _unitOfWork.CommitAsync().ConfigureAwait(false);
+            await PublishEvent();
 
             await _eventDispatcher.DispatchAsync().ConfigureAwait(false);
 
-            var publishedMessages = (_messageDispatcher as MessageDispatcherStub)!.PublishedMessages;
-            Assert.Equal(integrationEvent, publishedMessages.First());
+            Assert.Null(_outbox.GetNext());
+        }
+
+        private async Task PublishEvent()
+        {
+            var integrationEvent = new ConsumerMovedIn() { AccountingPointId = Guid.NewGuid().ToString(), };
+            var eventMetadata = GetService<IntegrationEventMapper>().GetByType(integrationEvent.GetType())!;
+            var senderFactory = GetService<IServiceBusSenderFactory>() as ServiceBusSenderFactoryStub;
+            senderFactory!.AddSenderSpy(new ServiceBusSenderSpy(eventMetadata.TopicName));
+
+            await _eventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }
 }

@@ -16,34 +16,48 @@ using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Google.Protobuf;
+using Processing.Domain.SeedWork;
+using Processing.Infrastructure.Configuration.Correlation;
 
 namespace Processing.Infrastructure.Configuration.EventPublishing
 {
-    public class ServiceBusMessageDispatcher : IMessageDispatcher
+    public class ServiceBusMessageDispatcher
     {
-        private readonly ServiceBusClient _serviceBusClient;
+        private readonly IServiceBusSenderFactory _serviceBusSenderFactory;
+        private readonly ISystemDateTimeProvider _systemDateTimeProvider;
+        private readonly ICorrelationContext _correlationContext;
+        private readonly IntegrationEventMapper _integrationEventMapper;
 
-        public ServiceBusMessageDispatcher(ServiceBusClient serviceBusClient)
+        public ServiceBusMessageDispatcher(IServiceBusSenderFactory serviceBusSenderFactory, ISystemDateTimeProvider systemDateTimeProvider, ICorrelationContext correlationContext, IntegrationEventMapper integrationEventMapper)
         {
-            _serviceBusClient = serviceBusClient;
+            _serviceBusSenderFactory = serviceBusSenderFactory;
+            _systemDateTimeProvider = systemDateTimeProvider;
+            _correlationContext = correlationContext;
+            _integrationEventMapper = integrationEventMapper;
         }
 
-        public async Task DispatchAsync(IMessage integrationEvent)
+        public Task DispatchAsync(IMessage integrationEvent)
         {
             if (integrationEvent == null) throw new ArgumentNullException(nameof(integrationEvent));
-            var sender = _serviceBusClient.CreateSender(integrationEvent.GetType().Name);
-            await sender.SendMessageAsync(CreateMessage(integrationEvent)).ConfigureAwait(false);
-            await sender.DisposeAsync().ConfigureAwait(false);
+            var eventMetadata = _integrationEventMapper.GetByType(integrationEvent.GetType());
+            if (eventMetadata == null)
+            {
+                throw new InvalidOperationException($"Could not find metadata for integration event type {integrationEvent.GetType().Name}");
+            }
+
+            return _serviceBusSenderFactory.GetSender(eventMetadata.TopicName).SendAsync(CreateMessage(integrationEvent, eventMetadata));
         }
 
-        private static ServiceBusMessage CreateMessage(IMessage integrationEvent)
+        private ServiceBusMessage CreateMessage(IMessage integrationEvent, EventMetadata eventMetadata)
         {
-            var binaryData = new System.BinaryData(integrationEvent.ToByteArray());
-            var serviceBusMessage = new ServiceBusMessage()
-            {
-                Body = binaryData,
-                ContentType = $"application/octet-stream;charset=utf-8",
-            };
+            var serviceBusMessage = new ServiceBusMessage();
+            serviceBusMessage.Body = new BinaryData(integrationEvent.ToByteArray());
+            serviceBusMessage.ContentType = "application/octet-stream;charset=utf-8";
+            serviceBusMessage.CorrelationId = _correlationContext.Id;
+            serviceBusMessage.ApplicationProperties.Add("OperationTimestamp", _systemDateTimeProvider.Now().ToDateTimeUtc());
+            serviceBusMessage.ApplicationProperties.Add("MessageVersion", eventMetadata.Version);
+            serviceBusMessage.ApplicationProperties.Add("MessageType", eventMetadata.EventName);
+            serviceBusMessage.ApplicationProperties.Add("EventIdentification", Guid.NewGuid());
             return serviceBusMessage;
         }
     }
