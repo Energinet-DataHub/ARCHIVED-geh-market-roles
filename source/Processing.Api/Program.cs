@@ -149,11 +149,6 @@ namespace Processing.Api
             container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
             container.Register<SystemTimer>();
 
-            var serviceBusConnectionStringForIntegrationEvents =
-                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_INTEGRATION_EVENTS");
-
-            container.RegisterSingleton<ServiceBusClient>(() => new ServiceBusClient(serviceBusConnectionStringForIntegrationEvents));
-
             container.ConfigureMoveInProcessTimePolicy(7, 60, TimeOfDay.Create(0, 0, 0));
 
             var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING")
@@ -203,8 +198,7 @@ namespace Processing.Api
                 typeof(ErrorMessageFactory).Assembly); // Infrastructure
 
             // Integration event publishing
-            container.Register<IEventPublisher, EventPublisher>();
-            container.Register<IMessagePublisher, ServiceBusMessagePublisher>();
+            container.AddEventPublishing(Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_INTEGRATION_EVENTS")!);
         }
     }
 }
