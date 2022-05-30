@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
+
 namespace Processing.Infrastructure.Configuration.Outbox
 {
     /// <summary>
@@ -38,6 +40,6 @@ namespace Processing.Infrastructure.Configuration.Outbox
         /// Mark message as processed
         /// </summary>
         /// <param name="outboxMessage"></param>
-        void MarkProcessed(OutboxMessage outboxMessage);
+        Task MarkProcessedAsync(OutboxMessage outboxMessage);
     }
 }

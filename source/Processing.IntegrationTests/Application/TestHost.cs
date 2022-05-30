@@ -61,6 +61,7 @@ using Processing.Infrastructure.Configuration.DataAccess.Consumers;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
 using Processing.Infrastructure.Configuration.DataAccess.ProcessManagers;
 using Processing.Infrastructure.Configuration.DomainEventDispatching;
+using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.Outbox;
 using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
@@ -75,6 +76,7 @@ using Processing.Infrastructure.InternalCommands;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Transport;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
+using Processing.IntegrationTests.TestDoubles;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using Xunit;
@@ -138,6 +140,10 @@ namespace Processing.IntegrationTests.Application
 
             _container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
             _container.ConfigureMoveInProcessTimePolicy(0, 0, TimeOfDay.Create(0, 0, 0));
+
+            // Integration event publishing
+            _container.Register<IEventPublisher, EventPublisher>();
+            _container.Register<IMessagePublisher, MessagePublisherStub>();
 
             // Business process responders
             _container.Register<IBusinessProcessResultHandler<RequestChangeOfSupplier>, RequestChangeOfSupplierResultHandler>(Lifestyle.Scoped);

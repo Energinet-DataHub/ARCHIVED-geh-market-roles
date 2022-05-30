@@ -6,6 +6,8 @@
     "APPINSIGHTS_INSTRUMENTATIONKEY": "<Azure application insights instrumentation key>",
     "MARKET_DATA_DB_CONNECTION_STRING": "<Main SQL database connection string>",
     "INTEGRATION_EVENT_QUEUE": "<Name of Service Bus queue for receiving integration/notification events>",
-    "INTEGRATION_EVENT_QUEUE_CONNECTION": "<Service Bus connection string where integration/notification events are received>"
+    "INTEGRATION_EVENT_QUEUE_CONNECTION": "<Service Bus connection string where integration/notification events are received>",
+    "RAISE_TIME_HAS_PASSED_EVENT_SCHEDULE": "*/10 * * * * *",
+    "SERVICE_BUS_CONNECTION_STRING_FOR_INTEGRATION_EVENTS": "<service bus connection string for integration events>"
   }
 }
