@@ -18,10 +18,14 @@ namespace Processing.Domain.Actors
 {
     public class Actor
     {
-        public Actor(ActorId actorId, IdentificationType identificationType, string identificationNumber, Collection<Role> roles)
+        public Actor(
+            ActorId actorId,
+            IdentificationType identificationType,
+            string identificationNumber,
+            Collection<Role> roles)
         {
             Id = actorId;
-            IdentificationType = identificationType;
+            IdentificationType = null!;
             IdentificationNumber = identificationNumber;
             Roles = roles;
         }
