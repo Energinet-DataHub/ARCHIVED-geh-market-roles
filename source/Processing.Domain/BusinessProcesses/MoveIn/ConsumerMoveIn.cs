@@ -52,6 +52,15 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
             if (energySupplier == null) throw new ArgumentNullException(nameof(energySupplier));
             if (consumerMovesInOn == null) throw new ArgumentNullException(nameof(consumerMovesInOn));
             accountingPoint.AcceptConsumerMoveIn(consumer.ConsumerId, energySupplier.EnergySupplierId, consumerMovesInOn.DateInUtc, transaction);
+            if (EffectiveDateIsInThePast(consumerMovesInOn, today))
+            {
+                accountingPoint.EffectuateConsumerMoveIn(transaction, today);
+            }
+        }
+
+        private static bool EffectiveDateIsInThePast(EffectiveDate consumerMovesInOn, Instant today)
+        {
+            return consumerMovesInOn.DateInUtc < today;
         }
     }
 }

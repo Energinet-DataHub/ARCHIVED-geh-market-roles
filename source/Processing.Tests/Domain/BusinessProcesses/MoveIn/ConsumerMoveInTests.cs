@@ -122,6 +122,6 @@ public class ConsumerMoveInTests : TestBase
 
     private EffectiveDate AsOfYesterday()
     {
-        return EffectiveDateFactory.WithTimeOfDay(SystemDateTimeProvider.Now().Minus(Duration.FromDays(-1)).ToDateTimeUtc(), 22, 0, 0);
+        return EffectiveDateFactory.WithTimeOfDay(SystemDateTimeProvider.Now().Minus(Duration.FromDays(1)).ToDateTimeUtc(), 22, 0, 0);
     }
 }
