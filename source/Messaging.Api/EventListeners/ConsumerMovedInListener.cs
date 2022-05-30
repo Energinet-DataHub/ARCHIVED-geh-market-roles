@@ -15,7 +15,7 @@ public class ConsumerMovedInListener
 
     [Function("ConsumerMovedInListener")]
     public void Run(
-        [ServiceBusTrigger("consumer-moved-in", "consumer-moved-in", Connection = "SERVICE_BUS_CONNECTION_STRING_FOR_INTEGRATION_EVENTS")] byte[] data,
+        [ServiceBusTrigger("consumer-moved-in", "consumer-moved-in", Connection = "SERVICE_BUS_CONNECTION_STRING_FOR_INTEGRATION_EVENTS_LISTENER")] byte[] data,
         FunctionContext context)
     {
         if (data == null) throw new ArgumentNullException(nameof(data));
