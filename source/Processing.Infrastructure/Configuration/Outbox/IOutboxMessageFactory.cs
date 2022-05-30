@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Processing.Infrastructure.Configuration.Serialization;
+
 namespace Processing.Infrastructure.Configuration.Outbox
 {
     /// <summary>
@@ -19,6 +21,15 @@ namespace Processing.Infrastructure.Configuration.Outbox
     /// </summary>
     public interface IOutboxMessageFactory
     {
+        /// <summary>
+        /// Creates outbox message
+        /// </summary>
+        /// <param name="message">Message payload</param>
+        /// <param name="messageType">Message type</param>
+        /// <param name="category">Message category <see cref="OutboxMessageCategory"/></param>
+        /// <returns><see cref="OutboxMessage"/></returns>
+        OutboxMessage CreateFrom(string message, string messageType, OutboxMessageCategory category);
+
         /// <summary>
         /// Creates outbox message
         /// </summary>

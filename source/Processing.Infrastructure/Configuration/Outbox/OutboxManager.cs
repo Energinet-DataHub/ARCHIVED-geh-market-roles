@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Linq;
+using System.Threading.Tasks;
 using Processing.Domain.SeedWork;
 using Processing.Infrastructure.Configuration.DataAccess;
 
@@ -60,10 +61,11 @@ namespace Processing.Infrastructure.Configuration.Outbox
                 .FirstOrDefault(message => message.Category == category);
         }
 
-        public void MarkProcessed(OutboxMessage outboxMessage)
+        public Task MarkProcessedAsync(OutboxMessage outboxMessage)
         {
             var processedMessage = _context.OutboxMessages.Single(message => message.Id == outboxMessage.Id);
             processedMessage.SetProcessed(_dateTimeProvider.Now());
+            return _context.SaveChangesAsync();
         }
     }
 }
