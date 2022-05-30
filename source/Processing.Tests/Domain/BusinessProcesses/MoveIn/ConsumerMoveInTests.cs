@@ -85,7 +85,7 @@ public class ConsumerMoveInTests : TestBase
     {
         var moveInDate = AsOfToday();
         _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, _transaction);
-        _accountingPoint.EffectuateConsumerMoveIn(_transaction, SystemDateTimeProvider);
+        _accountingPoint.EffectuateConsumerMoveIn(_transaction, SystemDateTimeProvider.Now());
 
         var result = CanStartProcess(moveInDate);
 
