@@ -45,6 +45,14 @@ public class ConsumerMoveInTests : TestBase
     }
 
     [Fact]
+    public void Move_in_is_effectuated_if_effective_date_is_in_the_past()
+    {
+        _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, AsOfYesterday(), _transaction);
+
+        Assert.Contains(_accountingPoint.DomainEvents, @event => @event is ConsumerMovedIn);
+    }
+
+    [Fact]
     public void Throw_if_any_business_rules_are_broken()
     {
         _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, AsOfToday(), _transaction);
@@ -110,5 +118,10 @@ public class ConsumerMoveInTests : TestBase
     private EffectiveDate AsOfToday()
     {
         return EffectiveDateFactory.WithTimeOfDay(SystemDateTimeProvider.Now().ToDateTimeUtc(), 22, 0, 0);
+    }
+
+    private EffectiveDate AsOfYesterday()
+    {
+        return EffectiveDateFactory.WithTimeOfDay(SystemDateTimeProvider.Now().Minus(Duration.FromDays(-1)).ToDateTimeUtc(), 22, 0, 0);
     }
 }
