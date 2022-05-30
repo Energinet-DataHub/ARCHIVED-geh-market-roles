@@ -51,7 +51,7 @@ namespace Processing.Application.ChangeOfSupplier
             _accountingPoint = await GetMeteringPointAsync(request.AccountingPointGsrnNumber).ConfigureAwait(false);
 
             var validationResult = Validate();
-            if (!validationResult.Success)
+            if (validationResult.Success)
             {
                 return validationResult;
             }
