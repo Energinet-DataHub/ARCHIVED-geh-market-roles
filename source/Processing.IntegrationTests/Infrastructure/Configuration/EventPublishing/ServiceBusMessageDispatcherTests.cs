@@ -56,7 +56,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
             Assert.Equal(eventMetadata!.Version, senderSpy.Message!.ApplicationProperties["MessageVersion"]);
             Assert.Equal(eventMetadata!.EventName, senderSpy.Message!.ApplicationProperties["MessageType"]);
             Assert.NotNull(senderSpy.Message!.ApplicationProperties["EventIdentification"]);
-            Assert.NotNull(senderSpy.Message!.CorrelationId);
+            Assert.NotNull(senderSpy.Message!.ApplicationProperties["OperationCorrelationId"]);
         }
 
         private void AddSenderSpy(ServiceBusSenderSpy senderSpy)

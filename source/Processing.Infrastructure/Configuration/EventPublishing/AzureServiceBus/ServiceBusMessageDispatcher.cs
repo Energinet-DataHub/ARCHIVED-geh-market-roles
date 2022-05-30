@@ -48,7 +48,7 @@ namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBu
             var serviceBusMessage = new ServiceBusMessage();
             serviceBusMessage.Body = new BinaryData(integrationEvent.ToByteArray());
             serviceBusMessage.ContentType = "application/octet-stream;charset=utf-8";
-            serviceBusMessage.CorrelationId = _correlationContext.Id;
+            serviceBusMessage.ApplicationProperties.Add("OperationCorrelationId", _correlationContext.Id);
             serviceBusMessage.ApplicationProperties.Add("OperationTimestamp", _systemDateTimeProvider.Now().ToDateTimeUtc());
             serviceBusMessage.ApplicationProperties.Add("MessageVersion", eventMetadata.Version);
             serviceBusMessage.ApplicationProperties.Add("MessageType", eventMetadata.EventName);
