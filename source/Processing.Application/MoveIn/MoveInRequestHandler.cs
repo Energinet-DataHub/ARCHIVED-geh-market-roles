@@ -78,7 +78,7 @@ namespace Processing.Application.MoveIn
 
             var consumer = await GetOrCreateConsumerAsync(request).ConfigureAwait(false);
 
-            _consumerMoveInProcess.StartProcess(accountingPoint, consumer, energySupplier, consumerMovesInOn, Transaction.Create(request.TransactionId));
+            _consumerMoveInProcess.StartProcess(accountingPoint, consumer, energySupplier, consumerMovesInOn, Transaction.Create(request.TransactionId), _systemDateTimeProvider.Now());
 
             return BusinessProcessResult.Ok(request.TransactionId);
         }
