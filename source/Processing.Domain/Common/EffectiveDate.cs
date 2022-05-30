@@ -31,10 +31,7 @@ namespace Processing.Domain.Common
 
         public static BusinessRulesValidationResult CheckRules(string dateInUtc)
         {
-            var rules = new Collection<IBusinessRule>()
-            {
-                new DateFormatMustBeUTCRule(dateInUtc),
-            };
+            var rules = new Collection<IBusinessRule>() { new DateFormatMustBeUTCRule(dateInUtc), };
             return new BusinessRulesValidationResult(rules);
         }
 
@@ -62,11 +59,6 @@ namespace Processing.Domain.Common
             }
 
             return new EffectiveDate(parseResult.Value);
-        }
-
-        public override string ToString()
-        {
-            return DateInUtc.ToString();
         }
     }
 }
