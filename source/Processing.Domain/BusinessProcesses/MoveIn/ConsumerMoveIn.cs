@@ -45,7 +45,7 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
             return accountingPoint.ConsumerMoveInAcceptable(consumerMovesInOn.DateInUtc);
         }
 
-        public void StartProcess(AccountingPoint accountingPoint, Consumer consumer, EnergySupplier energySupplier, EffectiveDate consumerMovesInOn, Transaction transaction)
+        public void StartProcess(AccountingPoint accountingPoint, Consumer consumer, EnergySupplier energySupplier, EffectiveDate consumerMovesInOn, Transaction transaction, Instant today)
         {
             if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
             if (consumer == null) throw new ArgumentNullException(nameof(consumer));
