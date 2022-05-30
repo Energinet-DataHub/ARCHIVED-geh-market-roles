@@ -33,6 +33,7 @@ namespace Processing.Infrastructure.Integration.Notifications
         public async Task PublishAndCommitAsync(object notification)
         {
             await _mediator.Publish(notification).ConfigureAwait(false);
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }
 }
