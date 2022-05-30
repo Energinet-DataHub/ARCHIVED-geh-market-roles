@@ -12,20 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
-using Google.Protobuf;
-
-namespace Processing.Infrastructure.Configuration.EventPublishing
+namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus
 {
     /// <summary>
-    /// Protobuf message publisher interface
+    /// Factory for Azure Service Bus client sender adapters
     /// </summary>
-    public interface IMessagePublisher
+    public interface IServiceBusSenderFactory
     {
         /// <summary>
-        /// Publish ProtoBuf message
+        /// Get sender for specified topic
         /// </summary>
-        /// <param name="integrationEvent"></param>
-        Task PublishAsync(IMessage integrationEvent);
+        /// <param name="topicName"></param>
+        /// <returns><see cref="IServiceBusSenderAdapter"/></returns>
+        IServiceBusSenderAdapter GetSender(string topicName);
     }
 }
