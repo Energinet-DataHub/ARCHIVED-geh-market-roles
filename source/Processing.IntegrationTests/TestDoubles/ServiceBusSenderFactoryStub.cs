@@ -12,17 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
-using Google.Protobuf;
-using Processing.Infrastructure.Configuration.EventPublishing;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 
 namespace Processing.IntegrationTests.TestDoubles
 {
-    public class MessagePublisherStub : IMessagePublisher
+    public class ServiceBusSenderFactoryStub : IServiceBusSenderFactory
     {
-        public Task PublishAsync(IMessage integrationEvent)
+        private readonly List<IServiceBusSenderAdapter> _senders = new();
+
+        public IServiceBusSenderAdapter GetSender(string topicName)
         {
-            return Task.CompletedTask;
+            return _senders.First(a => a.TopicName.Equals(topicName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        internal void AddSenderSpy(IServiceBusSenderAdapter senderAdapter)
+        {
+            _senders.Add(senderAdapter);
         }
     }
 }

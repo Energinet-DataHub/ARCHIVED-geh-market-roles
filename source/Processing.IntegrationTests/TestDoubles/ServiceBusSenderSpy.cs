@@ -12,25 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Processing.Infrastructure.Configuration.SystemTime;
+using Azure.Messaging.ServiceBus;
+using Processing.Infrastructure.Configuration.EventPublishing;
+using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 
-namespace Processing.Infrastructure.Configuration.EventPublishing
+namespace Processing.IntegrationTests.TestDoubles
 {
-    public class PublishEventsOnTimeHasPassed : INotificationHandler<TimeHasPassed>
+    public class ServiceBusSenderSpy : IServiceBusSenderAdapter
     {
-        private readonly EventDispatcher _eventDispatcher;
-
-        public PublishEventsOnTimeHasPassed(EventDispatcher eventDispatcher)
+        public ServiceBusSenderSpy(string topicName)
         {
-            _eventDispatcher = eventDispatcher;
+            TopicName = topicName;
         }
 
-        public Task Handle(TimeHasPassed notification, CancellationToken cancellationToken)
+        public string TopicName { get; }
+
+        public ServiceBusMessage? Message { get; private set; }
+
+        public Task SendAsync(ServiceBusMessage message)
         {
-            return _eventDispatcher.DispatchAsync();
+            Message = message;
+            return Task.CompletedTask;
         }
     }
 }

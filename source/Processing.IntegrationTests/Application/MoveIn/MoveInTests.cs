@@ -25,7 +25,9 @@ using Processing.Domain.EnergySuppliers.Errors;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.MeteringPoints.Errors;
 using Processing.Domain.SeedWork;
-using Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
+using Processing.Infrastructure.Configuration.DataAccess;
+using Processing.Infrastructure.Configuration.EventPublishing;
+using Processing.Infrastructure.Configuration.Outbox;
 using Xunit;
 using Xunit.Categories;
 using Consumer = Processing.Application.MoveIn.Consumer;
@@ -168,7 +170,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
             await InvokeCommandAsync(command).ConfigureAwait(false);
 
-            AssertOutboxMessage<ConsumerMovedIn>();
+            AssertIntegrationEvent<ConsumerMovedIn>();
         }
 
         private static void AssertValidationError<TRuleError>(BusinessProcessResult rulesValidationResult, string? expectedErrorCode = null, bool errorExpected = true)
@@ -212,6 +214,15 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var result = await SendRequestAsync(requestMoveIn).ConfigureAwait(false);
 
             return (accountingPoint, Transaction.Create(result.TransactionId));
+        }
+
+        private void AssertIntegrationEvent<TEvent>()
+        {
+            var mapper = GetService<IntegrationEventMapper>();
+            var eventMetadata = mapper.GetByType(typeof(TEvent));
+            var context = GetService<MarketRolesContext>();
+            var foundEvent = context.OutboxMessages.Where(message => message.Type == eventMetadata.EventName);
+            Assert.NotNull(foundEvent);
         }
     }
 }
