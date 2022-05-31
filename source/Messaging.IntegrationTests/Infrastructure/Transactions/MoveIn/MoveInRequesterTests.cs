@@ -33,13 +33,13 @@ namespace Messaging.IntegrationTests.Infrastructure.Transactions.MoveIn;
 public class MoveInRequesterTests : TestBase
 {
     private readonly HttpClientMock _httpClientMock;
-    private readonly MoveInRequester _requestService;
+    private readonly IMoveInRequester _requestService;
 
     public MoveInRequesterTests(DatabaseFixture databaseFixture)
         : base(databaseFixture)
     {
-        _httpClientMock = new HttpClientMock();
-        _requestService = new MoveInRequester(new MoveInConfiguration(new Uri("https://someuri")), _httpClientMock, GetService<ISerializer>(), new LoggerDummy<MoveInRequester>());
+        _httpClientMock = (HttpClientMock)GetService<IHttpClientAdapter>();
+        _requestService = GetService<IMoveInRequester>();
     }
 
     [Fact]
@@ -110,22 +110,5 @@ public class HttpClientMock : IHttpClientAdapter
     public void RespondWithValidationErrors(List<string> validationErrors)
     {
         _validationErrors = validationErrors;
-    }
-}
-
-public class LoggerDummy<T> : ILogger<T>
-{
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-    {
-    }
-
-    public bool IsEnabled(LogLevel logLevel)
-    {
-        return true;
-    }
-
-    public IDisposable BeginScope<TState>(TState state)
-    {
-        throw new NotImplementedException();
     }
 }
