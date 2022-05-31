@@ -11,7 +11,7 @@ on:
     types: [opened, synchronize, reopened]
 env:
   SOLUTION_PATH: 'source\Energinet.DataHub.MarketRoles.sln'
-  DOTNET_VERSION: '5.0.x'
+  DOTNET_VERSION: '6.0.201'
   SONAR_PROJECTKEY: 'geh-market-roles'
   SOURCE_PATH_ON_BUILDMACHINE: 'D:\a\geh-market-roles\geh-market-roles\source\' # We have to be speficic with this path to get around a .NET 5.0 issue in SonarCLoud
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -24,17 +24,14 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.11
-    
-      - name: Setup .NET 3.1 environment
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '3.1.x'      
-      
+
       - name: Setup .NET ${{ env.DOTNET_VERSION }} environment
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-          
+        env:
+          DOTNET_INSTALL_DIR: 'C:\Program Files\dotnet'
+
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
