@@ -94,7 +94,8 @@ namespace Messaging.Api
                         .AddRequestLogging(
                             runtime.REQUEST_RESPONSE_LOGGING_CONNECTION_STRING!,
                             runtime.REQUEST_RESPONSE_LOGGING_CONTAINER_NAME!)
-                        .AddMessagePublishing(sp => new NewMessageAvailableNotifier(sp.GetRequiredService<IDataAvailableNotificationSender>()))
+                        .AddMessagePublishing(sp =>
+                            new NewMessageAvailableNotifier(sp.GetRequiredService<IDataAvailableNotificationSender>()))
                         .AddMessageHubServices(
                             runtime.MESSAGEHUB_STORAGE_CONNECTION_STRING!,
                             runtime.MESSAGEHUB_STORAGE_CONTAINER_NAME!,
@@ -103,7 +104,8 @@ namespace Messaging.Api
                             runtime.MESSAGEHUB_DOMAIN_REPLY_QUEUE!)
                         .AddRequestHandler<NotifyMessageHubHandler, NotifyMessageHub>()
                         .AddNotificationHandler<PublishNewMessagesOnTimeHasPassed, TimeHasPassed>()
-                        .AddMoveInRequestHandler(sp => new MoveInRequester(
+                        .AddHttpClientAdapter(sp => new HttpClientAdapter(sp.GetRequiredService<HttpClient>()))
+                        .AddMoveInServices(sp => new MoveInRequester(
                             new Uri(
                             runtime.MOVE_IN_REQUEST_ENDPOINT ?? throw new ArgumentException(nameof(runtime.MOVE_IN_REQUEST_ENDPOINT))),
                             sp.GetRequiredService<IHttpClientAdapter>(),

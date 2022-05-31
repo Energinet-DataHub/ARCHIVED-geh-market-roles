@@ -79,6 +79,7 @@ public class HttpClientMock : IHttpClientAdapter
 {
     private string _messageBody;
     private HttpStatusCode _responseCode = HttpStatusCode.OK;
+    private List<string> _validationErrors = new();
 
     public void AssertJsonContent(object expectedContent)
     {
@@ -94,7 +95,7 @@ public class HttpClientMock : IHttpClientAdapter
 
     private HttpResponseMessage CreateResponseFromProcessing()
     {
-        var businessProcessResponse = new BusinessProcessResponse(new List<string>());
+        var businessProcessResponse = new BusinessProcessResponse(_validationErrors);
         var content = new StringContent(JsonConvert.SerializeObject(businessProcessResponse));
         var response = new HttpResponseMessage(_responseCode);
         response.Content = content;
@@ -104,6 +105,11 @@ public class HttpClientMock : IHttpClientAdapter
     public void RespondWith(HttpStatusCode responseCode)
     {
         _responseCode = responseCode;
+    }
+
+    public void RespondWithValidationErrors(List<string> validationErrors)
+    {
+        _validationErrors = validationErrors;
     }
 }
 
