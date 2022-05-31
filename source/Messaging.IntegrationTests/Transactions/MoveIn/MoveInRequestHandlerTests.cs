@@ -161,10 +161,10 @@ namespace Messaging.IntegrationTests.Transactions.MoveIn
             Assert.NotNull(transaction);
         }
 
-        private HttpClientMock GetHttpClientMock()
+        private HttpClientSpy GetHttpClientMock()
         {
             var adapter = GetService<IHttpClientAdapter>();
-            return adapter as HttpClientMock ?? throw new InvalidCastException();
+            return adapter as HttpClientSpy ?? throw new InvalidCastException();
         }
     }
 }

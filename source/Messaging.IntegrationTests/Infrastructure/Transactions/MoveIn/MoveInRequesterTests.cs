@@ -13,18 +13,15 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Messaging.Application.Transactions.MoveIn;
 using Messaging.Infrastructure.Configuration.Serialization;
 using Messaging.Infrastructure.Transactions;
-using Messaging.Infrastructure.Transactions.MoveIn;
 using Messaging.IntegrationTests.Fixtures;
+using Messaging.IntegrationTests.TestDoubles;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NodaTime;
 using Xunit;
 
@@ -32,13 +29,13 @@ namespace Messaging.IntegrationTests.Infrastructure.Transactions.MoveIn;
 
 public class MoveInRequesterTests : TestBase
 {
-    private readonly HttpClientMock _httpClientMock;
+    private readonly HttpClientSpy _httpClientSpy;
     private readonly IMoveInRequester _requestService;
 
     public MoveInRequesterTests(DatabaseFixture databaseFixture)
         : base(databaseFixture)
     {
-        _httpClientMock = (HttpClientMock)GetService<IHttpClientAdapter>();
+        _httpClientSpy = (HttpClientSpy)GetService<IHttpClientAdapter>();
         _requestService = GetService<IMoveInRequester>();
     }
 
@@ -49,14 +46,14 @@ public class MoveInRequesterTests : TestBase
 
         await _requestService.InvokeAsync(request).ConfigureAwait(false);
 
-        _httpClientMock
+        _httpClientSpy
             .AssertJsonContent(request);
     }
 
     [Fact]
     public async Task Throw_when_business_processing_request_is_unsuccessful()
     {
-        _httpClientMock.RespondWith(HttpStatusCode.BadRequest);
+        _httpClientSpy.RespondWith(HttpStatusCode.BadRequest);
 
         await Assert.ThrowsAsync<HttpRequestException>(() => _requestService.InvokeAsync(CreateRequest()));
     }
@@ -71,44 +68,5 @@ public class MoveInRequesterTests : TestBase
             Guid.NewGuid().ToString(),
             Guid.NewGuid().ToString(),
             "CPR");
-    }
-}
-
-#pragma warning disable
-public class HttpClientMock : IHttpClientAdapter
-{
-    private string _messageBody;
-    private HttpStatusCode _responseCode = HttpStatusCode.OK;
-    private List<string> _validationErrors = new();
-
-    public void AssertJsonContent(object expectedContent)
-    {
-        Assert.True(JToken.DeepEquals(JToken.Parse(JsonConvert.SerializeObject(expectedContent)), JToken.Parse(_messageBody)));
-    }
-
-    public async Task<HttpResponseMessage> PostAsync(Uri uri, HttpContent content)
-    {
-        _messageBody = await content.ReadAsStringAsync();
-        return CreateResponseFromProcessing();
-
-    }
-
-    private HttpResponseMessage CreateResponseFromProcessing()
-    {
-        var businessProcessResponse = new BusinessProcessResponse(_validationErrors);
-        var content = new StringContent(JsonConvert.SerializeObject(businessProcessResponse));
-        var response = new HttpResponseMessage(_responseCode);
-        response.Content = content;
-        return response;
-    }
-
-    public void RespondWith(HttpStatusCode responseCode)
-    {
-        _responseCode = responseCode;
-    }
-
-    public void RespondWithValidationErrors(List<string> validationErrors)
-    {
-        _validationErrors = validationErrors;
     }
 }
