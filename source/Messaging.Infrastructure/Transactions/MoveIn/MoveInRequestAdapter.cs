@@ -60,10 +60,7 @@ public sealed class MoveInRequestAdapter : IMoveInRequestAdapter
 
     private async Task<HttpResponseMessage> CallAsync(MoveInRequestDto moveInRequestDto)
     {
-        using var ms = new MemoryStream();
-        await _serializer.SerializeAsync(ms, moveInRequestDto).ConfigureAwait(false);
-        ms.Position = 0;
-        using var content = new StreamContent(ms);
+        using var content = new StringContent(_serializer.Serialize(moveInRequestDto));
         var response = await _httpClientAdapter.PostAsync(_moveInRequestUrl, content).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
         return response;
