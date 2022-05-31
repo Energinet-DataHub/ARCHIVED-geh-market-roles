@@ -11,21 +11,22 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+using System;
+using Processing.Api;
+using Xunit;
 
-using System.Threading.Tasks;
+namespace Processing.ArchitectureTests;
 
-namespace Messaging.Application.Transactions.MoveIn
+public class CompositionRootTests
 {
-    /// <summary>
-    /// Interface for move in request adapter
-    /// </summary>
-    public interface IMoveInRequestAdapter
+    [Fact]
+    public void Ensure_registrations()
     {
-        /// <summary>
-        /// Invokes a move in business process asynchronously
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns><see cref="Task"/></returns>
-        Task<BusinessRequestResult> InvokeAsync(MoveInRequest request);
+        var program = new Program();
+        Environment.SetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING", "SomeString");
+        Environment.SetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_INTEGRATION_EVENTS", "Endpoint=sb://somespace.windows.net/;SharedAccessKeyName=somekey;SharedAccessKey=somevalue");
+        program.ConfigureApplication();
+
+        program.AssertConfiguration();
     }
 }

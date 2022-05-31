@@ -19,7 +19,7 @@ using Processing.Infrastructure.Configuration.Serialization;
 
 namespace Processing.Infrastructure.Configuration.Outbox
 {
-    public class OutboxMessageFactory : IOutboxMessageFactory
+    public class OutboxMessageFactory
     {
         private readonly IJsonSerializer _jsonSerializer;
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
@@ -49,6 +49,15 @@ namespace Processing.Infrastructure.Configuration.Outbox
             var data = _jsonSerializer.Serialize(message);
 
             return new OutboxMessage(type, data, _correlationContext.AsTraceContext(), category, _systemDateTimeProvider.Now());
+        }
+
+        public OutboxMessage CreateFrom(string message, string messageType, OutboxMessageCategory category)
+        {
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            if (messageType == null) throw new ArgumentNullException(nameof(messageType));
+            if (category == null) throw new ArgumentNullException(nameof(category));
+
+            return new OutboxMessage(messageType, message, _correlationContext.AsTraceContext(), category, _systemDateTimeProvider.Now());
         }
     }
 }

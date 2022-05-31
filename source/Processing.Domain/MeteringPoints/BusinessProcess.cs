@@ -39,10 +39,17 @@ namespace Processing.Domain.MeteringPoints
 
         public BusinessProcessStatus Status { get; private set; }
 
+        public void Effectuate(Instant today)
+        {
+            EnsureNotTooEarly(today);
+            EnsureStatus();
+            Status = BusinessProcessStatus.Completed;
+        }
+
         public void Effectuate(ISystemDateTimeProvider systemDateTimeProvider)
         {
             if (systemDateTimeProvider == null) throw new ArgumentNullException(nameof(systemDateTimeProvider));
-            EnsureNotTooEarly(systemDateTimeProvider);
+            EnsureNotTooEarly(systemDateTimeProvider.Now());
             EnsureStatus();
             Status = BusinessProcessStatus.Completed;
         }
@@ -53,9 +60,9 @@ namespace Processing.Domain.MeteringPoints
             Status = BusinessProcessStatus.Cancelled;
         }
 
-        private void EnsureNotTooEarly(ISystemDateTimeProvider systemDateTimeProvider)
+        private void EnsureNotTooEarly(Instant today)
         {
-            if (EffectiveDate.ToDateTimeUtc().Date > systemDateTimeProvider.Now().ToDateTimeUtc().Date)
+            if (EffectiveDate.ToDateTimeUtc().Date > today.ToDateTimeUtc().Date)
             {
                 throw new BusinessProcessException(
                     "Pending business processes cannot be effectuated ahead of effective date.");

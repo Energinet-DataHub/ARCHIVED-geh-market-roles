@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Processing.Infrastructure.Configuration.Outbox
+using System.Threading.Tasks;
+
+namespace Messaging.Application.Transactions.MoveIn
 {
     /// <summary>
-    ///  Creates an outbox message containing the serialized message/payload
+    /// Interface for move in request adapter
     /// </summary>
-    public interface IOutboxMessageFactory
+    public interface IMoveInRequester
     {
         /// <summary>
-        /// Creates outbox message
+        /// Invokes a move in business process asynchronously
         /// </summary>
-        /// <param name="message">Message payload</param>
-        /// <param name="category">Message category <see cref="OutboxMessageCategory"/></param>
-        /// <typeparam name="T">Type of message payload to wrap in outbox message</typeparam>
-        /// <returns><see cref="OutboxMessage"/></returns>
-        OutboxMessage CreateFrom<T>(T message, OutboxMessageCategory category);
+        /// <param name="request"></param>
+        /// <returns><see cref="Task"/></returns>
+        Task<BusinessRequestResult> InvokeAsync(MoveInRequest request);
     }
 }

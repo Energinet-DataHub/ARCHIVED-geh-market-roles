@@ -61,6 +61,7 @@ using Processing.Infrastructure.Configuration.DataAccess.Consumers;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
 using Processing.Infrastructure.Configuration.DataAccess.ProcessManagers;
 using Processing.Infrastructure.Configuration.DomainEventDispatching;
+using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.Outbox;
 using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
@@ -75,6 +76,7 @@ using Processing.Infrastructure.InternalCommands;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Transport;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
+using Processing.IntegrationTests.TestDoubles;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using Xunit;
@@ -108,6 +110,8 @@ namespace Processing.IntegrationTests.Application
             _container = new Container();
             _container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 
+            _container.AddOutbox();
+
             _container.SendProtobuf<MarketRolesEnvelope>();
             _container.ReceiveProtobuf<MarketRolesEnvelope>(
                 config => config
@@ -124,9 +128,6 @@ namespace Processing.IntegrationTests.Application
             _container.Register<IEnergySupplierRepository, EnergySupplierRepository>(Lifestyle.Scoped);
             _container.Register<IProcessManagerRepository, ProcessManagerRepository>(Lifestyle.Scoped);
             _container.Register<IConsumerRepository, ConsumerRepository>(Lifestyle.Scoped);
-            _container.Register<IOutbox, OutboxProvider>(Lifestyle.Scoped);
-            _container.Register<IOutboxManager, OutboxManager>(Lifestyle.Scoped);
-            _container.Register<IOutboxMessageFactory, OutboxMessageFactory>(Lifestyle.Scoped);
             _container.Register<IJsonSerializer, JsonSerializer>(Lifestyle.Singleton);
             _container.Register<ISystemDateTimeProvider, SystemDateTimeProviderStub>(Lifestyle.Singleton);
             _container.Register<IDomainEventsAccessor, DomainEventsAccessor>();
@@ -138,6 +139,9 @@ namespace Processing.IntegrationTests.Application
 
             _container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
             _container.ConfigureMoveInProcessTimePolicy(0, 0, TimeOfDay.Create(0, 0, 0));
+
+            // Integration event publishing
+            _container.AddEventPublishing(new ServiceBusSenderFactoryStub());
 
             // Business process responders
             _container.Register<IBusinessProcessResultHandler<RequestChangeOfSupplier>, RequestChangeOfSupplierResultHandler>(Lifestyle.Scoped);
@@ -364,7 +368,7 @@ namespace Processing.IntegrationTests.Application
 
             var systemTimeProvider = GetService<ISystemDateTimeProvider>();
             accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, transaction);
-            accountingPoint.EffectuateConsumerMoveIn(transaction, systemTimeProvider);
+            accountingPoint.EffectuateConsumerMoveIn(transaction, systemTimeProvider.Now());
         }
 
         protected void RegisterChangeOfSupplier(AccountingPoint accountingPoint, EnergySupplierId energySupplierId, Transaction transaction)

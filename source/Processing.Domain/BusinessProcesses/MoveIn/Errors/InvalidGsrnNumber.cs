@@ -18,9 +18,6 @@ namespace Processing.Domain.BusinessProcesses.MoveIn.Errors
 {
     public class InvalidGsrnNumber : ValidationError
     {
-        public InvalidGsrnNumber()
-        {
-            Code = "InvalidGsrnNumber";
-        }
+        public override string Code { get; protected set; } = "InvalidGsrnNumber";
     }
 }

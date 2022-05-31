@@ -12,28 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Messaging.Application.Transactions;
-using Messaging.Infrastructure.Configuration.DataAccess;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 
-namespace Messaging.Infrastructure.Transactions
+namespace Processing.IntegrationTests.TestDoubles
 {
-    public class TransactionRepository : ITransactionRepository
+    public class ServiceBusSenderFactoryStub : IServiceBusSenderFactory
     {
-        private readonly B2BContext _b2BContext;
+        private readonly List<IServiceBusSenderAdapter> _senders = new();
 
-        public TransactionRepository(B2BContext b2BContext)
+        public IServiceBusSenderAdapter GetSender(string topicName)
         {
-            _b2BContext = b2BContext;
+            return _senders.First(a => a.TopicName.Equals(topicName, StringComparison.OrdinalIgnoreCase));
         }
 
-        public void Add(AcceptedTransaction acceptedTransaction)
+        internal void AddSenderSpy(IServiceBusSenderAdapter senderAdapter)
         {
-            _b2BContext.Transactions.Add(acceptedTransaction);
-        }
-
-        public AcceptedTransaction? GetById(string transactionId)
-        {
-            return _b2BContext.Transactions.Find(transactionId);
+            _senders.Add(senderAdapter);
         }
     }
 }

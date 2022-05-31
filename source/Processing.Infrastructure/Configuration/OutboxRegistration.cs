@@ -12,15 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Application.Transactions
-{
-    public class AcceptedTransaction
-    {
-        public AcceptedTransaction(string transactionId)
-        {
-            TransactionId = transactionId;
-        }
+using System;
+using Processing.Infrastructure.Configuration.Outbox;
+using SimpleInjector;
 
-        public string TransactionId { get; }
+namespace Processing.Infrastructure.Configuration
+{
+    public static class OutboxRegistration
+    {
+        public static void AddOutbox(this Container container)
+        {
+            if (container == null) throw new ArgumentNullException(nameof(container));
+            container.Register<OutboxProvider>(Lifestyle.Scoped);
+            container.Register<OutboxMessageFactory>(Lifestyle.Scoped);
+        }
     }
 }

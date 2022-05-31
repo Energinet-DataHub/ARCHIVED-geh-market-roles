@@ -12,24 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Application.Transactions
+namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus
 {
     /// <summary>
-    /// Storage for transactions
+    /// Factory for Azure Service Bus client sender adapters
     /// </summary>
-    public interface ITransactionRepository
+    public interface IServiceBusSenderFactory
     {
         /// <summary>
-        /// Adds a transaction to store
+        /// Get sender for specified topic
         /// </summary>
-        /// <param name="acceptedTransaction"></param>
-        void Add(AcceptedTransaction acceptedTransaction);
-
-        /// <summary>
-        /// Find a transaction by transaction id
-        /// </summary>
-        /// <param name="transactionId"></param>
-        /// <returns><see cref="AcceptedTransaction"/></returns>
-        AcceptedTransaction? GetById(string transactionId);
+        /// <param name="topicName"></param>
+        /// <returns><see cref="IServiceBusSenderAdapter"/></returns>
+        IServiceBusSenderAdapter GetSender(string topicName);
     }
 }

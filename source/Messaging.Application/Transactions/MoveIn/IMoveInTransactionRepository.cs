@@ -12,32 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Processing.Infrastructure.Configuration.Outbox
+namespace Messaging.Application.Transactions.MoveIn
 {
     /// <summary>
-    /// Transactional outbox manipulation
+    /// Storage for transactions
     /// </summary>
-    public interface IOutboxManager
+    public interface IMoveInTransactionRepository
     {
         /// <summary>
-        /// Get next unprocessed message
+        /// Adds a transaction to store
         /// </summary>
-        OutboxMessage? GetNext();
+        /// <param name="moveInTransaction"></param>
+        void Add(MoveInTransaction moveInTransaction);
 
         /// <summary>
-        /// Get next unprocessed message based on category
+        /// Find a transaction by transaction id
         /// </summary>
-        OutboxMessage? GetNext(OutboxMessageCategory category);
-
-        /// <summary>
-        /// Get next unprocessed message based on category and type
-        /// </summary>
-        OutboxMessage? GetNext(OutboxMessageCategory category, string type);
-
-        /// <summary>
-        /// Mark message as processed
-        /// </summary>
-        /// <param name="outboxMessage"></param>
-        void MarkProcessed(OutboxMessage outboxMessage);
+        /// <param name="transactionId"></param>
+        /// <returns><see cref="MoveInTransaction"/></returns>
+        MoveInTransaction? GetById(string transactionId);
     }
 }

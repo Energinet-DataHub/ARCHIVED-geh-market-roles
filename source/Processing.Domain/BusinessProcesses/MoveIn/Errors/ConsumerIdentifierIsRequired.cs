@@ -18,9 +18,6 @@ namespace Processing.Domain.BusinessProcesses.MoveIn.Errors
 {
     public class ConsumerIdentifierIsRequired : ValidationError
     {
-        public ConsumerIdentifierIsRequired()
-        {
-            Code = "ConsumerIdentifierIsRequired";
-        }
+        public override string Code { get; protected set; } = "ConsumerIdentifierIsRequired";
     }
 }

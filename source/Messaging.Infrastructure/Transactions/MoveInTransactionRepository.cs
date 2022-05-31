@@ -12,25 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
-using Messaging.Application.Transactions;
 using Messaging.Application.Transactions.MoveIn;
+using Messaging.Infrastructure.Configuration.DataAccess;
 
-namespace Messaging.IntegrationTests.TestDoubles;
-
-public class MoveInRequestAdapterStub : IMoveInRequestAdapter
+namespace Messaging.Infrastructure.Transactions
 {
-    #pragma warning disable // Disable mark as static warning
-    public Task<BusinessRequestResult> InvokeAsync(MoveInRequest request)
+    public class MoveInTransactionRepository : IMoveInTransactionRepository
     {
-        if (request == null) throw new ArgumentNullException(nameof(request));
-        if (string.IsNullOrEmpty(request.ConsumerName))
+        private readonly B2BContext _b2BContext;
+
+        public MoveInTransactionRepository(B2BContext b2BContext)
         {
-            return Task.FromResult(BusinessRequestResult.Failure(new []{ "ConsumerNameIsRequired" }));
+            _b2BContext = b2BContext;
         }
 
-        return Task.FromResult(BusinessRequestResult.Succeeded());
+        public void Add(MoveInTransaction moveInTransaction)
+        {
+            _b2BContext.Transactions.Add(moveInTransaction);
+        }
+
+        public MoveInTransaction? GetById(string transactionId)
+        {
+            return _b2BContext.Transactions.Find(transactionId);
+        }
     }
-    #pragma warning restore
 }
