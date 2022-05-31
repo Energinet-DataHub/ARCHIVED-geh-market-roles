@@ -28,9 +28,9 @@ namespace Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplier
     {
         private readonly IDbConnectionFactory _connectionFactory;
         private readonly OutboxProvider _outboxProvider;
-        private readonly IOutboxMessageFactory _outboxMessageFactory;
+        private readonly OutboxMessageFactory _outboxMessageFactory;
 
-        public PublishWhenEnergySupplierHasChanged(IDbConnectionFactory connectionFactory, OutboxProvider outboxProvider, IOutboxMessageFactory outboxMessageFactory)
+        public PublishWhenEnergySupplierHasChanged(IDbConnectionFactory connectionFactory, OutboxProvider outboxProvider, OutboxMessageFactory outboxMessageFactory)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
             _outboxProvider = outboxProvider ?? throw new ArgumentNullException(nameof(outboxProvider));

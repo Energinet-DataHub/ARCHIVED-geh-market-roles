@@ -23,8 +23,8 @@ namespace Processing.Infrastructure.Configuration
         public static void AddOutbox(this Container container)
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
-            container.Register<Outbox.OutboxProvider>(Lifestyle.Scoped);
-            container.Register<IOutboxMessageFactory, OutboxMessageFactory>(Lifestyle.Scoped);
+            container.Register<OutboxProvider>(Lifestyle.Scoped);
+            container.Register<OutboxMessageFactory>(Lifestyle.Scoped);
         }
     }
 }

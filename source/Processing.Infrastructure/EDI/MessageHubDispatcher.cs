@@ -24,13 +24,13 @@ namespace Processing.Infrastructure.EDI
     {
         private readonly ICorrelationContext _correlationContext;
         private readonly IJsonSerializer _jsonSerializer;
-        private readonly IOutboxMessageFactory _outboxMessageFactory;
+        private readonly OutboxMessageFactory _outboxMessageFactory;
         private readonly OutboxProvider _outboxProvider;
 
         public MessageHubDispatcher(
             ICorrelationContext correlationContext,
             IJsonSerializer jsonSerializer,
-            IOutboxMessageFactory outboxMessageFactory,
+            OutboxMessageFactory outboxMessageFactory,
             OutboxProvider outboxProvider)
         {
             _correlationContext = correlationContext ?? throw new ArgumentNullException(nameof(correlationContext));

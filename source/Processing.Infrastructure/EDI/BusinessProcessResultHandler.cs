@@ -24,9 +24,9 @@ namespace Processing.Infrastructure.EDI
         where TBusinessRequest : IBusinessRequest
     {
         private readonly OutboxProvider _outboxProvider;
-        private readonly IOutboxMessageFactory _outboxMessageFactory;
+        private readonly OutboxMessageFactory _outboxMessageFactory;
 
-        protected BusinessProcessResultHandler(OutboxProvider outboxProvider, IOutboxMessageFactory outboxMessageFactory)
+        protected BusinessProcessResultHandler(OutboxProvider outboxProvider, OutboxMessageFactory outboxMessageFactory)
         {
             _outboxProvider = outboxProvider ?? throw new ArgumentNullException(nameof(outboxProvider));
             _outboxMessageFactory = outboxMessageFactory ?? throw new ArgumentNullException(nameof(outboxMessageFactory));
