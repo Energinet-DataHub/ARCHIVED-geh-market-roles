@@ -19,7 +19,7 @@ using Processing.Infrastructure.Configuration.Serialization;
 
 namespace Processing.Infrastructure.Configuration.Outbox
 {
-    public class OutboxMessageFactory : IOutboxMessageFactory
+    public class OutboxMessageFactory
     {
         private readonly IJsonSerializer _jsonSerializer;
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;

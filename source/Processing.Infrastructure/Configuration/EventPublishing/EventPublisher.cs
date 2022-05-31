@@ -21,13 +21,13 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
 {
     public class EventPublisher : IEventPublisher
     {
-        private readonly IOutbox _outbox;
-        private readonly IOutboxMessageFactory _outboxMessageFactory;
+        private readonly OutboxProvider _outboxProvider;
+        private readonly OutboxMessageFactory _outboxMessageFactory;
         private readonly IntegrationEventMapper _integrationEventMapper;
 
-        public EventPublisher(IOutbox outbox, IOutboxMessageFactory outboxMessageFactory, IntegrationEventMapper integrationEventMapper)
+        public EventPublisher(Outbox.OutboxProvider outboxProvider, OutboxMessageFactory outboxMessageFactory, IntegrationEventMapper integrationEventMapper)
         {
-            _outbox = outbox;
+            _outboxProvider = outboxProvider;
             _outboxMessageFactory = outboxMessageFactory;
             _integrationEventMapper = integrationEventMapper;
         }
@@ -39,7 +39,7 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
             var message = integrationEvent.ToString() ?? throw new InvalidCastException("Message cannot be empty.");
             var messageType = eventMetadata.EventName;
 
-            _outbox.Add(_outboxMessageFactory.CreateFrom(message, messageType, OutboxMessageCategory.IntegrationEvent));
+            _outboxProvider.Add(_outboxMessageFactory.CreateFrom(message, messageType, OutboxMessageCategory.IntegrationEvent));
             return Task.CompletedTask;
         }
     }

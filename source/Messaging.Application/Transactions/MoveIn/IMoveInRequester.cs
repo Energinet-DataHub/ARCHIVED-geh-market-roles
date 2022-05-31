@@ -12,19 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using Processing.Infrastructure.Configuration.Outbox;
-using SimpleInjector;
+using System.Threading.Tasks;
 
-namespace Processing.Infrastructure.Configuration
+namespace Messaging.Application.Transactions.MoveIn
 {
-    public static class OutboxRegistration
+    /// <summary>
+    /// Interface for move in request adapter
+    /// </summary>
+    public interface IMoveInRequester
     {
-        public static void AddOutbox(this Container container)
-        {
-            if (container == null) throw new ArgumentNullException(nameof(container));
-            container.Register<OutboxProvider>(Lifestyle.Scoped);
-            container.Register<OutboxMessageFactory>(Lifestyle.Scoped);
-        }
+        /// <summary>
+        /// Invokes a move in business process asynchronously
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns><see cref="Task"/></returns>
+        Task<BusinessRequestResult> InvokeAsync(MoveInRequest request);
     }
 }

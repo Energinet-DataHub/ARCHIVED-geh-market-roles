@@ -13,18 +13,15 @@
 // limitations under the License.
 
 using System;
-using Processing.Infrastructure.Configuration.Outbox;
-using SimpleInjector;
 
-namespace Processing.Infrastructure.Configuration
+namespace Messaging.Infrastructure.Transactions.MoveIn;
+
+public class MoveInConfiguration
 {
-    public static class OutboxRegistration
+    public MoveInConfiguration(Uri requestUri)
     {
-        public static void AddOutbox(this Container container)
-        {
-            if (container == null) throw new ArgumentNullException(nameof(container));
-            container.Register<OutboxProvider>(Lifestyle.Scoped);
-            container.Register<OutboxMessageFactory>(Lifestyle.Scoped);
-        }
+        RequestUri = requestUri;
     }
+
+    public Uri RequestUri { get; }
 }
