@@ -19,12 +19,12 @@ using Processing.Infrastructure.Configuration.DataAccess;
 
 namespace Processing.Infrastructure.Configuration.Outbox
 {
-    public class OutboxManager
+    public class OutboxProvider
     {
         private readonly MarketRolesContext _context;
         private readonly ISystemDateTimeProvider _dateTimeProvider;
 
-        public OutboxManager(
+        public OutboxProvider(
             MarketRolesContext context,
             ISystemDateTimeProvider dateTimeProvider)
         {

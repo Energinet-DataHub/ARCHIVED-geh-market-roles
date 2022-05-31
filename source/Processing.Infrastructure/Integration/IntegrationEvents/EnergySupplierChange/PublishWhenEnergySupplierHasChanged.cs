@@ -27,13 +27,13 @@ namespace Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplier
     public class PublishWhenEnergySupplierHasChanged : INotificationHandler<EnergySupplierChanged>
     {
         private readonly IDbConnectionFactory _connectionFactory;
-        private readonly OutboxManager _outbox;
+        private readonly OutboxProvider _outboxProvider;
         private readonly IOutboxMessageFactory _outboxMessageFactory;
 
-        public PublishWhenEnergySupplierHasChanged(IDbConnectionFactory connectionFactory, OutboxManager outbox, IOutboxMessageFactory outboxMessageFactory)
+        public PublishWhenEnergySupplierHasChanged(IDbConnectionFactory connectionFactory, OutboxProvider outboxProvider, IOutboxMessageFactory outboxMessageFactory)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-            _outbox = outbox ?? throw new ArgumentNullException(nameof(outbox));
+            _outboxProvider = outboxProvider ?? throw new ArgumentNullException(nameof(outboxProvider));
             _outboxMessageFactory = outboxMessageFactory ?? throw new ArgumentNullException(nameof(outboxMessageFactory));
         }
 
@@ -49,7 +49,7 @@ namespace Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplier
                 notification.StartOfSupplyDate);
 
             var message = _outboxMessageFactory.CreateFrom(integrationEvent, OutboxMessageCategory.IntegrationEvent);
-            _outbox.Add(message);
+            _outboxProvider.Add(message);
         }
 
         private async Task<string> GetSupplierGlnNumberAsync(EnergySupplierId energySupplierId)

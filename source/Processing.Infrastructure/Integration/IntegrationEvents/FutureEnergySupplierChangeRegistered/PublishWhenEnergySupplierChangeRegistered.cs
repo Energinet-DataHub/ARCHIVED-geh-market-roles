@@ -29,16 +29,16 @@ namespace Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySu
             EnergySupplierChangeRegistered>
     {
         private readonly IDbConnectionFactory _connectionFactory;
-        private readonly OutboxManager _outbox;
+        private readonly OutboxProvider _outboxProvider;
         private readonly IOutboxMessageFactory _outboxMessageFactory;
 
         public PublishWhenEnergySupplierChangeRegistered(
             IDbConnectionFactory connectionFactory,
-            OutboxManager outbox,
+            OutboxProvider outboxProvider,
             IOutboxMessageFactory outboxMessageFactory)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-            _outbox = outbox ?? throw new ArgumentNullException(nameof(outbox));
+            _outboxProvider = outboxProvider ?? throw new ArgumentNullException(nameof(outboxProvider));
             _outboxMessageFactory =
                 outboxMessageFactory ?? throw new ArgumentNullException(nameof(outboxMessageFactory));
         }
@@ -58,7 +58,7 @@ namespace Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySu
                 notification.EffectiveDate);
 
             var message = _outboxMessageFactory.CreateFrom(integrationEvent, OutboxMessageCategory.IntegrationEvent);
-            _outbox.Add(message);
+            _outboxProvider.Add(message);
         }
 
         private async Task<string> GetSupplierGlnNumberAsync(EnergySupplierId energySupplierId)

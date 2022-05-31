@@ -23,12 +23,12 @@ namespace Processing.Infrastructure.EDI
     public abstract class BusinessProcessResultHandler<TBusinessRequest> : IBusinessProcessResultHandler<TBusinessRequest>
         where TBusinessRequest : IBusinessRequest
     {
-        private readonly OutboxManager _outbox;
+        private readonly OutboxProvider _outboxProvider;
         private readonly IOutboxMessageFactory _outboxMessageFactory;
 
-        protected BusinessProcessResultHandler(OutboxManager outbox, IOutboxMessageFactory outboxMessageFactory)
+        protected BusinessProcessResultHandler(OutboxProvider outboxProvider, IOutboxMessageFactory outboxMessageFactory)
         {
-            _outbox = outbox ?? throw new ArgumentNullException(nameof(outbox));
+            _outboxProvider = outboxProvider ?? throw new ArgumentNullException(nameof(outboxProvider));
             _outboxMessageFactory = outboxMessageFactory ?? throw new ArgumentNullException(nameof(outboxMessageFactory));
         }
 
@@ -62,7 +62,7 @@ namespace Processing.Infrastructure.EDI
         private void AddToOutbox<TEdiMessage>(TEdiMessage ediMessage)
         {
             var outboxMessage = _outboxMessageFactory.CreateFrom(ediMessage, OutboxMessageCategory.ActorMessage);
-            _outbox.Add(outboxMessage);
+            _outboxProvider.Add(outboxMessage);
         }
     }
 }
