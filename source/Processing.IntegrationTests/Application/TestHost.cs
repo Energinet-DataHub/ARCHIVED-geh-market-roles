@@ -368,7 +368,7 @@ namespace Processing.IntegrationTests.Application
 
             var systemTimeProvider = GetService<ISystemDateTimeProvider>();
             accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, transaction);
-            accountingPoint.EffectuateConsumerMoveIn(transaction, systemTimeProvider);
+            accountingPoint.EffectuateConsumerMoveIn(transaction, systemTimeProvider.Now());
         }
 
         protected void RegisterChangeOfSupplier(AccountingPoint accountingPoint, EnergySupplierId energySupplierId, Transaction transaction)
