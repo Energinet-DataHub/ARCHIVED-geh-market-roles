@@ -27,10 +27,10 @@ namespace Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplier
     public class PublishWhenEnergySupplierHasChanged : INotificationHandler<EnergySupplierChanged>
     {
         private readonly IDbConnectionFactory _connectionFactory;
-        private readonly IOutbox _outbox;
+        private readonly OutboxManager _outbox;
         private readonly IOutboxMessageFactory _outboxMessageFactory;
 
-        public PublishWhenEnergySupplierHasChanged(IDbConnectionFactory connectionFactory, IOutbox outbox, IOutboxMessageFactory outboxMessageFactory)
+        public PublishWhenEnergySupplierHasChanged(IDbConnectionFactory connectionFactory, OutboxManager outbox, IOutboxMessageFactory outboxMessageFactory)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
             _outbox = outbox ?? throw new ArgumentNullException(nameof(outbox));

@@ -21,11 +21,11 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
 {
     public class EventPublisher : IEventPublisher
     {
-        private readonly IOutbox _outbox;
+        private readonly OutboxManager _outbox;
         private readonly IOutboxMessageFactory _outboxMessageFactory;
         private readonly IntegrationEventMapper _integrationEventMapper;
 
-        public EventPublisher(IOutbox outbox, IOutboxMessageFactory outboxMessageFactory, IntegrationEventMapper integrationEventMapper)
+        public EventPublisher(OutboxManager outbox, IOutboxMessageFactory outboxMessageFactory, IntegrationEventMapper integrationEventMapper)
         {
             _outbox = outbox;
             _outboxMessageFactory = outboxMessageFactory;

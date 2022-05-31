@@ -29,12 +29,12 @@ namespace Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySu
             EnergySupplierChangeRegistered>
     {
         private readonly IDbConnectionFactory _connectionFactory;
-        private readonly IOutbox _outbox;
+        private readonly OutboxManager _outbox;
         private readonly IOutboxMessageFactory _outboxMessageFactory;
 
         public PublishWhenEnergySupplierChangeRegistered(
             IDbConnectionFactory connectionFactory,
-            IOutbox outbox,
+            OutboxManager outbox,
             IOutboxMessageFactory outboxMessageFactory)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));

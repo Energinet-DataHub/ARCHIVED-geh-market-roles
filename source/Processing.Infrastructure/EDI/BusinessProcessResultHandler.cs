@@ -23,10 +23,10 @@ namespace Processing.Infrastructure.EDI
     public abstract class BusinessProcessResultHandler<TBusinessRequest> : IBusinessProcessResultHandler<TBusinessRequest>
         where TBusinessRequest : IBusinessRequest
     {
-        private readonly IOutbox _outbox;
+        private readonly OutboxManager _outbox;
         private readonly IOutboxMessageFactory _outboxMessageFactory;
 
-        protected BusinessProcessResultHandler(IOutbox outbox, IOutboxMessageFactory outboxMessageFactory)
+        protected BusinessProcessResultHandler(OutboxManager outbox, IOutboxMessageFactory outboxMessageFactory)
         {
             _outbox = outbox ?? throw new ArgumentNullException(nameof(outbox));
             _outboxMessageFactory = outboxMessageFactory ?? throw new ArgumentNullException(nameof(outboxMessageFactory));
