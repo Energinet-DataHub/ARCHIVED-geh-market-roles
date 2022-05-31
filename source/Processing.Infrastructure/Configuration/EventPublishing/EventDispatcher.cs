@@ -21,11 +21,11 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
 {
     public class EventDispatcher
     {
-        private readonly IOutboxManager _outboxManager;
+        private readonly OutboxManager _outboxManager;
         private readonly ServiceBusMessageDispatcher _messageDispatcher;
         private readonly MessageParser _messageParser;
 
-        public EventDispatcher(IOutboxManager outboxManager, ServiceBusMessageDispatcher messageDispatcher, MessageParser messageParser)
+        public EventDispatcher(OutboxManager outboxManager, ServiceBusMessageDispatcher messageDispatcher, MessageParser messageParser)
         {
             _outboxManager = outboxManager;
             _messageDispatcher = messageDispatcher;

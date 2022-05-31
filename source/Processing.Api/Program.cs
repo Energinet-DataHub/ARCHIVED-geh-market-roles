@@ -136,6 +136,7 @@ namespace Processing.Api
             container.Register<IJsonSerializer, JsonSerializer>(Lifestyle.Scoped);
             container.Register<IOutbox, OutboxProvider>(Lifestyle.Scoped);
             container.Register<IOutboxMessageFactory, OutboxMessageFactory>(Lifestyle.Scoped);
+            container.Register<OutboxManager>(Lifestyle.Scoped);
             container.Register<ICommandScheduler, CommandScheduler>(Lifestyle.Scoped);
             container.Register<IDomainEventsAccessor, DomainEventsAccessor>(Lifestyle.Scoped);
             container.Register<IDomainEventsDispatcher, DomainEventsDispatcher>(Lifestyle.Scoped);
