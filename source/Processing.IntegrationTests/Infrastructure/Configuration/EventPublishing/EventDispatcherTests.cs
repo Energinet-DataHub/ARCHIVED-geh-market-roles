@@ -32,7 +32,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
         private readonly IEventPublisher _eventPublisher;
         private readonly EventDispatcher _eventDispatcher;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IOutboxManager _outbox;
+        private readonly OutboxManager _outbox;
 
         public EventDispatcherTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
@@ -40,7 +40,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
             _eventPublisher = GetService<IEventPublisher>();
             _eventDispatcher = GetService<EventDispatcher>();
             _unitOfWork = GetService<IUnitOfWork>();
-            _outbox = GetService<IOutboxManager>();
+            _outbox = GetService<OutboxManager>();
         }
 
         [Fact]
