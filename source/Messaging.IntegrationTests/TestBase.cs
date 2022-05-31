@@ -54,11 +54,7 @@ namespace Messaging.IntegrationTests
                 .AddOutgoingMessageDispatcher(new MessageDispatcherSpy())
                 .AddRequestHandler<TestCommandHandler, TestCommand>()
                 .AddHttpClientAdapter(_ => new HttpClientMock())
-                .AddMoveInServices(sp => new MoveInRequester(
-                    new Uri("http://someuri"),
-                    sp.GetRequiredService<IHttpClientAdapter>(),
-                    sp.GetRequiredService<ISerializer>(),
-                    new LoggerDummy<MoveInRequester>()));
+                .AddMoveInServices(new MoveInConfiguration(new Uri("http://someuri")));
             _serviceProvider = services.BuildServiceProvider();
         }
 

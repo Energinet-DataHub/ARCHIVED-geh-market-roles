@@ -39,7 +39,7 @@ public class MoveInRequesterTests : TestBase
         : base(databaseFixture)
     {
         _httpClientMock = new HttpClientMock();
-        _requestService = new MoveInRequester(new Uri("https://someuri"), _httpClientMock, GetService<ISerializer>(), new LoggerDummy<MoveInRequester>());
+        _requestService = new MoveInRequester(new MoveInConfiguration(new Uri("https://someuri")), _httpClientMock, GetService<ISerializer>(), new LoggerDummy<MoveInRequester>());
     }
 
     [Fact]

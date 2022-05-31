@@ -105,12 +105,7 @@ namespace Messaging.Api
                         .AddRequestHandler<NotifyMessageHubHandler, NotifyMessageHub>()
                         .AddNotificationHandler<PublishNewMessagesOnTimeHasPassed, TimeHasPassed>()
                         .AddHttpClientAdapter(sp => new HttpClientAdapter(sp.GetRequiredService<HttpClient>()))
-                        .AddMoveInServices(sp => new MoveInRequester(
-                            new Uri(
-                            runtime.MOVE_IN_REQUEST_ENDPOINT ?? throw new ArgumentException(nameof(runtime.MOVE_IN_REQUEST_ENDPOINT))),
-                            sp.GetRequiredService<IHttpClientAdapter>(),
-                            sp.GetService<Messaging.Infrastructure.Configuration.Serialization.ISerializer>()!,
-                            sp.GetRequiredService<ILogger<MoveInRequester>>()));
+                        .AddMoveInServices(new MoveInConfiguration(new Uri(runtime.MOVE_IN_REQUEST_ENDPOINT ?? throw new ArgumentException(nameof(runtime.MOVE_IN_REQUEST_ENDPOINT)))));
                 })
                 .Build();
         }
