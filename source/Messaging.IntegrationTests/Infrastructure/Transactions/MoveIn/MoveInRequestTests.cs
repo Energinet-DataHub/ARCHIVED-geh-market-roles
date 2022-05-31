@@ -32,30 +32,31 @@ namespace Messaging.IntegrationTests.Infrastructure.Transactions.MoveIn;
 
 public class MoveInRequestTests : TestBase
 {
+    private readonly HttpClientMock _httpClientMock;
+
     public MoveInRequestTests(DatabaseFixture databaseFixture)
         : base(databaseFixture)
     {
+        _httpClientMock = new HttpClientMock();
     }
 
     [Fact]
     public async Task Request_is_send_to_processing()
     {
-        var httpClientMock = new HttpClientMock();
-        var service = new MoveInRequestAdapter(new Uri("https://someuri"), httpClientMock, GetService<ISerializer>(), new LoggerDummy<MoveInRequestAdapter>());
+        var service = new MoveInRequestAdapter(new Uri("https://someuri"), _httpClientMock, GetService<ISerializer>(), new LoggerDummy<MoveInRequestAdapter>());
         var request = CreateRequest();
 
         await service.InvokeAsync(request).ConfigureAwait(false);
 
-        httpClientMock
+        _httpClientMock
             .AssertJsonContent(request);
     }
 
     [Fact]
     public async Task Throw_when_business_processing_request_is_unsuccessful()
     {
-        var httpClientMock = new HttpClientMock();
-        httpClientMock.RespondWith(HttpStatusCode.BadRequest);
-        var service = new MoveInRequestAdapter(new Uri("https://someuri"), httpClientMock, GetService<ISerializer>(), new LoggerDummy<MoveInRequestAdapter>());
+        _httpClientMock.RespondWith(HttpStatusCode.BadRequest);
+        var service = new MoveInRequestAdapter(new Uri("https://someuri"), _httpClientMock, GetService<ISerializer>(), new LoggerDummy<MoveInRequestAdapter>());
         var request = CreateRequest();
 
         await Assert.ThrowsAsync<HttpRequestException>(() => service.InvokeAsync(request));
