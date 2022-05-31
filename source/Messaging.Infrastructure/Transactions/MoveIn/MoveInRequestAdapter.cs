@@ -42,7 +42,7 @@ public sealed class MoveInRequestAdapter : IMoveInRequestAdapter
     public async Task<BusinessRequestResult> InvokeAsync(MoveInRequest request)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
-        var response = await MoveInAsync(CreateRequestFrom(request)).ConfigureAwait(false);
+        var response = await CallAsync(CreateRequestFrom(request)).ConfigureAwait(false);
         return await ParseResultFromAsync(response).ConfigureAwait(false);
     }
 
@@ -58,7 +58,7 @@ public sealed class MoveInRequestAdapter : IMoveInRequestAdapter
             request.ConsumerIdType);
     }
 
-    private async Task<HttpResponseMessage> MoveInAsync(MoveInRequestDto moveInRequestDto)
+    private async Task<HttpResponseMessage> CallAsync(MoveInRequestDto moveInRequestDto)
     {
         using var ms = new MemoryStream();
         await _serializer.SerializeAsync(ms, moveInRequestDto).ConfigureAwait(false);
