@@ -30,12 +30,12 @@ using Xunit;
 
 namespace Messaging.IntegrationTests.Infrastructure.Transactions.MoveIn;
 
-public class MoveInRequestTests : TestBase
+public class MoveInRequesterTests : TestBase
 {
     private readonly HttpClientMock _httpClientMock;
     private readonly MoveInRequester _requestService;
 
-    public MoveInRequestTests(DatabaseFixture databaseFixture)
+    public MoveInRequesterTests(DatabaseFixture databaseFixture)
         : base(databaseFixture)
     {
         _httpClientMock = new HttpClientMock();
