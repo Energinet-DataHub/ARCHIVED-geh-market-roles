@@ -21,13 +21,13 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
 {
     public class EventDispatcher
     {
-        private readonly OutboxManager _outboxManager;
+        private readonly Outbox.OutboxProvider _outboxProvider;
         private readonly ServiceBusMessageDispatcher _messageDispatcher;
         private readonly MessageParser _messageParser;
 
-        public EventDispatcher(OutboxManager outboxManager, ServiceBusMessageDispatcher messageDispatcher, MessageParser messageParser)
+        public EventDispatcher(Outbox.OutboxProvider outboxProvider, ServiceBusMessageDispatcher messageDispatcher, MessageParser messageParser)
         {
-            _outboxManager = outboxManager;
+            _outboxProvider = outboxProvider;
             _messageDispatcher = messageDispatcher;
             _messageParser = messageParser;
         }
@@ -35,12 +35,12 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
         public async Task DispatchAsync()
         {
             OutboxMessage? message;
-            while ((message = _outboxManager.GetNext(OutboxMessageCategory.IntegrationEvent)) != null)
+            while ((message = _outboxProvider.GetNext(OutboxMessageCategory.IntegrationEvent)) != null)
             {
                 var integrationEvent = _messageParser.GetFrom(message.Type, message.Data);
 
                 await _messageDispatcher.DispatchAsync(integrationEvent).ConfigureAwait(false);
-                await _outboxManager.MarkProcessedAsync(message).ConfigureAwait(false);
+                await _outboxProvider.MarkProcessedAsync(message).ConfigureAwait(false);
             }
         }
     }

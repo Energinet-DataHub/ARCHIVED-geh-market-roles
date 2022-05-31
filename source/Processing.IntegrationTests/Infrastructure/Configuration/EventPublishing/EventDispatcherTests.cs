@@ -32,7 +32,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
         private readonly IEventPublisher _eventPublisher;
         private readonly EventDispatcher _eventDispatcher;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly OutboxManager _outbox;
+        private readonly OutboxProvider _outboxProvider;
 
         public EventDispatcherTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
@@ -40,7 +40,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
             _eventPublisher = GetService<IEventPublisher>();
             _eventDispatcher = GetService<EventDispatcher>();
             _unitOfWork = GetService<IUnitOfWork>();
-            _outbox = GetService<OutboxManager>();
+            _outboxProvider = GetService<OutboxProvider>();
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
 
             await _eventDispatcher.DispatchAsync().ConfigureAwait(false);
 
-            Assert.Null(_outbox.GetNext());
+            Assert.Null(_outboxProvider.GetNext());
         }
 
         private async Task PublishEvent()
