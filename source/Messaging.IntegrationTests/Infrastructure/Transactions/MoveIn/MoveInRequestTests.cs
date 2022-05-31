@@ -88,12 +88,18 @@ public class HttpClientMock : IHttpClientAdapter
     public async Task<HttpResponseMessage> PostAsync(Uri uri, HttpContent content)
     {
         _messageBody = await content.ReadAsStringAsync();
-        var businessProcessResponse = new BusinessProcessResponse(new List<string>());
-        var body = new StringContent(JsonConvert.SerializeObject(businessProcessResponse));
-        var response = new HttpResponseMessage(_responseCode);
-        response.Content = body;
+        var response = CreateResponseFromProcessing();
         return response;
 
+    }
+
+    private HttpResponseMessage CreateResponseFromProcessing()
+    {
+        var businessProcessResponse = new BusinessProcessResponse(new List<string>());
+        var content = new StringContent(JsonConvert.SerializeObject(businessProcessResponse));
+        var response = new HttpResponseMessage(_responseCode);
+        response.Content = content;
+        return response;
     }
 
     public void RespondWith(HttpStatusCode responseCode)
