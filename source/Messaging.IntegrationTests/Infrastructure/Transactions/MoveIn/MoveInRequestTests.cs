@@ -33,13 +33,13 @@ namespace Messaging.IntegrationTests.Infrastructure.Transactions.MoveIn;
 public class MoveInRequestTests : TestBase
 {
     private readonly HttpClientMock _httpClientMock;
-    private readonly MoveInRequestAdapter _requestService;
+    private readonly MoveInRequester _requestService;
 
     public MoveInRequestTests(DatabaseFixture databaseFixture)
         : base(databaseFixture)
     {
         _httpClientMock = new HttpClientMock();
-        _requestService = new MoveInRequestAdapter(new Uri("https://someuri"), _httpClientMock, GetService<ISerializer>(), new LoggerDummy<MoveInRequestAdapter>());
+        _requestService = new MoveInRequester(new Uri("https://someuri"), _httpClientMock, GetService<ISerializer>(), new LoggerDummy<MoveInRequester>());
     }
 
     [Fact]

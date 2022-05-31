@@ -103,12 +103,12 @@ namespace Messaging.Api
                             runtime.MESSAGEHUB_DOMAIN_REPLY_QUEUE!)
                         .AddRequestHandler<NotifyMessageHubHandler, NotifyMessageHub>()
                         .AddNotificationHandler<PublishNewMessagesOnTimeHasPassed, TimeHasPassed>()
-                        .AddMoveInRequestHandler(sp => new MoveInRequestAdapter(
+                        .AddMoveInRequestHandler(sp => new MoveInRequester(
                             new Uri(
                             runtime.MOVE_IN_REQUEST_ENDPOINT ?? throw new ArgumentException(nameof(runtime.MOVE_IN_REQUEST_ENDPOINT))),
                             sp.GetRequiredService<IHttpClientAdapter>(),
                             sp.GetService<Messaging.Infrastructure.Configuration.Serialization.ISerializer>()!,
-                            sp.GetRequiredService<ILogger<MoveInRequestAdapter>>()));
+                            sp.GetRequiredService<ILogger<MoveInRequester>>()));
                 })
                 .Build();
         }

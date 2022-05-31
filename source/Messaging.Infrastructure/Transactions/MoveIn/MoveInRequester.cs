@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -24,14 +23,14 @@ using Messaging.Infrastructure.Configuration.Serialization;
 using Microsoft.Extensions.Logging;
 
 namespace Messaging.Infrastructure.Transactions.MoveIn;
-public sealed class MoveInRequestAdapter : IMoveInRequestAdapter
+public sealed class MoveInRequester : IMoveInRequestAdapter
 {
     private readonly Uri _moveInRequestUrl;
     private readonly ISerializer _serializer;
     private readonly IHttpClientAdapter _httpClientAdapter;
-    private readonly ILogger<MoveInRequestAdapter> _logger;
+    private readonly ILogger<MoveInRequester> _logger;
 
-    public MoveInRequestAdapter(Uri moveInRequestUrl, IHttpClientAdapter httpClientAdapter, ISerializer serializer,  ILogger<MoveInRequestAdapter> logger)
+    public MoveInRequester(Uri moveInRequestUrl, IHttpClientAdapter httpClientAdapter, ISerializer serializer,  ILogger<MoveInRequester> logger)
     {
         _moveInRequestUrl = moveInRequestUrl;
         _httpClientAdapter = httpClientAdapter;
