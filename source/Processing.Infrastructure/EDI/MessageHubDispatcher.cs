@@ -24,19 +24,19 @@ namespace Processing.Infrastructure.EDI
     {
         private readonly ICorrelationContext _correlationContext;
         private readonly IJsonSerializer _jsonSerializer;
-        private readonly IOutboxMessageFactory _outboxMessageFactory;
-        private readonly IOutbox _outbox;
+        private readonly OutboxMessageFactory _outboxMessageFactory;
+        private readonly OutboxProvider _outboxProvider;
 
         public MessageHubDispatcher(
             ICorrelationContext correlationContext,
             IJsonSerializer jsonSerializer,
-            IOutboxMessageFactory outboxMessageFactory,
-            IOutbox outbox)
+            OutboxMessageFactory outboxMessageFactory,
+            OutboxProvider outboxProvider)
         {
             _correlationContext = correlationContext ?? throw new ArgumentNullException(nameof(correlationContext));
             _jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
             _outboxMessageFactory = outboxMessageFactory ?? throw new ArgumentNullException(nameof(outboxMessageFactory));
-            _outbox = outbox ?? throw new ArgumentNullException(nameof(outbox));
+            _outboxProvider = outboxProvider ?? throw new ArgumentNullException(nameof(outboxProvider));
         }
 
         public Task DispatchAsync<TMessage>(TMessage message, DocumentType documentType, string recipient, string gsrnNumber)
@@ -65,7 +65,7 @@ namespace Processing.Infrastructure.EDI
         private void AddToOutbox<TEdiMessage>(TEdiMessage ediMessage)
         {
             var outboxMessage = _outboxMessageFactory.CreateFrom(ediMessage, OutboxMessageCategory.ActorMessage);
-            _outbox.Add(outboxMessage);
+            _outboxProvider.Add(outboxMessage);
         }
     }
 }
