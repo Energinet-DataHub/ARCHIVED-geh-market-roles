@@ -110,6 +110,8 @@ namespace Processing.IntegrationTests.Application
             _container = new Container();
             _container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 
+            _container.AddOutbox();
+
             _container.SendProtobuf<MarketRolesEnvelope>();
             _container.ReceiveProtobuf<MarketRolesEnvelope>(
                 config => config
@@ -126,9 +128,6 @@ namespace Processing.IntegrationTests.Application
             _container.Register<IEnergySupplierRepository, EnergySupplierRepository>(Lifestyle.Scoped);
             _container.Register<IProcessManagerRepository, ProcessManagerRepository>(Lifestyle.Scoped);
             _container.Register<IConsumerRepository, ConsumerRepository>(Lifestyle.Scoped);
-            _container.Register<IOutbox, OutboxProvider>(Lifestyle.Scoped);
-            _container.Register<IOutboxManager, OutboxManager>(Lifestyle.Scoped);
-            _container.Register<IOutboxMessageFactory, OutboxMessageFactory>(Lifestyle.Scoped);
             _container.Register<IJsonSerializer, JsonSerializer>(Lifestyle.Singleton);
             _container.Register<ISystemDateTimeProvider, SystemDateTimeProviderStub>(Lifestyle.Singleton);
             _container.Register<IDomainEventsAccessor, DomainEventsAccessor>();
