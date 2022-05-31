@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ using Messaging.Infrastructure.Transactions.MoveIn;
 using Messaging.IntegrationTests.Fixtures;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NodaTime;
 using Xunit;
 
@@ -52,13 +54,14 @@ public class MoveInRequestTests : TestBase
         await service.InvokeAsync(request).ConfigureAwait(false);
 
         httpClientMock
-            .WithContentBody(JsonConvert.SerializeObject(request));
+            .AssertJsonContent(request);
     }
 
     [Fact]
     public async Task Throw_when_business_processing_request_is_unsuccessful()
     {
         var httpClientMock = new HttpClientMock();
+        httpClientMock.RespondWith(HttpStatusCode.BadRequest);
         var service = new MoveInRequestAdapter(new Uri("https://someuri"), httpClientMock, GetService<ISerializer>(), new LoggerDummy<MoveInRequestAdapter>());
         var request = new MoveInRequest(
             "Consumer1",
@@ -76,16 +79,28 @@ public class MoveInRequestTests : TestBase
 #pragma warning disable
 public class HttpClientMock : IHttpClientAdapter
 {
-    private readonly string _messageBody;
-    public void WithContentBody(string expectedContentBody)
+    private string _messageBody;
+    private HttpStatusCode _responseCode = HttpStatusCode.OK;
+
+    public void AssertJsonContent(object expectedContent)
     {
-        Assert.Equal(expectedContentBody, _messageBody);
+        Assert.True(JToken.DeepEquals(JToken.Parse(JsonConvert.SerializeObject(expectedContent)), JToken.Parse(_messageBody)));
     }
 
-    public Task<HttpResponseMessage> PostAsync(Uri uri, HttpContent content)
+    public async Task<HttpResponseMessage> PostAsync(Uri uri, HttpContent content)
     {
-        var response = new HttpResponseMessage(HttpStatusCode.BadRequest);
-        return Task.FromResult(response);
+        _messageBody = await content.ReadAsStringAsync();
+        var businessProcessResponse = new BusinessProcessResponse(new List<string>());
+        var body = new StringContent(JsonConvert.SerializeObject(businessProcessResponse));
+        var response = new HttpResponseMessage(_responseCode);
+        response.Content = body;
+        return response;
+
+    }
+
+    public void RespondWith(HttpStatusCode responseCode)
+    {
+        _responseCode = responseCode;
     }
 }
 
