@@ -59,8 +59,7 @@ public sealed class MoveInRequestAdapter : IMoveInRequestAdapter
 
     private async Task<BusinessRequestResult> InvokeInternalAsync(MoveInRequest request)
     {
-        var moveInRequestDto = CreateRequestFrom(request);
-        var response = await MoveInAsync(moveInRequestDto).ConfigureAwait(false);
+        var response = await MoveInAsync(CreateRequestFrom(request)).ConfigureAwait(false);
         var moveInResponseDto = await ParseFromAsync(response).ConfigureAwait(false);
 
         return moveInResponseDto.ValidationErrors.Count > 0 ? BusinessRequestResult.Failure(moveInResponseDto.ValidationErrors.ToArray()) : BusinessRequestResult.Succeeded();
