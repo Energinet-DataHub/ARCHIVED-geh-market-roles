@@ -19,7 +19,7 @@ namespace Messaging.Application.Transactions.MoveIn
     /// <summary>
     /// Interface for move in request adapter
     /// </summary>
-    public interface IMoveInRequestAdapter
+    public interface IMoveInRequester
     {
         /// <summary>
         /// Invokes a move in business process asynchronously

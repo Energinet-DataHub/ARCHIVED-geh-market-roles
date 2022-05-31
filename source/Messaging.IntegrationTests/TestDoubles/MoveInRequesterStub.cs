@@ -19,7 +19,7 @@ using Messaging.Application.Transactions.MoveIn;
 
 namespace Messaging.IntegrationTests.TestDoubles;
 
-public class MoveInRequestAdapterStub : IMoveInRequestAdapter
+public class MoveInRequesterStub : IMoveInRequester
 {
     #pragma warning disable // Disable mark as static warning
     public Task<BusinessRequestResult> InvokeAsync(MoveInRequest request)

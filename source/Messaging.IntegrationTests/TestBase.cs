@@ -50,7 +50,7 @@ namespace Messaging.IntegrationTests
                 .AddMessagePublishing(_ => new NewMessageAvailableNotifierSpy())
                 .AddOutgoingMessageDispatcher(new MessageDispatcherSpy())
                 .AddRequestHandler<TestCommandHandler, TestCommand>()
-                .AddMoveInRequestHandler(sp => new MoveInRequestAdapterStub());
+                .AddMoveInRequestHandler(sp => new MoveInRequesterStub());
             _serviceProvider = services.BuildServiceProvider();
         }
 

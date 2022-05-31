@@ -23,7 +23,7 @@ using Messaging.Infrastructure.Configuration.Serialization;
 using Microsoft.Extensions.Logging;
 
 namespace Messaging.Infrastructure.Transactions.MoveIn;
-public sealed class MoveInRequester : IMoveInRequestAdapter
+public sealed class MoveInRequester : IMoveInRequester
 {
     private readonly Uri _moveInRequestUrl;
     private readonly ISerializer _serializer;

@@ -197,7 +197,7 @@ namespace Messaging.Infrastructure.Configuration
             return this;
         }
 
-        public CompositionRoot AddMoveInRequestHandler(Func<IServiceProvider, IMoveInRequestAdapter> action)
+        public CompositionRoot AddMoveInRequestHandler(Func<IServiceProvider, IMoveInRequester> action)
         {
             _services.AddScoped(action);
             return this;
