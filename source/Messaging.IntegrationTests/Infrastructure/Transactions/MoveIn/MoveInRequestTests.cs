@@ -42,14 +42,7 @@ public class MoveInRequestTests : TestBase
     {
         var httpClientMock = new HttpClientMock();
         var service = new MoveInRequestAdapter(new Uri("https://someuri"), httpClientMock, GetService<ISerializer>(), new LoggerDummy<MoveInRequestAdapter>());
-        var request = new MoveInRequest(
-            "Consumer1",
-            Guid.NewGuid().ToString(),
-            Guid.NewGuid().ToString(),
-            SystemClock.Instance.GetCurrentInstant().ToString(),
-            Guid.NewGuid().ToString(),
-            Guid.NewGuid().ToString(),
-            "CPR");
+        var request = CreateRequest();
 
         await service.InvokeAsync(request).ConfigureAwait(false);
 
@@ -63,7 +56,14 @@ public class MoveInRequestTests : TestBase
         var httpClientMock = new HttpClientMock();
         httpClientMock.RespondWith(HttpStatusCode.BadRequest);
         var service = new MoveInRequestAdapter(new Uri("https://someuri"), httpClientMock, GetService<ISerializer>(), new LoggerDummy<MoveInRequestAdapter>());
-        var request = new MoveInRequest(
+        var request = CreateRequest();
+
+        await Assert.ThrowsAsync<HttpRequestException>(() => service.InvokeAsync(request));
+    }
+
+    private static MoveInRequest CreateRequest()
+    {
+        return new MoveInRequest(
             "Consumer1",
             Guid.NewGuid().ToString(),
             Guid.NewGuid().ToString(),
@@ -71,8 +71,6 @@ public class MoveInRequestTests : TestBase
             Guid.NewGuid().ToString(),
             Guid.NewGuid().ToString(),
             "CPR");
-
-        await Assert.ThrowsAsync<HttpRequestException>(() => service.InvokeAsync(request));
     }
 }
 
