@@ -30,8 +30,10 @@ public sealed class MoveInRequestAdapter : IMoveInRequestAdapter
     private readonly Uri _moveInRequestUrl;
     private readonly HttpClient _httpClient;
     private readonly ISerializer _serializer;
+    private readonly IHttpClientAdapter _httpClientAdapter;
     private readonly ILogger<MoveInRequestAdapter> _logger;
 
+    #pragma warning disable
     public MoveInRequestAdapter(
         Uri moveInRequestUrl,
         HttpClient httpClient,
@@ -40,6 +42,14 @@ public sealed class MoveInRequestAdapter : IMoveInRequestAdapter
     {
         _moveInRequestUrl = moveInRequestUrl ?? throw new ArgumentNullException(nameof(moveInRequestUrl));
         _httpClient = httpClient;
+        _serializer = serializer;
+        _logger = logger;
+    }
+
+    public MoveInRequestAdapter(Uri moveInRequestUrl, IHttpClientAdapter httpClientAdapter, ISerializer serializer,  ILogger<MoveInRequestAdapter> logger)
+    {
+        _moveInRequestUrl = moveInRequestUrl;
+        _httpClientAdapter = httpClientAdapter;
         _serializer = serializer;
         _logger = logger;
     }
@@ -73,7 +83,9 @@ public sealed class MoveInRequestAdapter : IMoveInRequestAdapter
         await _serializer.SerializeAsync(ms, moveInRequestDto).ConfigureAwait(false);
         ms.Position = 0;
         using var content = new StreamContent(ms);
-        return await _httpClient.PostAsync(_moveInRequestUrl, content).ConfigureAwait(false);
+        var response = await _httpClientAdapter.PostAsync(_moveInRequestUrl, content).ConfigureAwait(false);
+        response.EnsureSuccessStatusCode();
+        return response;
     }
 
     private async Task<BusinessProcessResponse> ParseFromAsync(HttpResponseMessage response)
