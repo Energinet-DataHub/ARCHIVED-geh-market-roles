@@ -17,7 +17,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Messaging.Application.Transactions;
 using Messaging.Application.Transactions.MoveIn;
@@ -28,23 +27,9 @@ namespace Messaging.Infrastructure.Transactions.MoveIn;
 public sealed class MoveInRequestAdapter : IMoveInRequestAdapter
 {
     private readonly Uri _moveInRequestUrl;
-    private readonly HttpClient _httpClient;
     private readonly ISerializer _serializer;
     private readonly IHttpClientAdapter _httpClientAdapter;
     private readonly ILogger<MoveInRequestAdapter> _logger;
-
-    #pragma warning disable
-    public MoveInRequestAdapter(
-        Uri moveInRequestUrl,
-        HttpClient httpClient,
-        ISerializer serializer,
-        ILogger<MoveInRequestAdapter> logger)
-    {
-        _moveInRequestUrl = moveInRequestUrl ?? throw new ArgumentNullException(nameof(moveInRequestUrl));
-        _httpClient = httpClient;
-        _serializer = serializer;
-        _logger = logger;
-    }
 
     public MoveInRequestAdapter(Uri moveInRequestUrl, IHttpClientAdapter httpClientAdapter, ISerializer serializer,  ILogger<MoveInRequestAdapter> logger)
     {
@@ -60,9 +45,9 @@ public sealed class MoveInRequestAdapter : IMoveInRequestAdapter
         return InvokeInternalAsync(request);
     }
 
-    private async Task<BusinessRequestResult> InvokeInternalAsync(MoveInRequest request)
+    private static MoveInRequestDto CreateRequestFrom(MoveInRequest request)
     {
-        var moveInRequestDto = new MoveInRequestDto(
+        return new MoveInRequestDto(
             request.ConsumerName,
             request.EnergySupplierGlnNumber,
             request.AccountingPointGsrnNumber,
@@ -70,7 +55,11 @@ public sealed class MoveInRequestAdapter : IMoveInRequestAdapter
             request.TransactionId,
             request.ConsumerId,
             request.ConsumerIdType);
+    }
 
+    private async Task<BusinessRequestResult> InvokeInternalAsync(MoveInRequest request)
+    {
+        var moveInRequestDto = CreateRequestFrom(request);
         var response = await MoveInAsync(moveInRequestDto).ConfigureAwait(false);
         var moveInResponseDto = await ParseFromAsync(response).ConfigureAwait(false);
 

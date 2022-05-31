@@ -24,6 +24,7 @@ using Messaging.Api.Configuration.Middleware.Correlation;
 using Messaging.Infrastructure.Configuration;
 using Messaging.Infrastructure.Configuration.SystemTime;
 using Messaging.Infrastructure.OutgoingMessages;
+using Messaging.Infrastructure.Transactions;
 using Messaging.Infrastructure.Transactions.MoveIn;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -105,7 +106,7 @@ namespace Messaging.Api
                         .AddMoveInRequestHandler(sp => new MoveInRequestAdapter(
                             new Uri(
                             runtime.MOVE_IN_REQUEST_ENDPOINT ?? throw new ArgumentException(nameof(runtime.MOVE_IN_REQUEST_ENDPOINT))),
-                            sp.GetRequiredService<HttpClient>(),
+                            sp.GetRequiredService<IHttpClientAdapter>(),
                             sp.GetService<Messaging.Infrastructure.Configuration.Serialization.ISerializer>()!,
                             sp.GetRequiredService<ILogger<MoveInRequestAdapter>>()));
                 })
