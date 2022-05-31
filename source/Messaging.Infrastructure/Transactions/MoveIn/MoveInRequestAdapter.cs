@@ -39,10 +39,11 @@ public sealed class MoveInRequestAdapter : IMoveInRequestAdapter
         _logger = logger;
     }
 
-    public Task<BusinessRequestResult> InvokeAsync(MoveInRequest request)
+    public async Task<BusinessRequestResult> InvokeAsync(MoveInRequest request)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
-        return InvokeInternalAsync(request);
+        var response = await MoveInAsync(CreateRequestFrom(request)).ConfigureAwait(false);
+        return await ParseResultFromAsync(response).ConfigureAwait(false);
     }
 
     private static MoveInRequestDto CreateRequestFrom(MoveInRequest request)
@@ -57,14 +58,6 @@ public sealed class MoveInRequestAdapter : IMoveInRequestAdapter
             request.ConsumerIdType);
     }
 
-    private async Task<BusinessRequestResult> InvokeInternalAsync(MoveInRequest request)
-    {
-        var response = await MoveInAsync(CreateRequestFrom(request)).ConfigureAwait(false);
-        var moveInResponseDto = await ParseFromAsync(response).ConfigureAwait(false);
-
-        return moveInResponseDto.ValidationErrors.Count > 0 ? BusinessRequestResult.Failure(moveInResponseDto.ValidationErrors.ToArray()) : BusinessRequestResult.Succeeded();
-    }
-
     private async Task<HttpResponseMessage> MoveInAsync(MoveInRequestDto moveInRequestDto)
     {
         using var ms = new MemoryStream();
@@ -76,13 +69,15 @@ public sealed class MoveInRequestAdapter : IMoveInRequestAdapter
         return response;
     }
 
-    private async Task<BusinessProcessResponse> ParseFromAsync(HttpResponseMessage response)
+    private async Task<BusinessRequestResult> ParseResultFromAsync(HttpResponseMessage response)
     {
         try
         {
             var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             _logger.LogInformation($"Response body from business processing: {responseBody}");
-            return _serializer.Deserialize<BusinessProcessResponse>(responseBody);
+
+            var result = _serializer.Deserialize<BusinessProcessResponse>(responseBody);
+            return result.ValidationErrors.Count > 0 ? BusinessRequestResult.Failure(result.ValidationErrors.ToArray()) : BusinessRequestResult.Succeeded();
         }
         catch (Exception e)
         {
