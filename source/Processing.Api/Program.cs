@@ -27,6 +27,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Processing.Api.Configuration;
+using Processing.Api.Monitor;
 using Processing.Api.MoveIn;
 using Processing.Application.ChangeOfSupplier;
 using Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails;
@@ -205,6 +206,9 @@ namespace Processing.Api
 
             // Integration event publishing
             container.AddEventPublishing(Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_INTEGRATION_EVENTS")!);
+
+            // Health check
+            container.Register<HealthCheckEndpoint>(Lifestyle.Scoped);
         }
     }
 }
