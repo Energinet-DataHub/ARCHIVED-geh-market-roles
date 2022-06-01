@@ -112,6 +112,12 @@ namespace Processing.Api
 
                 x.UseSqlServer(connectionString, y => y.UseNodaTime());
             });
+
+            services.AddLiveHealthCheck();
+            services.AddSqlServerHealthCheck(Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING")!);
+            services.AddExternalServiceBusTopicsHealthCheck(
+                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_MANAGE_FOR_INTEGRATION_EVENTS")!,
+                "consumer-moved-in");
         }
 
         protected override void ConfigureContainer(Container container)
