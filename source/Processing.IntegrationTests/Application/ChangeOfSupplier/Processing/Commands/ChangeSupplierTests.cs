@@ -15,6 +15,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Contracts.IntegrationEvents;
 using MediatR;
 using Microsoft.Data.SqlClient;
 using NodaTime;
@@ -80,7 +81,7 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing.Co
             _transaction = CreateTransaction();
             await RequestFutureChangeOfSupplierProcess().ConfigureAwait(false);
 
-            AssertOutboxMessage<FutureEnergySupplierChangeRegisteredIntegrationEvent>();
+            AssertOutboxMessage<FutureEnergySupplierChangeRegistered>();
         }
 
         private async Task SimulateProcess()

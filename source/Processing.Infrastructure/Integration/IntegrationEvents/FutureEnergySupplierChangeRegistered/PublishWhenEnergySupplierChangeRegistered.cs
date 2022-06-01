@@ -21,6 +21,7 @@ using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints.Events;
 using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.Outbox;
+using Processing.Infrastructure.Integration.Helpers;
 
 namespace Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySupplierChangeRegistered
 {
@@ -51,11 +52,13 @@ namespace Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySu
 
             var supplierGlnNumber = await GetSupplierGlnNumberAsync(notification.EnergySupplierId)
                 .ConfigureAwait(false);
-            var integrationEvent = new FutureEnergySupplierChangeRegisteredIntegrationEvent(
-                notification.AccountingPointId.Value,
-                notification.GsrnNumber.Value,
-                supplierGlnNumber,
-                notification.EffectiveDate);
+            var integrationEvent = new Contracts.IntegrationEvents.FutureEnergySupplierChangeRegistered()
+            {
+                AccountingpointId = notification.AccountingPointId.Value.ToString(),
+                GsrnNumber = notification.GsrnNumber.Value,
+                EnergySupplierGln = supplierGlnNumber,
+                EffectiveDate = notification.EffectiveDate.ToTimestamp(),
+            };
 
             var message = _outboxMessageFactory.CreateFrom(integrationEvent, OutboxMessageCategory.IntegrationEvent);
             _outboxProvider.Add(message);
