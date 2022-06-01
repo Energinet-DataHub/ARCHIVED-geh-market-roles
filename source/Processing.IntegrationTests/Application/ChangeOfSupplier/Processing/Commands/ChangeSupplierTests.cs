@@ -28,7 +28,6 @@ using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
 using Processing.Infrastructure.Configuration.DataAccess;
-using Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySupplierChangeRegistered;
 using Xunit;
 using Xunit.Categories;
 

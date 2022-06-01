@@ -60,4 +60,8 @@ limitations under the License.
     <Compile Remove="Transport\Protobuf\Integration\ServiceCollectionSendProtobuf.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="EDI\MoveIn" />
+  </ItemGroup>
+
 </Project>

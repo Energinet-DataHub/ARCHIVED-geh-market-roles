@@ -28,12 +28,10 @@ namespace Processing.Infrastructure.BusinessRequestProcessing.Pipeline
         where TResponse : BusinessProcessResult
     {
         private readonly IValidator<TRequest> _validator;
-        private readonly IBusinessProcessResultHandler<TRequest> _businessProcessResultHandler;
 
-        public InputValidationBehaviour(IValidator<TRequest> validator, IBusinessProcessResultHandler<TRequest> businessProcessResultHandler)
+        public InputValidationBehaviour(IValidator<TRequest> validator)
         {
             _validator = validator;
-            _businessProcessResultHandler = businessProcessResultHandler ?? throw new ArgumentNullException(nameof(businessProcessResultHandler));
         }
 
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
@@ -51,7 +49,6 @@ namespace Processing.Infrastructure.BusinessRequestProcessing.Pipeline
                     .AsReadOnly();
 
                 var result = new BusinessProcessResult(request.TransactionId, validationErrors);
-                await _businessProcessResultHandler.HandleAsync(request, result).ConfigureAwait(false);
                 return (TResponse)result;
             }
 
