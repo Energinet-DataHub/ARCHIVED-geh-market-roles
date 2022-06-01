@@ -24,11 +24,8 @@ namespace Processing.Infrastructure.BusinessRequestProcessing.Pipeline
         where TRequest : IBusinessRequest, MediatR.IRequest<TResponse>
         where TResponse : BusinessProcessResult
     {
-        private readonly IBusinessProcessResultHandler<TRequest> _businessProcessResultHandler;
-
-        public AuthorizationBehaviour(IBusinessProcessResultHandler<TRequest> businessProcessResultHandler)
+        public AuthorizationBehaviour()
         {
-            _businessProcessResultHandler = businessProcessResultHandler ?? throw new ArgumentNullException(nameof(businessProcessResultHandler));
         }
 
         public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
