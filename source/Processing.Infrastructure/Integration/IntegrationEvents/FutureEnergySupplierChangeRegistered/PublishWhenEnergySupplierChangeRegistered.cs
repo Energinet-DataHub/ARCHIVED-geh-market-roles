@@ -17,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using MediatR;
+using Processing.Application.Common;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints.Events;
 using Processing.Infrastructure.Configuration.DataAccess;

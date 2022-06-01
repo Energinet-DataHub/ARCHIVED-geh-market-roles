@@ -14,7 +14,7 @@
 
 using System.Data;
 
-namespace Processing.Infrastructure.Configuration.DataAccess
+namespace Processing.Application.Common
 {
     /// <summary>
     /// Factory for creating database connections

@@ -15,6 +15,7 @@
 using System;
 using System.Data;
 using Microsoft.Data.SqlClient;
+using Processing.Application.Common;
 
 namespace Processing.Infrastructure.Configuration.DataAccess
 {

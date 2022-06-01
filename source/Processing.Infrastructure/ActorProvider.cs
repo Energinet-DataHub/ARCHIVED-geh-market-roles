@@ -16,6 +16,7 @@ using System;
 using System.Threading.Tasks;
 using Dapper;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
+using Processing.Application.Common;
 using Processing.Infrastructure.Configuration.DataAccess;
 
 namespace Processing.Infrastructure
