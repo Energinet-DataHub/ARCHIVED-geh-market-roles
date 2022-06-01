@@ -24,7 +24,7 @@ namespace Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySu
         protected override IMessage Convert(FutureEnergySupplierChangeRegisteredIntegrationEvent obj)
         {
             if (obj == null) throw new ArgumentException(null, nameof(obj));
-            return new Energinet.DataHub.MarketRoles.IntegrationEventContracts.FutureEnergySupplierChangeRegistered
+            return new Contracts.IntegrationEvents.FutureEnergySupplierChangeRegistered
             {
                 AccountingpointId = obj.AccountingPointId.ToString(),
                 EnergySupplierGln = obj.EnergySupplierGln,
