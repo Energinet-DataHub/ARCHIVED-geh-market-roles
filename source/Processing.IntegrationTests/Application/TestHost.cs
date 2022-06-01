@@ -71,7 +71,6 @@ using Processing.Infrastructure.EDI.ChangeOfSupplier.ConsumerDetails;
 using Processing.Infrastructure.EDI.ChangeOfSupplier.EndOfSupplyNotification;
 using Processing.Infrastructure.EDI.ChangeOfSupplier.MeteringPointDetails;
 using Processing.Infrastructure.EDI.MoveIn;
-using Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
 using Processing.Infrastructure.InternalCommands;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Transport;

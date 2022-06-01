@@ -20,39 +20,31 @@ using MediatR;
 using Processing.Application.Common;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints.Events;
-using Processing.Infrastructure.Integration.Helpers;
 
-namespace Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySupplierChangeRegistered
+namespace Processing.Application.ChangeOfSupplier
 {
-    public class
-        PublishWhenEnergySupplierChangeRegistered : INotificationHandler<
-            EnergySupplierChangeRegistered>
+    public class PublishWhenEnergySupplierHasChanged : INotificationHandler<EnergySupplierChanged>
     {
         private readonly IDbConnectionFactory _connectionFactory;
         private readonly IEventPublisher _eventPublisher;
 
-        public PublishWhenEnergySupplierChangeRegistered(
-            IDbConnectionFactory connectionFactory,
-            IEventPublisher eventPublisher)
+        public PublishWhenEnergySupplierHasChanged(IDbConnectionFactory connectionFactory, IEventPublisher eventPublisher)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
             _eventPublisher = eventPublisher;
         }
 
-        public async Task Handle(
-            EnergySupplierChangeRegistered notification,
-            CancellationToken cancellationToken)
+        public async Task Handle(EnergySupplierChanged notification, CancellationToken cancellationToken)
         {
             if (notification == null) throw new ArgumentNullException(nameof(notification));
 
-            var supplierGlnNumber = await GetSupplierGlnNumberAsync(notification.EnergySupplierId)
-                .ConfigureAwait(false);
-            var integrationEvent = new Contracts.IntegrationEvents.FutureEnergySupplierChangeRegistered()
+            var supplierGlnNumber = await GetSupplierGlnNumberAsync(new EnergySupplierId(notification.EnergySupplierId)).ConfigureAwait(false);
+            var integrationEvent = new Contracts.IntegrationEvents.EnergySupplierChanged()
             {
-                AccountingpointId = notification.AccountingPointId.Value.ToString(),
-                GsrnNumber = notification.GsrnNumber.Value,
+                AccountingpointId = notification.AccountingPointId.ToString(),
+                GsrnNumber = notification.GsrnNumber,
                 EnergySupplierGln = supplierGlnNumber,
-                EffectiveDate = notification.EffectiveDate.ToTimestamp(),
+                EffectiveDate = notification.StartOfSupplyDate.ToString(),
             };
 
             await _eventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
@@ -61,9 +53,7 @@ namespace Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySu
         private async Task<string> GetSupplierGlnNumberAsync(EnergySupplierId energySupplierId)
         {
             var sql = $"SELECT GlnNumber FROM [dbo].[EnergySuppliers] WHERE Id = @EnergySupplierId";
-            return await _connectionFactory.GetOpenConnection()
-                .QuerySingleOrDefaultAsync<string>(sql, new { EnergySupplierId = energySupplierId.Value })
-                .ConfigureAwait(false);
+            return await _connectionFactory.GetOpenConnection().QuerySingleOrDefaultAsync<string>(sql, new { EnergySupplierId = energySupplierId.Value }).ConfigureAwait(false);
         }
     }
 }
