@@ -409,8 +409,11 @@ namespace Processing.IntegrationTests.Application
         {
             var jsonSerializer = GetService<IJsonSerializer>();
             var context = GetService<MarketRolesContext>();
+
+            var messageType = GetIntegrationEventNameFromType<TMessage>() ?? typeof(TMessage).FullName;
+
             return context.OutboxMessages
-                .Where(message => message.Type == typeof(TMessage).FullName)
+                .Where(message => message.Type == messageType)
                 .Select(message => jsonSerializer.Deserialize<TMessage>(message.Data));
         }
 
@@ -448,6 +451,19 @@ namespace Processing.IntegrationTests.Application
 
             using var sqlCommand = new SqlCommand(cleanupStatement, GetSqlDbConnection());
             sqlCommand.ExecuteNonQuery();
+        }
+
+        private string? GetIntegrationEventNameFromType<TIntegrationEventType>()
+        {
+            var mapper = GetService<IntegrationEventMapper>();
+            try
+            {
+                return mapper.GetByType(typeof(TIntegrationEventType)).EventName;
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
         }
     }
 }
