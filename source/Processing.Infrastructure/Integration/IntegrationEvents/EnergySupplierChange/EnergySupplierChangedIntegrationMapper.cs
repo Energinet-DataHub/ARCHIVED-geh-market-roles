@@ -23,7 +23,7 @@ namespace Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplier
         protected override IMessage Convert(EnergySupplierChangedIntegrationEvent obj)
         {
             if (obj == null) throw new ArgumentException(null, nameof(obj));
-            return new Energinet.DataHub.MarketRoles.IntegrationEventContracts.EnergySupplierChanged
+            return new Contracts.IntegrationEvents.EnergySupplierChanged
             {
                 AccountingpointId = obj.AccountingPointId.ToString(),
                 EffectiveDate = obj.StartOfSupplyDate.ToString(),
