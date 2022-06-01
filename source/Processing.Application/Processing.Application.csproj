@@ -20,7 +20,7 @@ limitations under the License.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Energinet.DataHub.Core.App.Common" Version="2.3.1" />
+    <PackageReference Include="Energinet.DataHub.Core.App.Common" Version="2.3.3" />
     <PackageReference Include="FluentValidation" Version="10.4.0" />
     <PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
