@@ -62,15 +62,12 @@ using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
 using Processing.Infrastructure.Configuration.DataAccess.ProcessManagers;
 using Processing.Infrastructure.Configuration.DomainEventDispatching;
 using Processing.Infrastructure.Configuration.EventPublishing;
-using Processing.Infrastructure.Configuration.Outbox;
 using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
 using Processing.Infrastructure.EDI;
-using Processing.Infrastructure.EDI.ChangeOfSupplier;
 using Processing.Infrastructure.EDI.ChangeOfSupplier.ConsumerDetails;
 using Processing.Infrastructure.EDI.ChangeOfSupplier.EndOfSupplyNotification;
 using Processing.Infrastructure.EDI.ChangeOfSupplier.MeteringPointDetails;
-using Processing.Infrastructure.EDI.MoveIn;
 using Processing.Infrastructure.InternalCommands;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Transport;
@@ -143,8 +140,6 @@ namespace Processing.IntegrationTests.Application
             _container.AddEventPublishing(new ServiceBusSenderFactoryStub());
 
             // Business process responders
-            _container.Register<IBusinessProcessResultHandler<RequestChangeOfSupplier>, RequestChangeOfSupplierResultHandler>(Lifestyle.Scoped);
-            _container.Register<IBusinessProcessResultHandler<MoveInRequest>, RequestMoveInResultHandler>(Lifestyle.Scoped);
             _container.Register<IActorMessageService, ActorMessageService>(Lifestyle.Scoped);
             _container.Register<IMessageHubDispatcher, MessageHubDispatcher>(Lifestyle.Scoped);
             _container.Register<IActorContext>(() => new ActorContext { CurrentActor = new Actor(Guid.NewGuid(), "GLN", "8200000001409", "GridAccessProvider") }, Lifestyle.Singleton);
@@ -167,7 +162,7 @@ namespace Processing.IntegrationTests.Application
                 new[] { typeof(RequestChangeOfSupplierHandler).Assembly, typeof(PublishWhenEnergySupplierHasChanged).Assembly, },
                 new[]
                 {
-                    typeof(UnitOfWorkBehaviour<,>), typeof(InputValidationBehaviour<,>), typeof(BusinessProcessResponderBehaviour<,>), typeof(DomainEventsDispatcherBehaviour<,>),
+                    typeof(UnitOfWorkBehaviour<,>), typeof(InputValidationBehaviour<,>), typeof(DomainEventsDispatcherBehaviour<,>),
                     typeof(InternalCommandHandlingBehaviour<,>),
                 });
 

@@ -14,7 +14,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
@@ -57,16 +56,12 @@ using Processing.Infrastructure.Configuration.DataAccess.Consumers;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
 using Processing.Infrastructure.Configuration.DataAccess.ProcessManagers;
 using Processing.Infrastructure.Configuration.DomainEventDispatching;
-using Processing.Infrastructure.Configuration.EventPublishing;
-using Processing.Infrastructure.Configuration.Outbox;
 using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
 using Processing.Infrastructure.EDI;
-using Processing.Infrastructure.EDI.ChangeOfSupplier;
 using Processing.Infrastructure.EDI.ChangeOfSupplier.ConsumerDetails;
 using Processing.Infrastructure.EDI.ChangeOfSupplier.EndOfSupplyNotification;
 using Processing.Infrastructure.EDI.ChangeOfSupplier.MeteringPointDetails;
-using Processing.Infrastructure.EDI.MoveIn;
 using Processing.Infrastructure.Integration.Notifications;
 using Processing.Infrastructure.InternalCommands;
 using Processing.Infrastructure.RequestAdapters;
@@ -174,7 +169,6 @@ namespace Processing.Api
                     typeof(InputValidationBehaviour<,>),
                     typeof(DomainEventsDispatcherBehaviour<,>),
                     typeof(InternalCommandHandlingBehaviour<,>),
-                    typeof(BusinessProcessResponderBehaviour<,>),
                 });
 
             container.ReceiveProtobuf<Energinet.DataHub.MarketRoles.Contracts.MarketRolesEnvelope>(
@@ -188,10 +182,6 @@ namespace Processing.Api
             container.Register<IEndOfSupplyNotifier, EndOfSupplyNotifier>(Lifestyle.Scoped);
             container.Register<IConsumerDetailsForwarder, ConsumerDetailsForwarder>(Lifestyle.Scoped);
             container.Register<IMeteringPointDetailsForwarder, MeteringPointDetailsForwarder>(Lifestyle.Scoped);
-
-            // Business process responders
-            container.Register<IBusinessProcessResultHandler<RequestChangeOfSupplier>, RequestChangeOfSupplierResultHandler>(Lifestyle.Scoped);
-            container.Register<IBusinessProcessResultHandler<MoveInRequest>, RequestMoveInResultHandler>(Lifestyle.Scoped);
 
             // Input validation(
             container.Register<IValidator<RequestChangeOfSupplier>, RequestChangeOfSupplierRuleSet>(Lifestyle.Scoped);
