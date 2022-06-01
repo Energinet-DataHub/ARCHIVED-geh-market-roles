@@ -16,32 +16,27 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using Google.Protobuf.WellKnownTypes;
 using MediatR;
+using Processing.Application.Common;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints.Events;
-using Processing.Infrastructure.Configuration.DataAccess;
-using Processing.Infrastructure.Configuration.Outbox;
-using Processing.Infrastructure.Integration.Helpers;
 
-namespace Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySupplierChangeRegistered
+namespace Processing.Application.ChangeOfSupplier
 {
     public class
         PublishWhenEnergySupplierChangeRegistered : INotificationHandler<
             EnergySupplierChangeRegistered>
     {
         private readonly IDbConnectionFactory _connectionFactory;
-        private readonly OutboxProvider _outboxProvider;
-        private readonly OutboxMessageFactory _outboxMessageFactory;
+        private readonly IEventPublisher _eventPublisher;
 
         public PublishWhenEnergySupplierChangeRegistered(
             IDbConnectionFactory connectionFactory,
-            OutboxProvider outboxProvider,
-            OutboxMessageFactory outboxMessageFactory)
+            IEventPublisher eventPublisher)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-            _outboxProvider = outboxProvider ?? throw new ArgumentNullException(nameof(outboxProvider));
-            _outboxMessageFactory =
-                outboxMessageFactory ?? throw new ArgumentNullException(nameof(outboxMessageFactory));
+            _eventPublisher = eventPublisher;
         }
 
         public async Task Handle(
@@ -57,11 +52,10 @@ namespace Processing.Infrastructure.Integration.IntegrationEvents.FutureEnergySu
                 AccountingpointId = notification.AccountingPointId.Value.ToString(),
                 GsrnNumber = notification.GsrnNumber.Value,
                 EnergySupplierGln = supplierGlnNumber,
-                EffectiveDate = notification.EffectiveDate.ToTimestamp(),
+                EffectiveDate = Timestamp.FromDateTimeOffset(notification.EffectiveDate.ToDateTimeOffset()),
             };
 
-            var message = _outboxMessageFactory.CreateFrom(integrationEvent, OutboxMessageCategory.IntegrationEvent);
-            _outboxProvider.Add(message);
+            await _eventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
         }
 
         private async Task<string> GetSupplierGlnNumberAsync(EnergySupplierId energySupplierId)

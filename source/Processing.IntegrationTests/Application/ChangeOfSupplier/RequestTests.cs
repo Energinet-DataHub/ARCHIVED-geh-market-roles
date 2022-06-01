@@ -38,7 +38,8 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier
 
             await Mediator.Send(request, CancellationToken.None).ConfigureAwait(false);
 
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectChangeOfSupplier);
+            //TODO: Generation of accept/reject message has been moved to messaging layer - We will handle these test when a full implementation of this process is due
+            //AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectChangeOfSupplier);
         }
 
         [Fact]
@@ -50,7 +51,8 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier
 
             await Mediator.Send(request, CancellationToken.None).ConfigureAwait(false);
 
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectChangeOfSupplier);
+            //TODO: Generation of accept/reject message has been moved to messaging layer - We will handle these test when a full implementation of this process is due
+            //AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectChangeOfSupplier);
         }
 
         [Fact]
@@ -65,7 +67,8 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier
 
             await Mediator.Send(request, CancellationToken.None).ConfigureAwait(false);
 
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectChangeOfSupplier);
+            //TODO: Generation of accept/reject message has been moved to messaging layer - We will handle these test when a full implementation of this process is due
+            //AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectChangeOfSupplier);
         }
 
         [Fact]
@@ -85,7 +88,9 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier
                 };
 
             await Mediator.Send(request, CancellationToken.None).ConfigureAwait(false);
-            AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.ConfirmChangeOfSupplier);
+
+            //TODO: Generation of accept/reject message has been moved to messaging layer - We will handle these test when a full implementation of this process is due
+            //AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.ConfirmChangeOfSupplier);
         }
 
         private static RequestChangeOfSupplier CreateRequest(string transaction, string energySupplierGln, string consumerId, string gsrnNumber, string startDate)

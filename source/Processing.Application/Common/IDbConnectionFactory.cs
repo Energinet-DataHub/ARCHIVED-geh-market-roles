@@ -12,24 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
-using Processing.Application.Common;
+using System.Data;
 
-namespace Processing.Infrastructure.BusinessRequestProcessing
+namespace Processing.Application.Common
 {
     /// <summary>
-    /// Generates a client response for completed a business process request
+    /// Factory for creating database connections
     /// </summary>
-    /// <typeparam name="TBusinessProcessRequest"><see cref="IBusinessRequest"/></typeparam>
-    public interface IBusinessProcessResultHandler<in TBusinessProcessRequest>
-        where TBusinessProcessRequest : IBusinessRequest
+    public interface IDbConnectionFactory
     {
         /// <summary>
-        /// Generates a response
+        /// Returns and existing open connection if any, or creates a new open connection
         /// </summary>
-        /// <param name="request"></param>
-        /// <param name="result"></param>
-        /// <returns><see cref="Task"/></returns>
-        Task HandleAsync(TBusinessProcessRequest request, BusinessProcessResult result);
+        /// <returns><see cref="IDbConnection"/></returns>
+        IDbConnection GetOpenConnection();
     }
 }

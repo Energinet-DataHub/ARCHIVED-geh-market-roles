@@ -17,24 +17,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using MediatR;
+using Processing.Application.Common;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints.Events;
-using Processing.Infrastructure.Configuration.DataAccess;
-using Processing.Infrastructure.Configuration.Outbox;
 
-namespace Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange
+namespace Processing.Application.ChangeOfSupplier
 {
     public class PublishWhenEnergySupplierHasChanged : INotificationHandler<EnergySupplierChanged>
     {
         private readonly IDbConnectionFactory _connectionFactory;
-        private readonly OutboxProvider _outboxProvider;
-        private readonly OutboxMessageFactory _outboxMessageFactory;
+        private readonly IEventPublisher _eventPublisher;
 
-        public PublishWhenEnergySupplierHasChanged(IDbConnectionFactory connectionFactory, OutboxProvider outboxProvider, OutboxMessageFactory outboxMessageFactory)
+        public PublishWhenEnergySupplierHasChanged(IDbConnectionFactory connectionFactory, IEventPublisher eventPublisher)
         {
             _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-            _outboxProvider = outboxProvider ?? throw new ArgumentNullException(nameof(outboxProvider));
-            _outboxMessageFactory = outboxMessageFactory ?? throw new ArgumentNullException(nameof(outboxMessageFactory));
+            _eventPublisher = eventPublisher;
         }
 
         public async Task Handle(EnergySupplierChanged notification, CancellationToken cancellationToken)
@@ -50,8 +47,7 @@ namespace Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplier
                 EffectiveDate = notification.StartOfSupplyDate.ToString(),
             };
 
-            var message = _outboxMessageFactory.CreateFrom(integrationEvent, OutboxMessageCategory.IntegrationEvent);
-            _outboxProvider.Add(message);
+            await _eventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
         }
 
         private async Task<string> GetSupplierGlnNumberAsync(EnergySupplierId energySupplierId)
