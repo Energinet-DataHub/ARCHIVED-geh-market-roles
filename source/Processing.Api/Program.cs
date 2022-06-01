@@ -120,6 +120,8 @@ namespace Processing.Api
                 throw new ArgumentNullException(nameof(container));
             base.ConfigureContainer(container);
 
+            container.AddOutbox();
+
             container.Register<CorrelationIdMiddleware>(Lifestyle.Scoped);
             container.Register<ICorrelationContext, CorrelationContext>(Lifestyle.Scoped);
             container.Register<EntryPointTelemetryScopeMiddleware>(Lifestyle.Scoped);
@@ -134,8 +136,6 @@ namespace Processing.Api
             container.Register<IProcessManagerRepository, ProcessManagerRepository>(Lifestyle.Scoped);
             container.Register<IConsumerRepository, ConsumerRepository>(Lifestyle.Scoped);
             container.Register<IJsonSerializer, JsonSerializer>(Lifestyle.Scoped);
-            container.Register<IOutbox, OutboxProvider>(Lifestyle.Scoped);
-            container.Register<IOutboxMessageFactory, OutboxMessageFactory>(Lifestyle.Scoped);
             container.Register<ICommandScheduler, CommandScheduler>(Lifestyle.Scoped);
             container.Register<IDomainEventsAccessor, DomainEventsAccessor>(Lifestyle.Scoped);
             container.Register<IDomainEventsDispatcher, DomainEventsDispatcher>(Lifestyle.Scoped);

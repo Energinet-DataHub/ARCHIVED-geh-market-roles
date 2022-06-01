@@ -12,17 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Processing.Infrastructure.Configuration.Outbox
+using System;
+using Processing.Infrastructure.Configuration.Outbox;
+using SimpleInjector;
+
+namespace Processing.Infrastructure.Configuration
 {
-    /// <summary>
-    /// Transactional outbox
-    /// </summary>
-    public interface IOutbox
+    public static class OutboxRegistration
     {
-        /// <summary>
-        /// Add message to outbox
-        /// </summary>
-        /// <param name="message"></param>
-        void Add(OutboxMessage message);
+        public static void AddOutbox(this Container container)
+        {
+            if (container == null) throw new ArgumentNullException(nameof(container));
+            container.Register<OutboxProvider>(Lifestyle.Scoped);
+            container.Register<OutboxMessageFactory>(Lifestyle.Scoped);
+        }
     }
 }

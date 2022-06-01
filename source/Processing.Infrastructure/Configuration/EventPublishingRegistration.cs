@@ -38,6 +38,7 @@ namespace Processing.Infrastructure.Configuration
             if (container == null) throw new ArgumentNullException(nameof(container));
 
             RegisterCommonServices(container);
+            container.Register<IServiceBusSenderFactory, ServiceBusSenderFactory>(Lifestyle.Singleton);
             container.RegisterSingleton<ServiceBusClient>(() => new ServiceBusClient(serviceBusConnectionStringForIntegrationEvents));
         }
 
