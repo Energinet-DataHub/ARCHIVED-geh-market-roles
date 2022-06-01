@@ -54,7 +54,9 @@ namespace Processing.Infrastructure.Configuration
         private static void RegisterIntegrationEvents(Container container)
         {
             var mapper = new IntegrationEventMapper();
-            mapper.Add(nameof(Contracts.IntegrationEvents.ConsumerMovedIn), typeof(ConsumerMovedIn), 1, "consumer-moved-in");
+            mapper.Add(nameof(ConsumerMovedIn), typeof(ConsumerMovedIn), 1, "consumer-moved-in");
+            mapper.Add(nameof(EnergySupplierChanged), typeof(EnergySupplierChanged), 1, "energy-supplier-changed");
+            mapper.Add(nameof(FutureEnergySupplierChangeRegistered), typeof(FutureEnergySupplierChangeRegistered), 1, "energy-supplier-change-registered");
 
             container.Register<IntegrationEventMapper>(() => mapper, Lifestyle.Singleton);
         }

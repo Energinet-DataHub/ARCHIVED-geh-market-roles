@@ -42,11 +42,13 @@ namespace Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplier
             if (notification == null) throw new ArgumentNullException(nameof(notification));
 
             var supplierGlnNumber = await GetSupplierGlnNumberAsync(new EnergySupplierId(notification.EnergySupplierId)).ConfigureAwait(false);
-            var integrationEvent = new EnergySupplierChangedIntegrationEvent(
-                notification.AccountingPointId,
-                notification.GsrnNumber,
-                supplierGlnNumber,
-                notification.StartOfSupplyDate);
+            var integrationEvent = new Contracts.IntegrationEvents.EnergySupplierChanged()
+            {
+                AccountingpointId = notification.AccountingPointId.ToString(),
+                GsrnNumber = notification.GsrnNumber,
+                EnergySupplierGln = supplierGlnNumber,
+                EffectiveDate = notification.StartOfSupplyDate.ToString(),
+            };
 
             var message = _outboxMessageFactory.CreateFrom(integrationEvent, OutboxMessageCategory.IntegrationEvent);
             _outboxProvider.Add(message);

@@ -184,7 +184,7 @@ namespace Processing.Api
                     .FromOneOf(envelope => envelope.MarketRolesMessagesCase)
                     .WithParser(() => Energinet.DataHub.MarketRoles.Contracts.MarketRolesEnvelope.Parser));
 
-            container.SendProtobuf<Energinet.DataHub.MarketRoles.IntegrationEventContracts.EnergySupplierChanged>();
+            container.SendProtobuf<Contracts.IntegrationEvents.EnergySupplierChanged>();
 
             // Actor Notification handlers
             container.Register<IEndOfSupplyNotifier, EndOfSupplyNotifier>(Lifestyle.Scoped);

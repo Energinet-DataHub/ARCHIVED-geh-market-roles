@@ -12,21 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using Processing.Infrastructure.Integration.IntegrationEvents.EnergySupplierChange;
+using System.Reflection;
 
-namespace Processing.Infrastructure.Integration.Helpers
+namespace Processing.Infrastructure.Configuration
 {
-    public static class IntegrationEventTypeFactory
+    public static class ApplicationAssemblies
     {
-        public static Type GetType(string type)
-        {
-            if (typeof(EnergySupplierChangedIntegrationEvent).FullName == type)
-            {
-                return typeof(EnergySupplierChangedIntegrationEvent);
-            }
-
-            throw new ArgumentException("Integration Event type is not implemented.");
-        }
+        public static Assembly Contracts => typeof(Contracts.AssemblyInfo).Assembly;
     }
 }
