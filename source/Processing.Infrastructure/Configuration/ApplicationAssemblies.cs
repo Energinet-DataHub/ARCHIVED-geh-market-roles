@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Reflection;
+using Processing.Application.MoveIn;
 
 namespace Processing.Infrastructure.Configuration
 {
@@ -21,5 +22,7 @@ namespace Processing.Infrastructure.Configuration
         public static Assembly Contracts => typeof(Contracts.AssemblyInfo).Assembly;
 
         public static Assembly Infrastructure => typeof(ApplicationAssemblies).Assembly;
+
+        public static Assembly Application => typeof(MoveInRequestHandler).Assembly;
     }
 }
