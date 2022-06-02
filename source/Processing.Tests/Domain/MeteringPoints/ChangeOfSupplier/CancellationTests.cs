@@ -26,7 +26,7 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
     [UnitTest]
     public class CancellationTests
     {
-        private SystemDateTimeProviderStub _systemDateTimeProvider;
+        private readonly SystemDateTimeProviderStub _systemDateTimeProvider;
 
         public CancellationTests()
         {
@@ -38,7 +38,7 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
         {
             var (meteringPoint, _) = CreateWithActiveMoveIn();
             var transaction = CreateTransaction();
-            meteringPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), _systemDateTimeProvider.Now().Plus(Duration.FromDays(5)), transaction, _systemDateTimeProvider);
+            meteringPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), _systemDateTimeProvider.Now().Plus(Duration.FromDays(5)), transaction, _systemDateTimeProvider, BusinessProcessId.New());
 
             meteringPoint.CancelChangeOfSupplier(transaction);
 
@@ -51,7 +51,7 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             var (meteringPoint, _) = CreateWithActiveMoveIn();
             var transaction = CreateTransaction();
             var supplyStartDate = _systemDateTimeProvider.Now();
-            meteringPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), supplyStartDate, transaction, _systemDateTimeProvider);
+            meteringPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), supplyStartDate, transaction, _systemDateTimeProvider, BusinessProcessId.New());
             meteringPoint.EffectuateChangeOfSupplier(transaction, _systemDateTimeProvider);
 
             Assert.Throws<BusinessProcessException>(() => meteringPoint.CancelChangeOfSupplier(transaction));
@@ -76,7 +76,7 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
         {
             var accountingPoint = new AccountingPoint(GsrnNumber.Create("571234567891234568"), MeteringPointType.Consumption);
             var transaction = CreateTransaction();
-            accountingPoint.AcceptConsumerMoveIn(CreateConsumerId(), CreateEnergySupplierId(), _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)), transaction);
+            accountingPoint.AcceptConsumerMoveIn(CreateConsumerId(), CreateEnergySupplierId(), _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)), transaction, BusinessProcessId.New());
             accountingPoint.EffectuateConsumerMoveIn(transaction, _systemDateTimeProvider.Now());
             return (accountingPoint, transaction);
         }

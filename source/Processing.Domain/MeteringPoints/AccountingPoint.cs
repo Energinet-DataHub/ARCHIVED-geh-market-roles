@@ -96,7 +96,7 @@ namespace Processing.Domain.MeteringPoints
             return new BusinessRulesValidationResult(rules);
         }
 
-        public void AcceptChangeOfSupplier(EnergySupplierId energySupplierId, Instant supplyStartDate, Transaction transaction, ISystemDateTimeProvider systemDateTimeProvider)
+        public void AcceptChangeOfSupplier(EnergySupplierId energySupplierId, Instant supplyStartDate, Transaction transaction, ISystemDateTimeProvider systemDateTimeProvider, BusinessProcessId businessProcessId)
         {
             if (energySupplierId == null) throw new ArgumentNullException(nameof(energySupplierId));
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
@@ -107,7 +107,7 @@ namespace Processing.Domain.MeteringPoints
                     "Cannot accept change of supplier request due to violation of one or more business rules.");
             }
 
-            var businessProcess = CreateBusinessProcess(transaction, supplyStartDate, BusinessProcessType.ChangeOfSupplier);
+            var businessProcess = CreateBusinessProcess(transaction, supplyStartDate, BusinessProcessType.ChangeOfSupplier, businessProcessId);
             _businessProcesses.Add(businessProcess);
             _supplierRegistrations.Add(new SupplierRegistration(energySupplierId, businessProcess.BusinessProcessId));
 
@@ -157,7 +157,7 @@ namespace Processing.Domain.MeteringPoints
             return new BusinessRulesValidationResult(rules);
         }
 
-        public void AcceptConsumerMoveIn(ConsumerId consumerId, EnergySupplierId energySupplierId, Instant moveInDate, Transaction transaction)
+        public void AcceptConsumerMoveIn(ConsumerId consumerId, EnergySupplierId energySupplierId, Instant moveInDate, Transaction transaction, BusinessProcessId businessProcessId)
         {
             if (consumerId == null) throw new ArgumentNullException(nameof(consumerId));
             if (energySupplierId == null) throw new ArgumentNullException(nameof(energySupplierId));
@@ -168,7 +168,7 @@ namespace Processing.Domain.MeteringPoints
                     "Cannot accept move in request due to violation of one or more business rules.");
             }
 
-            var businessProcess = CreateBusinessProcess(transaction, moveInDate, BusinessProcessType.MoveIn);
+            var businessProcess = CreateBusinessProcess(transaction, moveInDate, BusinessProcessType.MoveIn, businessProcessId);
             _businessProcesses.Add(businessProcess);
             _consumerRegistrations.Add(new ConsumerRegistration(consumerId, businessProcess.BusinessProcessId));
             _supplierRegistrations.Add(new SupplierRegistration(energySupplierId, businessProcess.BusinessProcessId));
@@ -253,14 +253,14 @@ namespace Processing.Domain.MeteringPoints
             return businessProcess;
         }
 
-        private BusinessProcess CreateBusinessProcess(Transaction transaction, Instant effectiveDate, BusinessProcessType businessProcessType)
+        private BusinessProcess CreateBusinessProcess(Transaction transaction, Instant effectiveDate, BusinessProcessType businessProcessType, BusinessProcessId businessProcessId)
         {
             if (_businessProcesses.Any(p => p.Transaction.Equals(transaction)))
             {
                 throw new BusinessProcessException($"Process id {transaction.Value} does already exist.");
             }
 
-            return new BusinessProcess(BusinessProcessId.New(), transaction, effectiveDate, businessProcessType);
+            return new BusinessProcess(businessProcessId, transaction, effectiveDate, businessProcessType);
         }
     }
 }

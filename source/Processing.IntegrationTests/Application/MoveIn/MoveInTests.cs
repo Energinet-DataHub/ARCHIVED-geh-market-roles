@@ -151,6 +151,19 @@ namespace Processing.IntegrationTests.Application.MoveIn
         }
 
         [Fact]
+        public async Task Request_succeeds()
+        {
+            CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
+            CreateAccountingPoint();
+            SaveChanges();
+
+            var request = CreateRequest(false);
+            var result = await SendRequestAsync(request).ConfigureAwait(false);
+
+            Assert.NotNull(result.ProcessId);
+        }
+
+        [Fact]
         public async Task Move_in_on_top_of_move_in_should_result_in_reject_message()
         {
             CreateEnergySupplier();

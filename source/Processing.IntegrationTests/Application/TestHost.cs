@@ -361,7 +361,7 @@ namespace Processing.IntegrationTests.Application
                 throw new ArgumentNullException(nameof(accountingPoint));
 
             var systemTimeProvider = GetService<ISystemDateTimeProvider>();
-            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, transaction);
+            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, transaction, BusinessProcessId.New());
             accountingPoint.EffectuateConsumerMoveIn(transaction, systemTimeProvider.Now());
         }
 
@@ -374,7 +374,7 @@ namespace Processing.IntegrationTests.Application
 
             var changeSupplierDate = systemTimeProvider.Now();
 
-            accountingPoint.AcceptChangeOfSupplier(energySupplierId, changeSupplierDate, transaction, systemTimeProvider);
+            accountingPoint.AcceptChangeOfSupplier(energySupplierId, changeSupplierDate, transaction, systemTimeProvider, BusinessProcessId.New());
         }
 
         protected BusinessProcessId GetBusinessProcessId(Transaction transaction)
