@@ -19,5 +19,7 @@ namespace Processing.Infrastructure.Configuration
     public static class ApplicationAssemblies
     {
         public static Assembly Contracts => typeof(Contracts.AssemblyInfo).Assembly;
+
+        public static Assembly Infrastructure => typeof(ApplicationAssemblies).Assembly;
     }
 }
