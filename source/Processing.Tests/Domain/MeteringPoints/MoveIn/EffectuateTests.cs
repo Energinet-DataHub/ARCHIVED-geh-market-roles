@@ -27,7 +27,7 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
     [UnitTest]
     public class EffectuateTests
     {
-        private SystemDateTimeProviderStub _systemDateTimeProvider = new SystemDateTimeProviderStub();
+        private readonly SystemDateTimeProviderStub _systemDateTimeProvider = new SystemDateTimeProviderStub();
 
         public EffectuateTests()
         {
@@ -39,7 +39,7 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         {
             var (accountingPoint, consumerId, energySupplierId, transaction) = SetupScenario();
             var moveInDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(1));
-            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, transaction);
+            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, transaction, BusinessProcessId.New());
 
             Assert.Throws<BusinessProcessException>(() =>
                 accountingPoint.EffectuateConsumerMoveIn(transaction, _systemDateTimeProvider.Now()));
@@ -60,7 +60,7 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         {
             var (accountingPoint, consumerId, energySupplierId, transaction) = SetupScenario();
             var moveInDate = _systemDateTimeProvider.Now();
-            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, transaction);
+            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, transaction, BusinessProcessId.New());
 
             accountingPoint.EffectuateConsumerMoveIn(transaction, _systemDateTimeProvider.Now());
 
