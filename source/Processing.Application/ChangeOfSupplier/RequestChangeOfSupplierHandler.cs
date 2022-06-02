@@ -64,9 +64,10 @@ namespace Processing.Application.ChangeOfSupplier
 
             var startDate = InstantPattern.General.Parse(request.StartDate).Value;
 
-            _accountingPoint?.AcceptChangeOfSupplier(_energySupplier!.EnergySupplierId, startDate, new Transaction(request.TransactionId), _systemTimeProvider);
+            var businessProcessId = BusinessProcessId.New();
+            _accountingPoint?.AcceptChangeOfSupplier(_energySupplier!.EnergySupplierId, startDate, new Transaction(request.TransactionId), _systemTimeProvider, businessProcessId);
 
-            return BusinessProcessResult.Ok(request.TransactionId);
+            return BusinessProcessResult.Ok(request.TransactionId, businessProcessId.Value.ToString());
         }
 
         private BusinessProcessResult Validate()
