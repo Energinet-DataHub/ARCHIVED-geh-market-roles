@@ -41,8 +41,7 @@ namespace Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetail
 
             await _domainEventPublisher.PublishAsync(new MeteringPointDetailsDispatched(
                 AccountingPointId.Create(request.AccountingPointId),
-                BusinessProcessId.Create(request.BusinessProcessId),
-                Transaction.Create(request.Transaction))).ConfigureAwait(false);
+                BusinessProcessId.Create(request.BusinessProcessId))).ConfigureAwait(false);
 
             return Unit.Value;
         }

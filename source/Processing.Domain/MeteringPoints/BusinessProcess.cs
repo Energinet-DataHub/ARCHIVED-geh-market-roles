@@ -20,18 +20,15 @@ namespace Processing.Domain.MeteringPoints
 {
     public class BusinessProcess : Entity
     {
-        internal BusinessProcess(BusinessProcessId businessProcessId, Transaction transaction, Instant effectiveDate, BusinessProcessType processType)
+        internal BusinessProcess(BusinessProcessId businessProcessId, Instant effectiveDate, BusinessProcessType processType)
         {
             BusinessProcessId = businessProcessId ?? throw new ArgumentNullException(nameof(businessProcessId));
-            Transaction = transaction ?? throw new ArgumentNullException(nameof(transaction));
             EffectiveDate = effectiveDate;
             ProcessType = processType ?? throw new ArgumentNullException(nameof(processType));
             Status = BusinessProcessStatus.Pending;
         }
 
         public BusinessProcessId BusinessProcessId { get; }
-
-        public Transaction Transaction { get; }
 
         public Instant EffectiveDate { get; }
 

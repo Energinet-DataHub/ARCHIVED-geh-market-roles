@@ -269,33 +269,12 @@ namespace Processing.IntegrationTests.Application
 
         protected async Task<BusinessProcessResult> SendRequestAsync(IBusinessRequest request)
         {
-            var result = await GetService<IMediator>().Send(request, CancellationToken.None).ConfigureAwait(false);
-            return result;
+            return await GetService<IMediator>().Send(request, CancellationToken.None).ConfigureAwait(false);
         }
 
         protected Task InvokeCommandAsync(InternalCommand command)
         {
             return GetService<IMediator>().Send(command, CancellationToken.None);
-        }
-
-        protected async Task<TCommand?> GetEnqueuedCommandAsync<TCommand>()
-        {
-            var businessProcessId = _businessProcessId?.Value ?? throw new InvalidOperationException("Unknown BusinessProcessId");
-            var type = typeof(TCommand).FullName;
-            var queuedCommand = MarketRolesContext.QueuedInternalCommands
-                .FirstOrDefault(queuedInternalCommand =>
-                    queuedInternalCommand.BusinessProcessId.Equals(businessProcessId) &&
-#pragma warning disable CA1309 // Warns about: "Use ordinal string comparison", but we want EF to take care of this.
-                    queuedInternalCommand.Type.Equals(type));
-
-            if (queuedCommand is null)
-            {
-                return default;
-            }
-
-            var messageExtractor = GetService<MessageExtractor>();
-            var command = await messageExtractor.ExtractAsync(queuedCommand!.Data).ConfigureAwait(false);
-            return (TCommand)command;
         }
 
         protected async Task<TCommand?> GetEnqueuedCommandAsync<TCommand>(BusinessProcessId businessProcessId)
@@ -351,21 +330,21 @@ namespace Processing.IntegrationTests.Application
         {
             var systemTimeProvider = GetService<ISystemDateTimeProvider>();
             var moveInDate = systemTimeProvider.Now().Minus(Duration.FromDays(365));
-            var transaction = CreateTransaction();
-            SetConsumerMovedIn(accountingPoint, consumerId, energySupplierId, moveInDate, transaction);
+            SetConsumerMovedIn(accountingPoint, consumerId, energySupplierId, moveInDate);
         }
 
-        protected void SetConsumerMovedIn(AccountingPoint accountingPoint, ConsumerId consumerId, EnergySupplierId energySupplierId, Instant moveInDate, Transaction transaction)
+        protected void SetConsumerMovedIn(AccountingPoint accountingPoint, ConsumerId consumerId, EnergySupplierId energySupplierId, Instant moveInDate)
         {
             if (accountingPoint == null)
                 throw new ArgumentNullException(nameof(accountingPoint));
 
             var systemTimeProvider = GetService<ISystemDateTimeProvider>();
-            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, transaction, BusinessProcessId.New());
-            accountingPoint.EffectuateConsumerMoveIn(transaction, systemTimeProvider.Now());
+            var businessProcessId = BusinessProcessId.New();
+            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, businessProcessId);
+            accountingPoint.EffectuateConsumerMoveIn(businessProcessId, systemTimeProvider.Now());
         }
 
-        protected void RegisterChangeOfSupplier(AccountingPoint accountingPoint, EnergySupplierId energySupplierId, Transaction transaction)
+        protected void RegisterChangeOfSupplier(AccountingPoint accountingPoint, EnergySupplierId energySupplierId, BusinessProcessId processId)
         {
             if (accountingPoint == null)
                 throw new ArgumentNullException(nameof(accountingPoint));
@@ -374,7 +353,7 @@ namespace Processing.IntegrationTests.Application
 
             var changeSupplierDate = systemTimeProvider.Now();
 
-            accountingPoint.AcceptChangeOfSupplier(energySupplierId, changeSupplierDate, transaction, systemTimeProvider, BusinessProcessId.New());
+            accountingPoint.AcceptChangeOfSupplier(energySupplierId, changeSupplierDate, systemTimeProvider, processId);
         }
 
         protected BusinessProcessId GetBusinessProcessId(Transaction transaction)

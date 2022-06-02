@@ -71,9 +71,6 @@ namespace Processing.Infrastructure.Configuration.DataAccess.AccountingPoints
                 x.Property(y => y.ProcessType)
                     .HasColumnName("ProcessType")
                     .HasConversion(toDbValue => toDbValue.Id, fromDbValue => EnumerationType.FromValue<BusinessProcessType>(fromDbValue));
-                x.Property(y => y.Transaction)
-                    .HasColumnName("TransactionId")
-                    .HasConversion(toDbValue => toDbValue.Value, fromDbValue => new Transaction(fromDbValue));
             });
 
             builder.OwnsMany<ConsumerRegistration>("_consumerRegistrations", y =>

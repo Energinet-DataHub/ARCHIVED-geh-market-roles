@@ -39,17 +39,18 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         {
             var (accountingPoint, consumerId, energySupplierId, transaction) = SetupScenario();
             var moveInDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(1));
-            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, transaction, BusinessProcessId.New());
+            var businessProcessId = BusinessProcessId.New();
+            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, businessProcessId);
 
             Assert.Throws<BusinessProcessException>(() =>
-                accountingPoint.EffectuateConsumerMoveIn(transaction, _systemDateTimeProvider.Now()));
+                accountingPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now()));
         }
 
         [Fact]
         public void Effectuate_WhenProcessIdDoesNotExists_IsNotPossible()
         {
             var (accountingPoint, _, _, _) = SetupScenario();
-            var nonExistingProcessId = new Transaction("NonExisting");
+            var nonExistingProcessId = BusinessProcessId.New();
 
             Assert.Throws<BusinessProcessException>(() =>
                 accountingPoint.EffectuateConsumerMoveIn(nonExistingProcessId, _systemDateTimeProvider.Now()));
@@ -60,9 +61,10 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         {
             var (accountingPoint, consumerId, energySupplierId, transaction) = SetupScenario();
             var moveInDate = _systemDateTimeProvider.Now();
-            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, transaction, BusinessProcessId.New());
+            var businessProcessId = BusinessProcessId.New();
+            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, businessProcessId);
 
-            accountingPoint.EffectuateConsumerMoveIn(transaction, _systemDateTimeProvider.Now());
+            accountingPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
 
             Assert.Contains(accountingPoint.DomainEvents, @event => @event is EnergySupplierChanged);
             Assert.Contains(accountingPoint.DomainEvents, @event => @event is ConsumerMovedIn);

@@ -32,7 +32,7 @@ namespace Processing.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSu
                     Id = obj.Id.ToString(),
                     AccountingPointId = obj.AccountingPointId.ToString(),
                     BusinessProcessId = obj.BusinessProcessId.ToString(),
-                    Transaction = obj.Transaction,
+                    Transaction = string.Empty,
                 },
             };
         }

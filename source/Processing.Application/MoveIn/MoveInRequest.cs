@@ -18,7 +18,6 @@ namespace Processing.Application.MoveIn
 {
     public record MoveInRequest(
         Consumer Consumer,
-        string TransactionId = "",
         string EnergySupplierGlnNumber = "",
         string AccountingPointGsrnNumber = "",
         string MoveInDate = "")

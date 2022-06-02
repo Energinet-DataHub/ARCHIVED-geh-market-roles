@@ -20,17 +20,14 @@ namespace Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetail
 {
     public class MeteringPointDetailsDispatched : DomainEventBase
     {
-        public MeteringPointDetailsDispatched(AccountingPointId accountingPointId, BusinessProcessId businessProcessId, Transaction transaction)
+        public MeteringPointDetailsDispatched(AccountingPointId accountingPointId, BusinessProcessId businessProcessId)
         {
             AccountingPointId = accountingPointId;
             BusinessProcessId = businessProcessId ?? throw new ArgumentNullException(nameof(businessProcessId));
-            Transaction = transaction;
         }
 
         public AccountingPointId AccountingPointId { get; }
 
         public BusinessProcessId BusinessProcessId { get; }
-
-        public Transaction Transaction { get; }
     }
 }
