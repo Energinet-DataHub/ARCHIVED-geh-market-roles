@@ -28,7 +28,7 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
     [UnitTest]
     public class AcceptTests
     {
-        private SystemDateTimeProviderStub _systemDateTimeProvider;
+        private readonly SystemDateTimeProviderStub _systemDateTimeProvider;
 
         public AcceptTests()
         {
@@ -87,9 +87,9 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             var moveInDate = _systemDateTimeProvider.Now().Minus(Duration.FromDays(1));
             var moveInTransaction = CreateTransaction();
 
-            meteringPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, moveInTransaction);
+            meteringPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, moveInTransaction, BusinessProcessId.New());
             meteringPoint.EffectuateConsumerMoveIn(moveInTransaction, _systemDateTimeProvider.Now());
-            meteringPoint.AcceptChangeOfSupplier(CreateSupplierId(), _systemDateTimeProvider.Now(), CreateTransaction(), _systemDateTimeProvider);
+            meteringPoint.AcceptChangeOfSupplier(CreateSupplierId(), _systemDateTimeProvider.Now(), CreateTransaction(), _systemDateTimeProvider, BusinessProcessId.New());
 
             var result = CanChangeSupplier(meteringPoint);
 
@@ -101,7 +101,7 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
         {
             var meteringPoint = CreateMeteringPoint(MeteringPointType.Consumption);
             var moveInDate = _systemDateTimeProvider.Now();
-            meteringPoint.AcceptConsumerMoveIn(CreateConsumerId(), CreateSupplierId(), moveInDate, CreateTransaction());
+            meteringPoint.AcceptConsumerMoveIn(CreateConsumerId(), CreateSupplierId(), moveInDate, CreateTransaction(), BusinessProcessId.New());
 
             var result = CanChangeSupplier(meteringPoint);
 
@@ -141,10 +141,10 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             var energySupplierId = CreateSupplierId();
             var moveInDate = _systemDateTimeProvider.Now().Minus(Duration.FromDays(1));
             var moveInTransaction = CreateTransaction();
-            meteringPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, moveInTransaction);
+            meteringPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, moveInTransaction, BusinessProcessId.New());
             meteringPoint.EffectuateConsumerMoveIn(moveInTransaction, _systemDateTimeProvider.Now());
 
-            meteringPoint.AcceptChangeOfSupplier(CreateSupplierId(), _systemDateTimeProvider.Now(), CreateTransaction(), _systemDateTimeProvider);
+            meteringPoint.AcceptChangeOfSupplier(CreateSupplierId(), _systemDateTimeProvider.Now(), CreateTransaction(), _systemDateTimeProvider, BusinessProcessId.New());
 
             Assert.Contains(meteringPoint.DomainEvents!, e => e is EnergySupplierChangeRegistered);
         }

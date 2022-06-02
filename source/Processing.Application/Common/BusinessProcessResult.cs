@@ -44,10 +44,11 @@ namespace Processing.Application.Common
             Success = ValidationErrors.Count == 0;
         }
 
-        private BusinessProcessResult(string transactionId, bool success)
+        private BusinessProcessResult(string transactionId, bool success, string processId)
         {
             TransactionId = transactionId;
             Success = success;
+            ProcessId = processId;
         }
 
         public bool Success { get; }
@@ -56,9 +57,11 @@ namespace Processing.Application.Common
 
         public IReadOnlyCollection<ValidationError> ValidationErrors { get; private set; } = new List<ValidationError>();
 
-        public static BusinessProcessResult Ok(string transactionId)
+        public string? ProcessId { get; set; }
+
+        public static BusinessProcessResult Ok(string transactionId, string processId)
         {
-            return new BusinessProcessResult(transactionId, true);
+            return new BusinessProcessResult(transactionId, true, processId);
         }
 
         public static BusinessProcessResult Fail(string transactionId, params ValidationError[] validationErrors)
