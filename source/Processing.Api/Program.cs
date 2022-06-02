@@ -159,8 +159,8 @@ namespace Processing.Api
             container.BuildMediator(
                 new[]
                 {
-                    typeof(RequestChangeOfSupplierHandler).Assembly,
-                    typeof(PublishWhenEnergySupplierHasChanged).Assembly,
+                    ApplicationAssemblies.Application,
+                    ApplicationAssemblies.Infrastructure,
                 },
                 new[]
                 {
