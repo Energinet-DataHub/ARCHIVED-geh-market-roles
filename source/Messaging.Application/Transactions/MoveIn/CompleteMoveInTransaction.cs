@@ -12,17 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Reflection;
-using Processing.Application.MoveIn;
+using Messaging.Application.Common.Commands;
 
-namespace Processing.Infrastructure.Configuration
+namespace Messaging.Application.Transactions.MoveIn;
+
+public class CompleteMoveInTransaction : InternalCommand
 {
-    public static class ApplicationAssemblies
+    public CompleteMoveInTransaction(string processId)
     {
-        public static Assembly Contracts => typeof(Contracts.AssemblyInfo).Assembly;
-
-        public static Assembly Infrastructure => typeof(ApplicationAssemblies).Assembly;
-
-        public static Assembly Application => typeof(MoveInRequestHandler).Assembly;
+        ProcessId = processId;
     }
+
+    public string ProcessId { get; }
 }

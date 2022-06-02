@@ -12,17 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Reflection;
-using Processing.Application.MoveIn;
+using System;
 
-namespace Processing.Infrastructure.Configuration
+namespace Messaging.Application.Transactions.MoveIn;
+
+public class TransactionNotFoundException : Exception
 {
-    public static class ApplicationAssemblies
+    public TransactionNotFoundException(string processId)
+        : base($"Could not find a transaction for business process id {processId}")
     {
-        public static Assembly Contracts => typeof(Contracts.AssemblyInfo).Assembly;
+    }
 
-        public static Assembly Infrastructure => typeof(ApplicationAssemblies).Assembly;
+    private TransactionNotFoundException()
+    {
+    }
 
-        public static Assembly Application => typeof(MoveInRequestHandler).Assembly;
+    private TransactionNotFoundException(string message, Exception innerException)
+        : base(message, innerException)
+    {
     }
 }
