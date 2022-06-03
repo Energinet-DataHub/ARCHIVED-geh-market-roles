@@ -51,7 +51,6 @@ using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.MeteringPoints.Events;
 using Processing.Domain.SeedWork;
-using Processing.Infrastructure.BusinessRequestProcessing;
 using Processing.Infrastructure.BusinessRequestProcessing.Pipeline;
 using Processing.Infrastructure.Configuration;
 using Processing.Infrastructure.Configuration.Correlation;
@@ -91,6 +90,7 @@ namespace Processing.IntegrationTests.Application
         private bool _disposed;
         private SqlConnection? _sqlConnection;
         private BusinessProcessId? _businessProcessId;
+        private ServiceBusSenderFactoryStub _serviceBusSenderFactoryStub;
 
         protected TestHost(DatabaseFixture databaseFixture)
         {
@@ -137,7 +137,8 @@ namespace Processing.IntegrationTests.Application
             _container.ConfigureMoveInProcessTimePolicy(0, 0, TimeOfDay.Create(0, 0, 0));
 
             // Integration event publishing
-            _container.AddEventPublishing(new ServiceBusSenderFactoryStub());
+            _serviceBusSenderFactoryStub = new ServiceBusSenderFactoryStub();
+            _container.AddEventPublishing(_serviceBusSenderFactoryStub);
 
             // Business process responders
             _container.Register<IActorMessageService, ActorMessageService>(Lifestyle.Scoped);
@@ -240,6 +241,7 @@ namespace Processing.IntegrationTests.Application
 
             CleanupDatabase();
 
+            _serviceBusSenderFactoryStub.Dispose();
             _sqlConnection?.Dispose();
             _scope.Dispose();
             _container.Dispose();
