@@ -27,7 +27,6 @@ namespace Processing.Tests.Application.MoveIn.Process
     {
         private readonly Guid _accountingPointId = Guid.NewGuid();
         private readonly Guid _businessProcessId = Guid.NewGuid();
-        private readonly string _transaction = Guid.NewGuid().ToString();
         private readonly Guid _consumerId = Guid.NewGuid();
         private readonly Guid _energySupplierId = Guid.NewGuid();
         private readonly Instant _moveInDate = SystemClock.Instance.GetCurrentInstant();
@@ -37,7 +36,7 @@ namespace Processing.Tests.Application.MoveIn.Process
         {
             var processManager = new MoveInProcessManager();
 
-            processManager.When(new ConsumerMoveInAccepted(_accountingPointId, SampleData.GsrnNumber, _businessProcessId, _transaction, _consumerId, _energySupplierId, _moveInDate));
+            processManager.When(new ConsumerMoveInAccepted(_accountingPointId, SampleData.GsrnNumber, _businessProcessId, _consumerId, _energySupplierId, _moveInDate));
 
             var command =
                 processManager.CommandsToSend.First(c => c.Command is EffectuateConsumerMoveIn).Command as
@@ -51,7 +50,7 @@ namespace Processing.Tests.Application.MoveIn.Process
         {
             var processManager = new MoveInProcessManager();
 
-            processManager.When(new ConsumerMoveInAccepted(_accountingPointId, SampleData.GsrnNumber, _businessProcessId, _transaction, _consumerId, _energySupplierId, _moveInDate));
+            processManager.When(new ConsumerMoveInAccepted(_accountingPointId, SampleData.GsrnNumber, _businessProcessId, _consumerId, _energySupplierId, _moveInDate));
             processManager.When(new ConsumerMovedIn(_accountingPointId, SampleData.GsrnNumber, _businessProcessId, _consumerId, _moveInDate));
 
             Assert.True(processManager.IsCompleted());

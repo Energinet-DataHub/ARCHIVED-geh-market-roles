@@ -19,15 +19,14 @@ namespace Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotifica
 {
     public class NotifyCurrentSupplier : InternalCommand
     {
-        public NotifyCurrentSupplier(Guid accountingPointId, Guid businessProcessId, string transaction)
+        public NotifyCurrentSupplier(Guid accountingPointId, Guid businessProcessId)
         {
             AccountingPointId = accountingPointId;
             BusinessProcessId = businessProcessId;
-            Transaction = transaction;
         }
 
-        public NotifyCurrentSupplier(Guid id, Guid accountingPointId, Guid businessProcessId, string transaction)
-            : this(accountingPointId, businessProcessId, transaction)
+        public NotifyCurrentSupplier(Guid id, Guid accountingPointId, Guid businessProcessId)
+            : this(accountingPointId, businessProcessId)
         {
             Id = id;
         }
@@ -35,7 +34,5 @@ namespace Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotifica
         public Guid AccountingPointId { get; }
 
         public Guid BusinessProcessId { get; }
-
-        public string Transaction { get; }
     }
 }

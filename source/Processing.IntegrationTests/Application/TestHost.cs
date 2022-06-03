@@ -90,7 +90,6 @@ namespace Processing.IntegrationTests.Application
         private readonly string _connectionString;
         private bool _disposed;
         private SqlConnection? _sqlConnection;
-        private BusinessProcessId? _businessProcessId;
 
         protected TestHost(DatabaseFixture databaseFixture)
         {
@@ -190,7 +189,6 @@ namespace Processing.IntegrationTests.Application
             SystemDateTimeProvider = _container.GetInstance<ISystemDateTimeProvider>();
             Serializer = _container.GetInstance<IJsonSerializer>();
             CommandScheduler = _container.GetInstance<ICommandScheduler>();
-            Transaction = new Transaction(Guid.NewGuid().ToString());
         }
 
         // TODO: Get rid of all properties and methods instead
@@ -216,19 +214,12 @@ namespace Processing.IntegrationTests.Application
 
         protected IJsonSerializer Serializer { get; }
 
-        protected Transaction Transaction { get; }
-
         protected Instant EffectiveDate => SystemDateTimeProvider.Now();
 
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
-        }
-
-        protected static Transaction CreateTransaction()
-        {
-            return new Transaction(Guid.NewGuid().ToString());
         }
 
         protected virtual void Dispose(bool disposing)
@@ -269,33 +260,12 @@ namespace Processing.IntegrationTests.Application
 
         protected async Task<BusinessProcessResult> SendRequestAsync(IBusinessRequest request)
         {
-            var result = await GetService<IMediator>().Send(request, CancellationToken.None).ConfigureAwait(false);
-            return result;
+            return await GetService<IMediator>().Send(request, CancellationToken.None).ConfigureAwait(false);
         }
 
         protected Task InvokeCommandAsync(InternalCommand command)
         {
             return GetService<IMediator>().Send(command, CancellationToken.None);
-        }
-
-        protected async Task<TCommand?> GetEnqueuedCommandAsync<TCommand>()
-        {
-            var businessProcessId = _businessProcessId?.Value ?? throw new InvalidOperationException("Unknown BusinessProcessId");
-            var type = typeof(TCommand).FullName;
-            var queuedCommand = MarketRolesContext.QueuedInternalCommands
-                .FirstOrDefault(queuedInternalCommand =>
-                    queuedInternalCommand.BusinessProcessId.Equals(businessProcessId) &&
-#pragma warning disable CA1309 // Warns about: "Use ordinal string comparison", but we want EF to take care of this.
-                    queuedInternalCommand.Type.Equals(type));
-
-            if (queuedCommand is null)
-            {
-                return default;
-            }
-
-            var messageExtractor = GetService<MessageExtractor>();
-            var command = await messageExtractor.ExtractAsync(queuedCommand!.Data).ConfigureAwait(false);
-            return (TCommand)command;
         }
 
         protected async Task<TCommand?> GetEnqueuedCommandAsync<TCommand>(BusinessProcessId businessProcessId)
@@ -351,21 +321,21 @@ namespace Processing.IntegrationTests.Application
         {
             var systemTimeProvider = GetService<ISystemDateTimeProvider>();
             var moveInDate = systemTimeProvider.Now().Minus(Duration.FromDays(365));
-            var transaction = CreateTransaction();
-            SetConsumerMovedIn(accountingPoint, consumerId, energySupplierId, moveInDate, transaction);
+            SetConsumerMovedIn(accountingPoint, consumerId, energySupplierId, moveInDate);
         }
 
-        protected void SetConsumerMovedIn(AccountingPoint accountingPoint, ConsumerId consumerId, EnergySupplierId energySupplierId, Instant moveInDate, Transaction transaction)
+        protected void SetConsumerMovedIn(AccountingPoint accountingPoint, ConsumerId consumerId, EnergySupplierId energySupplierId, Instant moveInDate)
         {
             if (accountingPoint == null)
                 throw new ArgumentNullException(nameof(accountingPoint));
 
             var systemTimeProvider = GetService<ISystemDateTimeProvider>();
-            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, transaction, BusinessProcessId.New());
-            accountingPoint.EffectuateConsumerMoveIn(transaction, systemTimeProvider.Now());
+            var businessProcessId = BusinessProcessId.New();
+            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, businessProcessId);
+            accountingPoint.EffectuateConsumerMoveIn(businessProcessId, systemTimeProvider.Now());
         }
 
-        protected void RegisterChangeOfSupplier(AccountingPoint accountingPoint, EnergySupplierId energySupplierId, Transaction transaction)
+        protected void RegisterChangeOfSupplier(AccountingPoint accountingPoint, EnergySupplierId energySupplierId, BusinessProcessId processId)
         {
             if (accountingPoint == null)
                 throw new ArgumentNullException(nameof(accountingPoint));
@@ -374,29 +344,7 @@ namespace Processing.IntegrationTests.Application
 
             var changeSupplierDate = systemTimeProvider.Now();
 
-            accountingPoint.AcceptChangeOfSupplier(energySupplierId, changeSupplierDate, transaction, systemTimeProvider, BusinessProcessId.New());
-        }
-
-        protected BusinessProcessId GetBusinessProcessId(Transaction transaction)
-        {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
-
-            if (_businessProcessId == null)
-            {
-                using var connection = new SqlConnection(_connectionString);
-                if (connection.State == ConnectionState.Closed)
-                {
-                    connection.Open();
-                }
-
-                using var command = new SqlCommand($"SELECT Id FROM [dbo].[BusinessProcesses] WHERE TransactionId = @transaction", connection);
-                command.Parameters.Add("@transaction", SqlDbType.NVarChar).Value = transaction.Value;
-                var id = (Guid)command.ExecuteScalar();
-                _businessProcessId = BusinessProcessId.Create(id);
-            }
-
-            return _businessProcessId;
+            accountingPoint.AcceptChangeOfSupplier(energySupplierId, changeSupplierDate, systemTimeProvider, processId);
         }
 
         protected IEnumerable<TMessage> GetOutboxMessages<TMessage>()

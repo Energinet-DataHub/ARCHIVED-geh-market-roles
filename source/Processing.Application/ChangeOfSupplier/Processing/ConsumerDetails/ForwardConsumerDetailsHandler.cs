@@ -39,8 +39,7 @@ namespace Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails
 
             await _domainEventPublisher.PublishAsync(new ConsumerDetailsDispatched(
                 AccountingPointId.Create(request.AccountingPointId),
-                BusinessProcessId.Create(request.BusinessProcessId),
-                Transaction.Create(request.Transaction))).ConfigureAwait(false);
+                BusinessProcessId.Create(request.BusinessProcessId))).ConfigureAwait(false);
 
             return Unit.Value;
         }

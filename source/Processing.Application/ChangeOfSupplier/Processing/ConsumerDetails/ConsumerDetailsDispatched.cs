@@ -19,17 +19,14 @@ namespace Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails
 {
     public class ConsumerDetailsDispatched : DomainEventBase
     {
-        public ConsumerDetailsDispatched(AccountingPointId accountingPointId, BusinessProcessId businessProcessId, Transaction transaction)
+        public ConsumerDetailsDispatched(AccountingPointId accountingPointId, BusinessProcessId businessProcessId)
         {
             AccountingPointId = accountingPointId;
             BusinessProcessId = businessProcessId;
-            Transaction = transaction;
         }
 
         public AccountingPointId AccountingPointId { get; }
 
         public BusinessProcessId BusinessProcessId { get; }
-
-        public Transaction Transaction { get; }
     }
 }

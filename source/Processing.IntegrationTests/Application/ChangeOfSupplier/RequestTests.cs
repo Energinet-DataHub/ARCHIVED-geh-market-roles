@@ -59,7 +59,6 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier
         public async Task Request_WhenInputValidationsAreBroken_IsRejected()
         {
             var request = CreateRequest(
-                SampleData.Transaction,
                 SampleData.GlnNumber,
                 SampleData.ConsumerSSN,
                 "THIS_IS_NOT_VALID_GSRN_NUMBER",
@@ -93,10 +92,9 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier
             //AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.ConfirmChangeOfSupplier);
         }
 
-        private static RequestChangeOfSupplier CreateRequest(string transaction, string energySupplierGln, string consumerId, string gsrnNumber, string startDate)
+        private static RequestChangeOfSupplier CreateRequest(string energySupplierGln, string consumerId, string gsrnNumber, string startDate)
         {
             return new RequestChangeOfSupplier(
-                TransactionId: transaction,
                 EnergySupplierGlnNumber: energySupplierGln,
                 SocialSecurityNumber: consumerId,
                 AccountingPointGsrnNumber: gsrnNumber,
@@ -106,7 +104,6 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier
         private static RequestChangeOfSupplier CreateRequest()
         {
             return CreateRequest(
-                SampleData.Transaction,
                 SampleData.GlnNumber,
                 SampleData.ConsumerSSN,
                 SampleData.GsrnNumber,

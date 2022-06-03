@@ -65,9 +65,9 @@ namespace Processing.Application.ChangeOfSupplier
             var startDate = InstantPattern.General.Parse(request.StartDate).Value;
 
             var businessProcessId = BusinessProcessId.New();
-            _accountingPoint?.AcceptChangeOfSupplier(_energySupplier!.EnergySupplierId, startDate, new Transaction(request.TransactionId), _systemTimeProvider, businessProcessId);
+            _accountingPoint?.AcceptChangeOfSupplier(_energySupplier!.EnergySupplierId, startDate, _systemTimeProvider, businessProcessId);
 
-            return BusinessProcessResult.Ok(request.TransactionId, businessProcessId.Value.ToString());
+            return BusinessProcessResult.Ok(businessProcessId.Value.ToString());
         }
 
         private BusinessProcessResult Validate()
@@ -80,7 +80,7 @@ namespace Processing.Application.ChangeOfSupplier
                 new MeteringPointMustBeKnownRule(_accountingPoint, _request.AccountingPointGsrnNumber),
             };
 
-            return new BusinessProcessResult(_request.TransactionId, validationRules);
+            return new BusinessProcessResult(validationRules);
         }
 
         private BusinessProcessResult CheckBusinessRules()
@@ -92,7 +92,7 @@ namespace Processing.Application.ChangeOfSupplier
             var validationResult =
                 _accountingPoint!.ChangeSupplierAcceptable(_energySupplier!.EnergySupplierId, startDate, _systemTimeProvider);
 
-            return new BusinessProcessResult(_request.TransactionId, validationResult.Errors);
+            return new BusinessProcessResult(validationResult.Errors);
         }
 
         private Task<global::Processing.Domain.MeteringPoints.AccountingPoint?> GetMeteringPointAsync(string gsrnNumber)

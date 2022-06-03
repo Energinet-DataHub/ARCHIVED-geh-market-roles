@@ -19,11 +19,9 @@ namespace Processing.Application.Common
     /// <summary>
     /// Request for starting a business process
     /// </summary>
+    #pragma warning disable
     public interface IBusinessRequest : IRequest<BusinessProcessResult>
     {
-        /// <summary>
-        /// Business process transaction id
-        /// </summary>
-        string TransactionId { get; }
     }
+    #pragma warning restore
 }

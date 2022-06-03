@@ -59,13 +59,13 @@ namespace Processing.Application.MoveIn
             var accountingPoint = await _accountingPointRepository.GetByGsrnNumberAsync(GsrnNumber.Create(request.AccountingPointGsrnNumber)).ConfigureAwait(false);
             if (accountingPoint is null)
             {
-                return BusinessProcessResult.Fail(request.TransactionId, new UnknownAccountingPoint());
+                return BusinessProcessResult.Fail(new UnknownAccountingPoint());
             }
 
             var energySupplier = await _energySupplierRepository.GetByGlnNumberAsync(new GlnNumber(request.EnergySupplierGlnNumber)).ConfigureAwait(false);
             if (energySupplier is null)
             {
-                return BusinessProcessResult.Fail(request.TransactionId, new UnknownEnergySupplier());
+                return BusinessProcessResult.Fail(new UnknownEnergySupplier());
             }
 
             var consumerMovesInOn = EffectiveDate.Create(request.MoveInDate);
@@ -73,15 +73,15 @@ namespace Processing.Application.MoveIn
 
             if (!checkResult.Success)
             {
-                return BusinessProcessResult.Fail(request.TransactionId, checkResult.Errors.ToArray());
+                return BusinessProcessResult.Fail(checkResult.Errors.ToArray());
             }
 
             var consumer = await GetOrCreateConsumerAsync(request).ConfigureAwait(false);
 
             var businessProcessId = BusinessProcessId.New();
-            _consumerMoveInProcess.StartProcess(accountingPoint, consumer, energySupplier, consumerMovesInOn, Transaction.Create(request.TransactionId), _systemDateTimeProvider.Now(), businessProcessId);
+            _consumerMoveInProcess.StartProcess(accountingPoint, consumer, energySupplier, consumerMovesInOn, _systemDateTimeProvider.Now(), businessProcessId);
 
-            return BusinessProcessResult.Ok(request.TransactionId, businessProcessId.Value.ToString());
+            return BusinessProcessResult.Ok(businessProcessId.Value.ToString());
         }
 
         private async Task<Domain.Consumers.Consumer> GetOrCreateConsumerAsync(MoveInRequest moveInRequest)
