@@ -37,9 +37,8 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         [Fact]
         public void Effectuate_WhenAheadOfEffectiveDate_IsNotPossible()
         {
-            var (accountingPoint, consumerId, energySupplierId, transaction) = SetupScenario();
+            var (accountingPoint, consumerId, energySupplierId, businessProcessId) = SetupScenario();
             var moveInDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(1));
-            var businessProcessId = BusinessProcessId.New();
             accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, businessProcessId);
 
             Assert.Throws<BusinessProcessException>(() =>
@@ -59,9 +58,8 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         [Fact]
         public void Effectuate_WhenEffectiveDateIsDue_IsSuccessful()
         {
-            var (accountingPoint, consumerId, energySupplierId, transaction) = SetupScenario();
+            var (accountingPoint, consumerId, energySupplierId, businessProcessId) = SetupScenario();
             var moveInDate = _systemDateTimeProvider.Now();
-            var businessProcessId = BusinessProcessId.New();
             accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, businessProcessId);
 
             accountingPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
@@ -74,13 +72,13 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
             if (consumerMovedIn != null) Assert.NotNull(consumerMovedIn.MoveInDate);
         }
 
-        private static (AccountingPoint AccountingPoint, ConsumerId ConsumerId, EnergySupplierId EnergySupplierId, Transaction Transaction) SetupScenario()
+        private static (AccountingPoint AccountingPoint, ConsumerId ConsumerId, EnergySupplierId EnergySupplierId, BusinessProcessId ProcessId) SetupScenario()
         {
             return (
                 new AccountingPoint(GsrnNumber.Create(SampleData.GsrnNumber), MeteringPointType.Consumption),
                 new ConsumerId(Guid.NewGuid()),
                 new EnergySupplierId(Guid.NewGuid()),
-                new Transaction(Guid.NewGuid().ToString()));
+                BusinessProcessId.New());
         }
     }
 }

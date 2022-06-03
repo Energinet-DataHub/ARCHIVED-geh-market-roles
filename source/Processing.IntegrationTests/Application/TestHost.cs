@@ -90,7 +90,6 @@ namespace Processing.IntegrationTests.Application
         private readonly string _connectionString;
         private bool _disposed;
         private SqlConnection? _sqlConnection;
-        private BusinessProcessId? _businessProcessId;
 
         protected TestHost(DatabaseFixture databaseFixture)
         {
@@ -190,7 +189,6 @@ namespace Processing.IntegrationTests.Application
             SystemDateTimeProvider = _container.GetInstance<ISystemDateTimeProvider>();
             Serializer = _container.GetInstance<IJsonSerializer>();
             CommandScheduler = _container.GetInstance<ICommandScheduler>();
-            Transaction = new Transaction(Guid.NewGuid().ToString());
         }
 
         // TODO: Get rid of all properties and methods instead
@@ -216,19 +214,12 @@ namespace Processing.IntegrationTests.Application
 
         protected IJsonSerializer Serializer { get; }
 
-        protected Transaction Transaction { get; }
-
         protected Instant EffectiveDate => SystemDateTimeProvider.Now();
 
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
-        }
-
-        protected static Transaction CreateTransaction()
-        {
-            return new Transaction(Guid.NewGuid().ToString());
         }
 
         protected virtual void Dispose(bool disposing)
@@ -354,28 +345,6 @@ namespace Processing.IntegrationTests.Application
             var changeSupplierDate = systemTimeProvider.Now();
 
             accountingPoint.AcceptChangeOfSupplier(energySupplierId, changeSupplierDate, systemTimeProvider, processId);
-        }
-
-        protected BusinessProcessId GetBusinessProcessId(Transaction transaction)
-        {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
-
-            if (_businessProcessId == null)
-            {
-                using var connection = new SqlConnection(_connectionString);
-                if (connection.State == ConnectionState.Closed)
-                {
-                    connection.Open();
-                }
-
-                using var command = new SqlCommand($"SELECT Id FROM [dbo].[BusinessProcesses] WHERE TransactionId = @transaction", connection);
-                command.Parameters.Add("@transaction", SqlDbType.NVarChar).Value = transaction.Value;
-                var id = (Guid)command.ExecuteScalar();
-                _businessProcessId = BusinessProcessId.Create(id);
-            }
-
-            return _businessProcessId;
         }
 
         protected IEnumerable<TMessage> GetOutboxMessages<TMessage>()

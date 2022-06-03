@@ -62,11 +62,6 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             Assert.NotNull(@event);
         }
 
-        private static Transaction CreateTransaction()
-        {
-            return new Transaction(Guid.NewGuid().ToString());
-        }
-
         private static EnergySupplierId CreateEnergySupplierId()
         {
             return new EnergySupplierId(Guid.NewGuid());
