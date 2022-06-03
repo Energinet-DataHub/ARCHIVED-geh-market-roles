@@ -27,8 +27,7 @@ namespace Processing.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSu
             return new Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification.NotifyCurrentSupplier(
                 Guid.Parse(obj.Id),
                 Guid.Parse(obj.AccountingPointId),
-                Guid.Parse(obj.BusinessProcessId),
-                obj.Transaction);
+                Guid.Parse(obj.BusinessProcessId));
         }
     }
 }

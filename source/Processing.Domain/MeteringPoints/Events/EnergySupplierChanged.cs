@@ -20,12 +20,11 @@ namespace Processing.Domain.MeteringPoints.Events
 {
     public class EnergySupplierChanged : DomainEventBase
     {
-        public EnergySupplierChanged(Guid accountingPointId, string gsrnNumber, Guid businessProcessId, string transaction, Guid energySupplierId, Instant startOfSupplyDate)
+        public EnergySupplierChanged(Guid accountingPointId, string gsrnNumber, Guid businessProcessId, Guid energySupplierId, Instant startOfSupplyDate)
         {
             AccountingPointId = accountingPointId;
             GsrnNumber = gsrnNumber;
             BusinessProcessId = businessProcessId;
-            Transaction = transaction;
             EnergySupplierId = energySupplierId;
             StartOfSupplyDate = startOfSupplyDate;
         }
@@ -35,8 +34,6 @@ namespace Processing.Domain.MeteringPoints.Events
         public Guid AccountingPointId { get; }
 
         public Guid BusinessProcessId { get; }
-
-        public string Transaction { get; }
 
         public Guid EnergySupplierId { get; }
 

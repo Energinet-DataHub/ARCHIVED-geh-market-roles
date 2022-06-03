@@ -19,25 +19,21 @@ namespace Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails
 {
     public class ForwardConsumerDetails : InternalCommand
     {
-        public ForwardConsumerDetails(Guid accountingPointId, Guid businessProcessId, string transaction)
+        public ForwardConsumerDetails(Guid accountingPointId, Guid businessProcessId)
         {
             AccountingPointId = accountingPointId;
             BusinessProcessId = businessProcessId;
-            Transaction = transaction;
         }
 
-        public ForwardConsumerDetails(Guid id, Guid accountingPointId, Guid businessProcessId, string transaction)
+        public ForwardConsumerDetails(Guid id, Guid accountingPointId, Guid businessProcessId)
         {
             AccountingPointId = accountingPointId;
             BusinessProcessId = businessProcessId;
-            Transaction = transaction;
             Id = id;
         }
 
         public Guid AccountingPointId { get; }
 
         public Guid BusinessProcessId { get; }
-
-        public string Transaction { get; }
     }
 }
