@@ -24,7 +24,6 @@ namespace Processing.Application.ChangeOfSupplier.Validation
             RuleFor(request => request.AccountingPointGsrnNumber).SetValidator(new GsrnNumberMustBeValidRule());
             RuleFor(request => request.EnergySupplierGlnNumber).SetValidator(new GlnNumberMustBeValidRule());
             RuleFor(request => request.StartDate).SetValidator(new StartOfSupplyMustBeValidRule());
-            RuleFor(request => request.TransactionId).SetValidator(new TransactionMustBeValidRule());
         }
     }
 }

@@ -178,8 +178,8 @@ namespace Processing.IntegrationTests.Application.MoveIn
         [Fact]
         public async Task Integration_event_is_published_when_move_in_is_effectuated()
         {
-            var (accountingPoint, transaction) = await SetupScenarioAsync().ConfigureAwait(false);
-            var command = new EffectuateConsumerMoveIn(accountingPoint.Id.Value, transaction.Value);
+            var (accountingPoint, processId) = await SetupScenarioAsync().ConfigureAwait(false);
+            var command = new EffectuateConsumerMoveIn(accountingPoint.Id.Value, processId.Value.ToString());
 
             await InvokeCommandAsync(command).ConfigureAwait(false);
 
@@ -205,13 +205,12 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
             return new MoveInRequest(
                 new Consumer(SampleData.ConsumerName, consumerId, consumerIdType),
-                SampleData.Transaction,
                 SampleData.GlnNumber,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);
         }
 
-        private async Task<(AccountingPoint AccountingPoint, Transaction Transaction)> SetupScenarioAsync()
+        private async Task<(AccountingPoint AccountingPoint, BusinessProcessId ProcessId)> SetupScenarioAsync()
         {
             var accountingPoint = CreateAccountingPoint();
             CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
@@ -219,14 +218,18 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
             var requestMoveIn = new MoveInRequest(
                 new Consumer(SampleData.ConsumerName, SampleData.ConsumerSSN, ConsumerIdentifierType.CPR),
-                SampleData.Transaction,
                 SampleData.GlnNumber,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);
 
             var result = await SendRequestAsync(requestMoveIn).ConfigureAwait(false);
 
-            return (accountingPoint, Transaction.Create(result.TransactionId));
+            if (result.ProcessId is null)
+            {
+                throw new InvalidOperationException("Failed to setup scenario.");
+            }
+
+            return (accountingPoint, BusinessProcessId.Create(result.ProcessId));
         }
 
         private void AssertIntegrationEvent<TEvent>()

@@ -38,7 +38,7 @@ namespace Processing.Application.ChangeOfSupplier.Processing
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             var accountingPoint = await _accountingPointRepository.GetByIdAsync(AccountingPointId.Create(request.AccountingPointId)).ConfigureAwait(false);
-            accountingPoint?.EffectuateChangeOfSupplier(Transaction.Create(request.Transaction), _systemDateTimeProvider);
+            accountingPoint?.EffectuateChangeOfSupplier(BusinessProcessId.Create(request.ProcessId), _systemDateTimeProvider);
             return Unit.Value;
         }
     }

@@ -39,11 +39,11 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
         {
             var accountingPoint = CreateTestObject();
 
+            var businessProcessId = BusinessProcessId.New();
             var supplyStartDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(5));
-            var transaction = CreateTransaction();
-            accountingPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), supplyStartDate, transaction, _systemDateTimeProvider, BusinessProcessId.New());
+            accountingPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), supplyStartDate, _systemDateTimeProvider, businessProcessId);
 
-            Assert.Throws<BusinessProcessException>(() => accountingPoint.EffectuateChangeOfSupplier(transaction, _systemDateTimeProvider));
+            Assert.Throws<BusinessProcessException>(() => accountingPoint.EffectuateChangeOfSupplier(businessProcessId, _systemDateTimeProvider));
         }
 
         [Fact]
@@ -52,19 +52,14 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             var accountingPoint = CreateTestObject();
 
             var supplyStartDate = _systemDateTimeProvider.Now();
-            var transaction = CreateTransaction();
-            accountingPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), supplyStartDate, transaction, _systemDateTimeProvider, BusinessProcessId.New());
-            accountingPoint.EffectuateChangeOfSupplier(transaction, _systemDateTimeProvider);
+            var businessProcessId = BusinessProcessId.New();
+            accountingPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), supplyStartDate, _systemDateTimeProvider, businessProcessId);
+            accountingPoint.EffectuateChangeOfSupplier(businessProcessId, _systemDateTimeProvider);
 
             var @event =
                 accountingPoint.DomainEvents.FirstOrDefault(e => e is EnergySupplierChanged) as EnergySupplierChanged;
 
             Assert.NotNull(@event);
-        }
-
-        private static Transaction CreateTransaction()
-        {
-            return new Transaction(Guid.NewGuid().ToString());
         }
 
         private static EnergySupplierId CreateEnergySupplierId()
@@ -80,9 +75,9 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
         private AccountingPoint CreateTestObject()
         {
             var accountingPoint = new AccountingPoint(GsrnNumber.Create("571234567891234568"), MeteringPointType.Consumption);
-            var transaction = CreateTransaction();
-            accountingPoint.AcceptConsumerMoveIn(CreateConsumerId(), CreateEnergySupplierId(), _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)), transaction, BusinessProcessId.New());
-            accountingPoint.EffectuateConsumerMoveIn(transaction, _systemDateTimeProvider.Now());
+            var businessProcessId = BusinessProcessId.New();
+            accountingPoint.AcceptConsumerMoveIn(CreateConsumerId(), CreateEnergySupplierId(), _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)), businessProcessId);
+            accountingPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
             return accountingPoint;
         }
     }

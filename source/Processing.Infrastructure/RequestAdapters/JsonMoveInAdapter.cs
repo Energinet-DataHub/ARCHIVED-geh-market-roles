@@ -51,7 +51,6 @@ namespace Processing.Infrastructure.RequestAdapters
         {
             var command = new MoveInRequest(
                 ExtractConsumerFrom(requestDto),
-                requestDto.TransactionId,
                 requestDto.EnergySupplierGlnNumber ?? string.Empty,
                 requestDto.AccountingPointGsrnNumber,
                 requestDto.StartDate);

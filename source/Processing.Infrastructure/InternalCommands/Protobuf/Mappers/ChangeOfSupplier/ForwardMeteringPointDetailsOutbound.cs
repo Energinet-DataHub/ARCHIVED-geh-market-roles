@@ -30,7 +30,7 @@ namespace Processing.Infrastructure.InternalCommands.Protobuf.Mappers.ChangeOfSu
                 ForwardMeteringPointDetails = new Energinet.DataHub.MarketRoles.Contracts.ForwardMeteringPointDetails()
                 {
                     Id = obj.Id.ToString(),
-                    Transaction = obj.Transaction,
+                    Transaction = string.Empty,
                     AccountingPointId = obj.AccountingPointId.ToString(),
                     BusinessProcessId = obj.BusinessProcessId.ToString(),
                 },

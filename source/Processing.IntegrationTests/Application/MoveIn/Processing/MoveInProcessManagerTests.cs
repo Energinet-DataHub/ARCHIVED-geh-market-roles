@@ -38,18 +38,18 @@ namespace Processing.IntegrationTests.Application.MoveIn.Processing
         [Fact]
         public async Task ConsumerMoveInAccepted_WhenStateIsNotStarted_EffectuateCommandIsEnqueued()
         {
-            var (transaction, businessProcessId) = await SetupScenario().ConfigureAwait(false);
+            var businessProcessId = await SetupScenario().ConfigureAwait(false);
 
             var command = await GetEnqueuedCommandAsync<EffectuateConsumerMoveIn>(businessProcessId).ConfigureAwait(false);
 
             Assert.NotNull(command);
-            Assert.Equal(transaction.Value, command?.Transaction);
+            Assert.Equal(businessProcessId.Value.ToString(), command?.ProcessId);
         }
 
         [Fact]
         public async Task ConsumerMoveIn_WhenStateIsAwaitingEffectuation_ProcessIsCompleted()
         {
-            var (_, businessProcessId) = await SetupScenario().ConfigureAwait(false);
+            var businessProcessId = await SetupScenario().ConfigureAwait(false);
 
             var effectuateConsumerMoveInCommand = await GetEnqueuedCommandAsync<EffectuateConsumerMoveIn>(businessProcessId).ConfigureAwait(false);
             await InvokeCommandAsync(effectuateConsumerMoveInCommand!).ConfigureAwait(false);
@@ -58,23 +58,25 @@ namespace Processing.IntegrationTests.Application.MoveIn.Processing
             Assert.True(processManager?.IsCompleted());
         }
 
-        private async Task<(Transaction Transaction, BusinessProcessId BusinessProcessId)> SetupScenario()
+        private async Task<BusinessProcessId> SetupScenario()
         {
             _ = CreateAccountingPoint();
             _ = CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
             _ = CreateConsumer();
             SaveChanges();
 
-            var transaction = CreateTransaction();
-
-            await SendRequestAsync(new MoveInRequest(
+            var result = await SendRequestAsync(new MoveInRequest(
                 new Consumer(SampleData.ConsumerName, SampleData.ConsumerSSN, "CPR"),
-                transaction.Value,
                 SampleData.GlnNumber,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate)).ConfigureAwait(false);
 
-            return (transaction, GetBusinessProcessId(transaction));
+            if (result.ProcessId is null)
+            {
+                throw new InvalidOperationException("Setup scenario failed.");
+            }
+
+            return BusinessProcessId.Create(result.ProcessId);
         }
     }
 }

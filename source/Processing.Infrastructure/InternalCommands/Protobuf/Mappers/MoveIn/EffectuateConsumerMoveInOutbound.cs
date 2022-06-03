@@ -30,7 +30,7 @@ namespace Processing.Infrastructure.InternalCommands.Protobuf.Mappers.MoveIn
                 EffectuateConsumerMoveIn = new Energinet.DataHub.MarketRoles.Contracts.EffectuateConsumerMoveIn()
                 {
                     Id = obj.Id.ToString(),
-                    Transaction = obj.Transaction,
+                    Transaction = obj.ProcessId,
                     AccountingPointId = obj.AccountingPointId.ToString(),
                 },
             };

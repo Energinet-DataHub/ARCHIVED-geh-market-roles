@@ -19,17 +19,14 @@ namespace Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotifica
 {
     public class CurrentSupplierNotified : DomainEventBase
     {
-        public CurrentSupplierNotified(AccountingPointId accountingPointId, BusinessProcessId businessProcessId, Transaction transaction)
+        public CurrentSupplierNotified(AccountingPointId accountingPointId, BusinessProcessId businessProcessId)
         {
             AccountingPointId = accountingPointId;
             BusinessProcessId = businessProcessId;
-            Transaction = transaction;
         }
 
         public AccountingPointId AccountingPointId { get; }
 
         public BusinessProcessId BusinessProcessId { get; }
-
-        public Transaction Transaction { get; }
     }
 }
