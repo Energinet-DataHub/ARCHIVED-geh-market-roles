@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 
 namespace Processing.IntegrationTests.TestDoubles
 {
-    public class ServiceBusSenderSpy : IServiceBusSenderAdapter
+    public sealed class ServiceBusSenderSpy : IServiceBusSenderAdapter
     {
         public ServiceBusSenderSpy(string topicName)
         {
@@ -34,6 +34,18 @@ namespace Processing.IntegrationTests.TestDoubles
         {
             Message = message;
             return Task.CompletedTask;
+        }
+
+        #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+        public ValueTask DisposeAsync()
+        {
+            Dispose();
+            return ValueTask.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
         }
     }
 }

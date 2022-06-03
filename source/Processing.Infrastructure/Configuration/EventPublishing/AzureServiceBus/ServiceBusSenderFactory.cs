@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 
 namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus
 {
-    public class ServiceBusSenderFactory : IServiceBusSenderFactory
+    public sealed class ServiceBusSenderFactory : IServiceBusSenderFactory
     {
+        private readonly Dictionary<string, IServiceBusSenderAdapter> _adapters = new(StringComparer.OrdinalIgnoreCase);
         private readonly ServiceBusClient _serviceBusClient;
 
         public ServiceBusSenderFactory(ServiceBusClient serviceBusClient)
@@ -27,7 +31,33 @@ namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBu
 
         public IServiceBusSenderAdapter GetSender(string topicName)
         {
-           return new ServiceBusSenderAdapter(_serviceBusClient, topicName);
+            _adapters.TryGetValue(topicName, out var adapter);
+            if (adapter is null)
+            {
+                adapter = new ServiceBusSenderAdapter(_serviceBusClient, topicName);
+                _adapters.Add(topicName, adapter);
+            }
+
+            return adapter;
+        }
+
+        #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+        public async ValueTask DisposeAsync()
+        {
+            foreach (var serviceBusSenderAdapter in _adapters)
+            {
+                await serviceBusSenderAdapter.Value.DisposeAsync().ConfigureAwait(false);
+            }
+
+            GC.SuppressFinalize(this);
+        }
+
+        public void Dispose()
+        {
+            foreach (var serviceBusSenderAdapter in _adapters)
+            {
+                serviceBusSenderAdapter.Value.Dispose();
+            }
         }
     }
 }

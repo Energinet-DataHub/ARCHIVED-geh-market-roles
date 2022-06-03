@@ -44,7 +44,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
                 AccountingPointId = Guid.NewGuid().ToString(),
             };
             var eventMetadata = _integrationEventMapper.GetByType(integrationEvent.GetType());
-            var senderSpy = new ServiceBusSenderSpy(eventMetadata!.TopicName);
+            await using var senderSpy = new ServiceBusSenderSpy(eventMetadata!.TopicName);
             AddSenderSpy(senderSpy);
 
             await _serviceBusMessageDispatcher.DispatchAsync(integrationEvent);

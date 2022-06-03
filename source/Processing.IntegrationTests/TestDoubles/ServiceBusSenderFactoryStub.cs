@@ -15,17 +15,39 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 
 namespace Processing.IntegrationTests.TestDoubles
 {
-    public class ServiceBusSenderFactoryStub : IServiceBusSenderFactory
+    public sealed class ServiceBusSenderFactoryStub : IServiceBusSenderFactory
     {
         private readonly List<IServiceBusSenderAdapter> _senders = new();
 
         public IServiceBusSenderAdapter GetSender(string topicName)
         {
             return _senders.First(a => a.TopicName.Equals(topicName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
+        public async ValueTask DisposeAsync()
+        {
+            foreach (var serviceBusSenderAdapter in _senders)
+            {
+                await serviceBusSenderAdapter.DisposeAsync().ConfigureAwait(false);
+            }
+
+            GC.SuppressFinalize(this);
+        }
+
+        public void Dispose()
+        {
+            foreach (var serviceBusSenderAdapter in _senders)
+            {
+                serviceBusSenderAdapter.Dispose();
+            }
+
+            GC.SuppressFinalize(this);
         }
 
         internal void AddSenderSpy(IServiceBusSenderAdapter senderAdapter)
