@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
 namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus
 {
     /// <summary>
     /// Factory for Azure Service Bus client sender adapters
     /// </summary>
-    public interface IServiceBusSenderFactory
+    public interface IServiceBusSenderFactory : IAsyncDisposable, IDisposable
     {
         /// <summary>
         /// Get sender for specified topic
