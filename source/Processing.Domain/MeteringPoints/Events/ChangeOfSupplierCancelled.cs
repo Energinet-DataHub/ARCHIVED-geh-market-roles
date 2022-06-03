@@ -18,12 +18,11 @@ namespace Processing.Domain.MeteringPoints.Events
 {
     public class ChangeOfSupplierCancelled : DomainEventBase
     {
-        public ChangeOfSupplierCancelled(AccountingPointId accountingPointId, GsrnNumber gsrnNumber, BusinessProcessId businessProcessId, Transaction transaction)
+        public ChangeOfSupplierCancelled(AccountingPointId accountingPointId, GsrnNumber gsrnNumber, BusinessProcessId businessProcessId)
         {
             AccountingPointId = accountingPointId;
             GsrnNumber = gsrnNumber;
             BusinessProcessId = businessProcessId;
-            Transaction = transaction;
         }
 
         public AccountingPointId AccountingPointId { get; }
@@ -31,7 +30,5 @@ namespace Processing.Domain.MeteringPoints.Events
         public GsrnNumber GsrnNumber { get; }
 
         public BusinessProcessId BusinessProcessId { get; }
-
-        public Transaction Transaction { get; }
     }
 }

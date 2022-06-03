@@ -40,7 +40,7 @@ namespace Processing.Tests.Application.ChangeOfSupplier.Validation
         [Fact]
         public void Validate_WhenGlnNumberIsNotEmpty_IsSuccess()
         {
-            var businessRequest = CreateRequest(string.Empty, SampleData.GlnNumber, string.Empty);
+            var businessRequest = CreateRequest(SampleData.GlnNumber, string.Empty);
 
             var errors = GetValidationErrors(businessRequest);
 
@@ -70,27 +70,7 @@ namespace Processing.Tests.Application.ChangeOfSupplier.Validation
         [Fact]
         public void Validate_WhenGsrnNumberIsValid_IsSuccess()
         {
-            var businessRequest = CreateRequest(string.Empty, string.Empty, SampleData.GsrnNumber);
-
-            var errors = GetValidationErrors(businessRequest);
-
-            Assert.DoesNotContain(errors, error => error is GsrnNumberMustBeValidRuleError);
-        }
-
-        [Fact]
-        public void Validate_WhenTransactionIdIsEmpty_IsFailure()
-        {
-            var businessRequest = CreateRequest(string.Empty, SampleData.GlnNumber, SampleData.GsrnNumber);
-
-            var errors = GetValidationErrors(businessRequest);
-
-            Assert.Contains(errors, error => error is TransactionMustBeValidRuleError);
-        }
-
-        [Fact]
-        public void Validate_WhenTransactionIdIsNotEmpty_IsSuccess()
-        {
-            var businessRequest = CreateRequest(SampleData.TranactionId, SampleData.GlnNumber, SampleData.GsrnNumber);
+            var businessRequest = CreateRequest(string.Empty, SampleData.GsrnNumber);
 
             var errors = GetValidationErrors(businessRequest);
 
@@ -100,7 +80,7 @@ namespace Processing.Tests.Application.ChangeOfSupplier.Validation
         [Fact]
         public void Validate_WhenStartOfSupplyDateNotValid_IsFailure()
         {
-            var businessRequest = CreateRequest(SampleData.TranactionId, SampleData.GlnNumber, SampleData.GsrnNumber, startDate: string.Empty);
+            var businessRequest = CreateRequest(SampleData.GlnNumber, SampleData.GsrnNumber, startDate: string.Empty);
 
             var errors = GetValidationErrors(businessRequest);
 
@@ -117,10 +97,9 @@ namespace Processing.Tests.Application.ChangeOfSupplier.Validation
             Assert.DoesNotContain(errors, error => error is StartOfSupplyMustBeValidRuleError);
         }
 
-        private static RequestChangeOfSupplier CreateRequest(string transaction = "", string glnNumber = "", string gsrnNumber = "")
+        private static RequestChangeOfSupplier CreateRequest(string glnNumber = "", string gsrnNumber = "")
         {
             return new RequestChangeOfSupplier(
-                transaction,
                 glnNumber,
                 "1212120000",
                 "12345678",
@@ -128,10 +107,9 @@ namespace Processing.Tests.Application.ChangeOfSupplier.Validation
                 SystemClock.Instance.GetCurrentInstant().ToString());
         }
 
-        private static RequestChangeOfSupplier CreateRequest(string transaction = "", string glnNumber = "", string gsrnNumber = "", string startDate = "")
+        private static RequestChangeOfSupplier CreateRequest(string glnNumber = "", string gsrnNumber = "", string startDate = "")
         {
             return new RequestChangeOfSupplier(
-                transaction,
                 glnNumber,
                 "1212120000",
                 "12345678",

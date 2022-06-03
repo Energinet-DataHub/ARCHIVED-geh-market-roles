@@ -36,7 +36,6 @@ namespace Processing.Tests.Application.ChangeOfSupplier.Process
         private readonly AccountingPointId _accountingPointId;
         private readonly GsrnNumber _gsrnNumber;
         private readonly BusinessProcessId _businessProcessId;
-        private readonly Transaction _transaction;
         private readonly EnergySupplierId _energySupplierId;
         private readonly Instant _effectiveDate;
 
@@ -46,7 +45,6 @@ namespace Processing.Tests.Application.ChangeOfSupplier.Process
             _accountingPointId = AccountingPointId.New();
             _gsrnNumber = GsrnNumber.Create("571234567891234568");
             _businessProcessId = new BusinessProcessId(Guid.NewGuid());
-            _transaction = new Transaction(Guid.NewGuid().ToString());
             _energySupplierId = new EnergySupplierId(Guid.NewGuid());
             _effectiveDate = SystemClock.Instance.GetCurrentInstant().Plus(Duration.FromDays(60));
         }
@@ -71,7 +69,7 @@ namespace Processing.Tests.Application.ChangeOfSupplier.Process
             var processManager = Create();
 
             processManager.When(CreateSupplierChangeRegisteredEvent());
-            processManager.When(new MeteringPointDetailsDispatched(_accountingPointId, _businessProcessId, _transaction));
+            processManager.When(new MeteringPointDetailsDispatched(_accountingPointId, _businessProcessId));
             var command =
                 processManager.CommandsToSend.First(c => c.Command is ForwardConsumerDetails).Command as
                     ForwardConsumerDetails;
@@ -86,7 +84,7 @@ namespace Processing.Tests.Application.ChangeOfSupplier.Process
 
             Assert.Throws<InvalidProcessManagerStateException>(() =>
             {
-                processManager.When(new MeteringPointDetailsDispatched(_accountingPointId, _businessProcessId, _transaction));
+                processManager.When(new MeteringPointDetailsDispatched(_accountingPointId, _businessProcessId));
             });
         }
 
@@ -96,8 +94,8 @@ namespace Processing.Tests.Application.ChangeOfSupplier.Process
             var processManager = Create();
 
             processManager.When(CreateSupplierChangeRegisteredEvent());
-            processManager.When(new MeteringPointDetailsDispatched(_accountingPointId, _businessProcessId, _transaction));
-            processManager.When(new ConsumerDetailsDispatched(_accountingPointId, _businessProcessId, _transaction));
+            processManager.When(new MeteringPointDetailsDispatched(_accountingPointId, _businessProcessId));
+            processManager.When(new ConsumerDetailsDispatched(_accountingPointId, _businessProcessId));
 
             var command =
                 processManager.CommandsToSend.First(c => c.Command is NotifyCurrentSupplier).Command as
@@ -113,7 +111,7 @@ namespace Processing.Tests.Application.ChangeOfSupplier.Process
 
             Assert.Throws<InvalidProcessManagerStateException>(() =>
             {
-                processManager.When(new ConsumerDetailsDispatched(_accountingPointId, _businessProcessId, _transaction));
+                processManager.When(new ConsumerDetailsDispatched(_accountingPointId, _businessProcessId));
             });
         }
 
@@ -123,9 +121,9 @@ namespace Processing.Tests.Application.ChangeOfSupplier.Process
             var processManager = Create();
 
             processManager.When(CreateSupplierChangeRegisteredEvent());
-            processManager.When(new MeteringPointDetailsDispatched(_accountingPointId, _businessProcessId, _transaction));
-            processManager.When(new ConsumerDetailsDispatched(_accountingPointId, _businessProcessId, _transaction));
-            processManager.When(new CurrentSupplierNotified(_accountingPointId, _businessProcessId, _transaction));
+            processManager.When(new MeteringPointDetailsDispatched(_accountingPointId, _businessProcessId));
+            processManager.When(new ConsumerDetailsDispatched(_accountingPointId, _businessProcessId));
+            processManager.When(new CurrentSupplierNotified(_accountingPointId, _businessProcessId));
 
             var command =
                 processManager.CommandsToSend.First(c => c.Command is ChangeSupplier).Command as
@@ -141,7 +139,7 @@ namespace Processing.Tests.Application.ChangeOfSupplier.Process
 
             Assert.Throws<InvalidProcessManagerStateException>(() =>
             {
-                processManager.When(new CurrentSupplierNotified(_accountingPointId, _businessProcessId, _transaction));
+                processManager.When(new CurrentSupplierNotified(_accountingPointId, _businessProcessId));
             });
         }
 
@@ -151,10 +149,10 @@ namespace Processing.Tests.Application.ChangeOfSupplier.Process
             var processManager = Create();
 
             processManager.When(CreateSupplierChangeRegisteredEvent());
-            processManager.When(new MeteringPointDetailsDispatched(_accountingPointId, _businessProcessId, _transaction));
-            processManager.When(new ConsumerDetailsDispatched(_accountingPointId, _businessProcessId, _transaction));
-            processManager.When(new CurrentSupplierNotified(_accountingPointId, _businessProcessId, _transaction));
-            processManager.When(new EnergySupplierChanged(_accountingPointId.Value, _gsrnNumber.Value, _businessProcessId.Value, _transaction.Value, _energySupplierId.Value, Instant.MaxValue));
+            processManager.When(new MeteringPointDetailsDispatched(_accountingPointId, _businessProcessId));
+            processManager.When(new ConsumerDetailsDispatched(_accountingPointId, _businessProcessId));
+            processManager.When(new CurrentSupplierNotified(_accountingPointId, _businessProcessId));
+            processManager.When(new EnergySupplierChanged(_accountingPointId.Value, _gsrnNumber.Value, _businessProcessId.Value, _energySupplierId.Value, Instant.MaxValue));
 
             Assert.True(processManager.IsCompleted());
         }
@@ -170,7 +168,6 @@ namespace Processing.Tests.Application.ChangeOfSupplier.Process
                 _accountingPointId,
                 _gsrnNumber,
                 _businessProcessId,
-                _transaction,
                 _effectiveDate,
                 _energySupplierId);
         }

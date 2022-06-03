@@ -20,20 +20,20 @@ namespace Processing.Application.MoveIn.Processing
     public class EffectuateConsumerMoveIn
         : InternalCommand
     {
-        public EffectuateConsumerMoveIn(Guid accountingPointId, string transaction)
+        public EffectuateConsumerMoveIn(Guid accountingPointId, string processId)
         {
             AccountingPointId = accountingPointId;
-            Transaction = transaction;
+            ProcessId = processId;
         }
 
-        public EffectuateConsumerMoveIn(Guid id, Guid accountingPointId, string transaction)
-            : this(accountingPointId, transaction)
+        public EffectuateConsumerMoveIn(Guid id, Guid accountingPointId, string processId)
+            : this(accountingPointId, processId)
         {
             Id = id;
         }
 
         public Guid AccountingPointId { get; }
 
-        public string Transaction { get; }
+        public string ProcessId { get; }
     }
 }

@@ -19,20 +19,20 @@ namespace Processing.Application.ChangeOfSupplier.Processing
 {
     public class ChangeSupplier : InternalCommand
     {
-        public ChangeSupplier(Guid accountingPointId, string transaction)
+        public ChangeSupplier(Guid accountingPointId, string processId)
         {
             AccountingPointId = accountingPointId;
-            Transaction = transaction;
+            ProcessId = processId;
         }
 
-        public ChangeSupplier(Guid id, Guid accountingPointId, string transaction)
-            : this(accountingPointId, transaction)
+        public ChangeSupplier(Guid id, Guid accountingPointId, string processId)
+            : this(accountingPointId, processId)
         {
             Id = id;
         }
 
         public Guid AccountingPointId { get; }
 
-        public string Transaction { get; }
+        public string ProcessId { get; }
     }
 }
