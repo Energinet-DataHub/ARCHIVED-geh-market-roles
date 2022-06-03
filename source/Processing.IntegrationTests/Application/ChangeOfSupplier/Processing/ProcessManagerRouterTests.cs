@@ -35,7 +35,6 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing
         private readonly BusinessProcessId _businessProcessId;
         private readonly AccountingPoint _accountingPoint;
         private readonly EnergySupplier _energySupplier;
-        private readonly Transaction _transaction;
 
         public ProcessManagerRouterTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
@@ -43,14 +42,12 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing
             Consumer consumer = CreateConsumer();
             _energySupplier = CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
             _accountingPoint = CreateAccountingPoint();
-            _transaction = CreateTransaction();
-
+            _businessProcessId = BusinessProcessId.New();
             EnergySupplier newEnergySupplier = CreateEnergySupplier(Guid.NewGuid(), "7495563456235");
             SetConsumerMovedIn(_accountingPoint, consumer.ConsumerId, _energySupplier.EnergySupplierId);
-            RegisterChangeOfSupplier(_accountingPoint, newEnergySupplier.EnergySupplierId, _transaction);
+            RegisterChangeOfSupplier(_accountingPoint, newEnergySupplier.EnergySupplierId, _businessProcessId);
             MarketRolesContext.SaveChanges();
 
-            _businessProcessId = GetBusinessProcessId(_transaction);
             _router = new ProcessManagerRouter(ProcessManagerRepository, CommandScheduler);
         }
 
@@ -60,7 +57,7 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing
             await _router.Handle(CreateSupplierChangeRegisteredEvent(), CancellationToken.None).ConfigureAwait(false);
             await UnitOfWork.CommitAsync().ConfigureAwait(false);
 
-            var command = await GetEnqueuedCommandAsync<ForwardMeteringPointDetails>().ConfigureAwait(false);
+            var command = await GetEnqueuedCommandAsync<ForwardMeteringPointDetails>(_businessProcessId).ConfigureAwait(false);
 
             Assert.NotNull(command);
             Assert.Equal(_businessProcessId.Value, command?.BusinessProcessId);
@@ -72,10 +69,10 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing
             await _router.Handle(CreateSupplierChangeRegisteredEvent(), CancellationToken.None).ConfigureAwait(false);
             await UnitOfWork.CommitAsync().ConfigureAwait(false);
 
-            await _router.Handle(new MeteringPointDetailsDispatched(_accountingPoint.Id, _businessProcessId, Transaction), CancellationToken.None).ConfigureAwait(false);
+            await _router.Handle(new MeteringPointDetailsDispatched(_accountingPoint.Id, _businessProcessId), CancellationToken.None).ConfigureAwait(false);
             await UnitOfWork.CommitAsync().ConfigureAwait(false);
 
-            var command = await GetEnqueuedCommandAsync<ForwardConsumerDetails>().ConfigureAwait(false);
+            var command = await GetEnqueuedCommandAsync<ForwardConsumerDetails>(_businessProcessId).ConfigureAwait(false);
             Assert.NotNull(command);
             Assert.Equal(_businessProcessId.Value, command?.BusinessProcessId);
         }
@@ -86,13 +83,13 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing
             await _router.Handle(CreateSupplierChangeRegisteredEvent(), CancellationToken.None).ConfigureAwait(false);
             await UnitOfWork.CommitAsync().ConfigureAwait(false);
 
-            await _router.Handle(new MeteringPointDetailsDispatched(_accountingPoint.Id, _businessProcessId, Transaction), CancellationToken.None).ConfigureAwait(false);
+            await _router.Handle(new MeteringPointDetailsDispatched(_accountingPoint.Id, _businessProcessId), CancellationToken.None).ConfigureAwait(false);
             await UnitOfWork.CommitAsync().ConfigureAwait(false);
 
-            await _router.Handle(new ConsumerDetailsDispatched(_accountingPoint.Id, _businessProcessId, Transaction), CancellationToken.None).ConfigureAwait(false);
+            await _router.Handle(new ConsumerDetailsDispatched(_accountingPoint.Id, _businessProcessId), CancellationToken.None).ConfigureAwait(false);
             await UnitOfWork.CommitAsync().ConfigureAwait(false);
 
-            var command = await GetEnqueuedCommandAsync<NotifyCurrentSupplier>().ConfigureAwait(false);
+            var command = await GetEnqueuedCommandAsync<NotifyCurrentSupplier>(_businessProcessId).ConfigureAwait(false);
             Assert.NotNull(command);
             Assert.Equal(_businessProcessId.Value, command?.BusinessProcessId);
         }
@@ -103,16 +100,16 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing
             await _router.Handle(CreateSupplierChangeRegisteredEvent(), CancellationToken.None).ConfigureAwait(false);
             await UnitOfWork.CommitAsync().ConfigureAwait(false);
 
-            await _router.Handle(new MeteringPointDetailsDispatched(_accountingPoint.Id, _businessProcessId, Transaction), CancellationToken.None).ConfigureAwait(false);
+            await _router.Handle(new MeteringPointDetailsDispatched(_accountingPoint.Id, _businessProcessId), CancellationToken.None).ConfigureAwait(false);
             await UnitOfWork.CommitAsync().ConfigureAwait(false);
 
-            await _router.Handle(new ConsumerDetailsDispatched(_accountingPoint.Id, _businessProcessId, Transaction), CancellationToken.None).ConfigureAwait(false);
+            await _router.Handle(new ConsumerDetailsDispatched(_accountingPoint.Id, _businessProcessId), CancellationToken.None).ConfigureAwait(false);
             await UnitOfWork.CommitAsync().ConfigureAwait(false);
 
-            await _router.Handle(new CurrentSupplierNotified(_accountingPoint.Id, _businessProcessId, Transaction), CancellationToken.None).ConfigureAwait(false);
+            await _router.Handle(new CurrentSupplierNotified(_accountingPoint.Id, _businessProcessId), CancellationToken.None).ConfigureAwait(false);
             await UnitOfWork.CommitAsync().ConfigureAwait(false);
 
-            var command = await GetEnqueuedCommandAsync<ChangeSupplier>().ConfigureAwait(false);
+            var command = await GetEnqueuedCommandAsync<ChangeSupplier>(_businessProcessId).ConfigureAwait(false);
             Assert.NotNull(command);
             Assert.Equal(_accountingPoint.Id.Value, command?.AccountingPointId);
         }
@@ -123,13 +120,13 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing
             await _router.Handle(CreateSupplierChangeRegisteredEvent(), CancellationToken.None).ConfigureAwait(false);
             await UnitOfWork.CommitAsync().ConfigureAwait(false);
 
-            await _router.Handle(new MeteringPointDetailsDispatched(_accountingPoint.Id, _businessProcessId, Transaction), CancellationToken.None).ConfigureAwait(false);
+            await _router.Handle(new MeteringPointDetailsDispatched(_accountingPoint.Id, _businessProcessId), CancellationToken.None).ConfigureAwait(false);
             await UnitOfWork.CommitAsync().ConfigureAwait(false);
 
-            await _router.Handle(new ConsumerDetailsDispatched(_accountingPoint.Id, _businessProcessId, Transaction), CancellationToken.None).ConfigureAwait(false);
+            await _router.Handle(new ConsumerDetailsDispatched(_accountingPoint.Id, _businessProcessId), CancellationToken.None).ConfigureAwait(false);
             await UnitOfWork.CommitAsync().ConfigureAwait(false);
 
-            await _router.Handle(new CurrentSupplierNotified(_accountingPoint.Id, _businessProcessId, Transaction), CancellationToken.None).ConfigureAwait(false);
+            await _router.Handle(new CurrentSupplierNotified(_accountingPoint.Id, _businessProcessId), CancellationToken.None).ConfigureAwait(false);
             await UnitOfWork.CommitAsync().ConfigureAwait(false);
 
             await _router.Handle(CreateEnergySupplierChangedEvent(), CancellationToken.None).ConfigureAwait(false);
@@ -145,7 +142,6 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing
                 _accountingPoint.Id,
                 _accountingPoint.GsrnNumber,
                 _businessProcessId,
-                _transaction,
                 EffectiveDate,
                 _energySupplier.EnergySupplierId);
         }
@@ -156,7 +152,6 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing
                 _accountingPoint.Id.Value,
                 _accountingPoint.GsrnNumber.Value,
                 _businessProcessId.Value,
-                _transaction.Value,
                 _energySupplier.EnergySupplierId.Value,
                 EffectiveDate);
         }

@@ -48,7 +48,7 @@ namespace Processing.Application.MoveIn.Processing
                     EffectiveDate = @event.MoveInDate;
                     BusinessProcessId = BusinessProcessId.Create(@event.BusinessProcessId);
                     SetInternalState(State.AwaitingEffectuation);
-                    ScheduleEffectuation(@event.AccountingPointId, @event.Transaction);
+                    ScheduleEffectuation(@event.AccountingPointId, @event.BusinessProcessId.ToString());
                     break;
                 default:
                     ThrowIfStateDoesNotMatch(@event);
@@ -75,9 +75,9 @@ namespace Processing.Application.MoveIn.Processing
             return _state == State.Completed;
         }
 
-        private void ScheduleEffectuation(Guid accountingPointId, string transaction)
+        private void ScheduleEffectuation(Guid accountingPointId, string processId)
         {
-            SendCommand(new EffectuateConsumerMoveIn(accountingPointId, transaction), EffectiveDate);
+            SendCommand(new EffectuateConsumerMoveIn(accountingPointId, processId), EffectiveDate);
         }
 
         private void ThrowIfStateDoesNotMatch(IDomainEvent @event)

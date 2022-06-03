@@ -96,30 +96,30 @@ namespace Processing.Domain.MeteringPoints
             return new BusinessRulesValidationResult(rules);
         }
 
-        public void AcceptChangeOfSupplier(EnergySupplierId energySupplierId, Instant supplyStartDate, Transaction transaction, ISystemDateTimeProvider systemDateTimeProvider, BusinessProcessId businessProcessId)
+        public void AcceptChangeOfSupplier(EnergySupplierId energySupplierId, Instant supplyStartDate, ISystemDateTimeProvider systemDateTimeProvider, BusinessProcessId businessProcessId)
         {
             if (energySupplierId == null) throw new ArgumentNullException(nameof(energySupplierId));
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
             if (systemDateTimeProvider == null) throw new ArgumentNullException(nameof(systemDateTimeProvider));
+            if (businessProcessId == null) throw new ArgumentNullException(nameof(businessProcessId));
             if (!ChangeSupplierAcceptable(energySupplierId, supplyStartDate, systemDateTimeProvider).Success)
             {
                 throw new BusinessProcessException(
                     "Cannot accept change of supplier request due to violation of one or more business rules.");
             }
 
-            var businessProcess = CreateBusinessProcess(transaction, supplyStartDate, BusinessProcessType.ChangeOfSupplier, businessProcessId);
+            var businessProcess = CreateBusinessProcess(supplyStartDate, BusinessProcessType.ChangeOfSupplier, businessProcessId);
             _businessProcesses.Add(businessProcess);
             _supplierRegistrations.Add(new SupplierRegistration(energySupplierId, businessProcess.BusinessProcessId));
 
-            AddDomainEvent(new EnergySupplierChangeRegistered(Id, GsrnNumber, businessProcess.BusinessProcessId, transaction, supplyStartDate, energySupplierId));
+            AddDomainEvent(new EnergySupplierChangeRegistered(Id, GsrnNumber, businessProcess.BusinessProcessId, supplyStartDate, energySupplierId));
         }
 
-        public void EffectuateChangeOfSupplier(Transaction transaction, ISystemDateTimeProvider systemDateTimeProvider)
+        public void EffectuateChangeOfSupplier(BusinessProcessId processId, ISystemDateTimeProvider systemDateTimeProvider)
         {
-            if (transaction is null) throw new ArgumentNullException(nameof(transaction));
+            if (processId is null) throw new ArgumentNullException(nameof(processId));
             if (systemDateTimeProvider == null) throw new ArgumentNullException(nameof(systemDateTimeProvider));
 
-            var businessProcess = GetBusinessProcess(transaction, BusinessProcessType.ChangeOfSupplier);
+            var businessProcess = GetBusinessProcess(processId, BusinessProcessType.ChangeOfSupplier);
             businessProcess.Effectuate(systemDateTimeProvider);
 
             DiscontinueCurrentSupplier(businessProcess, systemDateTimeProvider);
@@ -127,7 +127,7 @@ namespace Processing.Domain.MeteringPoints
             var futureSupplier = GetFutureSupplierRegistration(businessProcess);
             StartOfSupplyForFutureSupplier(businessProcess, futureSupplier);
 
-            AddDomainEvent(new EnergySupplierChanged(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, transaction.Value, futureSupplier.EnergySupplierId.Value, businessProcess.EffectiveDate));
+            AddDomainEvent(new EnergySupplierChanged(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, futureSupplier.EnergySupplierId.Value, businessProcess.EffectiveDate));
         }
 
         public void CloseDown()
@@ -157,29 +157,29 @@ namespace Processing.Domain.MeteringPoints
             return new BusinessRulesValidationResult(rules);
         }
 
-        public void AcceptConsumerMoveIn(ConsumerId consumerId, EnergySupplierId energySupplierId, Instant moveInDate, Transaction transaction, BusinessProcessId businessProcessId)
+        public void AcceptConsumerMoveIn(ConsumerId consumerId, EnergySupplierId energySupplierId, Instant moveInDate, BusinessProcessId businessProcessId)
         {
             if (consumerId == null) throw new ArgumentNullException(nameof(consumerId));
             if (energySupplierId == null) throw new ArgumentNullException(nameof(energySupplierId));
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+            if (businessProcessId == null) throw new ArgumentNullException(nameof(businessProcessId));
             if (!ConsumerMoveInAcceptable(moveInDate).Success)
             {
                 throw new BusinessProcessException(
                     "Cannot accept move in request due to violation of one or more business rules.");
             }
 
-            var businessProcess = CreateBusinessProcess(transaction, moveInDate, BusinessProcessType.MoveIn, businessProcessId);
+            var businessProcess = CreateBusinessProcess(moveInDate, BusinessProcessType.MoveIn, businessProcessId);
             _businessProcesses.Add(businessProcess);
             _consumerRegistrations.Add(new ConsumerRegistration(consumerId, businessProcess.BusinessProcessId));
             _supplierRegistrations.Add(new SupplierRegistration(energySupplierId, businessProcess.BusinessProcessId));
 
-            AddDomainEvent(new ConsumerMoveInAccepted(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, businessProcess.Transaction.Value, consumerId.Value, energySupplierId.Value, moveInDate));
+            AddDomainEvent(new ConsumerMoveInAccepted(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, consumerId.Value, energySupplierId.Value, moveInDate));
         }
 
-        public void EffectuateConsumerMoveIn(Transaction transaction, Instant today)
+        public void EffectuateConsumerMoveIn(BusinessProcessId processId, Instant today)
         {
-            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
-            var businessProcess = GetBusinessProcess(transaction, BusinessProcessType.MoveIn);
+            if (processId == null) throw new ArgumentNullException(nameof(processId));
+            var businessProcess = GetBusinessProcess(processId, BusinessProcessType.MoveIn);
 
             businessProcess.Effectuate(today);
             var newSupplier = _supplierRegistrations.Find(supplier => supplier.BusinessProcessId.Equals(businessProcess.BusinessProcessId))!;
@@ -195,16 +195,16 @@ namespace Processing.Domain.MeteringPoints
                 consumer.ConsumerId.Value,
                 businessProcess.EffectiveDate));
 
-            AddDomainEvent(new EnergySupplierChanged(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, businessProcess.Transaction.Value, newSupplier.EnergySupplierId.Value, businessProcess.EffectiveDate));
+            AddDomainEvent(new EnergySupplierChanged(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, newSupplier.EnergySupplierId.Value, businessProcess.EffectiveDate));
         }
 
-        public void CancelChangeOfSupplier(Transaction transaction)
+        public void CancelChangeOfSupplier(BusinessProcessId processId)
         {
-            if (transaction is null) throw new ArgumentNullException(nameof(transaction));
+            if (processId is null) throw new ArgumentNullException(nameof(processId));
 
-            var businessProcess = GetBusinessProcess(transaction, BusinessProcessType.ChangeOfSupplier);
+            var businessProcess = GetBusinessProcess(processId, BusinessProcessType.ChangeOfSupplier);
             businessProcess.Cancel();
-            AddDomainEvent(new ChangeOfSupplierCancelled(Id, GsrnNumber, businessProcess.BusinessProcessId, transaction));
+            AddDomainEvent(new ChangeOfSupplierCancelled(Id, GsrnNumber, businessProcess.BusinessProcessId));
         }
 
         private static void StartOfSupplyForFutureSupplier(BusinessProcess businessProcess, SupplierRegistration supplierRegistration)
@@ -218,7 +218,7 @@ namespace Processing.Domain.MeteringPoints
             if (futureSupplier == null)
             {
                 throw new BusinessProcessException(
-                    $"Could find supplier registration of process id {businessProcess.Transaction.Value}.");
+                    $"Could find supplier registration of process id {businessProcess.BusinessProcessId.Value}.");
             }
 
             return futureSupplier;
@@ -241,26 +241,26 @@ namespace Processing.Domain.MeteringPoints
                 supplier.StartOfSupplyDate?.ToDateTimeUtc().Date <= systemDateTimeProvider.Now().ToDateTimeUtc().Date && supplier.EndOfSupplyDate == null);
         }
 
-        private BusinessProcess GetBusinessProcess(Transaction transaction, BusinessProcessType businessProcessType)
+        private BusinessProcess GetBusinessProcess(BusinessProcessId processId, BusinessProcessType businessProcessType)
         {
             var businessProcess =
-                _businessProcesses.Find(p => p.Transaction.Equals(transaction) && p.ProcessType == businessProcessType);
+                _businessProcesses.Find(p => p.BusinessProcessId.Equals(processId) && p.ProcessType == businessProcessType);
             if (businessProcess == null)
             {
-                throw new BusinessProcessException($"Business process ({businessProcessType.Name}) {transaction.ToString()} does not exist.");
+                throw new BusinessProcessException($"Business process ({businessProcessType.Name}) {processId.ToString()} does not exist.");
             }
 
             return businessProcess;
         }
 
-        private BusinessProcess CreateBusinessProcess(Transaction transaction, Instant effectiveDate, BusinessProcessType businessProcessType, BusinessProcessId businessProcessId)
+        private BusinessProcess CreateBusinessProcess(Instant effectiveDate, BusinessProcessType businessProcessType, BusinessProcessId businessProcessId)
         {
-            if (_businessProcesses.Any(p => p.Transaction.Equals(transaction)))
+            if (_businessProcesses.Any(p => p.BusinessProcessId.Equals(businessProcessId)))
             {
-                throw new BusinessProcessException($"Process id {transaction.Value} does already exist.");
+                throw new BusinessProcessException($"Process id {businessProcessId.Value} does already exist.");
             }
 
-            return new BusinessProcess(businessProcessId, transaction, effectiveDate, businessProcessType);
+            return new BusinessProcess(businessProcessId, effectiveDate, businessProcessType);
         }
     }
 }

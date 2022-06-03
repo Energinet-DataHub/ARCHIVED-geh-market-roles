@@ -37,10 +37,10 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
         public void Cancel_WhenProcessIsPending_Success()
         {
             var (meteringPoint, _) = CreateWithActiveMoveIn();
-            var transaction = CreateTransaction();
-            meteringPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), _systemDateTimeProvider.Now().Plus(Duration.FromDays(5)), transaction, _systemDateTimeProvider, BusinessProcessId.New());
+            var businessProcessId = BusinessProcessId.New();
+            meteringPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), _systemDateTimeProvider.Now().Plus(Duration.FromDays(5)), _systemDateTimeProvider, businessProcessId);
 
-            meteringPoint.CancelChangeOfSupplier(transaction);
+            meteringPoint.CancelChangeOfSupplier(businessProcessId);
 
             Assert.Contains(meteringPoint.DomainEvents !, e => e is ChangeOfSupplierCancelled);
         }
@@ -49,17 +49,12 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
         public void Cancel_WhenIsNotPending_IsNotPossible()
         {
             var (meteringPoint, _) = CreateWithActiveMoveIn();
-            var transaction = CreateTransaction();
             var supplyStartDate = _systemDateTimeProvider.Now();
-            meteringPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), supplyStartDate, transaction, _systemDateTimeProvider, BusinessProcessId.New());
-            meteringPoint.EffectuateChangeOfSupplier(transaction, _systemDateTimeProvider);
+            var businessProcessId = BusinessProcessId.New();
+            meteringPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), supplyStartDate, _systemDateTimeProvider, businessProcessId);
+            meteringPoint.EffectuateChangeOfSupplier(businessProcessId, _systemDateTimeProvider);
 
-            Assert.Throws<BusinessProcessException>(() => meteringPoint.CancelChangeOfSupplier(transaction));
-        }
-
-        private static Transaction CreateTransaction()
-        {
-            return new Transaction(Guid.NewGuid().ToString());
+            Assert.Throws<BusinessProcessException>(() => meteringPoint.CancelChangeOfSupplier(businessProcessId));
         }
 
         private static EnergySupplierId CreateEnergySupplierId()
@@ -72,13 +67,13 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             return new ConsumerId(Guid.NewGuid());
         }
 
-        private (AccountingPoint AccountingPoint, Transaction Transaction) CreateWithActiveMoveIn()
+        private (AccountingPoint AccountingPoint, BusinessProcessId ProcessId) CreateWithActiveMoveIn()
         {
             var accountingPoint = new AccountingPoint(GsrnNumber.Create("571234567891234568"), MeteringPointType.Consumption);
-            var transaction = CreateTransaction();
-            accountingPoint.AcceptConsumerMoveIn(CreateConsumerId(), CreateEnergySupplierId(), _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)), transaction, BusinessProcessId.New());
-            accountingPoint.EffectuateConsumerMoveIn(transaction, _systemDateTimeProvider.Now());
-            return (accountingPoint, transaction);
+            var businessProcessId = BusinessProcessId.New();
+            accountingPoint.AcceptConsumerMoveIn(CreateConsumerId(), CreateEnergySupplierId(), _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)), businessProcessId);
+            accountingPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
+            return (accountingPoint, businessProcessId);
         }
     }
 }

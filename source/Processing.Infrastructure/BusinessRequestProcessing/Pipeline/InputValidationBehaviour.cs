@@ -48,7 +48,7 @@ namespace Processing.Infrastructure.BusinessRequestProcessing.Pipeline
                     .ToList()
                     .AsReadOnly();
 
-                var result = new BusinessProcessResult(request.TransactionId, validationErrors);
+                var result = new BusinessProcessResult(validationErrors);
                 return (TResponse)result;
             }
 

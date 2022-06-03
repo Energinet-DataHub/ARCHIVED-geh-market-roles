@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 
@@ -20,7 +21,7 @@ namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBu
     /// <summary>
     /// Azure Service Bus Client sender adapter
     /// </summary>
-    public interface IServiceBusSenderAdapter
+    public interface IServiceBusSenderAdapter : IAsyncDisposable, IDisposable
     {
         /// <summary>
         /// Topic name

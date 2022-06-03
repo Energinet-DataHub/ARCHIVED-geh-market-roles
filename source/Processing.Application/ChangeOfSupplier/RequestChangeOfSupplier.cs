@@ -18,7 +18,6 @@ using Processing.Application.Common.Transport;
 namespace Processing.Application.ChangeOfSupplier
 {
     public record RequestChangeOfSupplier(
-            string TransactionId = "",
             string EnergySupplierGlnNumber = "",
             string SocialSecurityNumber = "",
             string VATNumber = "",
