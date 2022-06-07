@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Contracts.BusinessRequests.MoveIn;
 using Contracts.IntegrationEvents;
 using Newtonsoft.Json;
 using Processing.Application.Common;

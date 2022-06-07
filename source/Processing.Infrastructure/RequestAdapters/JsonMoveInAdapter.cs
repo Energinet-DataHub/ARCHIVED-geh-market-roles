@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Contracts.BusinessRequests.MoveIn;
 using MediatR;
 using Processing.Application.Common;
 using Processing.Application.MoveIn;
@@ -88,14 +88,4 @@ namespace Processing.Infrastructure.RequestAdapters
             return new Result(content);
         }
     }
-
-    public record MoveInRequestDto(
-        string? ConsumerName,
-        string? EnergySupplierGlnNumber,
-        string AccountingPointGsrnNumber,
-        string StartDate,
-        string? ConsumerId,
-        string? ConsumerIdType);
-
-    public record ResponseDto(IEnumerable<string> ValidationErrors, string? ProcessId = null);
 }
