@@ -83,7 +83,7 @@ namespace Processing.Infrastructure.RequestAdapters
 
         private Result CreateResult(BusinessProcessResult businessProcessResult)
         {
-            var response = new ResponseDto(businessProcessResult.ValidationErrors.Select(error => error.Code).ToList());
+            var response = new ResponseDto(businessProcessResult.ValidationErrors.Select(error => error.Code).ToList(), businessProcessResult.ProcessId);
             var content = new MemoryStream(Encoding.UTF8.GetBytes(_serializer.Serialize(response)));
             return new Result(content);
         }
@@ -94,9 +94,8 @@ namespace Processing.Infrastructure.RequestAdapters
         string? EnergySupplierGlnNumber,
         string AccountingPointGsrnNumber,
         string StartDate,
-        string TransactionId,
         string? ConsumerId,
         string? ConsumerIdType);
 
-    public record ResponseDto(IEnumerable<string> ValidationErrors);
+    public record ResponseDto(IEnumerable<string> ValidationErrors, string? ProcessId = null);
 }

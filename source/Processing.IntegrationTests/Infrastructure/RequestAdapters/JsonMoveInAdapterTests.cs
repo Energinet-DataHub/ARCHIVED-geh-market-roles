@@ -41,7 +41,6 @@ namespace Processing.IntegrationTests.Infrastructure.RequestAdapters
                 string.Empty,
                 string.Empty,
                 string.Empty,
-                string.Empty,
                 string.Empty);
 
             var result = await _adapter.ReceiveAsync(SerializeToStream(request)).ConfigureAwait(false);
