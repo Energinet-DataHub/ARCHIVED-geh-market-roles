@@ -13,9 +13,13 @@
 // limitations under the License.
 
 using System;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Contracts.BusinessRequests.MoveIn;
 using Contracts.IntegrationEvents;
+using Newtonsoft.Json;
 using Processing.Application.Common;
 using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Processing;
@@ -27,7 +31,7 @@ using Processing.Domain.MeteringPoints.Errors;
 using Processing.Domain.SeedWork;
 using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.EventPublishing;
-using Processing.Infrastructure.Configuration.Outbox;
+using Processing.Infrastructure.RequestAdapters;
 using Xunit;
 using Xunit.Categories;
 using Consumer = Processing.Application.MoveIn.Consumer;
@@ -153,14 +157,24 @@ namespace Processing.IntegrationTests.Application.MoveIn
         [Fact]
         public async Task Request_succeeds()
         {
+            var requestAdapter = GetService<JsonMoveInAdapter>();
             CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
             CreateAccountingPoint();
             SaveChanges();
 
-            var request = CreateRequest(false);
-            var result = await SendRequestAsync(request).ConfigureAwait(false);
+            var request = new Request(
+                ConsumerId: SampleData.ConsumerSSN,
+                ConsumerName: SampleData.ConsumerName,
+                StartDate: SampleData.MoveInDate,
+                ConsumerIdType: ConsumerIdentifierType.CPR,
+                AccountingPointGsrnNumber: SampleData.GsrnNumber,
+                EnergySupplierGlnNumber: SampleData.GlnNumber);
 
-            Assert.NotNull(result.ProcessId);
+            var response = await requestAdapter.ReceiveAsync(SerializeToStream(request));
+
+            var responseBody = await System.Text.Json.JsonSerializer.DeserializeAsync<Response>(response.Content);
+            Assert.NotNull(responseBody);
+            Assert.NotNull(responseBody?.ProcessId);
         }
 
         [Fact]
@@ -208,6 +222,18 @@ namespace Processing.IntegrationTests.Application.MoveIn
                 SampleData.GlnNumber,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);
+        }
+
+        private static MemoryStream SerializeToStream(object request)
+        {
+            var stream = new MemoryStream();
+            using var streamWriter = new StreamWriter(stream: stream, encoding: Encoding.UTF8, bufferSize: 4096, leaveOpen: true);
+            using var jsonWriter = new JsonTextWriter(streamWriter);
+            var serializer = new Newtonsoft.Json.JsonSerializer();
+            serializer.Serialize(jsonWriter, request);
+            streamWriter.Flush();
+            stream.Seek(0, SeekOrigin.Begin);
+            return stream;
         }
 
         private async Task<(AccountingPoint AccountingPoint, BusinessProcessId ProcessId)> SetupScenarioAsync()
