@@ -30,7 +30,6 @@ using Processing.Domain.MeteringPoints.Errors;
 using Processing.Domain.SeedWork;
 using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.EventPublishing;
-using Processing.Infrastructure.Configuration.Outbox;
 using Processing.Infrastructure.RequestAdapters;
 using Xunit;
 using Xunit.Categories;
