@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Contracts.BusinessRequests.MoveIn;
 using MediatR;
 using Processing.Application.Common;
 using Processing.Application.MoveIn;
@@ -47,13 +47,13 @@ namespace Processing.Infrastructure.RequestAdapters
             return CreateResult(businessProcessResult);
         }
 
-        private static MoveInRequest MapToCommandFrom(MoveInRequestDto requestDto)
+        private static MoveInRequest MapToCommandFrom(Request request)
         {
             var command = new MoveInRequest(
-                ExtractConsumerFrom(requestDto),
-                requestDto.EnergySupplierGlnNumber ?? string.Empty,
-                requestDto.AccountingPointGsrnNumber,
-                requestDto.StartDate);
+                ExtractConsumerFrom(request),
+                request.EnergySupplierGlnNumber ?? string.Empty,
+                request.AccountingPointGsrnNumber,
+                request.StartDate);
             return command;
         }
 
@@ -63,40 +63,29 @@ namespace Processing.Infrastructure.RequestAdapters
             return await streamReader.ReadToEndAsync().ConfigureAwait(false);
         }
 
-        private static Consumer ExtractConsumerFrom(MoveInRequestDto request)
+        private static Consumer ExtractConsumerFrom(Request request)
         {
             return new Consumer(request.ConsumerName ?? string.Empty, request.ConsumerId ?? string.Empty, request.ConsumerIdType ?? string.Empty);
         }
 
-        private async Task<MoveInRequestDto> ExtractRequestFromAsync(Stream request)
+        private async Task<Request> ExtractRequestFromAsync(Stream request)
         {
             var json = await ExtractJsonFromAsync(request).ConfigureAwait(false);
             var requestDto = DeserializeToRequest(json);
             return requestDto;
         }
 
-        private MoveInRequestDto DeserializeToRequest(string json)
+        private Request DeserializeToRequest(string json)
         {
-            var requestDto = _serializer.Deserialize<MoveInRequestDto>(json);
+            var requestDto = _serializer.Deserialize<Request>(json);
             return requestDto;
         }
 
         private Result CreateResult(BusinessProcessResult businessProcessResult)
         {
-            var response = new ResponseDto(businessProcessResult.ValidationErrors.Select(error => error.Code).ToList());
+            var response = new Response(businessProcessResult.ValidationErrors.Select(error => error.Code).ToList(), businessProcessResult.ProcessId);
             var content = new MemoryStream(Encoding.UTF8.GetBytes(_serializer.Serialize(response)));
             return new Result(content);
         }
     }
-
-    public record MoveInRequestDto(
-        string? ConsumerName,
-        string? EnergySupplierGlnNumber,
-        string AccountingPointGsrnNumber,
-        string StartDate,
-        string TransactionId,
-        string? ConsumerId,
-        string? ConsumerIdType);
-
-    public record ResponseDto(IEnumerable<string> ValidationErrors);
 }
