@@ -162,7 +162,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             CreateAccountingPoint();
             SaveChanges();
 
-            var request = new MoveInRequestDto(
+            var request = new Request(
                 ConsumerId: SampleData.ConsumerSSN,
                 ConsumerName: SampleData.ConsumerName,
                 StartDate: SampleData.MoveInDate,
@@ -172,7 +172,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
             var response = await requestAdapter.ReceiveAsync(SerializeToStream(request));
 
-            var responseBody = await System.Text.Json.JsonSerializer.DeserializeAsync<ResponseDto>(response.Content);
+            var responseBody = await System.Text.Json.JsonSerializer.DeserializeAsync<Response>(response.Content);
             Assert.NotNull(responseBody);
             Assert.NotNull(responseBody?.ProcessId);
         }
