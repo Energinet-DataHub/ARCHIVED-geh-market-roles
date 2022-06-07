@@ -51,7 +51,7 @@ namespace Processing.Application.Common
 
         public IReadOnlyCollection<ValidationError> ValidationErrors { get; private set; } = new List<ValidationError>();
 
-        public string? ProcessId { get; }
+        public string ProcessId { get; } = string.Empty;
 
         public static BusinessProcessResult Ok(string processId)
         {
