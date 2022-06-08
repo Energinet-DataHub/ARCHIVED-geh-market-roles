@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Processing.Infrastructure.Configuration.SystemTime;
 
 namespace Processing.Infrastructure.Configuration.EventPublishing
@@ -22,15 +24,26 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
     public class PublishEventsOnTimeHasPassed : INotificationHandler<TimeHasPassed>
     {
         private readonly EventDispatcher _eventDispatcher;
+        private readonly ILogger<PublishEventsOnTimeHasPassed> _logger;
 
-        public PublishEventsOnTimeHasPassed(EventDispatcher eventDispatcher)
+        public PublishEventsOnTimeHasPassed(EventDispatcher eventDispatcher, ILogger<PublishEventsOnTimeHasPassed> logger)
         {
             _eventDispatcher = eventDispatcher;
+            _logger = logger;
         }
 
         public Task Handle(TimeHasPassed notification, CancellationToken cancellationToken)
         {
-            return _eventDispatcher.DispatchAsync();
+            try
+            {
+                return _eventDispatcher.DispatchAsync();
+            }
+            #pragma warning disable CA1031 // Exceptions thrown here can be any exception
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Failed to process integration events.");
+                return Task.CompletedTask;
+            }
         }
     }
 }

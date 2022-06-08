@@ -55,7 +55,7 @@ namespace Processing.Application.ChangeOfSupplier.Processing
                     BusinessProcessId = @event.BusinessProcessId;
                     EffectiveDate = @event.EffectiveDate;
                     SetInternalState(State.AwaitingMeteringPointDetailsDispatch);
-                    SendCommand(new ForwardMeteringPointDetails(@event.AccountingPointId.Value, @event.BusinessProcessId.Value, @event.Transaction.Value));
+                    SendCommand(new ForwardMeteringPointDetails(@event.AccountingPointId.Value, @event.BusinessProcessId.Value));
                     break;
                 default:
                     ThrowIfStateDoesNotMatch(@event);
@@ -70,7 +70,7 @@ namespace Processing.Application.ChangeOfSupplier.Processing
             {
                 case State.AwaitingMeteringPointDetailsDispatch:
                     SetInternalState(State.AwaitingConsumerDetailsDispatch);
-                    SendCommand(new ForwardConsumerDetails(@event.AccountingPointId.Value, @event.BusinessProcessId.Value, @event.Transaction.Value));
+                    SendCommand(new ForwardConsumerDetails(@event.AccountingPointId.Value, @event.BusinessProcessId.Value));
                     break;
                 default:
                     ThrowIfStateDoesNotMatch(@event);
@@ -85,7 +85,7 @@ namespace Processing.Application.ChangeOfSupplier.Processing
             {
                 case State.AwaitingConsumerDetailsDispatch:
                     SetInternalState(State.AwaitingCurrentSupplierNotificationDispatch);
-                    ScheduleNotificationOfCurrentSupplier(@event.AccountingPointId, @event.Transaction);
+                    ScheduleNotificationOfCurrentSupplier(@event.AccountingPointId);
                     break;
                 default:
                     ThrowIfStateDoesNotMatch(@event);
@@ -100,7 +100,7 @@ namespace Processing.Application.ChangeOfSupplier.Processing
             {
                 case State.AwaitingCurrentSupplierNotificationDispatch:
                     SetInternalState(State.AwaitingSupplierChange);
-                    ScheduleSupplierChange(@event.AccountingPointId, @event.Transaction);
+                    ScheduleSupplierChange(@event.AccountingPointId, @event.BusinessProcessId);
                     break;
                 default:
                     ThrowIfStateDoesNotMatch(@event);
@@ -127,15 +127,15 @@ namespace Processing.Application.ChangeOfSupplier.Processing
             return _state == State.Completed;
         }
 
-        private void ScheduleSupplierChange(AccountingPointId accountingPointId, Transaction transaction)
+        private void ScheduleSupplierChange(AccountingPointId accountingPointId, BusinessProcessId processId)
         {
-            SendCommand(new ChangeSupplier(accountingPointId.Value, transaction.Value), EffectiveDate);
+            SendCommand(new ChangeSupplier(accountingPointId.Value, processId.Value.ToString()), EffectiveDate);
         }
 
-        private void ScheduleNotificationOfCurrentSupplier(AccountingPointId accountingPointId, Transaction transaction)
+        private void ScheduleNotificationOfCurrentSupplier(AccountingPointId accountingPointId)
         {
             var executionDate = EffectiveDate.Minus(Duration.FromHours(72));
-            SendCommand(new NotifyCurrentSupplier(accountingPointId.Value, BusinessProcessId.Value, transaction.Value), executionDate);
+            SendCommand(new NotifyCurrentSupplier(accountingPointId.Value, BusinessProcessId.Value), executionDate);
         }
 
         private void ThrowIfStateDoesNotMatch(IDomainEvent @event)

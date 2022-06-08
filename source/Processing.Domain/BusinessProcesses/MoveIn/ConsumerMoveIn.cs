@@ -45,16 +45,16 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
             return accountingPoint.ConsumerMoveInAcceptable(consumerMovesInOn.DateInUtc);
         }
 
-        public void StartProcess(AccountingPoint accountingPoint, Consumer consumer, EnergySupplier energySupplier, EffectiveDate consumerMovesInOn, Transaction transaction, Instant today)
+        public void StartProcess(AccountingPoint accountingPoint, Consumer consumer, EnergySupplier energySupplier, EffectiveDate consumerMovesInOn, Instant today, BusinessProcessId businessProcessId)
         {
             if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
             if (consumer == null) throw new ArgumentNullException(nameof(consumer));
             if (energySupplier == null) throw new ArgumentNullException(nameof(energySupplier));
             if (consumerMovesInOn == null) throw new ArgumentNullException(nameof(consumerMovesInOn));
-            accountingPoint.AcceptConsumerMoveIn(consumer.ConsumerId, energySupplier.EnergySupplierId, consumerMovesInOn.DateInUtc, transaction);
+            accountingPoint.AcceptConsumerMoveIn(consumer.ConsumerId, energySupplier.EnergySupplierId, consumerMovesInOn.DateInUtc, businessProcessId);
             if (EffectiveDateIsInThePast(consumerMovesInOn, today))
             {
-                accountingPoint.EffectuateConsumerMoveIn(transaction, today);
+                accountingPoint.EffectuateConsumerMoveIn(businessProcessId, today);
             }
         }
 

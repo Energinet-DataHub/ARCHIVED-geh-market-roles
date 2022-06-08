@@ -12,28 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using Processing.Domain.SeedWork;
+using MediatR;
 
-namespace Processing.Domain.MeteringPoints
+namespace Messaging.Application.Common.Commands
 {
-    public class Transaction : ValueObject
+    #pragma warning disable CA1040
+    /// <summary>
+    /// CQRS command object
+    /// </summary>
+    public interface ICommand : IRequest
     {
-        public Transaction(string value)
-        {
-            Value = !string.IsNullOrWhiteSpace(value) ? value : throw new ArgumentNullException(nameof(value));
-        }
-
-        public string Value { get; set; }
-
-        public static Transaction Create(string transaction)
-        {
-            return new Transaction(transaction);
-        }
-
-        public override string ToString()
-        {
-            return Value ?? string.Empty;
-        }
     }
+#pragma warning restore
 }

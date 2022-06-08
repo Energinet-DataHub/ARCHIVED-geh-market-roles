@@ -43,8 +43,6 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing.Co
         private readonly IMediator _mediator;
         private readonly string _glnNumber = "7495563456235";
 
-        private Transaction _transaction = CreateTransaction();
-
         public ChangeSupplierTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
@@ -58,9 +56,9 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing.Co
         [Fact]
         public async Task ChangeSupplier_WhenEffectiveDateIsDue_IsSuccessful()
         {
-            await SimulateProcess().ConfigureAwait(false);
+            var processId = await SimulateProcess().ConfigureAwait(false);
 
-            var command = new ChangeSupplier(_accountingPoint.Id.Value, _transaction.Value);
+            var command = new ChangeSupplier(_accountingPoint.Id.Value, processId.ToString());
             await GetService<IMediator>().Send(command, CancellationToken.None).ConfigureAwait(false);
 
             var query = @"SELECT Count(1) FROM SupplierRegistrations WHERE AccountingPointId = @AccountingPointId AND StartOfSupplyDate IS NOT NULL AND EndOfSupplyDate IS NULL";
@@ -77,24 +75,22 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing.Co
         [Fact]
         public async Task RequestChangeOfSupplier_IsSuccessful_FutureSupplier_IntegrationEventsIsPublished()
         {
-            _transaction = CreateTransaction();
             await RequestFutureChangeOfSupplierProcess().ConfigureAwait(false);
 
             AssertOutboxMessage<FutureEnergySupplierChangeRegistered>();
         }
 
-        private async Task SimulateProcess()
+        private async Task<Guid> SimulateProcess()
         {
             await SetConsumerMovedIn().ConfigureAwait(false);
 
-            _transaction = CreateTransaction();
-            await RequestChangeOfSupplier().ConfigureAwait(false);
+            var processId = await RequestChangeOfSupplier().ConfigureAwait(false);
 
-            var businessProcessId = GetBusinessProcessId(_transaction);
+            await _mediator.Send(new ForwardMeteringPointDetails(_accountingPoint.Id.Value, processId)).ConfigureAwait(false);
+            await _mediator.Send(new ForwardConsumerDetails(_accountingPoint.Id.Value, processId)).ConfigureAwait(false);
+            await _mediator.Send(new NotifyCurrentSupplier(_accountingPoint.Id.Value, processId)).ConfigureAwait(false);
 
-            await _mediator.Send(new ForwardMeteringPointDetails(_accountingPoint.Id.Value, businessProcessId.Value, _transaction.Value)).ConfigureAwait(false);
-            await _mediator.Send(new ForwardConsumerDetails(_accountingPoint.Id.Value, businessProcessId.Value, _transaction.Value)).ConfigureAwait(false);
-            await _mediator.Send(new NotifyCurrentSupplier(_accountingPoint.Id.Value, businessProcessId.Value, _transaction.Value)).ConfigureAwait(false);
+            return processId;
         }
 
         private async Task RequestFutureChangeOfSupplierProcess()
@@ -103,21 +99,26 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing.Co
             await RequestChangeOfSupplierInFuture().ConfigureAwait(false);
         }
 
-        private async Task RequestChangeOfSupplier()
+        private async Task<Guid> RequestChangeOfSupplier()
         {
-            await _mediator.Send(new RequestChangeOfSupplier(
-                _transaction.Value,
+            var result = await _mediator.Send(new RequestChangeOfSupplier(
                 _glnNumber,
                 _consumer.CprNumber?.Value ?? throw new InvalidOperationException("CprNumber was supposed to have a value"),
                 string.Empty,
                 _accountingPoint.GsrnNumber.Value,
                 Instant.FromDateTimeUtc(DateTime.UtcNow.AddHours(1)).ToString())).ConfigureAwait(false);
+
+            if (result.ProcessId is null)
+            {
+                throw new InvalidOperationException("Process id is null");
+            }
+
+            return Guid.Parse(result.ProcessId);
         }
 
         private async Task RequestChangeOfSupplierInFuture()
         {
             await _mediator.Send(new RequestChangeOfSupplier(
-                _transaction.Value,
                 _newEnergySupplier.GlnNumber.Value,
                 _consumer.CprNumber?.Value ?? throw new InvalidOperationException("CprNumber was supposed to have a value"),
                 string.Empty,

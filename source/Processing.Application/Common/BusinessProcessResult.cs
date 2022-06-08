@@ -21,49 +21,46 @@ namespace Processing.Application.Common
 {
     public class BusinessProcessResult
     {
-        public BusinessProcessResult(string transactionId, IEnumerable<IBusinessRule> businessRules)
+        public BusinessProcessResult(IEnumerable<IBusinessRule> businessRules)
         {
-            TransactionId = transactionId;
             SetValidationErrors(businessRules);
             Success = ValidationErrors.Count == 0;
         }
 
-        public BusinessProcessResult(string transactionId, IBusinessRule businessRule)
+        public BusinessProcessResult(IBusinessRule businessRule)
         {
             if (businessRule == null) throw new ArgumentNullException(nameof(businessRule));
 
-            TransactionId = transactionId;
             SetValidationErrors(new List<IBusinessRule>() { businessRule });
             Success = ValidationErrors.Count == 0;
         }
 
-        public BusinessProcessResult(string transactionId, IReadOnlyCollection<ValidationError> validationErrors)
+        public BusinessProcessResult(IReadOnlyCollection<ValidationError> validationErrors)
         {
-            TransactionId = transactionId;
             ValidationErrors = validationErrors ?? throw new ArgumentNullException(nameof(validationErrors));
             Success = ValidationErrors.Count == 0;
         }
 
-        private BusinessProcessResult(string transactionId, bool success)
+        private BusinessProcessResult(bool success, string processId)
         {
-            TransactionId = transactionId;
             Success = success;
+            ProcessId = processId;
         }
 
         public bool Success { get; }
 
-        public string TransactionId { get; }
-
         public IReadOnlyCollection<ValidationError> ValidationErrors { get; private set; } = new List<ValidationError>();
 
-        public static BusinessProcessResult Ok(string transactionId)
+        public string ProcessId { get; } = string.Empty;
+
+        public static BusinessProcessResult Ok(string processId)
         {
-            return new BusinessProcessResult(transactionId, true);
+            return new BusinessProcessResult(true, processId);
         }
 
-        public static BusinessProcessResult Fail(string transactionId, params ValidationError[] validationErrors)
+        public static BusinessProcessResult Fail(params ValidationError[] validationErrors)
         {
-            return new BusinessProcessResult(transactionId, validationErrors);
+            return new BusinessProcessResult(validationErrors);
         }
 
         private void SetValidationErrors(IEnumerable<IBusinessRule> rules)

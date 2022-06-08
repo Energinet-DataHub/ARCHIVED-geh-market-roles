@@ -18,7 +18,7 @@ using Azure.Messaging.ServiceBus;
 
 namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus
 {
-    public class ServiceBusSenderAdapter : IServiceBusSenderAdapter, IAsyncDisposable
+    public sealed class ServiceBusSenderAdapter : IServiceBusSenderAdapter
     {
         private readonly ServiceBusSender _serviceBusSender;
 
@@ -39,6 +39,11 @@ namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBu
         public async ValueTask DisposeAsync()
         {
             await _serviceBusSender.DisposeAsync().ConfigureAwait(false);
+            Dispose();
+        }
+
+        public void Dispose()
+        {
             GC.SuppressFinalize(this);
         }
     }

@@ -12,16 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
-
-namespace Messaging.Infrastructure.Configuration.InternalCommands
+namespace Contracts.BusinessRequests.MoveIn
 {
-    #pragma warning disable CA1040
-    /// <summary>
-    /// CQRS command object
-    /// </summary>
-    public interface ICommand : IRequest
-    {
-    }
-#pragma warning restore
+    public record Response(IEnumerable<string> ValidationErrors, string ProcessId = "");
 }

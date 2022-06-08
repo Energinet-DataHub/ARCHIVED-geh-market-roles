@@ -28,7 +28,7 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
     [UnitTest]
     public class AcceptTests
     {
-        private SystemDateTimeProviderStub _systemDateTimeProvider;
+        private readonly SystemDateTimeProviderStub _systemDateTimeProvider;
 
         public AcceptTests()
         {
@@ -85,11 +85,11 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             var energySupplierId = CreateSupplierId();
             var meteringPoint = CreateMeteringPoint(MeteringPointType.Consumption);
             var moveInDate = _systemDateTimeProvider.Now().Minus(Duration.FromDays(1));
-            var moveInTransaction = CreateTransaction();
+            var businessProcessId = BusinessProcessId.New();
 
-            meteringPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, moveInTransaction);
-            meteringPoint.EffectuateConsumerMoveIn(moveInTransaction, _systemDateTimeProvider.Now());
-            meteringPoint.AcceptChangeOfSupplier(CreateSupplierId(), _systemDateTimeProvider.Now(), CreateTransaction(), _systemDateTimeProvider);
+            meteringPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, businessProcessId);
+            meteringPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
+            meteringPoint.AcceptChangeOfSupplier(CreateSupplierId(), _systemDateTimeProvider.Now(), _systemDateTimeProvider, BusinessProcessId.New());
 
             var result = CanChangeSupplier(meteringPoint);
 
@@ -101,7 +101,8 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
         {
             var meteringPoint = CreateMeteringPoint(MeteringPointType.Consumption);
             var moveInDate = _systemDateTimeProvider.Now();
-            meteringPoint.AcceptConsumerMoveIn(CreateConsumerId(), CreateSupplierId(), moveInDate, CreateTransaction());
+            var businessProcessId = BusinessProcessId.New();
+            meteringPoint.AcceptConsumerMoveIn(CreateConsumerId(), CreateSupplierId(), moveInDate,  businessProcessId);
 
             var result = CanChangeSupplier(meteringPoint);
 
@@ -140,18 +141,13 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             var consumerId = CreateConsumerId();
             var energySupplierId = CreateSupplierId();
             var moveInDate = _systemDateTimeProvider.Now().Minus(Duration.FromDays(1));
-            var moveInTransaction = CreateTransaction();
-            meteringPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, moveInTransaction);
-            meteringPoint.EffectuateConsumerMoveIn(moveInTransaction, _systemDateTimeProvider.Now());
+            var businessProcessId = BusinessProcessId.New();
+            meteringPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, businessProcessId);
+            meteringPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
 
-            meteringPoint.AcceptChangeOfSupplier(CreateSupplierId(), _systemDateTimeProvider.Now(), CreateTransaction(), _systemDateTimeProvider);
+            meteringPoint.AcceptChangeOfSupplier(CreateSupplierId(), _systemDateTimeProvider.Now(), _systemDateTimeProvider, BusinessProcessId.New());
 
             Assert.Contains(meteringPoint.DomainEvents!, e => e is EnergySupplierChangeRegistered);
-        }
-
-        private static Transaction CreateTransaction()
-        {
-            return new Transaction(Guid.NewGuid().ToString());
         }
 
         private static ConsumerId CreateConsumerId()
@@ -178,11 +174,6 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
         private static MeteringPointType CreateMeteringPointTypeFromName(string meteringPointTypeName)
         {
             return MeteringPointType.FromName<MeteringPointType>(meteringPointTypeName);
-        }
-
-        private static Instant GetFakeEffectuationDate()
-        {
-            return Instant.FromUtc(2000, 1, 1, 0, 0);
         }
 
         private BusinessRulesValidationResult CanChangeSupplier(AccountingPoint accountingPoint)
