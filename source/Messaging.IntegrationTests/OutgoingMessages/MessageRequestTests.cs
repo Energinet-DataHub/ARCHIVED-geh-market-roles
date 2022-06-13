@@ -55,7 +55,7 @@ namespace Messaging.IntegrationTests.OutgoingMessages
                     .Build()).ConfigureAwait(false);
             var message2 = await MessageArrived(
                 builder
-                .WithProcessType("ProcessType2")
+                .WithProcessType(ProcessType.ChangeOfSupplier.Code)
                 .Build()).ConfigureAwait(false);
             var outgoingMessage1 = _outgoingMessageStore.GetByOriginalMessageId(message1.Id)!;
             var outgoingMessage2 = _outgoingMessageStore.GetByOriginalMessageId(message2.Id)!;
