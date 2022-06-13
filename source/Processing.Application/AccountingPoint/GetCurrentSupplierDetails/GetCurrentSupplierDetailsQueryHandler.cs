@@ -33,6 +33,12 @@ public class GetCurrentSupplierDetailsQueryHandler : IQueryHandler<GetCurrentSup
     public async Task<Result> Handle(GetCurrentSupplierDetailsQuery request, CancellationToken cancellationToken)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
+        var accoutingPointExists = await AccoutingPointExistsAsync(request.AccountingPointNumber).ConfigureAwait(false);
+        if (accoutingPointExists == false)
+        {
+            return new Result(null, $"Accounting point {request.AccountingPointNumber} does not exist.");
+        }
+
         var selectStatement =
             $"SELECT r.StartOfSupplyDate AS {nameof(EnergySupplier.StartOfSupplyDate)} , e.GlnNumber AS {nameof(EnergySupplier.EnergySupplierNumber)} " +
             $"FROM [dbo].[SupplierRegistrations] r JOIN AccountingPoints a ON r.AccountingPointId = a.Id " +
@@ -47,5 +53,13 @@ public class GetCurrentSupplierDetailsQueryHandler : IQueryHandler<GetCurrentSup
             .ConfigureAwait(false);
 
         return new Result(dataModel);
+    }
+
+    private async Task<bool> AccoutingPointExistsAsync(string accountingPointNumber)
+    {
+        var accoutingPointExists = await _connectionFactory.GetOpenConnection().ExecuteScalarAsync<bool>(
+            "SELECT COUNT(1) FROM dbo.AccountingPoints WHERE GsrnNumber = @GsrnNumber",
+            new { GsrnNumber = accountingPointNumber, }).ConfigureAwait(false);
+        return accoutingPointExists;
     }
 }

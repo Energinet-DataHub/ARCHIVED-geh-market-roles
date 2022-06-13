@@ -39,7 +39,16 @@ namespace Processing.IntegrationTests.Application.AccoutingPoints
 
             var result = await QueryAsync(new GetCurrentSupplierDetailsQuery(SampleData.GsrnNumber)).ConfigureAwait(false);
 
-            Assert.Equal(SampleData.GlnNumber, result.EnergySupplier.EnergySupplierNumber);
+            Assert.Equal(SampleData.GlnNumber, result.EnergySupplier?.EnergySupplierNumber);
+        }
+
+        [Fact]
+        public async Task Return_error_if_accounting_point_does_not_exist()
+        {
+            var result = await QueryAsync(new GetCurrentSupplierDetailsQuery("Not_existing_GSRN_number")).ConfigureAwait(false);
+
+            Assert.Null(result.EnergySupplier);
+            Assert.True(result.Error.Length > 0);
         }
 
         private async Task SetupScenario()
