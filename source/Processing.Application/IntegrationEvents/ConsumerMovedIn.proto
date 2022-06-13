@@ -1,4 +1,4 @@
-/* Copyright 2020 Energinet DataHub A/S
+﻿/* Copyright 2020 Energinet DataHub A/S
  *
  * Licensed under the Apache License, Version 2.0 (the "License2");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,11 @@
  */
 
 syntax = "proto3";
-
-import "google/protobuf/timestamp.proto";
-
-option csharp_namespace = "Contracts.IntegrationEvents";
+option csharp_namespace = "EnergySupplier.IntegrationEvents";
 /**
- * This message is sent out when an energy supplier has been changed.
+ * This message is sent out when consumer has moved in.
  */
 
-message FutureEnergySupplierChangeRegistered {
-  string accountingpoint_id = 1;
-  string gsrn_number = 2; // Unique metering point identification
-  string energy_supplier_gln = 3; // Unique Energy Supplier identifcation.
-  google.protobuf.Timestamp effective_date = 4; // Date which the change of supplier goes into effect.
+message ConsumerMovedIn {
+  string accounting_point_id = 1;
 }

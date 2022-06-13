@@ -33,7 +33,7 @@ public class PublishEventOnConsumerMovedIn : INotificationHandler<ConsumerMovedI
     public Task Handle(ConsumerMovedIn notification, CancellationToken cancellationToken)
     {
         if (notification == null) throw new ArgumentNullException(nameof(notification));
-        var integrationEvent = new Contracts.IntegrationEvents.ConsumerMovedIn()
+        var integrationEvent = new EnergySupplier.IntegrationEvents.ConsumerMovedIn()
         {
             AccountingPointId = notification.AccountingPointId.ToString(),
         };

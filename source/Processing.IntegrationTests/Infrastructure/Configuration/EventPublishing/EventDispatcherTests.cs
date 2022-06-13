@@ -13,9 +13,8 @@
 // limitations under the License.
 
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Contracts.IntegrationEvents;
+using EnergySupplier.IntegrationEvents;
 using Processing.Application.Common;
 using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.EventPublishing;

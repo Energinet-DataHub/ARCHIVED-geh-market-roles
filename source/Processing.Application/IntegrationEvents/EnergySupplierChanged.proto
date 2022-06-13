@@ -15,7 +15,7 @@
 
 syntax = "proto3";
 
-option csharp_namespace = "Contracts.IntegrationEvents";
+option csharp_namespace = "EnergySupplier.IntegrationEvents";
 /**
  * This message is sent out when an energy supplier has been changed.
  */
