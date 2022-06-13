@@ -14,6 +14,7 @@
 
 using System;
 using System.Linq;
+using Messaging.Application.Transactions;
 
 namespace Messaging.Application.OutgoingMessages;
 
@@ -21,7 +22,6 @@ public sealed class ProcessType : EnumerationType
 {
     public static readonly ProcessType MoveIn = new(0, nameof(MoveIn), "E65", new ProcessDetails("A01", "ConfirmRequestChangeOfSupplier"), new ProcessDetails("A02", "RejectRequestChangeOfSupplier"));
     public static readonly ProcessType ChangeOfSupplier = new(0, nameof(MoveIn), "E03", new ProcessDetails("A01", "ConfirmRequestChangeOfSupplier"), new ProcessDetails("A02", "RejectRequestChangeOfSupplier"));
-    public static readonly ProcessType Unknown = new(999, nameof(MoveIn), "Unknown", new ProcessDetails("Unknown", "Unknown"), new ProcessDetails("Unknown", "Unknown"));
 
     private ProcessType(int id, string name, string code, ProcessDetails confirm, ProcessDetails reject)
      : base(id, name)
@@ -39,8 +39,8 @@ public sealed class ProcessType : EnumerationType
 
     public static ProcessType FromCode(string code)
     {
-        var processType = GetAll<ProcessType>().FirstOrDefault(p => p.Code.Equals(code, StringComparison.OrdinalIgnoreCase));
-        return processType ?? Unknown;
+        return GetAll<ProcessType>().FirstOrDefault(p => p.Code.Equals(code, StringComparison.OrdinalIgnoreCase)) ??
+               throw new UnknownProcessTypeException(code);
     }
 
     public static bool IsKnown(string code)
