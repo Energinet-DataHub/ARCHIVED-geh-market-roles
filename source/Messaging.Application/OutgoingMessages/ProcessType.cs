@@ -41,6 +41,12 @@ public sealed class ProcessType : EnumerationType
         var processType = GetAll<ProcessType>().FirstOrDefault(p => p.Code.Equals(code, StringComparison.OrdinalIgnoreCase));
         return processType ?? Unknown;
     }
+
+    public static bool IsKnown(string code)
+    {
+        var processType = GetAll<ProcessType>().FirstOrDefault(p => p.Code.Equals(code, StringComparison.OrdinalIgnoreCase));
+        return processType is not null;
+    }
 }
 
 public record ProcessDetails(string BusinessReasonCode, string DocumentType);

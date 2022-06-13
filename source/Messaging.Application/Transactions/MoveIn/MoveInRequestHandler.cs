@@ -63,6 +63,11 @@ namespace Messaging.Application.Transactions.MoveIn
         {
             if (incomingMessage == null) throw new ArgumentNullException(nameof(incomingMessage));
 
+            if (ProcessType.IsKnown(incomingMessage.Message.ProcessType) == false)
+            {
+                throw new UnknownProcessTypeException(incomingMessage.Message.ProcessType);
+            }
+
             var marketEvaluationPoint =
                 await _marketEvaluationPointProvider.GetByGsrnNumberAsync(incomingMessage.MarketActivityRecord.MarketEvaluationPointId).ConfigureAwait(false);
 

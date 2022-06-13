@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Messaging.Application.Common;
 using Messaging.Application.OutgoingMessages;
+using Messaging.Application.Transactions;
 using Messaging.Application.Transactions.MoveIn;
 using Messaging.Application.Xml;
 using Messaging.Application.Xml.SchemaStore;
@@ -47,6 +48,18 @@ namespace Messaging.IntegrationTests.Transactions.MoveIn
             _outgoingMessageStore = GetService<IOutgoingMessageStore>();
             _moveInRequestHandler = GetService<MoveInRequestHandler>();
             _marketEvaluationPointProvider = (MarketEvaluationPointProviderStub)GetService<IMarketEvaluationPointProvider>();
+        }
+
+        [Fact]
+        public async Task Throw_if_process_type_is_unknown()
+        {
+            var incomingMessage = MessageBuilder()
+                .WithProcessType("Invalid_process_type")
+                .Build();
+
+            await Assert
+                .ThrowsAsync<UnknownProcessTypeException>(() => _moveInRequestHandler.HandleAsync(incomingMessage))
+                .ConfigureAwait(false);
         }
 
         [Fact]
@@ -113,6 +126,7 @@ namespace Messaging.IntegrationTests.Transactions.MoveIn
         private IncomingMessageBuilder MessageBuilder()
         {
             return new IncomingMessageBuilder()
+                .WithProcessType(ProcessType.MoveIn.Code)
                 .WithMarketEvaluationPointId(_marketEvaluationPointProvider.MarketEvaluationPoints.First().GsrnNumber);
         }
 
