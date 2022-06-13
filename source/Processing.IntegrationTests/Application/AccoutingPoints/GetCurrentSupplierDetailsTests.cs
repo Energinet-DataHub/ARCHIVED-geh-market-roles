@@ -51,6 +51,17 @@ namespace Processing.IntegrationTests.Application.AccoutingPoints
             Assert.True(result.Error.Length > 0);
         }
 
+        [Fact]
+        public async Task Return_error_if_accounting_point_does_not_have_a_supplier()
+        {
+            await CreateAccoutingPoint();
+
+            var result = await QueryAsync(new GetCurrentSupplierDetailsQuery(SampleData.GsrnNumber)).ConfigureAwait(false);
+
+            Assert.Null(result.EnergySupplier);
+            Assert.True(result.Error.Length > 0);
+        }
+
         private async Task SetupScenario()
         {
             await CreateEnergySupplier();
