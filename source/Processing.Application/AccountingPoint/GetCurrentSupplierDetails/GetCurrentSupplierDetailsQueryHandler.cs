@@ -69,11 +69,10 @@ public class GetCurrentSupplierDetailsQueryHandler : IQueryHandler<GetCurrentSup
 
     private async Task<bool> AccountingPointExistsAsync(string accountingPointNumber)
     {
-        var accoutingPointExists = await _connectionFactory
+        return await _connectionFactory
             .GetOpenConnection()
             .ExecuteScalarAsync<bool>(
-            "SELECT COUNT(1) FROM dbo.AccountingPoints WHERE GsrnNumber = @GsrnNumber",
-            new { GsrnNumber = accountingPointNumber, }).ConfigureAwait(false);
-        return accoutingPointExists;
+                "SELECT COUNT(1) FROM dbo.AccountingPoints WHERE GsrnNumber = @GsrnNumber",
+                new { GsrnNumber = accountingPointNumber, }).ConfigureAwait(false);
     }
 }
