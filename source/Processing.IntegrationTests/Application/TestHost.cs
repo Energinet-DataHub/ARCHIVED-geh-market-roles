@@ -42,6 +42,7 @@ using Processing.Application.Common;
 using Processing.Application.Common.Commands;
 using Processing.Application.Common.DomainEvents;
 using Processing.Application.Common.Processing;
+using Processing.Application.Common.Queries;
 using Processing.Application.EDI;
 using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Validation;
@@ -265,9 +266,14 @@ namespace Processing.IntegrationTests.Application
             return await GetService<IMediator>().Send(request, CancellationToken.None).ConfigureAwait(false);
         }
 
-        protected Task InvokeCommandAsync(InternalCommand command)
+        protected Task InvokeCommandAsync(object command)
         {
             return GetService<IMediator>().Send(command, CancellationToken.None);
+        }
+
+        protected Task<TResult> QueryAsync<TResult>(IQuery<TResult> query)
+        {
+            return GetService<IMediator>().Send(query, CancellationToken.None);
         }
 
         protected async Task<TCommand?> GetEnqueuedCommandAsync<TCommand>(BusinessProcessId businessProcessId)
