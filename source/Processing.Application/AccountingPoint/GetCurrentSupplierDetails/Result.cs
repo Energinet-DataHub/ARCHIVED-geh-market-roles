@@ -16,6 +16,6 @@ using System;
 
 namespace Processing.Application.AccountingPoint.GetCurrentSupplierDetails;
 
-public record Result(EnergySupplier? EnergySupplier, string Error = "");
+public record Result(EnergySupplierRecord? EnergySupplier, string Error = "");
 
-public record EnergySupplier(DateTime StartOfSupplyDate, string EnergySupplierNumber);
+public record EnergySupplierRecord(DateTime StartOfSupplyDate, string EnergySupplierNumber);

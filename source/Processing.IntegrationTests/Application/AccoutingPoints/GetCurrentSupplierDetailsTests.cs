@@ -89,7 +89,7 @@ namespace Processing.IntegrationTests.Application.AccoutingPoints
 
         private async Task CreateEnergySupplier()
         {
-            GetService<IEnergySupplierRepository>().Add(new EnergySupplier(EnergySupplierId.New(), GlnNumber.Create(SampleData.GlnNumber)));
+            GetService<IEnergySupplierRepository>().Add(new Domain.EnergySuppliers.EnergySupplier(EnergySupplierId.New(), GlnNumber.Create(SampleData.GlnNumber)));
             await GetService<IUnitOfWork>().CommitAsync().ConfigureAwait(false);
         }
     }

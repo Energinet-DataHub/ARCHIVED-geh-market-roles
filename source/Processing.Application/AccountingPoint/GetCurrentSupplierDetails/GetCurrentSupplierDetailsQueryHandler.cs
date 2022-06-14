@@ -50,17 +50,17 @@ public class GetCurrentSupplierDetailsQueryHandler : IQueryHandler<GetCurrentSup
         return new Result(energySupplier);
     }
 
-    private Task<EnergySupplier?> GetCurrentEnergySupplierAsync(string accountingPointNumber)
+    private Task<EnergySupplierRecord?> GetCurrentEnergySupplierAsync(string accountingPointNumber)
     {
         var selectStatement =
-            $"SELECT r.StartOfSupplyDate AS {nameof(EnergySupplier.StartOfSupplyDate)} , e.GlnNumber AS {nameof(EnergySupplier.EnergySupplierNumber)} " +
+            $"SELECT r.StartOfSupplyDate AS {nameof(EnergySupplierRecord.StartOfSupplyDate)} , e.GlnNumber AS {nameof(EnergySupplierRecord.EnergySupplierNumber)} " +
             $"FROM [dbo].[SupplierRegistrations] r JOIN AccountingPoints a ON r.AccountingPointId = a.Id " +
             $"JOIN EnergySuppliers e ON e.Id = r.EnergySupplierId " +
             $"WHERE a.GsrnNumber = @GsrnNumber AND r.EndOfSupplyDate IS NULL";
 
         return _connectionFactory
             .GetOpenConnection()
-            .QuerySingleOrDefaultAsync<EnergySupplier?>(
+            .QuerySingleOrDefaultAsync<EnergySupplierRecord?>(
                 selectStatement, new
                 {
                     GsrnNumber = accountingPointNumber,
