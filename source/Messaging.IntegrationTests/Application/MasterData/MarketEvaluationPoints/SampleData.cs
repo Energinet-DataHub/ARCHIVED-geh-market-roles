@@ -12,10 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+namespace Messaging.IntegrationTests.Application.MasterData.MarketEvaluationPoints;
 
-namespace Processing.Application.AccountingPoint.GetCurrentSupplierDetails;
+internal static class SampleData
+{
+    internal static string MarketEvaluationPointNumber => "571234567891234568";
 
+    internal static string EnergySupplierNumber => "5790000555550";
+
+    internal static string NewEnergySupplierNumber => "5790000555551";
+}
 public record Result(EnergySupplierRecord? EnergySupplier, string Error = "");
 
 public record EnergySupplierRecord(DateTime StartOfSupplyDate, string EnergySupplierNumber);
