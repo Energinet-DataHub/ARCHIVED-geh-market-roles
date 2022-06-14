@@ -61,14 +61,19 @@ public class SetEnergySupplierDetailsTests : TestBase
         var command = new SetEnergySupplier(SampleData.AccountingPointNumber, SampleData.NewEnergySupplierNumber);
         await InvokeCommandAsync(command).ConfigureAwait(false);
 
+        await AssertEnergySupplier(SampleData.NewEnergySupplierNumber);
+    }
+
+    private async Task AssertEnergySupplier(string expectedEnergySupplier)
+    {
         var found = await GetService<IDbConnectionFactory>()
             .GetOpenConnection()
             .ExecuteScalarAsync<bool>(
                 "SELECT COUNT(1) FROM b2b.MarketEvaluationPoints WHERE EnergySupplierNumber = @EnergySupplierNumber AND MarketEvaluationPointNumber = @MarketEvaluationPointNumber",
                 new
                 {
-                    EnergySupplierNumber = command.EnergySupplierNumber,
-                    MarketEvaluationPointNumber = command.MarketEvaluationPointNumber,
+                    EnergySupplierNumber = expectedEnergySupplier,
+                    MarketEvaluationPointNumber = SampleData.AccountingPointNumber,
                 })
             .ConfigureAwait(false);
 
