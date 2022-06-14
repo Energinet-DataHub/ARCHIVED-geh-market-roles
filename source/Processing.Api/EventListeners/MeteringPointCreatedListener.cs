@@ -13,8 +13,10 @@
 // limitations under the License.
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Processing.Application.AccountingPoint;
 using Processing.Infrastructure.Integration.Notifications;
 
 namespace Processing.Api.EventListeners;
@@ -42,6 +44,9 @@ public class MeteringPointCreatedListener
 
         _logger.LogInformation($"Received metering point created integration event");
 
-        // return _notificationReceiver.PublishAndCommitAsync(notification);
+        // TODO: Translate incoming event to MeteringPointCreated object
+        // TODO: Log relevant info about the event after translation
+        // var eventMeteringPointCreated = new MeteringPointCreated(Guid.NewGuid().ToString(), "gsrn", "mpType");
+        // await _notificationReceiver.PublishAndCommitAsync(eventMeteringPointCreated).ConfigureAwait(false);
     }
 }

@@ -43,12 +43,12 @@ namespace Processing.Domain.MeteringPoints
             AddDomainEvent(new MeteringPointCreated(GsrnNumber, _meteringPointType));
         }
 
-        public AccountingPoint(AccountingPointId meteringPointId, GsrnNumber gsrnNumber, MeteringPointType meteringPointType, PhysicalState physicalState)
+        public AccountingPoint(AccountingPointId meteringPointId, GsrnNumber gsrnNumber, MeteringPointType meteringPointType)
         {
             Id = meteringPointId;
             GsrnNumber = gsrnNumber;
             _meteringPointType = meteringPointType;
-            _physicalState = physicalState;
+            _physicalState = PhysicalState.New;
             AddDomainEvent(new MeteringPointCreated(GsrnNumber, _meteringPointType));
         }
 

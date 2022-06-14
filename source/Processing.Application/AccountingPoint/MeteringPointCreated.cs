@@ -19,6 +19,7 @@ namespace Processing.Application.AccountingPoint
 {
     public record MeteringPointCreated(
             string MeteringPointId,
-            string GsrnNumber)
+            string GsrnNumber,
+            string MeteringPointType)
         : INotification, IInboundMessage;
 }

@@ -38,8 +38,7 @@ namespace Processing.Application.AccountingPoint
             var accountingPoint = new Processing.Domain.MeteringPoints.AccountingPoint(
                 AccountingPointId.Create(Guid.Parse(request.AccountingPointId)),
                 GsrnNumber.Create(request.GsrnNumber),
-                EnumerationType.FromName<MeteringPointType>(request.MeteringPointType),
-                EnumerationType.FromName<PhysicalState>(request.PhysicalState));
+                EnumerationType.FromName<MeteringPointType>(request.MeteringPointType));
 
             _accountingPointRepository.Add(accountingPoint);
             return Task.FromResult(Unit.Value);

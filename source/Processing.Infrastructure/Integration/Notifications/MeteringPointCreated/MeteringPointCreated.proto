@@ -23,4 +23,5 @@ option csharp_namespace = "NotificationContracts";
 message MeteringPointCreated {
   string metering_point_id = 1; // Unique identification for metering point
   string gsrn_number = 2; // Business facing metering point identifier
+  string metering_point_type = 3; // Type of metering point
 }

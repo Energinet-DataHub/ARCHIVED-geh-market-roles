@@ -26,7 +26,8 @@ namespace Processing.Infrastructure.Integration.Notifications.MeteringPointCreat
 
             return new Processing.Application.AccountingPoint.MeteringPointCreated(
                 obj.MeteringPointId,
-                obj.GsrnNumber);
+                obj.GsrnNumber,
+                obj.MeteringPointType);
         }
     }
 }

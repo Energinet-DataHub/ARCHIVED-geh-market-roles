@@ -83,8 +83,7 @@ namespace Processing.IntegrationTests.Application.AccoutingPoints
             await InvokeCommandAsync(new CreateAccountingPoint(
                 Guid.NewGuid().ToString(),
                 SampleData.GsrnNumber,
-                MeteringPointType.Consumption.Name,
-                PhysicalState.New.Name));
+                MeteringPointType.Consumption.Name));
         }
 
         private async Task CreateEnergySupplier()

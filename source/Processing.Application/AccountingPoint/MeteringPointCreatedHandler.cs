@@ -16,16 +16,29 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Processing.Application.Common.Commands;
 
 namespace Processing.Application.AccountingPoint
 {
     public class MeteringPointCreatedHandler : INotificationHandler<MeteringPointCreated>
     {
+        private readonly ICommandScheduler _commandScheduler;
+
+        public MeteringPointCreatedHandler(ICommandScheduler commandScheduler)
+        {
+            _commandScheduler = commandScheduler;
+        }
+
         public Task Handle(MeteringPointCreated notification, CancellationToken cancellationToken)
         {
             if (notification == null) throw new ArgumentNullException(nameof(notification));
 
-            return Task.CompletedTask;
+            var command = new CreateAccountingPoint(
+                notification.MeteringPointId,
+                notification.GsrnNumber,
+                notification.MeteringPointType);
+
+            return _commandScheduler.EnqueueAsync(command);
         }
     }
 }

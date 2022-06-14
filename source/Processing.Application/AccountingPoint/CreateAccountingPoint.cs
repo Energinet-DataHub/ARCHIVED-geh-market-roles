@@ -17,14 +17,13 @@ using Processing.Application.Common.Transport;
 
 namespace Processing.Application.AccountingPoint
 {
-    public class CreateAccountingPoint : InternalCommand, IOutboundMessage, IInboundMessage
+    public class CreateAccountingPoint : InternalCommand
     {
-        public CreateAccountingPoint(string meteringPointId, string gsrnNumber, string meteringPointType, string physicalState)
+        public CreateAccountingPoint(string meteringPointId, string gsrnNumber, string meteringPointType)
         {
             AccountingPointId = meteringPointId;
             GsrnNumber = gsrnNumber;
             MeteringPointType = meteringPointType;
-            PhysicalState = physicalState;
         }
 
         public string GsrnNumber { get; }
@@ -32,7 +31,5 @@ namespace Processing.Application.AccountingPoint
         public string MeteringPointType { get; }
 
         public string AccountingPointId { get; }
-
-        public string PhysicalState { get; }
     }
 }
