@@ -14,7 +14,7 @@
 
 using System;
 using System.Threading.Tasks;
-using EnergySupplier.IntegrationEvents;
+using Energinet.DataHub.EnergySupplier.IntegrationEvents;
 using Processing.Application.Common;
 using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.EventPublishing;

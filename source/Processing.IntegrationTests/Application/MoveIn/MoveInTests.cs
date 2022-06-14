@@ -18,7 +18,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts.BusinessRequests.MoveIn;
-using EnergySupplier.IntegrationEvents;
+using Energinet.DataHub.EnergySupplier.IntegrationEvents;
 using Newtonsoft.Json;
 using Processing.Application.Common;
 using Processing.Application.MoveIn;

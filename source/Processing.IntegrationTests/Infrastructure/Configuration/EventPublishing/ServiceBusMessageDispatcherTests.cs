@@ -39,7 +39,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
         [Fact]
         public async Task Message_is_dispatched()
         {
-            var integrationEvent = new EnergySupplier.IntegrationEvents.ConsumerMovedIn()
+            var integrationEvent = new Energinet.DataHub.EnergySupplier.IntegrationEvents.ConsumerMovedIn()
             {
                 AccountingPointId = Guid.NewGuid().ToString(),
             };

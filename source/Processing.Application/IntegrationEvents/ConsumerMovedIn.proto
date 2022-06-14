@@ -14,7 +14,7 @@
  */
 
 syntax = "proto3";
-option csharp_namespace = "EnergySupplier.IntegrationEvents";
+option csharp_namespace = "Energinet.DataHub.EnergySupplier.IntegrationEvents";
 /**
  * This message is sent out when consumer has moved in.
  */
