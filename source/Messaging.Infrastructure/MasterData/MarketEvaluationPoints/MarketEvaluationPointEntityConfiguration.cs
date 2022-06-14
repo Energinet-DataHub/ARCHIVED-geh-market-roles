@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System;
-using Messaging.Application.MasterData.MarketEvaluationPoints;
+using Messaging.Domain.MasterData.MarketEvaluationPoints;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

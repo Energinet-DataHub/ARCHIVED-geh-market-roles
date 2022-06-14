@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
-using Messaging.Application.MasterData.MarketEvaluationPoints;
+using Messaging.Domain.MasterData.MarketEvaluationPoints;
 using Messaging.Infrastructure.Configuration.DataAccess;
 using Microsoft.EntityFrameworkCore;
 

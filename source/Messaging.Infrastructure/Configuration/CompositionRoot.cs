@@ -37,6 +37,7 @@ using Messaging.Application.Transactions.MoveIn;
 using Messaging.Application.Xml.SchemaStore;
 using Messaging.CimMessageAdapter;
 using Messaging.CimMessageAdapter.Messages;
+using Messaging.Domain.MasterData.MarketEvaluationPoints;
 using Messaging.Infrastructure.Common;
 using Messaging.Infrastructure.Common.Reasons;
 using Messaging.Infrastructure.Configuration.Authentication;

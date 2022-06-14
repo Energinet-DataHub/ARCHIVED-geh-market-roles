@@ -17,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Messaging.Application.Configuration.DataAccess;
+using Messaging.Domain.MasterData.MarketEvaluationPoints;
 
 namespace Messaging.Application.MasterData.MarketEvaluationPoints;
 
