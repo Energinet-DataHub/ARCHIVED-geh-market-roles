@@ -25,21 +25,19 @@ public class MarketEvaluationPoint
         Id = Guid.NewGuid();
     }
 
-    private MarketEvaluationPoint(Guid id, string marketEvaluationPointNumber, string energySupplierNumber)
-    {
-        MarketEvaluationPointNumber = marketEvaluationPointNumber;
-        EnergySupplierNumber = energySupplierNumber;
-        Id = id;
-    }
-
     public Guid Id { get; }
 
     public string MarketEvaluationPointNumber { get; }
 
-    public string EnergySupplierNumber { get; }
+    public string EnergySupplierNumber { get; private set; }
 
     public static MarketEvaluationPoint Create(string energySupplierNumber, string accountingPointNumber)
     {
         return new MarketEvaluationPoint(accountingPointNumber, energySupplierNumber);
+    }
+
+    public void SetEnergySupplier(string energySupplierNumber)
+    {
+        EnergySupplierNumber = energySupplierNumber;
     }
 }

@@ -34,8 +34,20 @@ public class SetEnergySupplierHandler : IRequestHandler<SetEnergySupplier, Unit>
     public async Task<Unit> Handle(SetEnergySupplier request, CancellationToken cancellationToken)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
-        var energySupplier = MarketEvaluationPoint.Create(request.EnergySupplierNumber, request.MarketEvaluationPointNumber);
-        _marketEvaluationPoints.Add(energySupplier);
+        var marketEvaluationPoint = await _marketEvaluationPoints
+            .GetByNumberAsync(request.MarketEvaluationPointNumber)
+            .ConfigureAwait(false);
+
+        if (marketEvaluationPoint is null)
+        {
+            marketEvaluationPoint = MarketEvaluationPoint.Create(request.EnergySupplierNumber, request.MarketEvaluationPointNumber);
+            _marketEvaluationPoints.Add(marketEvaluationPoint);
+        }
+        else
+        {
+            marketEvaluationPoint.SetEnergySupplier(request.EnergySupplierNumber);
+        }
+
         await _unitOfWork.CommitAsync().ConfigureAwait(false);
         return Unit.Value;
     }

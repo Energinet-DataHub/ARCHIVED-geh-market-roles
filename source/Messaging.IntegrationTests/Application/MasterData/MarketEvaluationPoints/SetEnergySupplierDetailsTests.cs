@@ -21,9 +21,9 @@ using Xunit;
 
 namespace Messaging.IntegrationTests.Application.MasterData.MarketEvaluationPoints;
 
-public class EnergySupplierDetailsTests : TestBase
+public class SetEnergySupplierDetailsTests : TestBase
 {
-    public EnergySupplierDetailsTests(DatabaseFixture databaseFixture)
+    public SetEnergySupplierDetailsTests(DatabaseFixture databaseFixture)
         : base(databaseFixture)
     {
     }
@@ -35,6 +35,30 @@ public class EnergySupplierDetailsTests : TestBase
             marketEvaluationPointNumber: SampleData.AccountingPointNumber,
             energySupplierNumber: SampleData.EnergySupplierNumber);
 
+        await InvokeCommandAsync(command).ConfigureAwait(false);
+
+        var found = await GetService<IDbConnectionFactory>()
+            .GetOpenConnection()
+            .ExecuteScalarAsync<bool>(
+                "SELECT COUNT(1) FROM b2b.MarketEvaluationPoints WHERE EnergySupplierNumber = @EnergySupplierNumber AND MarketEvaluationPointNumber = @MarketEvaluationPointNumber",
+                new
+                {
+                    EnergySupplierNumber = command.EnergySupplierNumber,
+                    MarketEvaluationPointNumber = command.MarketEvaluationPointNumber,
+                })
+            .ConfigureAwait(false);
+
+        Assert.True(found);
+    }
+
+    [Fact]
+    public async Task Energy_supplier_is_changed()
+    {
+        await InvokeCommandAsync(new SetEnergySupplier(
+            marketEvaluationPointNumber: SampleData.AccountingPointNumber,
+            energySupplierNumber: SampleData.EnergySupplierNumber)).ConfigureAwait(false);
+
+        var command = new SetEnergySupplier(SampleData.AccountingPointNumber, SampleData.NewEnergySupplierNumber);
         await InvokeCommandAsync(command).ConfigureAwait(false);
 
         var found = await GetService<IDbConnectionFactory>()

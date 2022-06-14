@@ -19,4 +19,6 @@ internal static class SampleData
     internal static string AccountingPointNumber => "571234567891234568";
 
     internal static string EnergySupplierNumber => "5790000555550";
+
+    internal static string NewEnergySupplierNumber => "5790000555551";
 }
