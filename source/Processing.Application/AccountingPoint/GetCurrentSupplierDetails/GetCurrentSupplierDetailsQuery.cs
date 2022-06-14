@@ -12,22 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Application.Common;
+using Processing.Application.Common.Queries;
 
-public class MarketEvaluationPoint
-{
-    public MarketEvaluationPoint(string? glnNumberOfEnergySupplier, string gsrnNumber)
-    {
-        GlnNumberOfEnergySupplier = glnNumberOfEnergySupplier;
-        GsrnNumber = gsrnNumber;
-    }
+namespace Processing.Application.AccountingPoint.GetCurrentSupplierDetails;
 
-    public MarketEvaluationPoint(string gsrnNumber)
-    {
-        GsrnNumber = gsrnNumber;
-    }
-
-    public string GsrnNumber { get; }
-
-    public string? GlnNumberOfEnergySupplier { get; }
-}
+public record GetCurrentSupplierDetailsQuery(string AccountingPointNumber) : IQuery<Result>;
