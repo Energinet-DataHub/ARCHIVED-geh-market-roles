@@ -31,24 +31,11 @@ public class SetEnergySupplierDetailsTests : TestBase
     [Fact]
     public async Task Market_evaluation_point_is_created_if_it_does_not_exist()
     {
-        var command = new SetEnergySupplier(
+        await InvokeCommandAsync(new SetEnergySupplier(
             marketEvaluationPointNumber: SampleData.AccountingPointNumber,
-            energySupplierNumber: SampleData.EnergySupplierNumber);
+            energySupplierNumber: SampleData.EnergySupplierNumber)).ConfigureAwait(false);
 
-        await InvokeCommandAsync(command).ConfigureAwait(false);
-
-        var found = await GetService<IDbConnectionFactory>()
-            .GetOpenConnection()
-            .ExecuteScalarAsync<bool>(
-                "SELECT COUNT(1) FROM b2b.MarketEvaluationPoints WHERE EnergySupplierNumber = @EnergySupplierNumber AND MarketEvaluationPointNumber = @MarketEvaluationPointNumber",
-                new
-                {
-                    EnergySupplierNumber = command.EnergySupplierNumber,
-                    MarketEvaluationPointNumber = command.MarketEvaluationPointNumber,
-                })
-            .ConfigureAwait(false);
-
-        Assert.True(found);
+        await AssertEnergySupplier(SampleData.EnergySupplierNumber);
     }
 
     [Fact]
