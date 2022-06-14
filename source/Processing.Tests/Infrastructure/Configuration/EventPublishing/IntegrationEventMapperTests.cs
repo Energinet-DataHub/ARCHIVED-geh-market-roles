@@ -24,9 +24,9 @@ namespace Processing.Tests.Infrastructure.Configuration.EventPublishing
         {
             var mapper = new IntegrationEventMapper();
 
-            mapper.Add(nameof(Energinet.DataHub.EnergySupplier.IntegrationEvents.ConsumerMovedIn), typeof(Energinet.DataHub.EnergySupplier.IntegrationEvents.ConsumerMovedIn), 1, "consumer-moved-in");
+            mapper.Add(nameof(Energinet.DataHub.EnergySupplying.IntegrationEvents.ConsumerMovedIn), typeof(Energinet.DataHub.EnergySupplying.IntegrationEvents.ConsumerMovedIn), 1, "consumer-moved-in");
 
-            var eventMetadata = mapper.GetByName(nameof(Energinet.DataHub.EnergySupplier.IntegrationEvents.ConsumerMovedIn));
+            var eventMetadata = mapper.GetByName(nameof(Energinet.DataHub.EnergySupplying.IntegrationEvents.ConsumerMovedIn));
             Assert.NotNull(eventMetadata);
         }
 
@@ -35,9 +35,9 @@ namespace Processing.Tests.Infrastructure.Configuration.EventPublishing
         {
             var mapper = new IntegrationEventMapper();
 
-            mapper.Add(nameof(Energinet.DataHub.EnergySupplier.IntegrationEvents.ConsumerMovedIn), typeof(Energinet.DataHub.EnergySupplier.IntegrationEvents.ConsumerMovedIn), 1, "consumer-moved-in");
+            mapper.Add(nameof(Energinet.DataHub.EnergySupplying.IntegrationEvents.ConsumerMovedIn), typeof(Energinet.DataHub.EnergySupplying.IntegrationEvents.ConsumerMovedIn), 1, "consumer-moved-in");
 
-            var eventMetadata = mapper.GetByType(typeof(Energinet.DataHub.EnergySupplier.IntegrationEvents.ConsumerMovedIn));
+            var eventMetadata = mapper.GetByType(typeof(Energinet.DataHub.EnergySupplying.IntegrationEvents.ConsumerMovedIn));
             Assert.NotNull(eventMetadata);
         }
     }

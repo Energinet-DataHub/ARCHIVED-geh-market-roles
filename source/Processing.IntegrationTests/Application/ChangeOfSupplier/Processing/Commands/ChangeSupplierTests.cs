@@ -15,7 +15,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Energinet.DataHub.EnergySupplier.IntegrationEvents;
+using Energinet.DataHub.EnergySupplying.IntegrationEvents;
 using MediatR;
 using Microsoft.Data.SqlClient;
 using NodaTime;

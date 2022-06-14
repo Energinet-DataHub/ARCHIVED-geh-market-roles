@@ -16,7 +16,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
-using Energinet.DataHub.EnergySupplier.IntegrationEvents;
+using Energinet.DataHub.EnergySupplying.IntegrationEvents;
 using Google.Protobuf.WellKnownTypes;
 using MediatR;
 using Processing.Application.Common;

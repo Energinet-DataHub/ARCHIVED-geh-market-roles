@@ -39,7 +39,7 @@ namespace Processing.Application.ChangeOfSupplier
             if (notification == null) throw new ArgumentNullException(nameof(notification));
 
             var supplierGlnNumber = await GetSupplierGlnNumberAsync(new EnergySupplierId(notification.EnergySupplierId)).ConfigureAwait(false);
-            var integrationEvent = new Energinet.DataHub.EnergySupplier.IntegrationEvents.EnergySupplierChanged()
+            var integrationEvent = new Energinet.DataHub.EnergySupplying.IntegrationEvents.EnergySupplierChanged()
             {
                 AccountingpointId = notification.AccountingPointId.ToString(),
                 GsrnNumber = notification.GsrnNumber,
