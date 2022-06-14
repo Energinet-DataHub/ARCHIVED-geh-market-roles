@@ -16,7 +16,7 @@ namespace Messaging.IntegrationTests.Application.MasterData.MarketEvaluationPoin
 
 internal static class SampleData
 {
-    internal static string AccountingPointNumber => "571234567891234568";
+    internal static string MarketEvaluationPointNumber => "571234567891234568";
 
     internal static string EnergySupplierNumber => "5790000555550";
 

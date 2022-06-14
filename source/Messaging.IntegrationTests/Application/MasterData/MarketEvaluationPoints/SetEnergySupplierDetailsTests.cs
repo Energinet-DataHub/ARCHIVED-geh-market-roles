@@ -32,7 +32,7 @@ public class SetEnergySupplierDetailsTests : TestBase
     public async Task Market_evaluation_point_is_created_if_it_does_not_exist()
     {
         await InvokeCommandAsync(new SetEnergySupplier(
-            marketEvaluationPointNumber: SampleData.AccountingPointNumber,
+            marketEvaluationPointNumber: SampleData.MarketEvaluationPointNumber,
             energySupplierNumber: SampleData.EnergySupplierNumber)).ConfigureAwait(false);
 
         await AssertEnergySupplier(SampleData.EnergySupplierNumber);
@@ -42,10 +42,10 @@ public class SetEnergySupplierDetailsTests : TestBase
     public async Task Energy_supplier_is_changed()
     {
         await InvokeCommandAsync(new SetEnergySupplier(
-            marketEvaluationPointNumber: SampleData.AccountingPointNumber,
+            marketEvaluationPointNumber: SampleData.MarketEvaluationPointNumber,
             energySupplierNumber: SampleData.EnergySupplierNumber)).ConfigureAwait(false);
 
-        var command = new SetEnergySupplier(SampleData.AccountingPointNumber, SampleData.NewEnergySupplierNumber);
+        var command = new SetEnergySupplier(SampleData.MarketEvaluationPointNumber, SampleData.NewEnergySupplierNumber);
         await InvokeCommandAsync(command).ConfigureAwait(false);
 
         await AssertEnergySupplier(SampleData.NewEnergySupplierNumber);
@@ -60,7 +60,7 @@ public class SetEnergySupplierDetailsTests : TestBase
                 new
                 {
                     EnergySupplierNumber = expectedEnergySupplier,
-                    MarketEvaluationPointNumber = SampleData.AccountingPointNumber,
+                    MarketEvaluationPointNumber = SampleData.MarketEvaluationPointNumber,
                 })
             .ConfigureAwait(false);
 
