@@ -34,16 +34,7 @@ namespace Processing.Domain.MeteringPoints
         private readonly List<SupplierRegistration> _supplierRegistrations = new List<SupplierRegistration>();
         private PhysicalState _physicalState;
 
-        public AccountingPoint(GsrnNumber gsrnNumber, MeteringPointType meteringPointType)
-        {
-            Id = AccountingPointId.New();
-            GsrnNumber = gsrnNumber;
-            _meteringPointType = meteringPointType;
-            _physicalState = PhysicalState.New;
-            AddDomainEvent(new MeteringPointCreated(GsrnNumber, _meteringPointType));
-        }
-
-        public AccountingPoint(AccountingPointId meteringPointId, GsrnNumber gsrnNumber, MeteringPointType meteringPointType)
+        private AccountingPoint(AccountingPointId meteringPointId, GsrnNumber gsrnNumber, MeteringPointType meteringPointType)
         {
             Id = meteringPointId;
             GsrnNumber = gsrnNumber;
@@ -52,8 +43,8 @@ namespace Processing.Domain.MeteringPoints
             AddDomainEvent(new MeteringPointCreated(GsrnNumber, _meteringPointType));
         }
 
-        private AccountingPoint(GsrnNumber gsrnNumber, MeteringPointType meteringPointType, bool isProductionObligated)
-            : this(gsrnNumber, meteringPointType)
+        private AccountingPoint(AccountingPointId meteringPointId, GsrnNumber gsrnNumber, MeteringPointType meteringPointType, bool isProductionObligated)
+            : this(meteringPointId, gsrnNumber, meteringPointType)
         {
             _isProductionObligated = isProductionObligated;
         }
@@ -62,9 +53,14 @@ namespace Processing.Domain.MeteringPoints
 
         public GsrnNumber GsrnNumber { get; private set; }
 
-        public static AccountingPoint CreateProduction(GsrnNumber gsrnNumber, bool isObligated)
+        public static AccountingPoint CreateProduction(AccountingPointId meteringPointId, GsrnNumber gsrnNumber, bool isObligated)
         {
-            return new AccountingPoint(gsrnNumber, MeteringPointType.Production, isObligated);
+            return new AccountingPoint(meteringPointId, gsrnNumber, MeteringPointType.Production, isObligated);
+        }
+
+        public static AccountingPoint CreateConsumption(AccountingPointId meteringPointId, GsrnNumber gsrnNumber)
+        {
+            return new AccountingPoint(meteringPointId, gsrnNumber, MeteringPointType.Consumption);
         }
 
         public BusinessRulesValidationResult ChangeSupplierAcceptable(EnergySupplierId energySupplierId, Instant supplyStartDate, ISystemDateTimeProvider systemDateTimeProvider)

@@ -88,9 +88,9 @@ namespace Processing.IntegrationTests.Application
         private readonly Scope _scope;
         private readonly Container _container;
         private readonly string _connectionString;
+        private readonly ServiceBusSenderFactoryStub _serviceBusSenderFactoryStub;
         private bool _disposed;
         private SqlConnection? _sqlConnection;
-        private ServiceBusSenderFactoryStub _serviceBusSenderFactoryStub;
 
         protected TestHost(DatabaseFixture databaseFixture)
         {
@@ -318,7 +318,7 @@ namespace Processing.IntegrationTests.Application
         {
             var meteringPoint =
                 AccountingPoint.CreateProduction(
-                    GsrnNumber.Create(SampleData.GsrnNumber), true);
+                    AccountingPointId.New(), GsrnNumber.Create(SampleData.GsrnNumber), true);
 
             AccountingPointRepository.Add(meteringPoint);
 

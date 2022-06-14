@@ -38,7 +38,7 @@ public class ConsumerMoveInTests : TestBase
     {
         CurrentSystemTimeIsSummertime();
         _consumerMoveInProcess = new ConsumerMoveIn(EffectiveDatePolicyFactory.CreateEffectiveDatePolicy());
-        _accountingPoint = AccountingPoint.CreateProduction(GsrnNumber.Create(SampleData.GsrnNumber), true);
+        _accountingPoint = AccountingPoint.CreateProduction(AccountingPointId.New(), GsrnNumber.Create(SampleData.GsrnNumber), true);
         _consumer = new Consumer(ConsumerId.New(), CprNumber.Create(SampleData.ConsumerSocialSecurityNumber), ConsumerName.Create(SampleData.ConsumerName));
         _energySupplier = new EnergySupplier(EnergySupplierId.New(), GlnNumber.Create(SampleData.GlnNumber));
         _processId = BusinessProcessId.New();
