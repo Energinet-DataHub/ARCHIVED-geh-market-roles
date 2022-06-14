@@ -12,8 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Processing.Application.Common.Queries;
+using Messaging.Application.Common.Commands;
 
-namespace Processing.Application.AccountingPoint.GetCurrentSupplierDetails;
+namespace Messaging.Application.MasterData.MarketEvaluationPoints;
 
-public record GetCurrentSupplierDetailsQuery(string AccountingPointNumber) : IQuery<Result>;
+public class SetEnergySupplier : InternalCommand
+{
+    public SetEnergySupplier(string marketEvaluationPointNumber, string energySupplierNumber)
+    {
+        MarketEvaluationPointNumber = marketEvaluationPointNumber;
+        EnergySupplierNumber = energySupplierNumber;
+    }
+
+    public string MarketEvaluationPointNumber { get; }
+
+    public string EnergySupplierNumber { get; }
+}
