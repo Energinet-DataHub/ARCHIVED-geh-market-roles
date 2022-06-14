@@ -201,6 +201,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var consumerMovedInEvent = FindIntegrationEvent<ConsumerMovedIn>();
             Assert.NotNull(consumerMovedInEvent);
             Assert.Equal(command.AccountingPointId.ToString(), consumerMovedInEvent?.AccountingPointId);
+            Assert.Equal(command.ProcessId, consumerMovedInEvent?.ProcessId);
         }
 
         private static void AssertValidationError<TRuleError>(BusinessProcessResult rulesValidationResult, string? expectedErrorCode = null, bool errorExpected = true)
