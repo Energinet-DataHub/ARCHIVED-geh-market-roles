@@ -42,6 +42,11 @@ namespace Messaging.ArchitectureTests
                 .SelectMany(GetConstructorParameters);
         }
 
+        public static Func<Type, IEnumerable<Type>> FindAllConstructorDependenciesForType()
+        {
+            return type => GetConstructorParameters(GetOnePublicConstructor(type));
+        }
+
         public static Func<Type, IEnumerable<Type>, IEnumerable<Type>> FindAllTypesThatImplementType()
         {
             return (targetType, types) =>
