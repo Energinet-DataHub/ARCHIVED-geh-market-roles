@@ -12,22 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Application.Common;
+using MediatR;
 
-public class MarketEvaluationPoint
+namespace Processing.Application.Common.Queries;
+
+/// <summary>
+/// Data query
+/// </summary>
+#pragma warning disable CA1040 // This marker interface is needed in order to distinguish between commands and queries
+public interface IQuery<out TResult> : IRequest<TResult>
 {
-    public MarketEvaluationPoint(string? glnNumberOfEnergySupplier, string gsrnNumber)
-    {
-        GlnNumberOfEnergySupplier = glnNumberOfEnergySupplier;
-        GsrnNumber = gsrnNumber;
-    }
-
-    public MarketEvaluationPoint(string gsrnNumber)
-    {
-        GsrnNumber = gsrnNumber;
-    }
-
-    public string GsrnNumber { get; }
-
-    public string? GlnNumberOfEnergySupplier { get; }
 }
+#pragma warning restore

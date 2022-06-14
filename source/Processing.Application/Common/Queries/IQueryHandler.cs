@@ -12,22 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Application.Common;
+using MediatR;
 
-public class MarketEvaluationPoint
+namespace Processing.Application.Common.Queries
 {
-    public MarketEvaluationPoint(string? glnNumberOfEnergySupplier, string gsrnNumber)
+    /// <summary>
+    /// Query handler
+    /// </summary>
+    /// <typeparam name="TQuery"><see cref="IQuery{TResult}"/></typeparam>
+    /// <typeparam name="TResult">Type of result returned by handler</typeparam>
+    public interface IQueryHandler<in TQuery, TResult> : IRequestHandler<TQuery, TResult>
+        where TQuery : IQuery<TResult>
     {
-        GlnNumberOfEnergySupplier = glnNumberOfEnergySupplier;
-        GsrnNumber = gsrnNumber;
     }
-
-    public MarketEvaluationPoint(string gsrnNumber)
-    {
-        GsrnNumber = gsrnNumber;
-    }
-
-    public string GsrnNumber { get; }
-
-    public string? GlnNumberOfEnergySupplier { get; }
 }

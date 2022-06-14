@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
+using System;
 
-namespace Processing.Api.Responses;
+namespace Processing.Application.AccountingPoint.GetCurrentSupplierDetails;
 
-public record ResponseDto(IEnumerable<string> ValidationErrors);
+public record Result(EnergySupplier? EnergySupplier, string Error = "");
+
+public record EnergySupplier(DateTime StartOfSupplyDate, string EnergySupplierNumber);
