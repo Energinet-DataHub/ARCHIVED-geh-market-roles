@@ -72,7 +72,7 @@ namespace Messaging.ArchitectureTests
 
         #endregion
 
-        [Theory]
+        [Theory(DisplayName = nameof(All_request_handlers_are_registered))]
         [MemberData(nameof(GetRequestHandlerRequirements))]
         public void All_request_handlers_are_registered(Requirement requirement)
         {
@@ -80,7 +80,7 @@ namespace Messaging.ArchitectureTests
             Assert.True(scope.ServiceProvider.CanSatisfyRequirement(requirement));
         }
 
-        [Theory]
+        [Theory(DisplayName = nameof(All_notification_handlers_are_registered))]
         [MemberData(nameof(GetNotificationsHandlerRequirements))]
         public void All_notification_handlers_are_registered(Requirement requirement)
         {
@@ -88,7 +88,7 @@ namespace Messaging.ArchitectureTests
             Assert.True(scope.ServiceProvider.CanSatisfyRequirement(requirement));
         }
 
-        [Theory]
+        [Theory(DisplayName = nameof(All_dependencies_can_be_resolved_for_middleware))]
         [MemberData(nameof(GetMiddlewareRequirements))]
         public void All_dependencies_can_be_resolved_for_middleware(Requirement requirement)
         {
@@ -96,7 +96,7 @@ namespace Messaging.ArchitectureTests
             Assert.True(scope.ServiceProvider.CanSatisfyRequirement(requirement));
         }
 
-        [Theory]
+        [Theory(DisplayName = nameof(All_dependencies_can_be_resolved_in_functions))]
         [MemberData(nameof(GetFunctionRequirements))]
         public void All_dependencies_can_be_resolved_in_functions(Requirement requirement)
         {
