@@ -24,6 +24,7 @@ using Processing.Application.ChangeOfSupplier.Processing;
 using Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails;
 using Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
 using Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
+using Processing.Application.Common;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
