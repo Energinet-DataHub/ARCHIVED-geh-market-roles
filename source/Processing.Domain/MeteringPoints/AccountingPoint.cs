@@ -34,6 +34,15 @@ namespace Processing.Domain.MeteringPoints
         private readonly List<SupplierRegistration> _supplierRegistrations = new List<SupplierRegistration>();
         private PhysicalState _physicalState;
 
+        // constructor to satisfy EF
+        public AccountingPoint(GsrnNumber gsrnNumber, MeteringPointType meteringPointType, PhysicalState physicalState)
+        {
+            Id = AccountingPointId.New();
+            GsrnNumber = gsrnNumber;
+            _meteringPointType = meteringPointType;
+            _physicalState = physicalState;
+        }
+
         private AccountingPoint(AccountingPointId meteringPointId, GsrnNumber gsrnNumber, MeteringPointType meteringPointType)
         {
             Id = meteringPointId;
