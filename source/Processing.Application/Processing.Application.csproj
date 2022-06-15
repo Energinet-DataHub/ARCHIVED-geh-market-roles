@@ -35,6 +35,7 @@ limitations under the License.
 
   <ItemGroup>
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\IntegrationEvents\IntegrationsEvents.csproj" />
     <ProjectReference Include="..\Processing.Domain\Processing.Domain.csproj" />
   </ItemGroup>
 
@@ -44,7 +45,7 @@ limitations under the License.
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
       <CompileOutputs>True</CompileOutputs>
-      <OutputDir>IntegrationEvents\source\Events</OutputDir>
+      <OutputDir>..\IntegrationEvents\source\Events</OutputDir>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
   </ItemGroup>
