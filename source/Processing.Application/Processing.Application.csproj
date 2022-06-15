@@ -44,7 +44,7 @@ limitations under the License.
       <Access>Public</Access>
       <ProtoCompile>True</ProtoCompile>
       <CompileOutputs>True</CompileOutputs>
-      <OutputDir>..\source\Events</OutputDir>
+      <OutputDir>IntegrationEvents\source\Events</OutputDir>
       <Generator>MSBuild:Compile</Generator>
     </Protobuf>
   </ItemGroup>
