@@ -18,6 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using MediatR;
+using NodaTime;
 using Processing.Application.Common;
 using Processing.Application.Common.Commands;
 using Processing.Application.Common.TimeEvents;
@@ -42,18 +43,21 @@ public class ProcessPendingProcesses : INotificationHandler<DayHasPassed>
     public async Task Handle(DayHasPassed notification, CancellationToken cancellationToken)
     {
         if (notification == null) throw new ArgumentNullException(nameof(notification));
-        var sql = $"SELECT Id AS {nameof(PendingProcess.ProcessId)}, AccountingPointId AS {nameof(PendingProcess.AccountingPointId)} FROM [dbo].[BusinessProcesses] " +
-                  $"WHERE ProcessType = @ProcessType AND Status = @Status AND EffectiveDate <= @EffectiveDate";
-        var pendingBusinessProcesses = await _connectionFactory.GetOpenConnection().QueryAsync<PendingProcess>(
-            sql,
+        var pendingBusinessProcesses = await FetchPendingBusinessProcessesAsync(notification.Now).ConfigureAwait(false);
+        await EnqueueCommandsAsync(pendingBusinessProcesses).ConfigureAwait(false);
+    }
+
+    private async Task<IEnumerable<PendingProcess>> FetchPendingBusinessProcessesAsync(Instant now)
+    {
+        return await _connectionFactory.GetOpenConnection().QueryAsync<PendingProcess>(
+            $"SELECT Id AS {nameof(PendingProcess.ProcessId)}, AccountingPointId AS {nameof(PendingProcess.AccountingPointId)} FROM [dbo].[BusinessProcesses] " +
+            $"WHERE ProcessType = @ProcessType AND Status = @Status AND EffectiveDate <= @EffectiveDate",
             new
             {
                 ProcessType = BusinessProcessType.MoveIn.Id,
                 Status = BusinessProcessStatus.Pending.Id,
-                EffectiveDate = notification.Now.ToDateTimeUtc(),
+                EffectiveDate = now.ToDateTimeUtc(),
             }).ConfigureAwait(false);
-
-        await EnqueueCommandsAsync(pendingBusinessProcesses).ConfigureAwait(false);
     }
 
     private async Task EnqueueCommandsAsync(IEnumerable<PendingProcess> pendingBusinessProcesses)
@@ -68,9 +72,8 @@ public class ProcessPendingProcesses : INotificationHandler<DayHasPassed>
                     command,
                     BusinessProcessId.Create(pendingBusinessProcess.ProcessId),
                     null).ConfigureAwait(false);
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
-
-        await _unitOfWork.CommitAsync().ConfigureAwait(false);
     }
 
     private record PendingProcess(Guid ProcessId, Guid AccountingPointId);
