@@ -37,13 +37,18 @@ namespace Processing.IntegrationTests.Application.MoveIn
         {
             var businessProcessId = RegisterPendingMoveIn();
 
-            _systemDateTimeProvider.SetCurrentTimeToMidnight();
-            var dayHasPassed = new DayHasPassed(_systemDateTimeProvider.Now());
-            await GetService<IMediator>().Publish(dayHasPassed);
+            await SimulateThatADayHasPassed();
 
             var command = await GetEnqueuedCommandAsync<EffectuateConsumerMoveIn>(businessProcessId).ConfigureAwait(false);
 
             Assert.NotNull(command);
+        }
+
+        private async Task SimulateThatADayHasPassed()
+        {
+            _systemDateTimeProvider.SetCurrentTimeToMidnight();
+            var dayHasPassed = new DayHasPassed(_systemDateTimeProvider.Now());
+            await GetService<IMediator>().Publish(dayHasPassed);
         }
 
         private BusinessProcessId RegisterPendingMoveIn()
