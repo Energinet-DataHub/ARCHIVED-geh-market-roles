@@ -14,6 +14,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Processing.Application.Common;
 
 namespace Processing.Infrastructure.Configuration.DataAccess
 {
