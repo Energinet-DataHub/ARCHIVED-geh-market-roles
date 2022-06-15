@@ -21,12 +21,17 @@ namespace Processing.IntegrationTests
     {
         internal static EffectiveDate AsOfToday()
         {
+            return EffectiveDate.Create(InstantAsOfToday().ToDateTimeUtc());
+        }
+
+        internal static Instant InstantAsOfToday()
+        {
             var timeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
             var now = SystemClock.Instance.GetCurrentInstant()
                 .InZone(timeZone);
             var day = now.Day + 1; // Need to add one day because after converting from local time to UTC, one days subtracted
             var localDateTime = new ZonedDateTime(new LocalDateTime(now.Year, now.Month, day, 0, 0, 0), timeZone, now.Offset);
-            return EffectiveDate.Create(localDateTime.ToDateTimeUtc());
+            return localDateTime.ToInstant();
         }
     }
 }
