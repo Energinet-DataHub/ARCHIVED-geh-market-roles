@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
-using Energinet.DataHub.MarketRoles.Contracts;
 using MediatR;
 using Processing.Application.Common.TimeEvents;
 using Processing.Domain.MeteringPoints;
@@ -36,12 +35,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         [Fact]
         public async Task Pending_processes_are_processed()
         {
-            var supplier = CreateEnergySupplier();
-            var consumer = CreateConsumer();
-            var accountingPoint = CreateAccountingPoint();
-            var businessProcessId = BusinessProcessId.New();
-            accountingPoint.AcceptConsumerMoveIn(consumer.ConsumerId, supplier.EnergySupplierId, EffectiveDateFactory.InstantAsOfToday(), businessProcessId);
-            SaveChanges();
+            var businessProcessId = RegisterPendingMoveIn();
 
             _systemDateTimeProvider.SetCurrentTimeToMidnight();
             var dayHasPassed = new DayHasPassed(_systemDateTimeProvider.Now());
@@ -50,6 +44,17 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var command = await GetEnqueuedCommandAsync<EffectuateConsumerMoveIn>(businessProcessId).ConfigureAwait(false);
 
             Assert.NotNull(command);
+        }
+
+        private BusinessProcessId RegisterPendingMoveIn()
+        {
+            var supplier = CreateEnergySupplier();
+            var consumer = CreateConsumer();
+            var accountingPoint = CreateAccountingPoint();
+            var businessProcessId = BusinessProcessId.New();
+            accountingPoint.AcceptConsumerMoveIn(consumer.ConsumerId, supplier.EnergySupplierId, EffectiveDateFactory.InstantAsOfToday(), businessProcessId);
+            SaveChanges();
+            return businessProcessId;
         }
     }
 }
