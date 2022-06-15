@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
@@ -52,6 +53,11 @@ public class ProcessPendingProcesses : INotificationHandler<DayHasPassed>
                 EffectiveDate = notification.Now.ToDateTimeUtc(),
             }).ConfigureAwait(false);
 
+        await EnqueueCommandsAsync(pendingBusinessProcesses).ConfigureAwait(false);
+    }
+
+    private async Task EnqueueCommandsAsync(IEnumerable<PendingProcess> pendingBusinessProcesses)
+    {
         foreach (var pendingBusinessProcess in pendingBusinessProcesses)
         {
             var command = new EffectuateConsumerMoveIn(
