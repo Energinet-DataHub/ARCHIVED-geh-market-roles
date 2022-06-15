@@ -17,9 +17,9 @@ using NodaTime;
 
 namespace Processing.Infrastructure.Configuration.SystemTime
 {
-    public class TimeHasPassed : INotification
+    public class TenSecondsHasPassed : INotification
     {
-        public TimeHasPassed(Instant now)
+        public TenSecondsHasPassed(Instant now)
         {
             Now = now;
         }
