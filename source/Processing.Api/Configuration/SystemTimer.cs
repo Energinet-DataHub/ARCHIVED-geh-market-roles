@@ -34,8 +34,8 @@ namespace Processing.Api.Configuration
             _systemDateTimeProvider = systemDateTimeProvider;
         }
 
-        [Function("RaiseTimeHasPassedEvent")]
-        public Task RunAsync([TimerTrigger("%RAISE_TIME_HAS_PASSED_EVENT_SCHEDULE%")] TimerInfo timerTimerInfo, FunctionContext context)
+        [Function("RaiseTenSecondsHasPassedEvent")]
+        public Task OnTenSecondsHasPassedAsync([TimerTrigger("%RAISE_TIME_HAS_PASSED_EVENT_SCHEDULE%")] TimerInfo timerTimerInfo, FunctionContext context)
         {
             LogInfo(timerTimerInfo, context, "RaiseTimeHasPassedEvent");
             return _mediator.Publish(new TimeHasPassed(_systemDateTimeProvider.Now()));
