@@ -31,6 +31,7 @@ using Processing.Domain.MeteringPoints.Errors;
 using Processing.Domain.SeedWork;
 using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.EventPublishing;
+using Processing.Infrastructure.Configuration.EventPublishing.Protobuf;
 using Processing.Infrastructure.RequestAdapters;
 using Xunit;
 using Xunit.Categories;
@@ -197,7 +198,10 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
             await InvokeCommandAsync(command).ConfigureAwait(false);
 
-            AssertIntegrationEvent<ConsumerMovedIn>();
+            var consumerMovedInEvent = FindIntegrationEvent<ConsumerMovedIn>();
+            Assert.NotNull(consumerMovedInEvent);
+            Assert.Equal(command.AccountingPointId.ToString(), consumerMovedInEvent?.AccountingPointId);
+            Assert.Equal(command.ProcessId, consumerMovedInEvent?.ProcessId);
         }
 
         private static void AssertValidationError<TRuleError>(BusinessProcessResult rulesValidationResult, string? expectedErrorCode = null, bool errorExpected = true)
@@ -258,13 +262,19 @@ namespace Processing.IntegrationTests.Application.MoveIn
             return (accountingPoint, BusinessProcessId.Create(result.ProcessId));
         }
 
-        private void AssertIntegrationEvent<TEvent>()
+        private TEvent? FindIntegrationEvent<TEvent>()
         {
             var mapper = GetService<IntegrationEventMapper>();
             var eventMetadata = mapper.GetByType(typeof(TEvent));
             var context = GetService<MarketRolesContext>();
-            var foundEvent = context.OutboxMessages.Where(message => message.Type == eventMetadata.EventName);
-            Assert.NotNull(foundEvent);
+            var message = context.OutboxMessages.FirstOrDefault(message => message.Type == eventMetadata.EventName);
+            if (message is null)
+            {
+                return default;
+            }
+
+            var parser = GetService<MessageParser>();
+            return (TEvent)parser.GetFrom(eventMetadata.EventName, message.Data);
         }
     }
 }

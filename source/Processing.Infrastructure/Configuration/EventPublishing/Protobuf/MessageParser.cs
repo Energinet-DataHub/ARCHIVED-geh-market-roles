@@ -27,7 +27,7 @@ namespace Processing.Infrastructure.Configuration.EventPublishing.Protobuf
             _integrationEventMapper = integrationEventMapper;
         }
 
-        internal IMessage GetFrom(string integrationEventTypeName, string payload)
+        public IMessage GetFrom(string integrationEventTypeName, string payload)
         {
             var eventMetadata = _integrationEventMapper.GetByName(integrationEventTypeName);
             var descriptor = (Google.Protobuf.Reflection.MessageDescriptor)eventMetadata.EventType
