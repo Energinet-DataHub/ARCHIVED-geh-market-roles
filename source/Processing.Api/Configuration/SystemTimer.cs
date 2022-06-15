@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Processing.Application.Common.TimeEvents;
 using Processing.Domain.SeedWork;
 using Processing.Infrastructure.Configuration.SystemTime;
 
@@ -36,11 +37,22 @@ namespace Processing.Api.Configuration
         [Function("RaiseTimeHasPassedEvent")]
         public Task RunAsync([TimerTrigger("%RAISE_TIME_HAS_PASSED_EVENT_SCHEDULE%")] TimerInfo timerTimerInfo, FunctionContext context)
         {
-            var logger = context.GetLogger("System timer");
+            LogInfo(timerTimerInfo, context, "RaiseTimeHasPassedEvent");
+            return _mediator.Publish(new TimeHasPassed(_systemDateTimeProvider.Now()));
+        }
+
+        [Function("RaiseDayHasPassedEvent")]
+        public Task OnDayHasPassedAsync([TimerTrigger("0 0 0 * * *")] TimerInfo timerTimerInfo, FunctionContext context)
+        {
+            LogInfo(timerTimerInfo, context, "RaiseDayHasPassedEvent");
+            return _mediator.Publish(new DayHasPassed(_systemDateTimeProvider.Now()));
+        }
+
+        private static void LogInfo(TimerInfo timerTimerInfo, FunctionContext context, string functionName)
+        {
+            var logger = context.GetLogger(functionName);
             logger.LogInformation($"System timer trigger at: {DateTime.Now}");
             logger.LogInformation($"Next timer schedule at: {timerTimerInfo?.ScheduleStatus?.Next}");
-
-            return _mediator.Publish(new TimeHasPassed(_systemDateTimeProvider.Now()));
         }
     }
 }
