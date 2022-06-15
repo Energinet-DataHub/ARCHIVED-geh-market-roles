@@ -36,6 +36,7 @@ public class PublishEventOnConsumerMovedIn : INotificationHandler<ConsumerMovedI
         var integrationEvent = new Contracts.IntegrationEvents.ConsumerMovedIn()
         {
             AccountingPointId = notification.AccountingPointId.ToString(),
+            ProcessId = notification.BusinessProcessId.ToString(),
         };
         return _eventPublisher.PublishAsync(integrationEvent);
     }
