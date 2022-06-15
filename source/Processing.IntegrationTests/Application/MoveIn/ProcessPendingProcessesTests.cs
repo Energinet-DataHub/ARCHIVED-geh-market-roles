@@ -47,8 +47,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         private async Task SimulateThatADayHasPassed()
         {
             _systemDateTimeProvider.SetCurrentTimeToMidnight();
-            var dayHasPassed = new DayHasPassed(_systemDateTimeProvider.Now());
-            await GetService<IMediator>().Publish(dayHasPassed);
+            await GetService<IMediator>().Publish(new DayHasPassed(_systemDateTimeProvider.Now()));
         }
 
         private BusinessProcessId RegisterPendingMoveIn()
