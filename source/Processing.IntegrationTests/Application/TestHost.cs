@@ -367,18 +367,6 @@ namespace Processing.IntegrationTests.Application
                 .Select(message => jsonSerializer.Deserialize<TMessage>(message.Data));
         }
 
-        protected void AssertOutboxMessage<TMessage>(Func<TMessage, bool> funcAssert, int count = 1)
-        {
-            if (funcAssert == null)
-                throw new ArgumentNullException(nameof(funcAssert));
-
-            var messages = GetOutboxMessages<TMessage>().Where(funcAssert.Invoke);
-
-            messages.Should().HaveCount(count);
-            messages.Should().NotContainNulls();
-            messages.Should().AllBeOfType<TMessage>();
-        }
-
         protected void AssertOutboxMessage<TMessage>()
         {
             var message = GetOutboxMessages<TMessage>().SingleOrDefault();
