@@ -14,8 +14,8 @@
 
 using System;
 using System.Threading.Tasks;
+using Processing.Application.Common;
 using Processing.Domain.SeedWork;
-using Processing.Infrastructure.Configuration.DataAccess;
 
 namespace Processing.Infrastructure.InternalCommands
 {
