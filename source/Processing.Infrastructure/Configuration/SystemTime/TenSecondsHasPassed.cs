@@ -12,24 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Threading.Tasks;
-using Processing.Application.Common;
+using MediatR;
+using NodaTime;
 
-namespace Processing.Infrastructure.Configuration.DataAccess
+namespace Processing.Infrastructure.Configuration.SystemTime
 {
-    public class UnitOfWork : IUnitOfWork
+    public class TenSecondsHasPassed : INotification
     {
-        private readonly MarketRolesContext _context;
-
-        public UnitOfWork(MarketRolesContext context)
+        public TenSecondsHasPassed(Instant now)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            Now = now;
         }
 
-        public Task CommitAsync()
-        {
-            return _context.SaveChangesAsync();
-        }
+        public Instant Now { get; }
     }
 }

@@ -14,7 +14,7 @@
 
 using System.Threading.Tasks;
 
-namespace Processing.Infrastructure.Configuration.DataAccess
+namespace Processing.Application.Common
 {
     /// <summary>
     /// Unit of work for handling database transctions
