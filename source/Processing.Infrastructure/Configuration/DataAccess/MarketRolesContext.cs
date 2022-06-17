@@ -38,7 +38,7 @@ namespace Processing.Infrastructure.Configuration.DataAccess
         {
         }
 
-        public DbSet<EnergySupplier> EnergySuppliers { get; private set; }
+        public DbSet<Domain.EnergySuppliers.EnergySupplier> EnergySuppliers { get; private set; }
 
         public DbSet<Consumer> Consumers { get; private set; }
 
