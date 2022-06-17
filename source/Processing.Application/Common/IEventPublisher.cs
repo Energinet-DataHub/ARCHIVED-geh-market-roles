@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
-using Contracts.IntegrationEvents;
 
 namespace Processing.Application.Common;
 

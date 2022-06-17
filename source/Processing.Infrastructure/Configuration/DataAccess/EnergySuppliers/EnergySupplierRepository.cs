@@ -35,13 +35,13 @@ namespace Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers
             return _context.EnergySuppliers.AnyAsync(x => x.GlnNumber.Equals(glnNumber));
         }
 
-        public void Add(EnergySupplier energySupplier)
+        public void Add(Domain.EnergySuppliers.EnergySupplier energySupplier)
         {
             if (energySupplier == null) throw new ArgumentNullException(nameof(energySupplier));
             _context.EnergySuppliers.Add(energySupplier);
         }
 
-        public Task<EnergySupplier?> GetByGlnNumberAsync(GlnNumber glnNumber)
+        public Task<Domain.EnergySuppliers.EnergySupplier?> GetByGlnNumberAsync(GlnNumber glnNumber)
         {
             if (glnNumber == null) throw new ArgumentNullException(nameof(glnNumber));
             return _context.EnergySuppliers
