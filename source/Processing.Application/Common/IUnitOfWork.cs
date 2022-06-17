@@ -12,8 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Application.Transactions.MoveIn;
+using System.Threading.Tasks;
 
-public class MoveInTransactionCompleted
+namespace Processing.Application.Common
 {
+    /// <summary>
+    /// Unit of work for handling database transctions
+    /// </summary>
+    public interface IUnitOfWork
+    {
+        /// <summary>
+        /// Commits the transaction
+        /// </summary>
+        /// <returns><see cref="Task"/></returns>
+        Task CommitAsync();
+    }
 }

@@ -12,17 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
+using Messaging.Application.Configuration;
+using Messaging.Domain.Transactions.MoveIn.Events;
 
 namespace Messaging.Application.Transactions.MoveIn;
 
-public class PendingBusinessProcess
+public class FetchMeteringPointMasterDataWhenAccepted : INotificationHandler<MoveInWasAccepted>
 {
-    public PendingBusinessProcess(string processId)
+    private readonly ICommandScheduler _commandScheduler;
+
+    public FetchMeteringPointMasterDataWhenAccepted(ICommandScheduler commandScheduler)
     {
-        if (processId == null) throw new ArgumentNullException(nameof(processId));
-        ProcessId = processId;
+        _commandScheduler = commandScheduler;
     }
 
-    public string ProcessId { get; }
+    public Task Handle(MoveInWasAccepted notification, CancellationToken cancellationToken)
+    {
+        return _commandScheduler.EnqueueAsync(new FetchMeteringPointMasterData());
+    }
 }

@@ -88,9 +88,9 @@ namespace Processing.IntegrationTests.Application
         private readonly Scope _scope;
         private readonly Container _container;
         private readonly string _connectionString;
+        private readonly ServiceBusSenderFactoryStub _serviceBusSenderFactoryStub;
         private bool _disposed;
         private SqlConnection? _sqlConnection;
-        private ServiceBusSenderFactoryStub _serviceBusSenderFactoryStub;
 
         protected TestHost(DatabaseFixture databaseFixture)
         {
@@ -305,11 +305,11 @@ namespace Processing.IntegrationTests.Application
             return consumer;
         }
 
-        protected EnergySupplier CreateEnergySupplier(Guid? id = null, string? glnNumber = null)
+        protected Domain.EnergySuppliers.EnergySupplier CreateEnergySupplier(Guid? id = null, string? glnNumber = null)
         {
             var energySupplierId = new EnergySupplierId(id ?? Guid.NewGuid());
             var energySupplierGln = new GlnNumber(glnNumber ?? SampleData.GlnNumber);
-            var energySupplier = new EnergySupplier(energySupplierId, energySupplierGln);
+            var energySupplier = new Domain.EnergySuppliers.EnergySupplier(energySupplierId, energySupplierGln);
             EnergySupplierRepository.Add(energySupplier);
             return energySupplier;
         }
@@ -365,18 +365,6 @@ namespace Processing.IntegrationTests.Application
             return context.OutboxMessages
                 .Where(message => message.Type == messageType)
                 .Select(message => jsonSerializer.Deserialize<TMessage>(message.Data));
-        }
-
-        protected void AssertOutboxMessage<TMessage>(Func<TMessage, bool> funcAssert, int count = 1)
-        {
-            if (funcAssert == null)
-                throw new ArgumentNullException(nameof(funcAssert));
-
-            var messages = GetOutboxMessages<TMessage>().Where(funcAssert.Invoke);
-
-            messages.Should().HaveCount(count);
-            messages.Should().NotContainNulls();
-            messages.Should().AllBeOfType<TMessage>();
         }
 
         protected void AssertOutboxMessage<TMessage>()

@@ -16,6 +16,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using Energinet.DataHub.EnergySupplying.IntegrationEvents;
 using Google.Protobuf.WellKnownTypes;
 using MediatR;
 using Processing.Application.Common;
@@ -47,7 +48,7 @@ namespace Processing.Application.ChangeOfSupplier
 
             var supplierGlnNumber = await GetSupplierGlnNumberAsync(notification.EnergySupplierId)
                 .ConfigureAwait(false);
-            var integrationEvent = new Contracts.IntegrationEvents.FutureEnergySupplierChangeRegistered()
+            var integrationEvent = new FutureEnergySupplierChangeRegistered()
             {
                 AccountingpointId = notification.AccountingPointId.Value.ToString(),
                 GsrnNumber = notification.GsrnNumber.Value,

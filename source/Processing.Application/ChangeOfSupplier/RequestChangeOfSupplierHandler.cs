@@ -30,7 +30,7 @@ namespace Processing.Application.ChangeOfSupplier
         private readonly IAccountingPointRepository _accountingPointRepository;
         private readonly ISystemDateTimeProvider _systemTimeProvider;
         private readonly IEnergySupplierRepository _energySupplierRepository;
-        private EnergySupplier? _energySupplier;
+        private Domain.EnergySuppliers.EnergySupplier? _energySupplier;
         private global::Processing.Domain.MeteringPoints.AccountingPoint? _accountingPoint;
         private RequestChangeOfSupplier? _request;
 

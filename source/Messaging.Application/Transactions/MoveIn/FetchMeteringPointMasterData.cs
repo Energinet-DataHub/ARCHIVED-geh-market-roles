@@ -12,19 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
+using Messaging.Application.Common.Commands;
 
-namespace Processing.Infrastructure.Configuration.DataAccess
+namespace Messaging.Application.Transactions.MoveIn;
+
+public class FetchMeteringPointMasterData : InternalCommand
 {
-    /// <summary>
-    /// Unit of work for handling database transctions
-    /// </summary>
-    public interface IUnitOfWork
-    {
-        /// <summary>
-        /// Commits the transaction
-        /// </summary>
-        /// <returns><see cref="Task"/></returns>
-        Task CommitAsync();
-    }
 }

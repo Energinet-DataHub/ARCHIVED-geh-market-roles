@@ -12,18 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using MediatR;
-using NodaTime;
+using Messaging.Domain.SeedWork;
 
-namespace Processing.Infrastructure.Configuration.SystemTime
+namespace Messaging.Domain.Transactions.MoveIn.Events;
+
+public class MoveInWasRejected : DomainEvent
 {
-    public class TimeHasPassed : INotification
+    public MoveInWasRejected(string transactionId)
     {
-        public TimeHasPassed(Instant now)
-        {
-            Now = now;
-        }
-
-        public Instant Now { get; }
+        TransactionId = transactionId;
     }
+
+    public string TransactionId { get; }
 }
