@@ -14,7 +14,7 @@
 
 using System;
 using Azure.Messaging.ServiceBus;
-using Contracts.IntegrationEvents;
+using Energinet.DataHub.EnergySupplying.IntegrationEvents;
 using Processing.Application.Common;
 using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;

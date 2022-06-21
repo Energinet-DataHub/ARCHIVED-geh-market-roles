@@ -19,9 +19,9 @@ using Processing.Domain.EnergySuppliers;
 
 namespace Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers
 {
-    internal class EnergySupplierEntityConfiguration : IEntityTypeConfiguration<EnergySupplier>
+    internal class EnergySupplierEntityConfiguration : IEntityTypeConfiguration<Domain.EnergySuppliers.EnergySupplier>
     {
-        public void Configure(EntityTypeBuilder<EnergySupplier> builder)
+        public void Configure(EntityTypeBuilder<Domain.EnergySuppliers.EnergySupplier> builder)
         {
             builder.ToTable("EnergySuppliers", "dbo");
             builder.HasKey(x => x.EnergySupplierId);
