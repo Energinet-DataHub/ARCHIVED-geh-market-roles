@@ -15,7 +15,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Contracts.IntegrationEvents;
+using Energinet.DataHub.EnergySupplying.IntegrationEvents;
 using MediatR;
 using Microsoft.Data.SqlClient;
 using NodaTime;
@@ -24,8 +24,8 @@ using Processing.Application.ChangeOfSupplier.Processing;
 using Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails;
 using Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
 using Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
+using Processing.Application.Common;
 using Processing.Domain.Consumers;
-using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
 using Processing.Infrastructure.Configuration.DataAccess;
 using Xunit;
@@ -37,8 +37,8 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing.Co
     public class ChangeSupplierTests : TestHost
     {
         private readonly AccountingPoint _accountingPoint;
-        private readonly EnergySupplier _energySupplier;
-        private readonly EnergySupplier _newEnergySupplier;
+        private readonly Domain.EnergySuppliers.EnergySupplier _energySupplier;
+        private readonly Domain.EnergySuppliers.EnergySupplier _newEnergySupplier;
         private readonly Consumer _consumer;
         private readonly IMediator _mediator;
         private readonly string _glnNumber = "7495563456235";

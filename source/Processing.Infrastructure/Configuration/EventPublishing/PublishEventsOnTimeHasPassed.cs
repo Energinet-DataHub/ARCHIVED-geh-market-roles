@@ -21,7 +21,7 @@ using Processing.Infrastructure.Configuration.SystemTime;
 
 namespace Processing.Infrastructure.Configuration.EventPublishing
 {
-    public class PublishEventsOnTimeHasPassed : INotificationHandler<TimeHasPassed>
+    public class PublishEventsOnTimeHasPassed : INotificationHandler<TenSecondsHasPassed>
     {
         private readonly EventDispatcher _eventDispatcher;
         private readonly ILogger<PublishEventsOnTimeHasPassed> _logger;
@@ -32,7 +32,7 @@ namespace Processing.Infrastructure.Configuration.EventPublishing
             _logger = logger;
         }
 
-        public Task Handle(TimeHasPassed notification, CancellationToken cancellationToken)
+        public Task Handle(TenSecondsHasPassed notification, CancellationToken cancellationToken)
         {
             try
             {

@@ -15,7 +15,7 @@
 using System;
 using System.Threading.Tasks;
 using MediatR;
-using Processing.Infrastructure.Configuration.DataAccess;
+using Processing.Application.Common;
 
 namespace Processing.Infrastructure.Integration.Notifications
 {

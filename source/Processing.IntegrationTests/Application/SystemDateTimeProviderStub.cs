@@ -30,5 +30,14 @@ namespace Processing.IntegrationTests.Application
         {
             return _now;
         }
+
+        public void SetCurrentTimeToMidnight()
+        {
+            var timeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
+            var now = SystemClock.Instance.GetCurrentInstant()
+                .InZone(timeZone);
+            var localDateTime = new ZonedDateTime(new LocalDateTime(now.Year, now.Month, now.Day + 1, 0, 0, 0), timeZone, now.Offset);
+            SetNow(localDateTime.ToInstant());
+        }
     }
 }

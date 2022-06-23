@@ -22,7 +22,7 @@ namespace Processing.Application.Common.Validation
     {
         private readonly string _glnNumber;
 
-        public EnergySupplierMustBeKnownRule(EnergySupplier? energySupplier, string glnNumber)
+        public EnergySupplierMustBeKnownRule(Domain.EnergySuppliers.EnergySupplier? energySupplier, string glnNumber)
         {
             _glnNumber = glnNumber;
             IsBroken = energySupplier == null;

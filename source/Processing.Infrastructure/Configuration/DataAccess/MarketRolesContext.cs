@@ -38,7 +38,7 @@ namespace Processing.Infrastructure.Configuration.DataAccess
         {
         }
 
-        public DbSet<EnergySupplier> EnergySuppliers { get; private set; }
+        public DbSet<Domain.EnergySuppliers.EnergySupplier> EnergySuppliers { get; private set; }
 
         public DbSet<Consumer> Consumers { get; private set; }
 
@@ -58,7 +58,6 @@ namespace Processing.Infrastructure.Configuration.DataAccess
             modelBuilder.ApplyConfiguration(new OutboxMessageEntityConfiguration());
             modelBuilder.ApplyConfiguration(new ProcessManagerEntityConfiguration());
             modelBuilder.ApplyConfiguration(new ChangeOfSupplierProcessManagerEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new MoveInProcessManagerEntityConfiguration());
             modelBuilder.ApplyConfiguration(new QueuedInternalCommandEntityConfiguration());
         }
     }

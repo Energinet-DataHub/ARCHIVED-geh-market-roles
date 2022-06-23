@@ -23,6 +23,11 @@ limitations under the License.
     <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="Energinet.DataHub.Core.App.Common" Version="2.3.3" />
     <PackageReference Include="FluentValidation" Version="10.4.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.21.1" />
+    <PackageReference Include="Grpc.Tools" Version="2.46.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
     <PackageReference Include="NodaTime" Version="3.0.10" />
@@ -31,6 +36,17 @@ limitations under the License.
   <ItemGroup>
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\Processing.Domain\Processing.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<Protobuf Include="**/*.proto">
+      <GrpcServices>None</GrpcServices>
+      <Access>Public</Access>
+      <ProtoCompile>True</ProtoCompile>
+      <CompileOutputs>True</CompileOutputs>
+      <OutputDir>..\IntegrationEvents\source\</OutputDir>
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
   </ItemGroup>
 
 </Project>

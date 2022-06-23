@@ -34,16 +34,16 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier.Processing
         private readonly ProcessManagerRouter _router;
         private readonly BusinessProcessId _businessProcessId;
         private readonly AccountingPoint _accountingPoint;
-        private readonly EnergySupplier _energySupplier;
+        private readonly Domain.EnergySuppliers.EnergySupplier _energySupplier;
 
         public ProcessManagerRouterTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
-            Consumer consumer = CreateConsumer();
+            var consumer = CreateConsumer();
             _energySupplier = CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
             _accountingPoint = CreateAccountingPoint();
             _businessProcessId = BusinessProcessId.New();
-            EnergySupplier newEnergySupplier = CreateEnergySupplier(Guid.NewGuid(), "7495563456235");
+            var newEnergySupplier = CreateEnergySupplier(Guid.NewGuid(), "7495563456235");
             SetConsumerMovedIn(_accountingPoint, consumer.ConsumerId, _energySupplier.EnergySupplierId);
             RegisterChangeOfSupplier(_accountingPoint, newEnergySupplier.EnergySupplierId, _businessProcessId);
             MarketRolesContext.SaveChanges();
