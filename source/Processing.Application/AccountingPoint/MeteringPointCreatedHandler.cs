@@ -17,6 +17,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Processing.Application.Common.Commands;
+using Processing.Domain.MeteringPoints;
+using Processing.Domain.SeedWork;
 
 namespace Processing.Application.AccountingPoint
 {
@@ -29,16 +31,21 @@ namespace Processing.Application.AccountingPoint
             _commandScheduler = commandScheduler;
         }
 
-        public Task Handle(MeteringPointCreated notification, CancellationToken cancellationToken)
+        public async Task Handle(MeteringPointCreated notification, CancellationToken cancellationToken)
         {
             if (notification == null) throw new ArgumentNullException(nameof(notification));
 
-            var command = new CreateAccountingPoint(
-                notification.MeteringPointId,
-                notification.GsrnNumber,
-                notification.MeteringPointType);
+            var meteringPointType = EnumerationType.FromName<MeteringPointType>(notification.MeteringPointType);
+            if (meteringPointType == MeteringPointType.Consumption ||
+                meteringPointType == MeteringPointType.Production)
+            {
+                var command = new CreateAccountingPoint(
+                    notification.MeteringPointId,
+                    notification.GsrnNumber,
+                    notification.MeteringPointType);
 
-            return _commandScheduler.EnqueueAsync(command);
+                await _commandScheduler.EnqueueAsync(command).ConfigureAwait(false);
+            }
         }
     }
 }

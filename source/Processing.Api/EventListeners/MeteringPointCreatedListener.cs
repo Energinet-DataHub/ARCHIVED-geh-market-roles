@@ -18,6 +18,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Processing.Application.AccountingPoint;
 using Processing.Infrastructure.Integration.Notifications;
+using MeteringPointCreated = Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts.MeteringPointCreated;
 
 namespace Processing.Api.EventListeners;
 
@@ -35,7 +36,7 @@ public class MeteringPointCreatedListener
     }
 
     [Function("MeteringPointCreatedListener")]
-    public void Run(
+    public async Task RunAsync(
         [ServiceBusTrigger("metering-point-created", "metering-point-created-to-marketroles", Connection = "SERVICE_BUS_CONNECTION_STRING_LISTENER_FOR_INTEGRATION_EVENTS")] byte[] data,
         FunctionContext context)
     {
@@ -44,9 +45,12 @@ public class MeteringPointCreatedListener
 
         _logger.LogInformation($"Received metering point created integration event");
 
-        // TODO: Translate incoming event to MeteringPointCreated object
+        var eventMeteringPointCreated = MeteringPointCreated.Parser.ParseFrom(data);
         // TODO: Log relevant info about the event after translation
-        // var eventMeteringPointCreated = new MeteringPointCreated(Guid.NewGuid().ToString(), "gsrn", "mpType");
-        // await _notificationReceiver.PublishAndCommitAsync(eventMeteringPointCreated).ConfigureAwait(false);
+        var meteringPointCreated = new Application.AccountingPoint.MeteringPointCreated(
+            eventMeteringPointCreated.MeteringPointId,
+            eventMeteringPointCreated.GsrnNumber,
+            eventMeteringPointCreated.MeteringPointType.ToString());
+        await _notificationReceiver.PublishAndCommitAsync(meteringPointCreated).ConfigureAwait(false);
     }
 }
