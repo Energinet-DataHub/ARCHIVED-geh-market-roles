@@ -35,14 +35,13 @@ namespace Processing.Application.AccountingPoint
         {
             if (notification == null) throw new ArgumentNullException(nameof(notification));
 
-            var meteringPointType = EnumerationType.FromName<MeteringPointType>(notification.MeteringPointType);
-            if (meteringPointType == MeteringPointType.Consumption ||
-                meteringPointType == MeteringPointType.Production)
+            if (notification.MeteringPointType == MeteringPointType.Consumption ||
+                notification.MeteringPointType == MeteringPointType.Production)
             {
                 var command = new CreateAccountingPoint(
                     notification.MeteringPointId,
                     notification.GsrnNumber,
-                    notification.MeteringPointType);
+                    notification.MeteringPointType.ToString());
 
                 await _commandScheduler.EnqueueAsync(command).ConfigureAwait(false);
             }

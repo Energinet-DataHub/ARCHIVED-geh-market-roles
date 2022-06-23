@@ -16,6 +16,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Processing.Api.EventListeners.Extensions;
 using Processing.Application.AccountingPoint;
 using Processing.Infrastructure.Integration.Notifications;
 using MeteringPointCreated = Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts.MeteringPointCreated;
@@ -50,7 +51,7 @@ public class MeteringPointCreatedListener
         var meteringPointCreated = new Application.AccountingPoint.MeteringPointCreated(
             eventMeteringPointCreated.MeteringPointId,
             eventMeteringPointCreated.GsrnNumber,
-            eventMeteringPointCreated.MeteringPointType.ToString());
+            eventMeteringPointCreated.MeteringPointType.GetMeteringPointType());
         await _notificationReceiver.PublishAndCommitAsync(meteringPointCreated).ConfigureAwait(false);
     }
 }
