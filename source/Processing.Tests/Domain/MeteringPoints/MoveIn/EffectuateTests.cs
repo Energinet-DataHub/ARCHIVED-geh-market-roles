@@ -75,7 +75,7 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         private static (AccountingPoint AccountingPoint, ConsumerId ConsumerId, EnergySupplierId EnergySupplierId, BusinessProcessId ProcessId) SetupScenario()
         {
             return (
-                new AccountingPoint(GsrnNumber.Create(SampleData.GsrnNumber), MeteringPointType.Consumption),
+                AccountingPoint.CreateConsumption(AccountingPointId.New(), GsrnNumber.Create(SampleData.GsrnNumber)),
                 new ConsumerId(Guid.NewGuid()),
                 new EnergySupplierId(Guid.NewGuid()),
                 BusinessProcessId.New());

@@ -35,22 +35,10 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             _systemDateTimeProvider = new SystemDateTimeProviderStub();
         }
 
-        [Theory]
-        [InlineData("exchange")]
-        public void Accept_WhenMeteringPointTypeIsNotEligible_IsNotPossible(string meteringPointTypeName)
-        {
-            var meteringPointType = CreateMeteringPointTypeFromName(meteringPointTypeName);
-            var meteringPoint = CreateMeteringPoint(meteringPointType);
-
-            var result = CanChangeSupplier(meteringPoint);
-
-            Assert.Contains(result.Errors, error => error is MeteringPointMustBeEnergySuppliableRuleError);
-        }
-
         [Fact]
         public void Accept_WhenProductionMeteringPointIsNotObligated_IsNotPossible()
         {
-            var meteringPoint = CreateMeteringPoint(MeteringPointType.Production);
+            var meteringPoint = CreateMeteringPoint(MeteringPointType.Production, false);
 
             var result = CanChangeSupplier(meteringPoint);
 
@@ -160,10 +148,21 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             return new EnergySupplierId(Guid.NewGuid());
         }
 
-        private static AccountingPoint CreateMeteringPoint(MeteringPointType meteringPointType)
+        private static AccountingPoint CreateMeteringPoint(MeteringPointType meteringPointType, bool isObligated = true)
         {
-            var meteringPointId = CreateGsrnNumber();
-            return new AccountingPoint(meteringPointId, meteringPointType);
+            var gsrnNumber = CreateGsrnNumber();
+
+            if (meteringPointType == MeteringPointType.Consumption)
+            {
+                return AccountingPoint.CreateConsumption(AccountingPointId.New(), gsrnNumber);
+            }
+
+            if (meteringPointType == MeteringPointType.Production)
+            {
+                return AccountingPoint.CreateProduction(AccountingPointId.New(), gsrnNumber, isObligated);
+            }
+
+            throw new InvalidOperationException();
         }
 
         private static GsrnNumber CreateGsrnNumber()
