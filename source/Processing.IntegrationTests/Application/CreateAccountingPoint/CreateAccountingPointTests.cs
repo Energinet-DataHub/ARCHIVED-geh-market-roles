@@ -17,14 +17,13 @@ using System.Threading.Tasks;
 using MediatR;
 using Processing.Application.AccountingPoint;
 using Processing.Domain.MeteringPoints;
-using Processing.Infrastructure.Integration.Notifications;
 using Xunit;
 
 namespace Processing.IntegrationTests.Application.CreateAccountingPoint
 {
-    public class ProcessPendingCreateAccountingPointCommand : TestHost
+    public class CreateAccountingPointTests : TestHost
     {
-        public ProcessPendingCreateAccountingPointCommand(DatabaseFixture databaseFixture)
+        public CreateAccountingPointTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
         }
