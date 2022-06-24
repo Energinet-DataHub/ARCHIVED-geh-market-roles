@@ -26,6 +26,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Processing.Api.Configuration;
+using Processing.Api.EventListeners;
 using Processing.Api.Monitor;
 using Processing.Api.MoveIn;
 using Processing.Application.ChangeOfSupplier;
@@ -197,6 +198,9 @@ namespace Processing.Api
 
             // Health check
             container.Register<HealthCheckEndpoint>(Lifestyle.Scoped);
+
+            // Event listeners
+            container.Register<MeteringPointCreatedListener>(Lifestyle.Scoped);
         }
     }
 }

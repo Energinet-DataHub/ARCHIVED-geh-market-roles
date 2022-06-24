@@ -76,8 +76,6 @@ message CreateAccountingPoint {
     string accounting_point_id = 1;
     string gsrn_number = 2;
     string metering_point_type = 3;
-    string connection_state = 4;
-
 }
 
 message MarketRolesEnvelope {

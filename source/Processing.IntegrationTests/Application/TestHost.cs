@@ -318,7 +318,7 @@ namespace Processing.IntegrationTests.Application
         {
             var meteringPoint =
                 AccountingPoint.CreateProduction(
-                    GsrnNumber.Create(SampleData.GsrnNumber), true);
+                    AccountingPointId.New(), GsrnNumber.Create(SampleData.GsrnNumber), true);
 
             AccountingPointRepository.Add(meteringPoint);
 

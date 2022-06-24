@@ -33,7 +33,6 @@ namespace Processing.Infrastructure.InternalCommands.Protobuf.Mappers.Accounting
                     AccountingPointId = obj.AccountingPointId,
                     GsrnNumber = obj.GsrnNumber,
                     MeteringPointType = obj.MeteringPointType,
-                    ConnectionState = obj.PhysicalState,
                 },
             };
         }
