@@ -28,8 +28,7 @@ namespace Processing.Infrastructure.BusinessRequestProcessing.Protobuf.Mappers
             return new Processing.Application.AccountingPoint.CreateAccountingPoint(
                 obj.AccountingPointId,
                 obj.GsrnNumber,
-                obj.MeteringPointType,
-                obj.ConnectionState);
+                obj.MeteringPointType);
         }
     }
 }

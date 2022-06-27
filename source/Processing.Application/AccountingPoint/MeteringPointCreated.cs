@@ -14,11 +14,13 @@
 
 using MediatR;
 using Processing.Application.Common.Transport;
+using Processing.Domain.MeteringPoints;
 
 namespace Processing.Application.AccountingPoint
 {
     public record MeteringPointCreated(
             string MeteringPointId,
-            string GsrnNumber)
+            string GsrnNumber,
+            MeteringPointType MeteringPointType)
         : INotification, IInboundMessage;
 }

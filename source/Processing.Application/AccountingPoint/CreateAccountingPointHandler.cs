@@ -35,13 +35,27 @@ namespace Processing.Application.AccountingPoint
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            var accountingPoint = new Processing.Domain.MeteringPoints.AccountingPoint(
-                AccountingPointId.Create(Guid.Parse(request.AccountingPointId)),
-                GsrnNumber.Create(request.GsrnNumber),
-                EnumerationType.FromName<MeteringPointType>(request.MeteringPointType),
-                EnumerationType.FromName<PhysicalState>(request.PhysicalState));
+            var accountingPointId = AccountingPointId.Create(
+                Guid.Parse(request.AccountingPointId));
+            var gsrnNumber = GsrnNumber.Create(request.GsrnNumber);
+            var meteringPointType = EnumerationType.FromName<MeteringPointType>(request.MeteringPointType);
 
-            _accountingPointRepository.Add(accountingPoint);
+            if (meteringPointType == MeteringPointType.Consumption)
+            {
+                _accountingPointRepository.Add(
+                    Domain.MeteringPoints.AccountingPoint.CreateConsumption(
+                        accountingPointId,
+                        gsrnNumber));
+            }
+            else if (meteringPointType == MeteringPointType.Production)
+            {
+                _accountingPointRepository.Add(
+                    Domain.MeteringPoints.AccountingPoint.CreateProduction(
+                        accountingPointId,
+                        gsrnNumber,
+                        true));
+            }
+
             return Task.FromResult(Unit.Value);
         }
     }

@@ -20,7 +20,7 @@ namespace Processing.Domain.MeteringPoints
     {
         public static readonly MeteringPointType Consumption = new MeteringPointType(0, nameof(Consumption));
         public static readonly MeteringPointType Production = new MeteringPointType(1, nameof(Production));
-        public static readonly MeteringPointType Exchange = new MeteringPointType(2, nameof(Exchange));
+        public static readonly MeteringPointType NoneAccountingPoint = new MeteringPointType(2, nameof(NoneAccountingPoint));
 
         public MeteringPointType(int id, string name)
             : base(id, name)
