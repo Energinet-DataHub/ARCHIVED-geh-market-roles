@@ -18,7 +18,18 @@ namespace Messaging.Application.OutgoingMessages
 {
     public class OutgoingMessage
     {
-        public OutgoingMessage(string documentType, string receiverId, string correlationId, string originalMessageId, string processType, string receiverRole, string senderId, string senderRole, string marketActivityRecordPayload, string? reasonCode)
+        public OutgoingMessage(
+            string documentType,
+            string type,
+            string receiverId,
+            string correlationId,
+            string originalMessageId,
+            string processType,
+            string receiverRole,
+            string senderId,
+            string senderRole,
+            string marketActivityRecordPayload,
+            string? reasonCode)
         {
             DocumentType = documentType;
             ReceiverId = receiverId;
@@ -30,12 +41,26 @@ namespace Messaging.Application.OutgoingMessages
             SenderRole = senderRole;
             MarketActivityRecordPayload = marketActivityRecordPayload;
             ReasonCode = reasonCode;
+            Type = type;
             Id = Guid.NewGuid();
         }
 
-        private OutgoingMessage(Guid id, string documentType, string receiverId, string correlationId, string originalMessageId, string processType, string receiverRole, string senderId, string senderRole, string marketActivityRecordPayload, string? reasonCode)
+        private OutgoingMessage(
+            Guid id,
+            string documentType,
+            string type,
+            string receiverId,
+            string correlationId,
+            string originalMessageId,
+            string processType,
+            string receiverRole,
+            string senderId,
+            string senderRole,
+            string marketActivityRecordPayload,
+            string? reasonCode)
         {
             DocumentType = documentType;
+            Type = type;
             ReceiverId = receiverId;
             CorrelationId = correlationId;
             OriginalMessageId = originalMessageId;
@@ -55,6 +80,8 @@ namespace Messaging.Application.OutgoingMessages
         public string ReceiverId { get; }
 
         public string DocumentType { get; }
+
+        public string Type { get; }
 
         public string? ReasonCode { get; }
 

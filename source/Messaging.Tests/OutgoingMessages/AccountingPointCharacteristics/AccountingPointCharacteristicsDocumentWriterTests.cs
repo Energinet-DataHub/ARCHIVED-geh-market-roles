@@ -51,12 +51,9 @@ public class AccountingPointCharacteristicsDocumentWriterTests
     [Fact]
     public async Task Document_is_valid()
     {
-        var header = new MessageHeader("E03", "SenderId", "DDZ", "ReceiverId", "DDQ", Guid.NewGuid().ToString(), _systemDateTimeProvider.Now(), null);
+        var header = new MessageHeader("E03", "E45", "SenderId", "DDZ", "ReceiverId", "DDQ", Guid.NewGuid().ToString(), _systemDateTimeProvider.Now(), null);
         var marketActivityRecord = _sampleData.CreateMarketActivityRecord();
-        var marketActivityRecords = new List<MarketActivityRecord>()
-        {
-            marketActivityRecord,
-        };
+        var marketActivityRecords = new List<MarketActivityRecord>() { marketActivityRecord, };
         var message = await _documentWriter.WriteAsync(header, marketActivityRecords.Select(record => _marketActivityRecordParser.From(record)).ToList()).ConfigureAwait(false);
         await AssertMessage(message, header, marketActivityRecords).ConfigureAwait(false);
     }

@@ -102,7 +102,7 @@ namespace Messaging.Application.Transactions.MoveIn
             if (!string.IsNullOrEmpty(consumerIdType))
             {
                 consumerType =
-                   consumerIdType.Equals(cprNumberTypeIdentifier, StringComparison.OrdinalIgnoreCase)
+                    consumerIdType.Equals(cprNumberTypeIdentifier, StringComparison.OrdinalIgnoreCase)
                         ? "CPR"
                         : "CVR";
             }
@@ -132,6 +132,7 @@ namespace Messaging.Application.Transactions.MoveIn
             return CreateOutgoingMessage(
                 transaction.StartedByMessageId,
                 ProcessType.MoveIn.Confirm.DocumentType,
+                DocumentNameCode.ConfirmationOfStartOfSupply.Code,
                 ProcessType.MoveIn.Code,
                 transaction.NewEnergySupplierId,
                 _marketActivityRecordParser.From(marketActivityRecord),
@@ -149,6 +150,7 @@ namespace Messaging.Application.Transactions.MoveIn
             return CreateOutgoingMessage(
                 transaction.StartedByMessageId,
                 ProcessType.MoveIn.Reject.DocumentType,
+                DocumentNameCode.ConfirmationOfStartOfSupply.Code,
                 ProcessType.MoveIn.Code,
                 transaction.NewEnergySupplierId,
                 _marketActivityRecordParser.From(marketActivityRecord),
@@ -160,10 +162,18 @@ namespace Messaging.Application.Transactions.MoveIn
             return _validationErrorTranslator.TranslateAsync(validationErrors);
         }
 
-        private OutgoingMessage CreateOutgoingMessage(string id, string documentType, string processType, string receiverId, string marketActivityRecordPayload, string reasonCode)
+        private OutgoingMessage CreateOutgoingMessage(
+            string id,
+            string documentType,
+            string type,
+            string processType,
+            string receiverId,
+            string marketActivityRecordPayload,
+            string reasonCode)
         {
             return new OutgoingMessage(
                 documentType,
+                type,
                 receiverId,
                 _correlationContext.Id,
                 id,

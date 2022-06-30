@@ -49,6 +49,15 @@ public class MessageFactory
 
     private MessageHeader CreateMessageHeaderFrom(OutgoingMessage message)
     {
-        return new MessageHeader(message.ProcessType, message.SenderId, message.SenderRole, message.ReceiverId, message.ReceiverRole, MessageIdGenerator.Generate(), _systemDateTimeProvider.Now(), message.ReasonCode);
+        return new MessageHeader(
+            message.ProcessType,
+            message.Type,
+            message.SenderId,
+            message.SenderRole,
+            message.ReceiverId,
+            message.ReceiverRole,
+            MessageIdGenerator.Generate(),
+            _systemDateTimeProvider.Now(),
+            message.ReasonCode);
     }
 }

@@ -18,6 +18,7 @@ namespace Messaging.Application.OutgoingMessages
 {
     public record MessageHeader(
         string ProcessType,
+        string Type,
         string SenderId,
         string SenderRole,
         string ReceiverId,

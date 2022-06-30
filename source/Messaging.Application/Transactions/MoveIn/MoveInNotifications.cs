@@ -51,6 +51,7 @@ public class MoveInNotifications
 
         var message = new OutgoingMessage(
             DocumentType.GenericNotification.ToString(),
+            DocumentNameCode.NotificationToSupplier.Code,
             transaction.CurrentEnergySupplierId,
             Guid.NewGuid().ToString(),
             transaction.TransactionId,

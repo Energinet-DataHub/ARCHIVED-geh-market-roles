@@ -48,20 +48,12 @@ public class RejectRequestChangeOfSupplierDocumentWriterTests
     [Fact]
     public async Task Document_is_valid()
     {
-        var header = new MessageHeader("E03", "SenderId", "DDZ", "ReceiverId", "DDQ", Guid.NewGuid().ToString(), _systemDateTimeProvider.Now(), "A01");
+        var header = new MessageHeader("E03", "414", "SenderId", "DDZ", "ReceiverId", "DDQ", Guid.NewGuid().ToString(), _systemDateTimeProvider.Now(), "A01");
         var marketActivityRecords = new List<MarketActivityRecord>()
         {
-            new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "FakeMarketEvaluationPointId", new List<Reason>()
-            {
-                new Reason("Reason1", "999"),
-                new Reason("Reason2", "999"),
-            }),
+            new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "FakeMarketEvaluationPointId", new List<Reason>() { new Reason("Reason1", "999"), new Reason("Reason2", "999"), }),
             new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "FakeMarketEvaluationPointId",
-            new List<Reason>()
-            {
-                new Reason("Reason3", "999"),
-                new Reason("Reason4", "999"),
-            }),
+                new List<Reason>() { new Reason("Reason3", "999"), new Reason("Reason4", "999"), }),
         };
 
         var message = await _documentWriter.WriteAsync(header, marketActivityRecords.Select(record => _marketActivityRecordParser.From(record)).ToList()).ConfigureAwait(false);
