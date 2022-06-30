@@ -12,20 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Messaging.Application.Common.Commands;
-using Messaging.Application.MasterData;
+namespace Messaging.Api.IncomingMessages;
 
-namespace Messaging.Application.Transactions.MoveIn;
-
-public class ForwardMeteringPointMasterData : InternalCommand
+public class MasterDataResponseMetadata
 {
-    public ForwardMeteringPointMasterData(string transactionId, MasterDataContent masterDataContent)
-    {
-        TransactionId = transactionId;
-        MasterDataContent = masterDataContent;
-    }
+    public string? BusinessProcessId { get; set; }
 
-    public string TransactionId { get; }
-
-    public MasterDataContent MasterDataContent { get; set; }
+    public string? TransactionId { get; set; }
 }

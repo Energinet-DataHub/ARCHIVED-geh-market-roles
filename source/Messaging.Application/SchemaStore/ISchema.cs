@@ -12,20 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Messaging.Application.Common.Commands;
-using Messaging.Application.MasterData;
+namespace Messaging.Application.SchemaStore;
 
-namespace Messaging.Application.Transactions.MoveIn;
-
-public class ForwardMeteringPointMasterData : InternalCommand
+/// <summary>
+/// bla
+/// </summary>
+public interface ISchema
 {
-    public ForwardMeteringPointMasterData(string transactionId, MasterDataContent masterDataContent)
-    {
-        TransactionId = transactionId;
-        MasterDataContent = masterDataContent;
-    }
+    /// <summary>
+    /// bla
+    /// </summary>
+    public string SchemaPath { get; }
 
-    public string TransactionId { get; }
-
-    public MasterDataContent MasterDataContent { get; set; }
+    /// <summary>
+    /// bla
+    /// </summary>
+    /// <param name="businessProcessType"></param>
+    /// <param name="version"></param>
+    /// <returns><see cref="string"/></returns>
+    public string? GetSchemaLocation(string businessProcessType, string version);
 }
