@@ -30,6 +30,11 @@ public sealed class DocumentNameCode : EnumerationType
         nameof(NotificationToSupplier),
         "E44");
 
+    public static readonly DocumentNameCode MasterDataMeteringPoint = new(
+        2,
+        nameof(MasterDataMeteringPoint),
+        "E07");
+
     private DocumentNameCode(int id, string name, string code)
         : base(id, name)
     {
