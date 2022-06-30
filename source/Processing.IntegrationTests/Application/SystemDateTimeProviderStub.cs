@@ -36,7 +36,8 @@ namespace Processing.IntegrationTests.Application
             var timeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
             var now = SystemClock.Instance.GetCurrentInstant()
                 .InZone(timeZone);
-            var localDateTime = new ZonedDateTime(new LocalDateTime(now.Year, now.Month, now.Day + 1, 0, 0, 0), timeZone, now.Offset);
+            var localDateTime = new ZonedDateTime(new LocalDateTime(now.Year, now.Month, now.Day, 0, 0, 0), timeZone, now.Offset);
+            localDateTime = localDateTime.PlusHours(24);
             SetNow(localDateTime.ToInstant());
         }
     }
