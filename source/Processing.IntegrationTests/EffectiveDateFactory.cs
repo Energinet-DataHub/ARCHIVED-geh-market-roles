@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using FluentAssertions.Extensions;
 using NodaTime;
 using Processing.Domain.Common;
 
@@ -29,8 +30,9 @@ namespace Processing.IntegrationTests
             var timeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
             var now = SystemClock.Instance.GetCurrentInstant()
                 .InZone(timeZone);
-            var day = now.Day + 1; // Need to add one day because after converting from local time to UTC, one days subtracted
-            var localDateTime = new ZonedDateTime(new LocalDateTime(now.Year, now.Month, day, 0, 0, 0), timeZone, now.Offset);
+            //var day = now.Day + 1; // Need to add one day because after converting from local time to UTC, one days subtracted
+            var localDateTime = new ZonedDateTime(new LocalDateTime(now.Year, now.Month, now.Day, 0, 0, 0), timeZone, now.Offset);
+            localDateTime = localDateTime.PlusHours(24);
             return localDateTime.ToInstant();
         }
     }
