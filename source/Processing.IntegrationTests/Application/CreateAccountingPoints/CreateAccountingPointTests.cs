@@ -61,33 +61,6 @@ namespace Processing.IntegrationTests.Application.CreateAccountingPoints
             Assert.Null(command);
         }
 
-        private async Task AssertAccountingPointAsync(MeteringPointCreated meteringPoint)
-        {
-            var accountingPoint = await GetAccountingPointAsync(meteringPoint).ConfigureAwait(false);
-            Assert.Equal(meteringPoint.MeteringPointId, accountingPoint.Id.Value.ToString());
-            Assert.Equal(meteringPoint.GsrnNumber, accountingPoint.GsrnNumber.Value);
-        }
-
-        private async Task<AccountingPoint> GetAccountingPointAsync(MeteringPointCreated meteringPoint)
-        {
-           return (await AccountingPointRepository.GetByIdAsync(AccountingPointId.Create(Guid.Parse(meteringPoint.MeteringPointId)))
-               .ConfigureAwait(false))!;
-        }
-
-        private async Task<MeteringPointCreated> SimulateIncomingMeteringPointCreatedEventWithTypeConsumptionAsync()
-        {
-            var meteringPoint = new MeteringPointCreated(
-                Guid.NewGuid().ToString(),
-                SampleData.GsrnNumber,
-                MeteringPointType.Consumption);
-
-            await GetService<IMediator>().Publish(meteringPoint).ConfigureAwait(false);
-
-            SaveChanges();
-
-            return meteringPoint;
-        }
-
         private async Task SimulateIncomingMeteringPointCreatedEventWithNoneAccountingPointTypeAsync()
         {
             var meteringPoint = new MeteringPointCreated(
