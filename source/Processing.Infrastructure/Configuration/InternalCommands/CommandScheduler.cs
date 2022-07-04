@@ -21,9 +21,10 @@ using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
 using Processing.Infrastructure.Configuration.Correlation;
 using Processing.Infrastructure.Configuration.DataAccess;
+using Processing.Infrastructure.InternalCommands;
 using Processing.Infrastructure.Transport;
 
-namespace Processing.Infrastructure.InternalCommands
+namespace Processing.Infrastructure.Configuration.InternalCommands
 {
     public class CommandScheduler : ICommandScheduler
     {
