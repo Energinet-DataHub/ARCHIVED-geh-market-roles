@@ -30,9 +30,6 @@ using Processing.Api.EventListeners;
 using Processing.Api.Monitor;
 using Processing.Api.MoveIn;
 using Processing.Application.ChangeOfSupplier;
-using Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails;
-using Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
-using Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
 using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.Common;
 using Processing.Application.Common.DomainEvents;
@@ -54,14 +51,10 @@ using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.DataAccess.AccountingPoints;
 using Processing.Infrastructure.Configuration.DataAccess.Consumers;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
-using Processing.Infrastructure.Configuration.DataAccess.ProcessManagers;
 using Processing.Infrastructure.Configuration.DomainEventDispatching;
 using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
 using Processing.Infrastructure.EDI;
-using Processing.Infrastructure.EDI.ChangeOfSupplier.ConsumerDetails;
-using Processing.Infrastructure.EDI.ChangeOfSupplier.EndOfSupplyNotification;
-using Processing.Infrastructure.EDI.ChangeOfSupplier.MeteringPointDetails;
 using Processing.Infrastructure.Integration.Notifications;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Transport.Protobuf;
@@ -133,7 +126,6 @@ namespace Processing.Api
             container.Register<ISystemDateTimeProvider, SystemDateTimeProvider>(Lifestyle.Scoped);
             container.Register<IAccountingPointRepository, AccountingPointRepository>(Lifestyle.Scoped);
             container.Register<IEnergySupplierRepository, EnergySupplierRepository>(Lifestyle.Scoped);
-            container.Register<IProcessManagerRepository, ProcessManagerRepository>(Lifestyle.Scoped);
             container.Register<IConsumerRepository, ConsumerRepository>(Lifestyle.Scoped);
             container.Register<IJsonSerializer, JsonSerializer>(Lifestyle.Scoped);
             container.Register<IDomainEventsAccessor, DomainEventsAccessor>(Lifestyle.Scoped);
@@ -176,11 +168,6 @@ namespace Processing.Api
                     .WithParser(() => Energinet.DataHub.MarketRoles.Contracts.MarketRolesEnvelope.Parser));
 
             container.SendProtobuf<Energinet.DataHub.EnergySupplying.IntegrationEvents.EnergySupplierChanged>(ApplicationAssemblies.Infrastructure);
-
-            // Actor Notification handlers
-            container.Register<IEndOfSupplyNotifier, EndOfSupplyNotifier>(Lifestyle.Scoped);
-            container.Register<IConsumerDetailsForwarder, ConsumerDetailsForwarder>(Lifestyle.Scoped);
-            container.Register<IMeteringPointDetailsForwarder, MeteringPointDetailsForwarder>(Lifestyle.Scoped);
 
             // Input validation(
             container.Register<IValidator<RequestChangeOfSupplier>, RequestChangeOfSupplierRuleSet>(Lifestyle.Scoped);

@@ -34,9 +34,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NodaTime;
 using Processing.Application.ChangeOfSupplier;
-using Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails;
-using Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
-using Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
 using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.Common;
 using Processing.Application.Common.Commands;
@@ -59,17 +56,11 @@ using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.DataAccess.AccountingPoints;
 using Processing.Infrastructure.Configuration.DataAccess.Consumers;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
-using Processing.Infrastructure.Configuration.DataAccess.ProcessManagers;
 using Processing.Infrastructure.Configuration.DomainEventDispatching;
 using Processing.Infrastructure.Configuration.EventPublishing;
-using Processing.Infrastructure.Configuration.InternalCommands;
 using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
 using Processing.Infrastructure.EDI;
-using Processing.Infrastructure.EDI.ChangeOfSupplier.ConsumerDetails;
-using Processing.Infrastructure.EDI.ChangeOfSupplier.EndOfSupplyNotification;
-using Processing.Infrastructure.EDI.ChangeOfSupplier.MeteringPointDetails;
-using Processing.Infrastructure.InternalCommands;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Transport;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
@@ -124,7 +115,6 @@ namespace Processing.IntegrationTests.Application
             _container.Register<IUnitOfWork, UnitOfWork>(Lifestyle.Scoped);
             _container.Register<IAccountingPointRepository, AccountingPointRepository>(Lifestyle.Scoped);
             _container.Register<IEnergySupplierRepository, EnergySupplierRepository>(Lifestyle.Scoped);
-            _container.Register<IProcessManagerRepository, ProcessManagerRepository>(Lifestyle.Scoped);
             _container.Register<IConsumerRepository, ConsumerRepository>(Lifestyle.Scoped);
             _container.Register<IJsonSerializer, JsonSerializer>(Lifestyle.Singleton);
             _container.Register<ISystemDateTimeProvider, SystemDateTimeProviderStub>(Lifestyle.Singleton);
@@ -155,11 +145,6 @@ namespace Processing.IntegrationTests.Application
                 typeof(ConsumerMovedIn).Assembly, // Domain
                 typeof(DocumentType).Assembly); // Infrastructure
 
-            // Actor Notification handlers
-            _container.Register<IEndOfSupplyNotifier, EndOfSupplyNotifier>(Lifestyle.Scoped);
-            _container.Register<IConsumerDetailsForwarder, ConsumerDetailsForwarder>(Lifestyle.Scoped);
-            _container.Register<IMeteringPointDetailsForwarder, MeteringPointDetailsForwarder>(Lifestyle.Scoped);
-
             _container.BuildMediator(
                 new[] { typeof(RequestChangeOfSupplierHandler).Assembly, typeof(PublishWhenEnergySupplierHasChanged).Assembly, },
                 new[]
@@ -185,7 +170,6 @@ namespace Processing.IntegrationTests.Application
             Mediator = _container.GetInstance<IMediator>();
             AccountingPointRepository = _container.GetInstance<IAccountingPointRepository>();
             EnergySupplierRepository = _container.GetInstance<IEnergySupplierRepository>();
-            ProcessManagerRepository = _container.GetInstance<IProcessManagerRepository>();
             ConsumerRepository = _container.GetInstance<IConsumerRepository>();
             UnitOfWork = _container.GetInstance<IUnitOfWork>();
             MarketRolesContext = _container.GetInstance<MarketRolesContext>();
@@ -204,8 +188,6 @@ namespace Processing.IntegrationTests.Application
         protected IEnergySupplierRepository EnergySupplierRepository { get; }
 
         protected IConsumerRepository ConsumerRepository { get; }
-
-        protected IProcessManagerRepository ProcessManagerRepository { get; }
 
         protected IUnitOfWork UnitOfWork { get; }
 
