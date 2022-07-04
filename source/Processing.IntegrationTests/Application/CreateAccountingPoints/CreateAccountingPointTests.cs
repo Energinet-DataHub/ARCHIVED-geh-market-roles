@@ -15,7 +15,6 @@
 using System;
 using System.Threading.Tasks;
 using Dapper;
-using MediatR;
 using Processing.Application.AccountingPoints;
 using Processing.Application.Common;
 using Processing.Domain.MeteringPoints;
@@ -49,28 +48,6 @@ namespace Processing.IntegrationTests.Application.CreateAccountingPoints
                     GsrnNumber = SampleData.GsrnNumber,
                     Type = MeteringPointType.Consumption.Id,
                 });
-        }
-
-        [Fact]
-        public async Task CreateAccountingPointCommandNotCreatedWhenMeteringPointTypeIsNotConsumptionOrProductionAsync()
-        {
-            await SimulateIncomingMeteringPointCreatedEventWithNoneAccountingPointTypeAsync().ConfigureAwait(false);
-
-            var command = await GetEnqueuedCommandAsync<Processing.Application.AccountingPoints.CreateAccountingPoint>();
-
-            Assert.Null(command);
-        }
-
-        private async Task SimulateIncomingMeteringPointCreatedEventWithNoneAccountingPointTypeAsync()
-        {
-            var meteringPoint = new MeteringPointCreated(
-                Guid.NewGuid().ToString(),
-                SampleData.GsrnNumber,
-                MeteringPointType.NoneAccountingPoint);
-
-            await GetService<IMediator>().Publish(meteringPoint).ConfigureAwait(false);
-
-            SaveChanges();
         }
     }
 }
