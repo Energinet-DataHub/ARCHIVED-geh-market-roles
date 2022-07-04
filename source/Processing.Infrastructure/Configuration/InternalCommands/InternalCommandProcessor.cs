@@ -21,7 +21,7 @@ using Polly;
 using Processing.Application.Common;
 using Processing.Infrastructure.Configuration.Serialization;
 
-namespace Processing.Infrastructure.InternalCommands
+namespace Processing.Infrastructure.Configuration.InternalCommands
 {
     public class InternalCommandProcessor
     {

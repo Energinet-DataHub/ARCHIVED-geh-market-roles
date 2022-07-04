@@ -18,7 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Processing.Infrastructure.Configuration.DataAccess;
 
-namespace Processing.Infrastructure.InternalCommands
+namespace Processing.Infrastructure.Configuration.InternalCommands
 {
     public class InternalCommandAccessor
     {

@@ -17,7 +17,7 @@ using NodaTime;
 using Processing.Application.Common.Commands;
 using Processing.Infrastructure.Configuration.Serialization;
 
-namespace Processing.Infrastructure.InternalCommands
+namespace Processing.Infrastructure.Configuration.InternalCommands
 {
     public class QueuedInternalCommand
     {

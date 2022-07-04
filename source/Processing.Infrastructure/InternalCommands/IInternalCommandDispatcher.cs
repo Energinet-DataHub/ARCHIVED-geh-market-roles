@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
+using Processing.Infrastructure.Configuration.InternalCommands;
 
 namespace Processing.Infrastructure.InternalCommands
 {

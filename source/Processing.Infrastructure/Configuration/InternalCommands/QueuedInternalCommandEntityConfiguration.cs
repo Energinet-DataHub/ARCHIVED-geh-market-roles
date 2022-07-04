@@ -16,7 +16,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Processing.Infrastructure.InternalCommands
+namespace Processing.Infrastructure.Configuration.InternalCommands
 {
     public class QueuedInternalCommandEntityConfiguration : IEntityTypeConfiguration<QueuedInternalCommand>
     {

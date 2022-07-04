@@ -20,7 +20,7 @@ using Processing.Application.Common.Commands;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 
-namespace Processing.Infrastructure.InternalCommands
+namespace Processing.Infrastructure.Configuration.InternalCommands
 {
     public class CommandExecutor
     {
