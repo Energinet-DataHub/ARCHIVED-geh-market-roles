@@ -108,6 +108,7 @@ namespace Processing.IntegrationTests.Application
             _container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 
             _container.AddOutbox();
+            _container.AddInternalCommandsProcessing();
 
             _container.SendProtobuf<MarketRolesEnvelope>();
             _container.ReceiveProtobuf<MarketRolesEnvelope>(
@@ -130,7 +131,6 @@ namespace Processing.IntegrationTests.Application
             _container.Register<IDomainEventsAccessor, DomainEventsAccessor>();
             _container.Register<IDomainEventsDispatcher, DomainEventsDispatcher>();
             _container.Register<IDomainEventPublisher, DomainEventPublisher>();
-            _container.Register<ICommandScheduler, CommandScheduler>(Lifestyle.Scoped);
             _container.Register<IDbConnectionFactory>(() => new SqlDbConnectionFactory(_connectionString));
             _container.Register<ICorrelationContext, CorrelationContext>(Lifestyle.Scoped);
 

@@ -13,9 +13,9 @@
 // limitations under the License.
 
 using System;
+using Processing.Application.AccountingPoint;
 using Processing.Application.Common.Commands;
 using Processing.Infrastructure.Configuration.InternalCommands;
-using Processing.Infrastructure.InternalCommands;
 using SimpleInjector;
 
 namespace Processing.Infrastructure.Configuration
@@ -27,6 +27,15 @@ namespace Processing.Infrastructure.Configuration
             if (container == null) throw new ArgumentNullException(nameof(container));
             container.Register<CommandSchedulerFacade>(Lifestyle.Scoped);
             container.Register<ICommandScheduler, CommandScheduler>(Lifestyle.Scoped);
+            RegisterCommands(container);
+        }
+
+        private static void RegisterCommands(Container container)
+        {
+            var mapper = new InternalCommandMapper();
+            mapper.Add("CreateAccountingPoint", typeof(CreateAccountingPoint));
+
+            container.Register<InternalCommandMapper>(() => mapper, Lifestyle.Singleton);
         }
     }
 }
