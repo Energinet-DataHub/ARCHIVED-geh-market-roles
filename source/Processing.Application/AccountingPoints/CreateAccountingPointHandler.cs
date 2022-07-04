@@ -40,22 +40,16 @@ namespace Processing.Application.AccountingPoints
             var gsrnNumber = GsrnNumber.Create(request.GsrnNumber);
             var meteringPointType = EnumerationType.FromName<MeteringPointType>(request.MeteringPointType);
 
-            if (meteringPointType == MeteringPointType.Consumption)
-            {
-                _accountingPointRepository.Add(
-                    Domain.MeteringPoints.AccountingPoint.CreateConsumption(
-                        accountingPointId,
-                        gsrnNumber));
-            }
-            else if (meteringPointType == MeteringPointType.Production)
-            {
-                _accountingPointRepository.Add(
-                    Domain.MeteringPoints.AccountingPoint.CreateProduction(
-                        accountingPointId,
-                        gsrnNumber,
-                        true));
-            }
+            var meteringPoint = meteringPointType == MeteringPointType.Consumption
+                ? AccountingPoint.CreateConsumption(
+                    accountingPointId,
+                    gsrnNumber)
+                : AccountingPoint.CreateProduction(
+                    accountingPointId,
+                    gsrnNumber,
+                    true);
 
+            _accountingPointRepository.Add(meteringPoint);
             return Task.FromResult(Unit.Value);
         }
     }
