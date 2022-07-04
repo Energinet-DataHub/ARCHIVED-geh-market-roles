@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
-using NodaTime;
-using Processing.Domain.MeteringPoints;
 
 namespace Processing.Application.Common.Commands
 {
@@ -27,19 +25,8 @@ namespace Processing.Application.Common.Commands
         /// Schedules or enqueues a command
         /// </summary>
         /// <param name="command"></param>
-        /// <param name="businessProcessId"></param>
-        /// <param name="scheduleDate"></param>
         /// <typeparam name="TCommand"><see cref="InternalCommand"/></typeparam>
-        Task EnqueueAsync<TCommand>(TCommand command, BusinessProcessId businessProcessId, Instant? scheduleDate)
-            where TCommand : InternalCommand;
-
-        /// <summary>
-        /// Schedules or enqueues a command
-        /// </summary>
-        /// <param name="command"></param>
-        /// <param name="scheduleDate"></param>
-        /// <typeparam name="TCommand"><see cref="InternalCommand"/></typeparam>
-        Task EnqueueAsync<TCommand>(TCommand command, Instant? scheduleDate = null)
+        Task EnqueueAsync<TCommand>(TCommand command)
             where TCommand : InternalCommand;
     }
 }

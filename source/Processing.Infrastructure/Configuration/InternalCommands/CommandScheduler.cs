@@ -13,54 +13,39 @@
 // limitations under the License.
 
 using System;
-using System.Threading;
 using System.Threading.Tasks;
-using NodaTime;
 using Processing.Application.Common.Commands;
-using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
 using Processing.Infrastructure.Configuration.Correlation;
 using Processing.Infrastructure.Configuration.DataAccess;
+using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.InternalCommands;
-using Processing.Infrastructure.Transport;
 
 namespace Processing.Infrastructure.Configuration.InternalCommands
 {
     public class CommandScheduler : ICommandScheduler
     {
         private readonly MarketRolesContext _context;
-        private readonly MessageSerializer _serializer;
+        private readonly IJsonSerializer _serializer;
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
-        private readonly ICorrelationContext _correlationContext;
+        private readonly InternalCommandMapper _internalCommandMapper;
 
-        public CommandScheduler(MarketRolesContext context, MessageSerializer serializer, ISystemDateTimeProvider systemDateTimeProvider, ICorrelationContext correlationContext)
+        public CommandScheduler(MarketRolesContext context, IJsonSerializer serializer, ISystemDateTimeProvider systemDateTimeProvider, ICorrelationContext correlationContext, InternalCommandMapper internalCommandMapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
             _systemDateTimeProvider = systemDateTimeProvider ?? throw new ArgumentNullException(nameof(systemDateTimeProvider));
-            _correlationContext = correlationContext ?? throw new ArgumentNullException(nameof(correlationContext));
+            _internalCommandMapper = internalCommandMapper;
         }
 
-        public async Task EnqueueAsync<TCommand>(TCommand command, BusinessProcessId businessProcessId, Instant? scheduleDate)
-            where TCommand : InternalCommand
-        {
-            if (command == null) throw new ArgumentNullException(nameof(command));
-            if (businessProcessId == null) throw new ArgumentNullException(nameof(businessProcessId));
-
-            var data = await _serializer.ToBytesAsync(command, CancellationToken.None).ConfigureAwait(false);
-            var type = command.GetType().FullName;
-            var queuedCommand = new QueuedInternalCommand(command.Id, type!, data, _systemDateTimeProvider.Now(), businessProcessId.Value, scheduleDate!, _correlationContext.AsTraceContext());
-            await _context.QueuedInternalCommands.AddAsync(queuedCommand).ConfigureAwait(false);
-        }
-
-        public async Task EnqueueAsync<TCommand>(TCommand command, Instant? scheduleDate = null)
+        public async Task EnqueueAsync<TCommand>(TCommand command)
             where TCommand : InternalCommand
         {
             if (command == null) throw new ArgumentNullException(nameof(command));
 
-            var data = await _serializer.ToBytesAsync(command, CancellationToken.None).ConfigureAwait(false);
-            var type = command.GetType().FullName;
-            var queuedCommand = new QueuedInternalCommand(command.Id, type!, data, _systemDateTimeProvider.Now(), scheduleDate!, _correlationContext.Id);
+            var data = _serializer.Serialize(command);
+            var commandMetadata = _internalCommandMapper.GetByType(command.GetType());
+            var queuedCommand = new QueuedInternalCommand(command.Id, commandMetadata.CommandName, data, _systemDateTimeProvider.Now());
             await _context.QueuedInternalCommands.AddAsync(queuedCommand).ConfigureAwait(false);
         }
     }

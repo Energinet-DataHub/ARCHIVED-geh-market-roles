@@ -12,19 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
 
-namespace Processing.Infrastructure.InternalCommands
+namespace Processing.IntegrationTests.Infrastructure.Configuration.InternalCommands
 {
-    /// <summary>
-    /// Service for dispatching of queued internal commands
-    /// </summary>
-    public interface IInternalCommandProcessor
+    public class TestCommandHandler : IRequestHandler<TestCommand, Unit>
     {
-        /// <summary>
-        /// Dispatch all undispatched internal commands
-        /// </summary>
-        /// <returns><see cref="Task"/></returns>
-        Task ProcessUndispatchedAsync();
+        public Task<Unit> Handle(TestCommand request, CancellationToken cancellationToken)
+        {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+            if (request.ThrowException)
+            {
+                throw new InvalidOperationException("This is a test exception");
+            }
+
+            return Unit.Task;
+        }
     }
 }

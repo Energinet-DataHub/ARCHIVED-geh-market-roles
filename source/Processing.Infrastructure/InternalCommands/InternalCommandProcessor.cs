@@ -13,43 +13,96 @@
 // limitations under the License.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
+using Dapper;
+using Microsoft.Extensions.Logging;
+using Polly;
 using Processing.Application.Common;
-using Processing.Domain.SeedWork;
+using Processing.Infrastructure.Configuration.Serialization;
 
 namespace Processing.Infrastructure.InternalCommands
 {
-    public class InternalCommandProcessor : IInternalCommandProcessor
+    public class InternalCommandProcessor
     {
-        private readonly IInternalCommandAccessor _internalCommandAccessor;
-        private readonly IInternalCommandDispatcher _internalCommandDispatcher;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ISystemDateTimeProvider _systemDateTimeProvider;
+        private readonly InternalCommandAccessor _internalCommandAccessor;
+        private readonly IJsonSerializer _serializer;
+        private readonly CommandExecutor _commandExecutor;
+        private readonly ILogger<InternalCommandProcessor> _logger;
+        private readonly IDbConnectionFactory _connectionFactory;
 
-        public InternalCommandProcessor(IInternalCommandAccessor internalCommandAccessor, IInternalCommandDispatcher internalCommandDispatcher, IUnitOfWork unitOfWork, ISystemDateTimeProvider systemDateTimeProvider)
+        public InternalCommandProcessor(InternalCommandAccessor internalCommandAccessor, IJsonSerializer serializer, CommandExecutor commandExecutor, ILogger<InternalCommandProcessor> logger, IDbConnectionFactory connectionFactory)
         {
             _internalCommandAccessor = internalCommandAccessor ?? throw new ArgumentNullException(nameof(internalCommandAccessor));
-            _internalCommandDispatcher = internalCommandDispatcher ?? throw new ArgumentNullException(nameof(internalCommandDispatcher));
-            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            _systemDateTimeProvider = systemDateTimeProvider ?? throw new ArgumentNullException(nameof(systemDateTimeProvider));
+            _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
+            _commandExecutor = commandExecutor ?? throw new ArgumentNullException(nameof(commandExecutor));
+            _logger = logger;
+            _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
         }
 
-        public async Task ProcessUndispatchedAsync()
+        public async Task ProcessPendingAsync()
         {
-            var undispatchedCommands = await _internalCommandAccessor.GetUndispatchedAsync().ConfigureAwait(false);
+            var pendingCommands = await _internalCommandAccessor.GetPendingAsync().ConfigureAwait(false);
 
-            foreach (var queuedCommand in undispatchedCommands)
-            {
-                var dispatchResult = await _internalCommandDispatcher.DispatchAsync(queuedCommand).ConfigureAwait(false);
-                queuedCommand.SetDispatched(_systemDateTimeProvider.Now());
-
-                if (dispatchResult.SequenceId != default(long))
+            var executionPolicy = Policy
+                .Handle<Exception>()
+                .WaitAndRetryAsync(new[]
                 {
-                    queuedCommand.SetSequenceId(dispatchResult.SequenceId);
-                }
+                    TimeSpan.FromSeconds(2),
+                });
 
-                await _unitOfWork.CommitAsync().ConfigureAwait(false);
+            foreach (var queuedCommand in pendingCommands)
+            {
+                var result = await executionPolicy.ExecuteAndCaptureAsync(() =>
+                    ExecuteCommandAsync(queuedCommand)).ConfigureAwait(false);
+
+                if (result.Outcome == OutcomeType.Failure)
+                {
+                    var exception = result.FinalException.ToString();
+                    await MarkAsFailedAsync(queuedCommand, exception).ConfigureAwait(false);
+                    _logger?.Log(LogLevel.Error, $"Failed to process internal command {queuedCommand.Id}", exception);
+                }
+                else
+                {
+                    await MarkAsProcessedAsync(queuedCommand).ConfigureAwait(false);
+                }
             }
+        }
+
+        private Task ExecuteCommandAsync(QueuedInternalCommand queuedInternalCommand)
+        {
+            var command = queuedInternalCommand.ToCommand(_serializer);
+            return _commandExecutor.ExecuteAsync(command, CancellationToken.None);
+        }
+
+        private Task MarkAsFailedAsync(QueuedInternalCommand queuedCommand, string exception)
+        {
+            var connection = _connectionFactory.GetOpenConnection();
+            return connection.ExecuteScalarAsync(
+                "UPDATE [dbo].[QueuedInternalCommands] " +
+                "SET ProcessedDate = @NowDate, " +
+                "ErrorMessage = @Error " +
+                "WHERE [Id] = @Id",
+                new
+                {
+                    NowDate = DateTime.UtcNow,
+                    Error = exception,
+                    queuedCommand.Id,
+                });
+        }
+
+        private Task MarkAsProcessedAsync(QueuedInternalCommand queuedCommand)
+        {
+            var connection = _connectionFactory.GetOpenConnection();
+            return connection.ExecuteScalarAsync(
+                "UPDATE [dbo].[QueuedInternalCommands] " +
+                "SET ProcessedDate = @NowDate " +
+                "WHERE [Id] = @Id",
+                new
+                {
+                    NowDate = DateTime.UtcNow,
+                    queuedCommand.Id,
+                });
         }
     }
 }

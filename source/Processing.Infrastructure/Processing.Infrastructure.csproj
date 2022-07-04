@@ -36,6 +36,7 @@ limitations under the License.
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
     <PackageReference Include="NodaTime" Version="3.0.10" />
     <PackageReference Include="NodaTime.Serialization.SystemTextJson" Version="1.0.0" />
+    <PackageReference Include="Polly" Version="7.2.2" />
     <PackageReference Include="SimpleInjector" Version="5.3.3" />
     <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="6.0.1" />
   </ItemGroup>

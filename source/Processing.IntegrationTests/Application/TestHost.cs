@@ -38,7 +38,6 @@ using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.Common;
 using Processing.Application.Common.Commands;
 using Processing.Application.Common.DomainEvents;
-using Processing.Application.Common.Processing;
 using Processing.Application.Common.Queries;
 using Processing.Application.EDI;
 using Processing.Application.MoveIn;
@@ -58,6 +57,7 @@ using Processing.Infrastructure.Configuration.DataAccess.Consumers;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
 using Processing.Infrastructure.Configuration.DomainEventDispatching;
 using Processing.Infrastructure.Configuration.EventPublishing;
+using Processing.Infrastructure.Configuration.InternalCommands;
 using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
 using Processing.Infrastructure.EDI;
@@ -94,6 +94,8 @@ namespace Processing.IntegrationTests.Application
 
             _container = new Container();
             var serviceCollection = new ServiceCollection();
+
+            serviceCollection.AddLogging();
 
             _container = new Container();
             _container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
@@ -259,23 +261,21 @@ namespace Processing.IntegrationTests.Application
             return GetService<IMediator>().Send(query, CancellationToken.None);
         }
 
-        protected async Task<TCommand?> GetEnqueuedCommandAsync<TCommand>(BusinessProcessId businessProcessId)
+        protected Task<TCommand?> GetEnqueuedCommandAsync<TCommand>()
         {
-            var type = typeof(TCommand).FullName;
+            var commandMapper = GetService<InternalCommandMapper>();
+            var commandMetadata = commandMapper.GetByType(typeof(TCommand));
             var queuedCommand = MarketRolesContext.QueuedInternalCommands
-                .FirstOrDefault(queuedInternalCommand =>
-                    queuedInternalCommand.BusinessProcessId.Equals(businessProcessId.Value) &&
-#pragma warning disable CA1309 // Warns about: "Use ordinal string comparison", but we want EF to take care of this.
-                    queuedInternalCommand.Type.Equals(type));
+                .FirstOrDefault(queuedInternalCommand => queuedInternalCommand.Type == commandMetadata.CommandName);
 
             if (queuedCommand is null)
             {
-                return default;
+                return Task.FromResult<TCommand?>(default);
             }
 
-            var messageExtractor = GetService<MessageExtractor>();
-            var command = await messageExtractor.ExtractAsync(queuedCommand!.Data).ConfigureAwait(false);
-            return (TCommand)command;
+            var serializer = GetService<IJsonSerializer>();
+            var command = (TCommand)serializer.Deserialize(queuedCommand.Data, commandMetadata.CommandType);
+            return Task.FromResult<TCommand?>(command);
         }
 
         protected Consumer CreateConsumer()

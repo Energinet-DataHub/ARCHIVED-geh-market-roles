@@ -33,8 +33,7 @@ namespace Processing.IntegrationTests.Application.CreateAccountingPoint
         {
             var meteringPoint = await SimulateIncomingMeteringPointCreatedEventWithTypeConsumptionAsync().ConfigureAwait(false);
             var command =
-                await GetEnqueuedCommandAsync<Processing.Application.AccountingPoint.CreateAccountingPoint>(
-                    BusinessProcessId.Create("00000000-0000-0000-0000-000000000000"));
+                await GetEnqueuedCommandAsync<Processing.Application.AccountingPoint.CreateAccountingPoint>();
 
             await InvokeCommandAsync(command!).ConfigureAwait(false);
 
@@ -46,8 +45,7 @@ namespace Processing.IntegrationTests.Application.CreateAccountingPoint
         {
             await SimulateIncomingMeteringPointCreatedEventWithNoneAccountingPointTypeAsync().ConfigureAwait(false);
 
-            var command = await GetEnqueuedCommandAsync<Processing.Application.AccountingPoint.CreateAccountingPoint>(
-                BusinessProcessId.Create("00000000-0000-0000-0000-000000000000"));
+            var command = await GetEnqueuedCommandAsync<Processing.Application.AccountingPoint.CreateAccountingPoint>();
 
             Assert.Null(command);
         }

@@ -12,20 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Immutable;
-using System.Threading.Tasks;
+using System;
+using System.Text.Json.Serialization;
+using Processing.Application.Common.Commands;
 
-namespace Processing.Infrastructure.InternalCommands
+namespace Processing.IntegrationTests.Infrastructure.Configuration.InternalCommands
 {
-    /// <summary>
-    /// Access provider for queued internal commands
-    /// </summary>
-    public interface IInternalCommandAccessor
+    public class TestCommand : InternalCommand
     {
-        /// <summary>
-        /// Returns all queued internal commands that have not been marked as dispatched
-        /// </summary>
-        /// <returns><see cref="QueuedInternalCommand"/></returns>
-        Task<ImmutableList<QueuedInternalCommand>> GetUndispatchedAsync();
+        [JsonConstructor]
+        public TestCommand(Guid id, bool throwException)
+            : base()
+        {
+            ThrowException = throwException;
+        }
+
+        public TestCommand(bool throwException = false)
+        {
+            ThrowException = throwException;
+        }
+
+        public bool ThrowException { get; }
     }
 }

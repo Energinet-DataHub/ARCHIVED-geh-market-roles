@@ -14,66 +14,41 @@
 
 using System;
 using NodaTime;
+using Processing.Application.Common.Commands;
+using Processing.Infrastructure.Configuration.Serialization;
 
 namespace Processing.Infrastructure.InternalCommands
 {
     public class QueuedInternalCommand
     {
-        public QueuedInternalCommand(Guid id, string type, byte[] data, Instant creationDate, Guid businessProcessId, Instant? scheduleDate, string correlation)
+        public QueuedInternalCommand(Guid id, string type, string data, Instant creationDate)
         {
             Id = id;
             Type = type;
             Data = data;
             CreationDate = creationDate;
-            ScheduleDate = scheduleDate;
-            CorrelationId = correlation;
-            BusinessProcessId = businessProcessId;
-        }
-
-        public QueuedInternalCommand(Guid id, string type, byte[] data, Instant creationDate, Instant? scheduleDate, string correlationId)
-        {
-            Id = id;
-            Type = type;
-            Data = data;
-            CreationDate = creationDate;
-            ScheduleDate = scheduleDate;
-            CorrelationId = correlationId;
         }
 
         public Guid Id { get; }
 
-        public string Type { get;  } = string.Empty;
+        public string Type { get; }
 
-        #pragma warning disable CA1819 // Properties should not return arrays
-        public byte[] Data { get; }
+        public string Data { get; }
 
         public Instant CreationDate { get; private set; }
 
-        public Instant? ScheduleDate { get; private set; }
-
         public Instant? ProcessedDate { get; set; }
-
-        public Guid BusinessProcessId { get; private set; }
-
-        public Instant? DispatchedDate { get; private set; }
-
-        public long SequenceId { get; private set; }
-
-        public string CorrelationId { get; }
 
         public void SetProcessed(Instant now)
         {
             ProcessedDate = now;
         }
 
-        public void SetDispatched(Instant now)
+        public InternalCommand ToCommand(IJsonSerializer serializer)
         {
-            DispatchedDate = now;
-        }
-
-        public void SetSequenceId(long sequenceId)
-        {
-            SequenceId = sequenceId;
+            if (serializer == null) throw new ArgumentNullException(nameof(serializer));
+            var storedCommandType = System.Type.GetType(Type, true);
+            return (InternalCommand)serializer.Deserialize(Data, storedCommandType!);
         }
     }
 }

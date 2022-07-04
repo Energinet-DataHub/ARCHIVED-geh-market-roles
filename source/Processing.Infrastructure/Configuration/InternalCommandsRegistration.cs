@@ -17,6 +17,7 @@ using Processing.Application.AccountingPoint;
 using Processing.Application.Common.Commands;
 using Processing.Application.MoveIn.Processing;
 using Processing.Infrastructure.Configuration.InternalCommands;
+using Processing.Infrastructure.InternalCommands;
 using SimpleInjector;
 
 namespace Processing.Infrastructure.Configuration
@@ -28,6 +29,9 @@ namespace Processing.Infrastructure.Configuration
             if (container == null) throw new ArgumentNullException(nameof(container));
             container.Register<CommandSchedulerFacade>(Lifestyle.Scoped);
             container.Register<ICommandScheduler, CommandScheduler>(Lifestyle.Scoped);
+            container.Register<InternalCommandProcessor>(Lifestyle.Scoped);
+            container.Register<InternalCommandAccessor>(Lifestyle.Scoped);
+            container.Register<CommandExecutor>(Lifestyle.Scoped);
             RegisterCommands(container);
         }
 

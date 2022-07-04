@@ -20,7 +20,7 @@ using Processing.Infrastructure.Configuration.DataAccess;
 
 namespace Processing.Infrastructure.InternalCommands
 {
-    public class InternalCommandAccessor : IInternalCommandAccessor
+    public class InternalCommandAccessor
     {
         private readonly MarketRolesContext _context;
 
@@ -29,10 +29,10 @@ namespace Processing.Infrastructure.InternalCommands
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public Task<ImmutableList<QueuedInternalCommand>> GetUndispatchedAsync()
+        public Task<ImmutableList<QueuedInternalCommand>> GetPendingAsync()
         {
             return Task.FromResult(_context.QueuedInternalCommands
-                .Where(queuedCommand => queuedCommand.DispatchedDate == null)
+                .Where(queuedCommand => queuedCommand.ProcessedDate == null)
                 .ToImmutableList());
         }
     }
