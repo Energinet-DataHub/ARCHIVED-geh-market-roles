@@ -56,7 +56,7 @@ public class MeteringPointCreatedListener
             return _commandScheduler.EnqueueAsync(command);
         }
 
-        _logger.LogInformation($"Metering point type {meteringPointCreatedEvent.MeteringPointType.ToString()} is not an accouting point type. Accounting point creation is skipped.");
+        _logger.LogInformation($"Metering point type {meteringPointCreatedEvent.MeteringPointType.ToString()} is not an accounting point type. Accounting point creation is skipped.");
         return Task.CompletedTask;
     }
 
