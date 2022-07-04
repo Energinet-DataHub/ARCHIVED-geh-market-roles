@@ -19,7 +19,6 @@ using Processing.Domain.SeedWork;
 using Processing.Infrastructure.Configuration.Correlation;
 using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.Serialization;
-using Processing.Infrastructure.InternalCommands;
 
 namespace Processing.Infrastructure.Configuration.InternalCommands
 {

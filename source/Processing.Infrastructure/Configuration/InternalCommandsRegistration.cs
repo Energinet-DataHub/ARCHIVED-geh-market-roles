@@ -17,7 +17,6 @@ using Processing.Application.AccountingPoint;
 using Processing.Application.Common.Commands;
 using Processing.Application.MoveIn.Processing;
 using Processing.Infrastructure.Configuration.InternalCommands;
-using Processing.Infrastructure.InternalCommands;
 using SimpleInjector;
 
 namespace Processing.Infrastructure.Configuration

@@ -18,7 +18,6 @@ using Dapper;
 using Processing.Application.Common;
 using Processing.Application.Common.Commands;
 using Processing.Infrastructure.Configuration.InternalCommands;
-using Processing.Infrastructure.InternalCommands;
 using Processing.IntegrationTests.Application;
 using Xunit;
 using Xunit.Categories;
