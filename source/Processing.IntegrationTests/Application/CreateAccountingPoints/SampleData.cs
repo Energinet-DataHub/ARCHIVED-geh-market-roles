@@ -12,23 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Processing.Application.Common.Commands;
-
-namespace Processing.Application.AccountingPoints
+namespace Processing.IntegrationTests.Application.CreateAccountingPoints
 {
-    public class CreateAccountingPoint : InternalCommand
+    public static class SampleData
     {
-        public CreateAccountingPoint(string meteringPointId, string gsrnNumber, string meteringPointType)
-        {
-            AccountingPointId = meteringPointId;
-            GsrnNumber = gsrnNumber;
-            MeteringPointType = meteringPointType;
-        }
-
-        public string GsrnNumber { get; }
-
-        public string MeteringPointType { get; }
-
-        public string AccountingPointId { get; }
+        public static string GsrnNumber => "571234567891234568";
     }
 }

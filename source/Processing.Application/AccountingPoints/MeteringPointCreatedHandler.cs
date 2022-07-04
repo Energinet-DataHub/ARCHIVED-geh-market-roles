@@ -18,9 +18,8 @@ using System.Threading.Tasks;
 using MediatR;
 using Processing.Application.Common.Commands;
 using Processing.Domain.MeteringPoints;
-using Processing.Domain.SeedWork;
 
-namespace Processing.Application.AccountingPoint
+namespace Processing.Application.AccountingPoints
 {
     public class MeteringPointCreatedHandler : INotificationHandler<MeteringPointCreated>
     {

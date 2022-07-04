@@ -14,12 +14,14 @@
 
 using System;
 using System.Threading.Tasks;
+using Dapper;
 using MediatR;
-using Processing.Application.AccountingPoint;
+using Processing.Application.AccountingPoints;
+using Processing.Application.Common;
 using Processing.Domain.MeteringPoints;
 using Xunit;
 
-namespace Processing.IntegrationTests.Application.CreateAccountingPoint
+namespace Processing.IntegrationTests.Application.CreateAccountingPoints
 {
     public class CreateAccountingPointTests : TestHost
     {
@@ -29,11 +31,32 @@ namespace Processing.IntegrationTests.Application.CreateAccountingPoint
         }
 
         [Fact]
+        public async Task Can_create_accounting_point()
+        {
+            var command = new CreateAccountingPoint(
+                Guid.NewGuid().ToString(),
+                SampleData.GsrnNumber,
+                MeteringPointType.Consumption.Name);
+
+            await InvokeCommandAsync(command).ConfigureAwait(false);
+
+            var checkStatement =
+                $"SELECT COUNT(1) FROM [dbo].[AccountingPoints] WHERE GsrnNumber = @GsrnNumber AND Type = @Type";
+            var found = GetService<IDbConnectionFactory>().GetOpenConnection().ExecuteScalar<bool>(
+                checkStatement,
+                new
+                {
+                    GsrnNumber = SampleData.GsrnNumber,
+                    Type = MeteringPointType.Consumption.Id,
+                });
+        }
+
+        [Fact]
         public async Task CreateAccountingPointCommandNotCreatedWhenMeteringPointTypeIsNotConsumptionOrProductionAsync()
         {
             await SimulateIncomingMeteringPointCreatedEventWithNoneAccountingPointTypeAsync().ConfigureAwait(false);
 
-            var command = await GetEnqueuedCommandAsync<Processing.Application.AccountingPoint.CreateAccountingPoint>();
+            var command = await GetEnqueuedCommandAsync<Processing.Application.AccountingPoints.CreateAccountingPoint>();
 
             Assert.Null(command);
         }

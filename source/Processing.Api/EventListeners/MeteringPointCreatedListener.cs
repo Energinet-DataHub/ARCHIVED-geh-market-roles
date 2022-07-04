@@ -16,7 +16,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using Processing.Application.AccountingPoint;
+using Processing.Application.AccountingPoints;
 using Processing.Domain.MeteringPoints;
 using Processing.Infrastructure.Configuration.InternalCommands;
 using MeteringPointCreated = Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts.MeteringPointCreated;

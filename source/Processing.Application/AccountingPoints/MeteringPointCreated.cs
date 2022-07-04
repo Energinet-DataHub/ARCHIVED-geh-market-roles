@@ -16,7 +16,7 @@ using MediatR;
 using Processing.Application.Common.Transport;
 using Processing.Domain.MeteringPoints;
 
-namespace Processing.Application.AccountingPoint
+namespace Processing.Application.AccountingPoints
 {
     public record MeteringPointCreated(
             string MeteringPointId,

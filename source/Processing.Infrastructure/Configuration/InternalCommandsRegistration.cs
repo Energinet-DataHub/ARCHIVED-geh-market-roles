@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System;
-using Processing.Application.AccountingPoint;
+using Processing.Application.AccountingPoints;
 using Processing.Application.Common.Commands;
 using Processing.Application.MoveIn.Processing;
 using Processing.Infrastructure.Configuration.InternalCommands;
