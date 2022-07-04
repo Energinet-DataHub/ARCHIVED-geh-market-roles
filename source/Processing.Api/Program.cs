@@ -122,6 +122,7 @@ namespace Processing.Api
             base.ConfigureContainer(container);
 
             container.AddOutbox();
+            container.AddInternalCommandsProcessing();
 
             container.Register<CorrelationIdMiddleware>(Lifestyle.Scoped);
             container.Register<ICorrelationContext, CorrelationContext>(Lifestyle.Scoped);
