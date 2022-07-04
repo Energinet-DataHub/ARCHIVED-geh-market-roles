@@ -35,7 +35,6 @@ using Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification
 using Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
 using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.Common;
-using Processing.Application.Common.Commands;
 using Processing.Application.Common.DomainEvents;
 using Processing.Application.Common.Processing;
 using Processing.Application.EDI;
@@ -64,7 +63,6 @@ using Processing.Infrastructure.EDI.ChangeOfSupplier.ConsumerDetails;
 using Processing.Infrastructure.EDI.ChangeOfSupplier.EndOfSupplyNotification;
 using Processing.Infrastructure.EDI.ChangeOfSupplier.MeteringPointDetails;
 using Processing.Infrastructure.Integration.Notifications;
-using Processing.Infrastructure.InternalCommands;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Transport.Protobuf;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
@@ -138,7 +136,6 @@ namespace Processing.Api
             container.Register<IProcessManagerRepository, ProcessManagerRepository>(Lifestyle.Scoped);
             container.Register<IConsumerRepository, ConsumerRepository>(Lifestyle.Scoped);
             container.Register<IJsonSerializer, JsonSerializer>(Lifestyle.Scoped);
-            container.Register<ICommandScheduler, CommandScheduler>(Lifestyle.Scoped);
             container.Register<IDomainEventsAccessor, DomainEventsAccessor>(Lifestyle.Scoped);
             container.Register<IDomainEventsDispatcher, DomainEventsDispatcher>(Lifestyle.Scoped);
             container.Register<IDomainEventPublisher, DomainEventPublisher>(Lifestyle.Scoped);

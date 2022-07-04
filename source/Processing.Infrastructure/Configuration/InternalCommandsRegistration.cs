@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using System;
+using Processing.Application.Common.Commands;
 using Processing.Infrastructure.Configuration.InternalCommands;
+using Processing.Infrastructure.InternalCommands;
 using SimpleInjector;
 
 namespace Processing.Infrastructure.Configuration
@@ -24,6 +26,7 @@ namespace Processing.Infrastructure.Configuration
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
             container.Register<CommandSchedulerFacade>(Lifestyle.Scoped);
+            container.Register<ICommandScheduler, CommandScheduler>(Lifestyle.Scoped);
         }
     }
 }
