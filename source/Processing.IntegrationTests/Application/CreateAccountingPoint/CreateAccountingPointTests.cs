@@ -29,18 +29,6 @@ namespace Processing.IntegrationTests.Application.CreateAccountingPoint
         }
 
         [Fact]
-        public async Task PendingCreateAccountingPointCommandProcessedAsync()
-        {
-            var meteringPoint = await SimulateIncomingMeteringPointCreatedEventWithTypeConsumptionAsync().ConfigureAwait(false);
-            var command =
-                await GetEnqueuedCommandAsync<Processing.Application.AccountingPoint.CreateAccountingPoint>();
-
-            await InvokeCommandAsync(command!).ConfigureAwait(false);
-
-            await AssertAccountingPointAsync(meteringPoint).ConfigureAwait(false);
-        }
-
-        [Fact]
         public async Task CreateAccountingPointCommandNotCreatedWhenMeteringPointTypeIsNotConsumptionOrProductionAsync()
         {
             await SimulateIncomingMeteringPointCreatedEventWithNoneAccountingPointTypeAsync().ConfigureAwait(false);
