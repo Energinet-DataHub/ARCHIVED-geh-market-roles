@@ -68,10 +68,7 @@ public class ProcessPendingProcesses : INotificationHandler<DayHasPassed>
                 pendingBusinessProcess.AccountingPointId,
                 pendingBusinessProcess.ProcessId.ToString());
             await _commandScheduler
-                .EnqueueAsync(
-                    command,
-                    BusinessProcessId.Create(pendingBusinessProcess.ProcessId),
-                    null).ConfigureAwait(false);
+                .EnqueueAsync(command).ConfigureAwait(false);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
     }

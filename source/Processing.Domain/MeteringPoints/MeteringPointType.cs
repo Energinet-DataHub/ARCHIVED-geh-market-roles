@@ -18,11 +18,10 @@ namespace Processing.Domain.MeteringPoints
 {
     public class MeteringPointType : EnumerationType
     {
-        public static readonly MeteringPointType Consumption = new MeteringPointType(0, nameof(Consumption));
-        public static readonly MeteringPointType Production = new MeteringPointType(1, nameof(Production));
-        public static readonly MeteringPointType NoneAccountingPoint = new MeteringPointType(2, nameof(NoneAccountingPoint));
+        public static readonly MeteringPointType Consumption = new(0, nameof(Consumption));
+        public static readonly MeteringPointType Production = new(1, nameof(Production));
 
-        public MeteringPointType(int id, string name)
+        private MeteringPointType(int id, string name)
             : base(id, name)
         {
         }
