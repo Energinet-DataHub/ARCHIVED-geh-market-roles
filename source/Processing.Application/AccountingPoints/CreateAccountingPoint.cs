@@ -12,12 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Text.Json.Serialization;
 using Processing.Application.Common.Commands;
 
 namespace Processing.Application.AccountingPoints
 {
     public class CreateAccountingPoint : InternalCommand
     {
+        [JsonConstructor]
+        public CreateAccountingPoint(string gsrnNumber, string meteringPointType, string accountingPointId, Guid id)
+        {
+            GsrnNumber = gsrnNumber;
+            MeteringPointType = meteringPointType;
+            AccountingPointId = accountingPointId;
+            Id = id;
+        }
+
         public CreateAccountingPoint(string meteringPointId, string gsrnNumber, string meteringPointType)
         {
             AccountingPointId = meteringPointId;
