@@ -37,16 +37,4 @@ limitations under the License.
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\Processing.Domain\Processing.Domain.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-	<Protobuf Include="**/*.proto">
-      <GrpcServices>None</GrpcServices>
-      <Access>Public</Access>
-      <ProtoCompile>True</ProtoCompile>
-      <CompileOutputs>True</CompileOutputs>
-      <OutputDir>..\IntegrationEvents\source\</OutputDir>
-      <Generator>MSBuild:Compile</Generator>
-    </Protobuf>
-  </ItemGroup>
-
 </Project>
