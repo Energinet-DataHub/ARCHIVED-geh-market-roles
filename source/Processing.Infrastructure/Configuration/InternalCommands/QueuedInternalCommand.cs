@@ -14,8 +14,6 @@
 
 using System;
 using NodaTime;
-using Processing.Application.Common.Commands;
-using Processing.Infrastructure.Configuration.Serialization;
 
 namespace Processing.Infrastructure.Configuration.InternalCommands
 {
@@ -42,13 +40,6 @@ namespace Processing.Infrastructure.Configuration.InternalCommands
         public void SetProcessed(Instant now)
         {
             ProcessedDate = now;
-        }
-
-        public InternalCommand ToCommand(IJsonSerializer serializer)
-        {
-            if (serializer == null) throw new ArgumentNullException(nameof(serializer));
-            var storedCommandType = System.Type.GetType(Type, true);
-            return (InternalCommand)serializer.Deserialize(Data, storedCommandType!);
         }
     }
 }
