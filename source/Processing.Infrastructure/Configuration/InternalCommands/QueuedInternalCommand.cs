@@ -43,12 +43,5 @@ namespace Processing.Infrastructure.Configuration.InternalCommands
         {
             ProcessedDate = now;
         }
-
-        public InternalCommand ToCommand(IJsonSerializer serializer)
-        {
-            if (serializer == null) throw new ArgumentNullException(nameof(serializer));
-            var storedCommandType = System.Type.GetType(Type, true);
-            return (InternalCommand)serializer.Deserialize(Data, storedCommandType!);
-        }
     }
 }
