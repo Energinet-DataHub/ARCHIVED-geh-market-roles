@@ -12,21 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
-
-namespace Processing.Application.Common.Commands
+namespace Processing.IntegrationTests.Application.CreateAccountingPoints
 {
-    /// <summary>
-    /// Service for scheduling and enqueueing internal commands for later processing
-    /// </summary>
-    public interface ICommandScheduler
+    public static class SampleData
     {
-        /// <summary>
-        /// Schedules or enqueues a command
-        /// </summary>
-        /// <param name="command"></param>
-        /// <typeparam name="TCommand"><see cref="InternalCommand"/></typeparam>
-        Task EnqueueAsync<TCommand>(TCommand command)
-            where TCommand : InternalCommand;
+        public static string GsrnNumber => "571234567891234568";
     }
 }

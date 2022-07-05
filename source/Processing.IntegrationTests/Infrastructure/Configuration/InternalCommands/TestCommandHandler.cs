@@ -12,21 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
 
-namespace Processing.Application.Common.Commands
+namespace Processing.IntegrationTests.Infrastructure.Configuration.InternalCommands
 {
-    /// <summary>
-    /// Service for scheduling and enqueueing internal commands for later processing
-    /// </summary>
-    public interface ICommandScheduler
+    public class TestCommandHandler : IRequestHandler<TestCommand, Unit>
     {
-        /// <summary>
-        /// Schedules or enqueues a command
-        /// </summary>
-        /// <param name="command"></param>
-        /// <typeparam name="TCommand"><see cref="InternalCommand"/></typeparam>
-        Task EnqueueAsync<TCommand>(TCommand command)
-            where TCommand : InternalCommand;
+        public Task<Unit> Handle(TestCommand request, CancellationToken cancellationToken)
+        {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+            if (request.ThrowException)
+            {
+                throw new InvalidOperationException("This is a test exception");
+            }
+
+            return Unit.Task;
+        }
     }
 }

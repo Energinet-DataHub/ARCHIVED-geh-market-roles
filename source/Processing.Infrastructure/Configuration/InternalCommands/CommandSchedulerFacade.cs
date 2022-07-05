@@ -12,30 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using Processing.Application.Common;
 using Processing.Application.Common.Commands;
 
-namespace Processing.Application.MoveIn.Processing
+namespace Processing.Infrastructure.Configuration.InternalCommands
 {
-    public class EffectuateConsumerMoveIn
-        : InternalCommand
+    public class CommandSchedulerFacade
     {
-        public EffectuateConsumerMoveIn(Guid accountingPointId, string processId)
+        private readonly ICommandScheduler _commandScheduler;
+        private readonly IUnitOfWork _unitOfWork;
+
+        public CommandSchedulerFacade(ICommandScheduler commandScheduler, IUnitOfWork unitOfWork)
         {
-            AccountingPointId = accountingPointId;
-            ProcessId = processId;
+            _commandScheduler = commandScheduler;
+            _unitOfWork = unitOfWork;
         }
 
-        [JsonConstructor]
-        public EffectuateConsumerMoveIn(Guid id, Guid accountingPointId, string processId)
-            : this(accountingPointId, processId)
+        public async Task EnqueueAsync(InternalCommand command)
         {
-            Id = id;
+            await _commandScheduler.EnqueueAsync(command).ConfigureAwait(false);
+            await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
-
-        public Guid AccountingPointId { get; }
-
-        public string ProcessId { get; }
     }
 }

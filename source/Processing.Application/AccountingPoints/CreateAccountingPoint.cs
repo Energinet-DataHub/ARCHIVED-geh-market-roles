@@ -12,21 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
+using Processing.Application.Common.Commands;
 
-namespace Processing.Application.Common.Commands
+namespace Processing.Application.AccountingPoints
 {
-    /// <summary>
-    /// Service for scheduling and enqueueing internal commands for later processing
-    /// </summary>
-    public interface ICommandScheduler
+    public class CreateAccountingPoint : InternalCommand
     {
-        /// <summary>
-        /// Schedules or enqueues a command
-        /// </summary>
-        /// <param name="command"></param>
-        /// <typeparam name="TCommand"><see cref="InternalCommand"/></typeparam>
-        Task EnqueueAsync<TCommand>(TCommand command)
-            where TCommand : InternalCommand;
+        public CreateAccountingPoint(string meteringPointId, string gsrnNumber, string meteringPointType)
+        {
+            AccountingPointId = meteringPointId;
+            GsrnNumber = gsrnNumber;
+            MeteringPointType = meteringPointType;
+        }
+
+        public string GsrnNumber { get; }
+
+        public string MeteringPointType { get; }
+
+        public string AccountingPointId { get; }
     }
 }

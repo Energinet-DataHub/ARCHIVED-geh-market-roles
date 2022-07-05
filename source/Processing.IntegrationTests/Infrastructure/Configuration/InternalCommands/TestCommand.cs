@@ -12,21 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
+using System;
+using System.Text.Json.Serialization;
+using Processing.Application.Common.Commands;
 
-namespace Processing.Application.Common.Commands
+namespace Processing.IntegrationTests.Infrastructure.Configuration.InternalCommands
 {
-    /// <summary>
-    /// Service for scheduling and enqueueing internal commands for later processing
-    /// </summary>
-    public interface ICommandScheduler
+    public class TestCommand : InternalCommand
     {
-        /// <summary>
-        /// Schedules or enqueues a command
-        /// </summary>
-        /// <param name="command"></param>
-        /// <typeparam name="TCommand"><see cref="InternalCommand"/></typeparam>
-        Task EnqueueAsync<TCommand>(TCommand command)
-            where TCommand : InternalCommand;
+        [JsonConstructor]
+        public TestCommand(Guid id, bool throwException)
+            : base()
+        {
+            ThrowException = throwException;
+        }
+
+        public TestCommand(bool throwException = false)
+        {
+            ThrowException = throwException;
+        }
+
+        public bool ThrowException { get; }
     }
 }
