@@ -15,14 +15,12 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Processing.Domain.Consumers;
-using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
 using Processing.Infrastructure.Configuration.DataAccess.AccountingPoints;
 using Processing.Infrastructure.Configuration.DataAccess.Consumers;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
-using Processing.Infrastructure.Configuration.DataAccess.ProcessManagers;
+using Processing.Infrastructure.Configuration.InternalCommands;
 using Processing.Infrastructure.Configuration.Outbox;
-using Processing.Infrastructure.InternalCommands;
 
 namespace Processing.Infrastructure.Configuration.DataAccess
 {
@@ -56,8 +54,6 @@ namespace Processing.Infrastructure.Configuration.DataAccess
             modelBuilder.ApplyConfiguration(new AccountingPointEntityConfiguration());
             modelBuilder.ApplyConfiguration(new ConsumerEntityConfiguration());
             modelBuilder.ApplyConfiguration(new OutboxMessageEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new ProcessManagerEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new ChangeOfSupplierProcessManagerEntityConfiguration());
             modelBuilder.ApplyConfiguration(new QueuedInternalCommandEntityConfiguration());
         }
     }
