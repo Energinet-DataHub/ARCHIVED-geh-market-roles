@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Text.Json.Serialization;
 using Processing.Application.Common.Commands;
 
 namespace Processing.Application.MoveIn.Processing
@@ -26,6 +27,7 @@ namespace Processing.Application.MoveIn.Processing
             ProcessId = processId;
         }
 
+        [JsonConstructor]
         public EffectuateConsumerMoveIn(Guid id, Guid accountingPointId, string processId)
             : this(accountingPointId, processId)
         {

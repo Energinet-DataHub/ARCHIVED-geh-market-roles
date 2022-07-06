@@ -25,7 +25,7 @@ namespace Processing.Infrastructure.BusinessRequestProcessing.Protobuf.Mappers
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj));
 
-            return new Processing.Application.AccountingPoint.CreateAccountingPoint(
+            return new Application.AccountingPoints.CreateAccountingPoint(
                 obj.AccountingPointId,
                 obj.GsrnNumber,
                 obj.MeteringPointType);
