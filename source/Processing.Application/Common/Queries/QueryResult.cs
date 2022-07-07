@@ -12,9 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using Processing.Application.Common.Queries;
+namespace Processing.Application.Common.Queries;
 
-namespace Processing.Application.Customers.GetCustomerMasterData;
+public class QueryResult<TData>
+{
+    public QueryResult(string error)
+    {
+        Error = error;
+    }
 
-public record GetCustomerMasterDataQuery(Guid ProcessId) : IQuery<QueryResult<CustomerMasterData>>;
+    public QueryResult(TData data)
+    {
+        Data = data;
+    }
+
+    public string Error { get; } = string.Empty;
+
+    public TData? Data { get; }
+}

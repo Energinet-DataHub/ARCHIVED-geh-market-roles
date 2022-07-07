@@ -21,7 +21,7 @@ using Processing.Application.Common.Queries;
 
 namespace Processing.Application.Customers.GetCustomerMasterData;
 
-public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMasterDataQuery, CustomerMasterData>
+public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMasterDataQuery, QueryResult<CustomerMasterData>>
 {
     private readonly IDbConnectionFactory _connectionFactory;
 
@@ -30,7 +30,7 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
         _connectionFactory = connectionFactory;
     }
 
-    public async Task<CustomerMasterData> Handle(GetCustomerMasterDataQuery request, CancellationToken cancellationToken)
+    public async Task<QueryResult<CustomerMasterData>> Handle(GetCustomerMasterDataQuery request, CancellationToken cancellationToken)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
         var queryStatement = $"SELECT c.Name AS {nameof(CustomerMasterData.CustomerName)}, " +
@@ -45,14 +45,16 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
                                 $"JOIN [dbo].[ConsumerRegistrations] cr ON cr.ConsumerId = c.Id " +
                                 $"WHERE cr.BusinessProcessId = @ProcessId";
 
-        var dataModel = await _connectionFactory.GetOpenConnection().QuerySingleAsync<CustomerMasterData>(
+        var dataModel = await _connectionFactory.GetOpenConnection().QuerySingleOrDefaultAsync<CustomerMasterData>(
             queryStatement,
             new
             {
                 ProcessId = request.ProcessId,
             }).ConfigureAwait(false);
 
-        return dataModel;
+        return dataModel == null
+            ? new QueryResult<CustomerMasterData>($"Could not find customer data for process id {request.ProcessId}")
+            : new QueryResult<CustomerMasterData>(dataModel);
     }
 }
 

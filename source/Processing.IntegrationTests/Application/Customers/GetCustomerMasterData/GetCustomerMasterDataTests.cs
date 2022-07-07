@@ -38,10 +38,21 @@ namespace Processing.IntegrationTests.Application.Customers.GetCustomerMasterDat
             var query = new GetCustomerMasterDataQuery(Guid.Parse(processId));
             var result = await QueryAsync(query).ConfigureAwait(false);
 
-            Assert.Equal(result.RegisteredByProcessId.ToString(), processId);
-            Assert.Equal(result.CustomerId, SampleData.CustomerId);
-            Assert.Equal(result.CustomerName, SampleData.CustomerName);
-            Assert.Equal(result.CustomerIdType, SampleData.CustomerIdType);
+            Assert.Equal(result.Data?.RegisteredByProcessId.ToString(), processId);
+            Assert.Equal(result.Data?.CustomerId, SampleData.CustomerId);
+            Assert.Equal(result.Data?.CustomerName, SampleData.CustomerName);
+            Assert.Equal(result.Data?.CustomerIdType, SampleData.CustomerIdType);
+        }
+
+        [Fact]
+        public async Task Return_process_id_must_exist()
+        {
+            var processId = Guid.NewGuid();
+
+            var query = new GetCustomerMasterDataQuery(processId);
+            var result = await QueryAsync(query).ConfigureAwait(false);
+
+            Assert.NotEmpty(result.Error);
         }
 
         private async Task<string> GivenAMoveInProcessHasBeenStarted()
