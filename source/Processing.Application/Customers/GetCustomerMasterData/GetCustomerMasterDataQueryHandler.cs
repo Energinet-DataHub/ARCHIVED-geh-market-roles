@@ -33,7 +33,12 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
     public async Task<CustomerMasterData> Handle(GetCustomerMasterDataQuery request, CancellationToken cancellationToken)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
-        var queryStatement = $"SELECT c.CvrNumber, c.CprNumber, c.Name, cr.BusinessProcessId AS {nameof(CustomerMasterData.RegisteredByProcessId)} FROM [dbo].[Consumers] c " +
+        var queryStatement = $"SELECT c.Name, cr.BusinessProcessId AS {nameof(CustomerMasterData.RegisteredByProcessId)}, " +
+                             $"CASE " +
+                             $"WHEN c.CvrNumber IS NULL THEN c.CprNumber " +
+                             $"WHEN c.CprNumber IS NULL THEN c.CvrNumber " +
+                             $"END AS CustomerId " +
+                                $"FROM [dbo].[Consumers] c " +
                                 $"JOIN [dbo].[ConsumerRegistrations] cr ON cr.ConsumerId = c.Id " +
                                 $"WHERE cr.BusinessProcessId = @ProcessId";
 
@@ -48,5 +53,5 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
     }
 }
 
-public record CustomerMasterDataModel(string CvrNumber, string CprNumber, string Name, Guid RegisteredByProcessId);
+public record CustomerMasterDataModel(string Name, Guid RegisteredByProcessId, string CustomerId);
 public record CustomerMasterData(Guid RegisteredByProcessId);
