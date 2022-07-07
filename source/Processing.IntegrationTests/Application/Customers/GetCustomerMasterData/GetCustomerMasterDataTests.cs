@@ -39,6 +39,7 @@ namespace Processing.IntegrationTests.Application.Customers.GetCustomerMasterDat
             var result = await QueryAsync(query).ConfigureAwait(false);
 
             Assert.Equal(result.RegisteredByProcessId.ToString(), processId);
+            Assert.Equal(result.CustomerId, SampleData.CustomerId);
         }
 
         private async Task<string> GivenAMoveInProcessHasBeenStarted()
