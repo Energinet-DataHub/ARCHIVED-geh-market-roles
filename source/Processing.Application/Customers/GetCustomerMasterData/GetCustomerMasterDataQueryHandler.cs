@@ -36,12 +36,10 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
         var queryStatement = $"SELECT c.Name AS {nameof(CustomerMasterData.CustomerName)}, " +
                              $"cr.BusinessProcessId AS {nameof(CustomerMasterData.RegisteredByProcessId)}, " +
                              $"CASE " +
-                             $"WHEN c.CvrNumber IS NULL THEN c.CprNumber " +
-                             $"WHEN c.CprNumber IS NULL THEN c.CvrNumber " +
+                                $"WHEN c.CvrNumber IS NULL THEN c.CprNumber ELSE c.CvrNumber " +
                              $"END AS CustomerId, " +
                              $"CASE " +
-                             $"WHEN c.CvrNumber IS NULL THEN 'CPR' " +
-                             $"WHEN c.CprNumber IS NULL THEN 'CVR' " +
+                                $"WHEN c.CvrNumber IS NULL THEN 'CPR' ELSE 'CVR' " +
                              $"END AS CustomerIdType " +
                                 $"FROM [dbo].[Consumers] c " +
                                 $"JOIN [dbo].[ConsumerRegistrations] cr ON cr.ConsumerId = c.Id " +
