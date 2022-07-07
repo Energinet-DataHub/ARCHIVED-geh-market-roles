@@ -49,9 +49,9 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
                 ProcessId = request.ProcessId,
             }).ConfigureAwait(false);
 
-        return new CustomerMasterData(dataModel.RegisteredByProcessId, dataModel.CustomerId);
+        return new CustomerMasterData(dataModel.RegisteredByProcessId, dataModel.CustomerId, dataModel.Name);
     }
 }
 
 public record CustomerMasterDataModel(string Name, Guid RegisteredByProcessId, string CustomerId);
-public record CustomerMasterData(Guid RegisteredByProcessId, string CustomerId);
+public record CustomerMasterData(Guid RegisteredByProcessId, string CustomerId, string CustomerName);
