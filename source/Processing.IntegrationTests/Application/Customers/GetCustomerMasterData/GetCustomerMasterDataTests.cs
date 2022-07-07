@@ -41,6 +41,7 @@ namespace Processing.IntegrationTests.Application.Customers.GetCustomerMasterDat
             Assert.Equal(result.RegisteredByProcessId.ToString(), processId);
             Assert.Equal(result.CustomerId, SampleData.CustomerId);
             Assert.Equal(result.CustomerName, SampleData.CustomerName);
+            Assert.Equal(result.CustomerIdType, SampleData.CustomerIdType);
         }
 
         private async Task<string> GivenAMoveInProcessHasBeenStarted()

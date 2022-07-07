@@ -37,7 +37,11 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
                              $"CASE " +
                              $"WHEN c.CvrNumber IS NULL THEN c.CprNumber " +
                              $"WHEN c.CprNumber IS NULL THEN c.CvrNumber " +
-                             $"END AS CustomerId " +
+                             $"END AS CustomerId, " +
+                             $"CASE " +
+                             $"WHEN c.CvrNumber IS NULL THEN 'CPR' " +
+                             $"WHEN c.CprNumber IS NULL THEN 'CVR' " +
+                             $"END AS CustomerIdType " +
                                 $"FROM [dbo].[Consumers] c " +
                                 $"JOIN [dbo].[ConsumerRegistrations] cr ON cr.ConsumerId = c.Id " +
                                 $"WHERE cr.BusinessProcessId = @ProcessId";
@@ -49,9 +53,9 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
                 ProcessId = request.ProcessId,
             }).ConfigureAwait(false);
 
-        return new CustomerMasterData(dataModel.RegisteredByProcessId, dataModel.CustomerId, dataModel.Name);
+        return new CustomerMasterData(dataModel.RegisteredByProcessId, dataModel.CustomerId, dataModel.Name, dataModel.CustomerIdType);
     }
 }
 
-public record CustomerMasterDataModel(string Name, Guid RegisteredByProcessId, string CustomerId);
-public record CustomerMasterData(Guid RegisteredByProcessId, string CustomerId, string CustomerName);
+public record CustomerMasterDataModel(string Name, Guid RegisteredByProcessId, string CustomerId, string CustomerIdType);
+public record CustomerMasterData(Guid RegisteredByProcessId, string CustomerId, string CustomerName, string CustomerIdType);
