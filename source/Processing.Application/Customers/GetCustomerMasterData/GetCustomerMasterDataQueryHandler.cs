@@ -33,7 +33,8 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
     public async Task<CustomerMasterData> Handle(GetCustomerMasterDataQuery request, CancellationToken cancellationToken)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
-        var queryStatement = $"SELECT c.Name, cr.BusinessProcessId AS {nameof(CustomerMasterData.RegisteredByProcessId)}, " +
+        var queryStatement = $"SELECT c.Name AS {nameof(CustomerMasterData.CustomerName)}, " +
+                             $"cr.BusinessProcessId AS {nameof(CustomerMasterData.RegisteredByProcessId)}, " +
                              $"CASE " +
                              $"WHEN c.CvrNumber IS NULL THEN c.CprNumber " +
                              $"WHEN c.CprNumber IS NULL THEN c.CvrNumber " +
@@ -46,16 +47,15 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
                                 $"JOIN [dbo].[ConsumerRegistrations] cr ON cr.ConsumerId = c.Id " +
                                 $"WHERE cr.BusinessProcessId = @ProcessId";
 
-        var dataModel = await _connectionFactory.GetOpenConnection().QuerySingleAsync<CustomerMasterDataModel>(
+        var dataModel = await _connectionFactory.GetOpenConnection().QuerySingleAsync<CustomerMasterData>(
             queryStatement,
             new
             {
                 ProcessId = request.ProcessId,
             }).ConfigureAwait(false);
 
-        return new CustomerMasterData(dataModel.RegisteredByProcessId, dataModel.CustomerId, dataModel.Name, dataModel.CustomerIdType);
+        return dataModel;
     }
 }
 
-public record CustomerMasterDataModel(string Name, Guid RegisteredByProcessId, string CustomerId, string CustomerIdType);
-public record CustomerMasterData(Guid RegisteredByProcessId, string CustomerId, string CustomerName, string CustomerIdType);
+public record CustomerMasterData(string CustomerName, Guid RegisteredByProcessId, string CustomerId, string CustomerIdType);
