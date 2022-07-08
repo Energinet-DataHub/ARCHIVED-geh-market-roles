@@ -15,6 +15,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Processing.Domain.Common;
 using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
@@ -48,6 +49,12 @@ namespace Processing.Infrastructure.Configuration.DataAccess.AccountingPoints
             builder.Property<PhysicalState>("_physicalState")
                 .HasColumnName("PhysicalState")
                 .HasConversion(toDbValue => toDbValue.Id, fromDbValue => EnumerationType.FromValue<PhysicalState>(fromDbValue));
+
+            builder.Property<ElectricalHeating>("_electricalHeating")
+                .HasColumnName("ElectricalHeating_EffectiveDate")
+                .HasConversion(
+                    toDbValue => toDbValue.EffectiveDate.DateInUtc,
+                    fromDbValue => ElectricalHeating.Create(EffectiveDate.Create(fromDbValue.ToDateTimeUtc())));
 
             builder.OwnsMany<BusinessProcess>("_businessProcesses", x =>
             {
