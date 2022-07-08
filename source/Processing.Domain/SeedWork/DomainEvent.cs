@@ -17,9 +17,9 @@ using NodaTime;
 
 namespace Processing.Domain.SeedWork
 {
-    public class DomainEvent : IDomainEvent
+    public abstract class DomainEvent : IDomainEvent
     {
-        public DomainEvent()
+        protected DomainEvent()
         {
             Id = Guid.NewGuid();
             OccurredOn = SystemClock.Instance.GetCurrentInstant();
