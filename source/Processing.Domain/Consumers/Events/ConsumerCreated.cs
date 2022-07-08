@@ -17,7 +17,7 @@ using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.Consumers.Events
 {
-    public class ConsumerCreated : DomainEventBase
+    public class ConsumerCreated : DomainEvent
     {
         public ConsumerCreated(Guid consumerId, string? cprNumber, string? cvrNumber, string fullName)
         {

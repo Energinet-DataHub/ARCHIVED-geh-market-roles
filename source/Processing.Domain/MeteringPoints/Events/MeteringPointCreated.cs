@@ -16,7 +16,7 @@ using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.MeteringPoints.Events
 {
-    public class MeteringPointCreated : DomainEventBase
+    public class MeteringPointCreated : DomainEvent
     {
         public MeteringPointCreated(GsrnNumber gsrnNumber, MeteringPointType meteringPointType)
         {

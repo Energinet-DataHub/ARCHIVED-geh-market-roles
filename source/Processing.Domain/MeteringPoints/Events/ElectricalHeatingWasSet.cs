@@ -18,7 +18,7 @@ using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.MeteringPoints.Events
 {
-    public class ElectricalHeatingWasSet : DomainEventBase
+    public class ElectricalHeatingWasSet : DomainEvent
     {
         public ElectricalHeatingWasSet(Guid accountingPointId, Instant effectiveDate)
         {

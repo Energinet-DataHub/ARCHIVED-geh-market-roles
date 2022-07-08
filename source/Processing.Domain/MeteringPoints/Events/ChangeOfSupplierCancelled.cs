@@ -16,7 +16,7 @@ using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.MeteringPoints.Events
 {
-    public class ChangeOfSupplierCancelled : DomainEventBase
+    public class ChangeOfSupplierCancelled : DomainEvent
     {
         public ChangeOfSupplierCancelled(AccountingPointId accountingPointId, GsrnNumber gsrnNumber, BusinessProcessId businessProcessId)
         {
