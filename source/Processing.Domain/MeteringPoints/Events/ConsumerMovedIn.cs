@@ -18,7 +18,7 @@ using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.MeteringPoints.Events
 {
-    public class ConsumerMovedIn : DomainEventBase
+    public class ConsumerMovedIn : DomainEvent
     {
         public ConsumerMovedIn(Guid accountingPointId, string gsrnNumber, Guid businessProcessId, Guid consumerId, Instant? moveInDate)
         {

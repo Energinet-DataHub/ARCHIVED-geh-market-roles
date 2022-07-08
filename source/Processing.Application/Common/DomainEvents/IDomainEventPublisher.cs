@@ -27,6 +27,6 @@ namespace Processing.Application.Common.DomainEvents
         /// </summary>
         /// <param name="domainEvent"></param>
         /// <returns><see cref="Task"/></returns>
-        Task PublishAsync(IDomainEvent @domainEvent);
+        Task PublishAsync(DomainEvent @domainEvent);
     }
 }

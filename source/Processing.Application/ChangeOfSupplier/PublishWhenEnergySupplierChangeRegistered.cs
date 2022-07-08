@@ -26,8 +26,7 @@ using Processing.Domain.MeteringPoints.Events;
 namespace Processing.Application.ChangeOfSupplier
 {
     public class
-        PublishWhenEnergySupplierChangeRegistered : INotificationHandler<
-            EnergySupplierChangeRegistered>
+        PublishWhenEnergySupplierChangeRegistered : INotificationHandler<EnergySupplierChangeRegistered>
     {
         private readonly IDbConnectionFactory _connectionFactory;
         private readonly IEventPublisher _eventPublisher;

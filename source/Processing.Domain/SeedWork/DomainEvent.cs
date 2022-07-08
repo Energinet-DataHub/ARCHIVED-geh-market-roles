@@ -13,13 +13,14 @@
 // limitations under the License.
 
 using System;
+using MediatR;
 using NodaTime;
 
 namespace Processing.Domain.SeedWork
 {
-    public class DomainEventBase : IDomainEvent
+    public abstract class DomainEvent : INotification
     {
-        public DomainEventBase()
+        protected DomainEvent()
         {
             Id = Guid.NewGuid();
             OccurredOn = SystemClock.Instance.GetCurrentInstant();

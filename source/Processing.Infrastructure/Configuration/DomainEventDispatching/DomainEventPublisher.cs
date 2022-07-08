@@ -29,7 +29,7 @@ namespace Processing.Infrastructure.Configuration.DomainEventDispatching
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public Task PublishAsync(IDomainEvent domainEvent)
+        public Task PublishAsync(DomainEvent domainEvent)
         {
             return _mediator.Publish(domainEvent);
         }
