@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using NodaTime;
 using Processing.Domain.SeedWork;
 
@@ -19,10 +20,13 @@ namespace Processing.Domain.MeteringPoints.Events
 {
     public class ElectricalHeatingWasSet : DomainEventBase
     {
-        public ElectricalHeatingWasSet(Instant effectiveDate)
+        public ElectricalHeatingWasSet(Guid accountingPointId, Instant effectiveDate)
         {
             EffectiveDate = effectiveDate;
+            AccountingPointId = accountingPointId;
         }
+
+        public Guid AccountingPointId { get; }
 
         public Instant EffectiveDate { get; }
     }

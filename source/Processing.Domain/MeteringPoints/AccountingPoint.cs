@@ -76,7 +76,7 @@ namespace Processing.Domain.MeteringPoints
         public void SetElectricalHeating(ElectricalHeating electricalHeating)
         {
             _electricalHeating = electricalHeating;
-            AddDomainEvent(new ElectricalHeatingWasSet(_electricalHeating.EffectiveDate.DateInUtc));
+            AddDomainEvent(new ElectricalHeatingWasSet(Id.Value, _electricalHeating.EffectiveDate.DateInUtc));
         }
 
         public BusinessRulesValidationResult ChangeSupplierAcceptable(EnergySupplierId energySupplierId, Instant supplyStartDate, ISystemDateTimeProvider systemDateTimeProvider)

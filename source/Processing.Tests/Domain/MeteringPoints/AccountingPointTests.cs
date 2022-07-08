@@ -32,5 +32,6 @@ public class AccountingPointTests : TestBase
         var domainEvent = accountingPoint.DomainEvents.FirstOrDefault(e => e is ElectricalHeatingWasSet) as ElectricalHeatingWasSet;
         Assert.NotNull(domainEvent);
         Assert.Equal(electricalHeating.EffectiveDate.DateInUtc, domainEvent?.EffectiveDate);
+        Assert.Equal(accountingPoint.Id.Value, domainEvent?.AccountingPointId);
     }
 }
