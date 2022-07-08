@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using NodaTime;
 using Processing.Domain.Common;
 
 namespace Processing.Tests.Domain;
@@ -23,5 +24,20 @@ internal static class EffectiveDateFactory
     {
         var dateTime = new DateTime(now.Year, now.Month, now.Day, hour, minute, second);
         return EffectiveDate.Create(dateTime);
+    }
+
+    internal static EffectiveDate AsOfToday()
+    {
+        return EffectiveDate.Create(InstantAsOfToday().ToDateTimeUtc());
+    }
+
+    internal static Instant InstantAsOfToday()
+    {
+        var timeZone = DateTimeZoneProviders.Tzdb["Europe/Copenhagen"];
+        var now = SystemClock.Instance.GetCurrentInstant()
+            .InZone(timeZone);
+        var localDateTime = new ZonedDateTime(new LocalDateTime(now.Year, now.Month, now.Day, 0, 0, 0), timeZone, now.Offset);
+        localDateTime = localDateTime.PlusHours(24);
+        return localDateTime.ToInstant();
     }
 }

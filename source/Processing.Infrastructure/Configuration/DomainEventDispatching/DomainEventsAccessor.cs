@@ -29,7 +29,7 @@ namespace Processing.Infrastructure.Configuration.DomainEventDispatching
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public IReadOnlyCollection<IDomainEvent> GetAllDomainEvents()
+        public IReadOnlyCollection<DomainEvent> GetAllDomainEvents()
         {
             var domainEvents = _context.ChangeTracker
                 .Entries<Entity>()

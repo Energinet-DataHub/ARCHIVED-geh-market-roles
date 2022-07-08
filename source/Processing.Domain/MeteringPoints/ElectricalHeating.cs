@@ -12,25 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using MediatR;
-using NodaTime;
+using Processing.Domain.Common;
+using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.SeedWork
+namespace Processing.Domain.MeteringPoints
 {
-    /// <summary>
-    /// Interface for domain events
-    /// </summary>
-    public interface IDomainEvent : INotification
+    public class ElectricalHeating : ValueObject
     {
-        /// <summary>
-        /// Correlation id of event
-        /// </summary>
-        Guid Id { get; }
+        private ElectricalHeating(EffectiveDate effectiveDate)
+        {
+            EffectiveDate = effectiveDate;
+        }
 
-        /// <summary>
-        /// Date and time of occurence
-        /// </summary>
-        Instant OccurredOn { get; }
+        public EffectiveDate EffectiveDate { get; }
+
+        public static ElectricalHeating Create(EffectiveDate effectiveDate)
+        {
+            return new ElectricalHeating(effectiveDate);
+        }
     }
 }
