@@ -12,23 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Processing.Domain.SeedWork;
+namespace Processing.Application.Common.Queries;
 
-namespace Processing.Domain.MeteringPoints.Events
+public class QueryResult<TData>
 {
-    public class ChangeOfSupplierCancelled : DomainEvent
+    public QueryResult(string error)
     {
-        public ChangeOfSupplierCancelled(AccountingPointId accountingPointId, GsrnNumber gsrnNumber, BusinessProcessId businessProcessId)
-        {
-            AccountingPointId = accountingPointId;
-            GsrnNumber = gsrnNumber;
-            BusinessProcessId = businessProcessId;
-        }
-
-        public AccountingPointId AccountingPointId { get; }
-
-        public GsrnNumber GsrnNumber { get; }
-
-        public BusinessProcessId BusinessProcessId { get; }
+        Error = error;
     }
+
+    public QueryResult(TData data)
+    {
+        Data = data;
+    }
+
+    public string Error { get; } = string.Empty;
+
+    public TData? Data { get; }
 }

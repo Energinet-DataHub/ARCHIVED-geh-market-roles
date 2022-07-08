@@ -12,20 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Processing.Domain.SeedWork;
+using System;
+using Processing.Application.Common.Queries;
 
-namespace Processing.Domain.MeteringPoints.Events
-{
-    public class MeteringPointCreated : DomainEvent
-    {
-        public MeteringPointCreated(GsrnNumber gsrnNumber, MeteringPointType meteringPointType)
-        {
-            GsrnNumber = gsrnNumber;
-            MeteringPointType = meteringPointType;
-        }
+namespace Processing.Application.Customers.GetCustomerMasterData;
 
-        public GsrnNumber GsrnNumber { get; }
-
-        public MeteringPointType MeteringPointType { get; }
-    }
-}
+public record GetCustomerMasterDataQuery(Guid ProcessId) : IQuery<QueryResult<CustomerMasterData>>;

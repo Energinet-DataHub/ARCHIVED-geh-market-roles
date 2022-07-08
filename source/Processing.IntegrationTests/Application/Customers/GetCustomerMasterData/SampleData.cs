@@ -12,23 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Processing.Domain.SeedWork;
-
-namespace Processing.Domain.MeteringPoints.Events
+namespace Processing.IntegrationTests.Application.Customers.GetCustomerMasterData
 {
-    public class ChangeOfSupplierCancelled : DomainEvent
+    public static class SampleData
     {
-        public ChangeOfSupplierCancelled(AccountingPointId accountingPointId, GsrnNumber gsrnNumber, BusinessProcessId businessProcessId)
-        {
-            AccountingPointId = accountingPointId;
-            GsrnNumber = gsrnNumber;
-            BusinessProcessId = businessProcessId;
-        }
+        public static string GsrnNumber => "571234567891234568";
 
-        public AccountingPointId AccountingPointId { get; }
+        public static string MeteringPointId => "0C19F44B-DDDA-4A99-B8E4-6D454D5FD95E";
 
-        public GsrnNumber GsrnNumber { get; }
+        public static string EnergySupplierNumber => "5790000555550";
 
-        public BusinessProcessId BusinessProcessId { get; }
+        public static string CustomerName => "Test Testesen";
+
+        public static string CustomerIdType => "CPR";
+
+        public static string CustomerId => "2601211234";
+
+        public static string MoveInDate => EffectiveDateFactory.AsOfToday().ToString();
     }
 }

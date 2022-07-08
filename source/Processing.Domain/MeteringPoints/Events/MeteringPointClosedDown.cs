@@ -16,7 +16,7 @@ using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.MeteringPoints.Events
 {
-    public class MeteringPointClosedDown : DomainEventBase
+    public class MeteringPointClosedDown : DomainEvent
     {
         public MeteringPointClosedDown(GsrnNumber gsrnNumber)
         {

@@ -12,23 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using NodaTime;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.MeteringPoints.Events
 {
-    public class ChangeOfSupplierCancelled : DomainEvent
+    public class ElectricalHeatingWasSet : DomainEvent
     {
-        public ChangeOfSupplierCancelled(AccountingPointId accountingPointId, GsrnNumber gsrnNumber, BusinessProcessId businessProcessId)
+        public ElectricalHeatingWasSet(Guid accountingPointId, Instant effectiveDate)
         {
+            EffectiveDate = effectiveDate;
             AccountingPointId = accountingPointId;
-            GsrnNumber = gsrnNumber;
-            BusinessProcessId = businessProcessId;
         }
 
-        public AccountingPointId AccountingPointId { get; }
+        public Guid AccountingPointId { get; }
 
-        public GsrnNumber GsrnNumber { get; }
-
-        public BusinessProcessId BusinessProcessId { get; }
+        public Instant EffectiveDate { get; }
     }
 }
