@@ -13,11 +13,12 @@
 // limitations under the License.
 
 using System;
+using MediatR;
 using NodaTime;
 
 namespace Processing.Domain.SeedWork
 {
-    public abstract class DomainEvent : IDomainEvent
+    public abstract class DomainEvent : INotification
     {
         protected DomainEvent()
         {

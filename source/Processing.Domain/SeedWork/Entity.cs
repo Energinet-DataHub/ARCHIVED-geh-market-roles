@@ -18,12 +18,12 @@ namespace Processing.Domain.SeedWork
 {
     public abstract class Entity
     {
-        private List<IDomainEvent> _domainEvents = new List<IDomainEvent>();
+        private readonly List<DomainEvent> _domainEvents = new();
 
         /// <summary>
         /// Domain events occurred.
         /// </summary>
-        public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+        public IReadOnlyCollection<DomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
         /// <summary>
         /// Clears all recorded events
@@ -53,7 +53,7 @@ namespace Processing.Domain.SeedWork
         /// Add domain event.
         /// </summary>
         /// <param name="domainEvent">Domain event.</param>
-        protected void AddDomainEvent(IDomainEvent domainEvent)
+        protected void AddDomainEvent(DomainEvent domainEvent)
         {
             _domainEvents.Add(domainEvent);
         }

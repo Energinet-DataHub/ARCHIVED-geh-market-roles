@@ -26,7 +26,7 @@ namespace Processing.Infrastructure.Configuration.DomainEventDispatching
         /// Returns all generated domain events
         /// </summary>
         /// <returns><see cref="IReadOnlyCollection{T}"/></returns>
-        IReadOnlyCollection<IDomainEvent> GetAllDomainEvents();
+        IReadOnlyCollection<DomainEvent> GetAllDomainEvents();
 
         /// <summary>
         /// Clears all generated domain events
