@@ -21,8 +21,7 @@ on:
      - "sondergaard/build-on-push"
 
 env:
-  SAPWD: $(LC_CTYPE=C tr -d -c '[:print:]' </dev/urandom | head -c 25)
-  TestCommonConnectionString: 'Server=localhost;Database=master;User Id=sa;Password=$SAPWD;'
+  TestCommonConnectionString: 'Server=localhost;Database=master;User Id=sa;lala=$PWD;'
 
 jobs:
   # Markdown, links and spell checking
@@ -31,7 +30,9 @@ jobs:
   csharp_build:
    runs-on: ubuntu-20.04
    steps:
+     - name: Set env variables
+       run: echo "PWD=$(LC_CTYPE=C tr -d -c '[:print:]' </dev/urandom | head -c 25)" >> $GITHUB_ENV
      - name: Test solution
        run: |
-         echo "$SAPWD"
+         echo "$PWD"
          echo "$TestCommonConnectionString is the connectionstring"
