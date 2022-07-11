@@ -22,7 +22,7 @@ on:
 
 env:
   SAPWD: $(LC_CTYPE=C tr -d -c '[:print:]' </dev/urandom | head -c 25)
-  TestCommonConnectionString: 'Server=localhost;Database=master;User Id=sa;Password=${{ env.SAPWD }};'
+  TestCommonConnectionString: 'Server=localhost;Database=master;User Id=sa;Password=$SAPWD;'
 
 jobs:
   # Markdown, links and spell checking
