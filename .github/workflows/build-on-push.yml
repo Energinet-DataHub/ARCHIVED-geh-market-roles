@@ -21,7 +21,7 @@ on:
      - "sondergaard/build-on-push"
 
 env:
-  TestCommonConnectionString: 'Server=localhost;Database=master;User Id=sa;lala=$PWD;'
+  TestCommonConnectionString: 'Server=localhost;Database=master;User Id=sa;lala=${{ env.Temp }};'
 
 jobs:
   # Markdown, links and spell checking
@@ -31,9 +31,8 @@ jobs:
    runs-on: ubuntu-20.04
    steps:
      - name: Set env variables
-       shell: bash
-       run: echo "PWD=$(echo $GITHUB_SHA | cut -c 1-12)!" >> $GITHUB_ENV
+       run: echo "Temp=$(echo $GITHUB_SHA | cut -c 1-12)!" >> $GITHUB_ENV
      - name: Test solution
        run: |
-         echo "$PWD"
+         echo "$Temp"
          echo "$TestCommonConnectionString is the connectionstring"
