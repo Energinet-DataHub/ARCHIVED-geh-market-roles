@@ -32,3 +32,12 @@ jobs:
    steps:
      - name: Checkout repo
        uses: actions/checkout@v3
+
+     - name: Setup .NET 6.0.301
+       uses: actions/setup-dotnet@v2
+       with:
+        dotnet-version: '6.0.301'
+
+     - name: "Restore nuget packages"
+       run: dotnet restore source/Energinet.DataHub.MarketRoles.sln
+        
