@@ -29,8 +29,7 @@ jobs:
    steps:
      - name: Set env variables
        run: |
-         sudo apt-get -y install rng-tools
-         echo "Temp=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-20} | head -n 1)!" >> $GITHUB_ENV
+         echo "Temp=$(openssl rand -base64 21)!" >> $GITHUB_ENV
         # echo "Temp=$(echo $GITHUB_SHA | cut -c 1-12)!" >> $GITHUB_ENV
      - name: Test solution
        env:
