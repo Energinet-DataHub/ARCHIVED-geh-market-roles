@@ -29,12 +29,31 @@ jobs:
    steps:
      - name: Set env variables
        run: |
-         echo "Temp=$(openssl rand -base64 21)!" >> $GITHUB_ENV
-        # echo "Temp=$(echo $GITHUB_SHA | cut -c 1-12)!" >> $GITHUB_ENV
+         echo "RndPassword=$(openssl rand -base64 21)!" >> $GITHUB_ENV
+
+     - name: Checkout repo
+       uses: actions/checkout@v3
+
+     - name: Setup .NET 6.0.301
+       uses: actions/setup-dotnet@v2
+       with:
+        dotnet-version: '6.0.301'
+
+     - name: Run SQL server
+       uses: addnab/docker-run-action@v3
+       with:
+          image: mcr.microsoft.com/mssql/server:2019-latest
+          options: -e 'ACCEPT_EULA=Y' -e "SA_PASSWORD=${{ env.RndPassword }}" -p 1433:1433 --name sqlserver -d
+
+     - name: "Restore nuget packages"
+       run: dotnet restore source/Energinet.DataHub.MarketRoles.sln
+        
+     - name: Build solution
+       run: dotnet build source/Energinet.DataHub.MarketRoles.sln --no-restore --configuration Release
+
      - name: Test solution
        env:
-        TestCommonConnectionString: 'Server=localhost;Database=master;User Id=sa;lala=${{ env.Temp }};'
-
+        TestCommonConnectionString: 'Server=localhost;Database=master;User Id=sa;lala=${{ env.RndPassword }};'
        run: |
          echo "$Temp"
          echo "$TestCommonConnectionString is the connectionstring"
