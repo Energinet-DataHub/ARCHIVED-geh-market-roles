@@ -56,4 +56,4 @@ jobs:
         TestCommonConnectionString: 'Server=localhost;Database=B2BTransactions;Encrypt=false;User Id=sa;Password=${{ env.RndPassword }};'
        run: |
          dotnet tool install --tool-path ./temp/reportgenerator dotnet-reportgenerator-globaltool
-         dotnet test source/Energinet.DataHub.MarketRoles.sln --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover --output=output
+         dotnet test source/Energinet.DataHub.MarketRoles.sln --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover --output ${{ github.workspace }}/output
