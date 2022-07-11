@@ -39,11 +39,11 @@ jobs:
        with:
         dotnet-version: '6.0.301'
 
-     - name: Run SQL server
-       uses: addnab/docker-run-action@v3
-       with:
-          image: mcr.microsoft.com/mssql/server:2019-latest
-          options: -e 'ACCEPT_EULA=Y' -e "SA_PASSWORD=${{ env.RndPassword }}" -p 1433:1433 --name sqlserver -d
+     - name: Run SQL 'Server'
+       run: docker run -e 'ACCEPT_EULA=Y' -e "SA_PASSWORD=${{ env.RndPassword }}" -p 1433:1433 --name sqlserver -d mcr.microsoft.com/mssql/server:2019-latest
+      #  with:
+      #     image: mcr.microsoft.com/mssql/server:2019-latest
+      #     options: -e 'ACCEPT_EULA=Y' -e "SA_PASSWORD=${{ env.RndPassword }}" -p 1433:1433 --name sqlserver -d
 
      - name: docker
        run: docker ps     
