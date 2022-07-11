@@ -21,7 +21,8 @@ on:
      - "sondergaard/build-on-push"
 
 env:
-  TestCommonConnectionString: 'Server=localhost;Database=master;User Id=sa;Password=Pass123!;'
+  SAPWD: $(LC_CTYPE=C tr -d -c '[:print:]' </dev/urandom | head -c 25)
+  TestCommonConnectionString: 'Server=localhost;Database=master;User Id=sa;Password=${{ env.SAPWD }};'
 
 jobs:
   # Markdown, links and spell checking
