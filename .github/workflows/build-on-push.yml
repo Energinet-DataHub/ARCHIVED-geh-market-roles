@@ -41,3 +41,5 @@ jobs:
      - name: "Restore nuget packages"
        run: dotnet restore source/Energinet.DataHub.MarketRoles.sln
         
+     - name: Build solution
+       run: dotnet build source/Energinet.DataHub.MarketRoles.sln --no-restore --configuration Release
