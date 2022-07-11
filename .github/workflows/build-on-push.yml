@@ -43,19 +43,16 @@ jobs:
        run: docker run -e 'ACCEPT_EULA=Y' -e "SA_PASSWORD=${{ env.RndPassword }}" -p 1433:1433 --name sqlserver -d mcr.microsoft.com/mssql/server:2019-latest
       #  with:
       #     image: mcr.microsoft.com/mssql/server:2019-latest
-      #     options: -e 'ACCEPT_EULA=Y' -e "SA_PASSWORD=${{ env.RndPassword }}" -p 1433:1433 --name sqlserver -d
+      #     options: -e 'ACCEPT_EULA=Y' -e "SA_PASSWORD=${{ env.RndPassword }}" -p 1433:1433 --name sqlserver -d  
 
-     - name: docker
-       run: docker ps     
-
-    #  - name: "Restore nuget packages"
-    #    run: dotnet restore source/Energinet.DataHub.MarketRoles.sln
+     - name: "Restore nuget packages"
+       run: dotnet restore source/Energinet.DataHub.MarketRoles.sln
         
-    #  - name: Build solution
-    #    run: dotnet build source/Energinet.DataHub.MarketRoles.sln --no-restore --configuration Release
+     - name: Build solution
+       run: dotnet build source/Energinet.DataHub.MarketRoles.sln --no-restore --configuration Release
 
-    #  - name: Test solution
-    #    env:
-    #     TestCommonConnectionString: 'Server=localhost;Database=B2BTransactions;User Id=sa;Password=${{ env.RndPassword }};'
-    #    run: |
-    #      dotnet test source/Energinet.DataHub.MarketRoles.sln --no-build --configuration Release
+     - name: Test solution
+       env:
+        TestCommonConnectionString: 'Server=localhost;Database=B2BTransactions;User Id=sa;Password=${{ env.RndPassword }};'
+       run: |
+         dotnet test source/Energinet.DataHub.MarketRoles.sln --no-build --configuration Release
