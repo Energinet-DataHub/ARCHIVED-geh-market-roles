@@ -35,7 +35,7 @@ namespace Messaging.IntegrationTests.Fixtures
             _context = new B2BContext(optionsBuilder.Options);
         }
 
-        public string ConnectionString { get; } = @"Data Source=(LocalDB)\MSSQLLocalDB;Initial Catalog=B2BTransactions;Integrated Security=True;";
+        public string ConnectionString { get; } = CreateConnectionString();
 
         public Task InitializeAsync()
         {
@@ -79,6 +79,12 @@ namespace Messaging.IntegrationTests.Fixtures
             CleanupDatabase();
             _context.Dispose();
             _disposed = true;
+        }
+
+        private static string CreateConnectionString()
+        {
+            var envConnectionString = Environment.GetEnvironmentVariable("TestCommonConnectionString");
+            return envConnectionString ?? @"Data Source=(LocalDB)\MSSQLLocalDB;Initial Catalog=B2BTransactions;Integrated Security=True;";
         }
 
         private void CreateSchema()
