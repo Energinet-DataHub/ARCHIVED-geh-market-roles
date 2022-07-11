@@ -53,7 +53,6 @@ jobs:
 
      - name: Test solution
        env:
-        TestCommonConnectionString: 'Server=localhost;Database=master;User Id=sa;lala=${{ env.RndPassword }};'
+        TestCommonConnectionString: 'Server=localhost;Database=B2BTransactions;User Id=sa;Password=${{ env.RndPassword }};'
        run: |
-         echo "$Temp"
-         echo "$TestCommonConnectionString is the connectionstring"
+         dotnet test source/Energinet.DataHub.MarketRoles.sln --no-build --configuration Release
