@@ -27,4 +27,8 @@ jobs:
   # Markdown, links and spell checking
   ci_base:
     uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@7.6.0
-  
+  csharp_build:
+   runs-on: ubuntu-20.04
+   steps:
+     - name: Checkout repo
+       uses: actions/checkout@v3
