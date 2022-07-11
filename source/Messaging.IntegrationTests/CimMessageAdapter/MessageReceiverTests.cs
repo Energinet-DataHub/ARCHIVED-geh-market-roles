@@ -181,7 +181,7 @@ namespace Messaging.IntegrationTests.CimMessageAdapter
         public async Task Return_failure_if_xml_schema_for_business_process_type_does_not_exist()
         {
             await using var message = BusinessMessageBuilder
-                .RequestChangeOfSupplier("CimMessageAdapter//Messages//Xml//BadRequestChangeOfSupplier.xml")
+                .RequestChangeOfSupplier("CimMessageAdapter/Messages/Xml/BadRequestChangeOfSupplier.xml")
                 .Message();
 
             var result = await ReceiveRequestChangeOfSupplierMessage(message, MediaTypeNames.Application.Xml)
