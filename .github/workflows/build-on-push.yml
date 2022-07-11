@@ -53,6 +53,6 @@ jobs:
 
      - name: Test solution
        env:
-        TestCommonConnectionString: 'Server=localhost;Database=B2BTransactions;TrustServerCertificate=false;User Id=sa;Password=${{ env.RndPassword }};'
+        TestCommonConnectionString: 'Server=localhost;Database=B2BTransactions;TrustServerCertificate=false;Encrypt=False;User Id=sa;Password=${{ env.RndPassword }};'
        run: |
          dotnet test source/Energinet.DataHub.MarketRoles.sln --no-build --configuration Release
