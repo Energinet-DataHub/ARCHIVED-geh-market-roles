@@ -65,7 +65,7 @@ public class MessageParserTests : TestBase
 
     private static Stream LoadXmlFileAsMemoryStream()
     {
-        var xmlDoc = XDocument.Load($"cimmessageadapter{Path.DirectorySeparatorChar}messages{Path.DirectorySeparatorChar}xml{Path.DirectorySeparatorChar}Confirm request Change of Supplier.xml");
+        var xmlDoc = XDocument.Load($"CimMessageAdapter{Path.DirectorySeparatorChar}Messages{Path.DirectorySeparatorChar}xml{Path.DirectorySeparatorChar}Confirm request Change of Supplier.xml");
         var stream = new MemoryStream();
         xmlDoc.Save(stream);
 
@@ -74,7 +74,7 @@ public class MessageParserTests : TestBase
 
     private static MemoryStream LoadJsonFileAsMemoryStream()
     {
-        var jsonDoc = File.ReadAllText($"cimmessageadapter{Path.DirectorySeparatorChar}messages{Path.DirectorySeparatorChar}json{Path.DirectorySeparatorChar}Request Change of Supplier.json");
+        var jsonDoc = File.ReadAllText($"CimMessageAdapter{Path.DirectorySeparatorChar}Messages{Path.DirectorySeparatorChar}json{Path.DirectorySeparatorChar}Request Change of Supplier.json");
         var stream = new MemoryStream();
         using var writer = new StreamWriter(stream: stream, encoding: Encoding.UTF8, bufferSize: 4096, leaveOpen: true);
         writer.Write(jsonDoc);
