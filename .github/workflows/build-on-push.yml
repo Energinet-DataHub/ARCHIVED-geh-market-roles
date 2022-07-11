@@ -25,14 +25,14 @@ env:
 
 jobs:
   # Markdown, links and spell checking
-  ci_base:
-    uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@7.6.0
+  #ci_base:
+  #  uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@7.6.0
   csharp_build:
    runs-on: ubuntu-20.04
    steps:
      - name: Set env variables
        shell: bash
-       run: echo "PWD=$(cat /dev/urandom | env LC_ALL=C tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)!" >> $GITHUB_ENV
+       run: echo "PWD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)!" >> $GITHUB_ENV
      - name: Test solution
        run: |
          echo "$PWD"
