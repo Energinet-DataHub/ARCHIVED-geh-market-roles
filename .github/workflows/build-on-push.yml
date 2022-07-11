@@ -31,26 +31,7 @@ jobs:
   csharp_build:
    runs-on: ubuntu-20.04
    steps:
-     - name: Checkout repo
-       uses: actions/checkout@v3
-
-     - name: Setup .NET 6.0.301
-       uses: actions/setup-dotnet@v2
-       with:
-        dotnet-version: '6.0.301'
-
-     - name: Run SQL server
-       uses: addnab/docker-run-action@v3
-       with:
-          image: mcr.microsoft.com/mssql/server:2019-latest
-          options: -e 'ACCEPT_EULA=Y' -e "SA_PASSWORD=Pass123!" -p 1433:1433 --name sqlserver -d
-
-     - name: "Restore nuget packages"
-       run: dotnet restore source/Energinet.DataHub.MarketRoles.sln
-        
-     - name: Build solution
-       run: dotnet build source/Energinet.DataHub.MarketRoles.sln --no-restore --configuration Release
-
      - name: Test solution
        run: |
+         echo "$SAPWD"
          echo "$TestCommonConnectionString is the connectionstring"
