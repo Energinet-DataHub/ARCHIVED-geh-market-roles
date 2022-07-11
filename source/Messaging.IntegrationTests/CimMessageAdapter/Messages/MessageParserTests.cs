@@ -85,7 +85,7 @@ public class MessageParserTests : TestBase
 
     private static MemoryStream LoadInvalidJsonFileAsMemoryStream()
     {
-        var jsonDoc = File.ReadAllText($"cimmessageadapter{Path.DirectorySeparatorChar}messages{Path.DirectorySeparatorChar}json{Path.DirectorySeparatorChar}Invalid Request Change of Supplier.json");
+        var jsonDoc = File.ReadAllText($"CimMessageAdapter{Path.DirectorySeparatorChar}Messages{Path.DirectorySeparatorChar}json{Path.DirectorySeparatorChar}Invalid Request Change of Supplier.json");
         var stream = new MemoryStream();
         using var writer = new StreamWriter(stream: stream, encoding: Encoding.UTF8, bufferSize: 4096, leaveOpen: true);
         writer.Write(jsonDoc);
