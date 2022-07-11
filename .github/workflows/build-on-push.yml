@@ -51,4 +51,5 @@ jobs:
        run: dotnet build source/Energinet.DataHub.MarketRoles.sln --no-restore --configuration Release
 
      - name: Test solution
-       run: dotnet test source/Energinet.DataHub.MarketRoles.sln --no-build --configuration Release
+       run: |
+         echo "$TestCommonConnectionString is the connectionstring"
