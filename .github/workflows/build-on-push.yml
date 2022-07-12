@@ -61,4 +61,4 @@ jobs:
          run: |
            dotnet tool install --tool-path ./temp/reportgenerator dotnet-reportgenerator-globaltool
            dotnet --version
-           dir source\*.dll -Recurse
+           Get-ChildItem -Path source\*.dll -Recurse
