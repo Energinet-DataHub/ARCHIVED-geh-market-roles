@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Processing.Application.AccountingPoints;
 using Processing.Application.Customers.GetCustomerMasterData;
@@ -39,9 +40,10 @@ namespace Processing.IntegrationTests.Application.Customers.GetCustomerMasterDat
             var result = await QueryAsync(query).ConfigureAwait(false);
 
             Assert.Equal(result.Data?.RegisteredByProcessId.ToString(), processId);
-            Assert.Equal(result.Data?.CustomerId, SampleData.CustomerId);
-            Assert.Equal(result.Data?.CustomerName, SampleData.CustomerName);
-            Assert.Equal(result.Data?.CustomerIdType, SampleData.CustomerIdType);
+            Assert.Equal(SampleData.CustomerId, result.Data?.CustomerId);
+            Assert.Equal(SampleData.CustomerName, result.Data?.CustomerName);
+            Assert.Equal(SampleData.CustomerIdType, result.Data?.CustomerIdType);
+            Assert.Equal("01/01/0001 00:00:00", result.Data?.ElectricalHeatingEffectiveDate.ToString(CultureInfo.InvariantCulture));
         }
 
         [Fact]

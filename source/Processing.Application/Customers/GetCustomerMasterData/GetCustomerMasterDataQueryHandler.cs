@@ -16,6 +16,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using NodaTime;
 using Processing.Application.Common;
 using Processing.Application.Common.Queries;
 
@@ -40,9 +41,11 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
                              $"END AS CustomerId, " +
                              $"CASE " +
                                 $"WHEN c.CvrNumber IS NULL THEN 'CPR' ELSE 'CVR' " +
-                             $"END AS CustomerIdType " +
+                             $"END AS CustomerIdType, " +
+                             $"a.ElectricalHeating_EffectiveDate AS {nameof(CustomerMasterData.ElectricalHeatingEffectiveDate)} " +
                                 $"FROM [dbo].[Consumers] c " +
                                 $"JOIN [dbo].[ConsumerRegistrations] cr ON cr.ConsumerId = c.Id " +
+                                $"JOIN [dbo].[AccountingPoints] a ON a.Id = cr.AccountingPointId " +
                                 $"WHERE cr.BusinessProcessId = @ProcessId";
 
         var dataModel = await _connectionFactory.GetOpenConnection().QuerySingleOrDefaultAsync<CustomerMasterData>(
@@ -58,4 +61,4 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
     }
 }
 
-public record CustomerMasterData(string CustomerName, Guid RegisteredByProcessId, string CustomerId, string CustomerIdType);
+public record CustomerMasterData(string CustomerName, Guid RegisteredByProcessId, string CustomerId, string CustomerIdType, DateTime ElectricalHeatingEffectiveDate);
