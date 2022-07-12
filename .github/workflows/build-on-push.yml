@@ -60,4 +60,5 @@ jobs:
        - name: Test solution
          run: |
            dotnet tool install --tool-path ./temp/reportgenerator dotnet-reportgenerator-globaltool
-           dotnet test source/Energinet.DataHub.MarketRoles.sln --no-build --configuration Release --verbosity minimal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover --output ${{ github.workspace }}/output
+           dotnet --version
+           dir .\source\*.dll /S
