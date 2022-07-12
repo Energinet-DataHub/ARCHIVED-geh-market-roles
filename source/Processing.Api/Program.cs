@@ -14,6 +14,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
@@ -186,6 +187,18 @@ namespace Processing.Api
 
             // Event listeners
             container.Register<MeteringPointCreatedListener>(Lifestyle.Scoped);
+
+            // Master data request
+            var serviceBusConnectionString =
+                Environment.GetEnvironmentVariable("MARKET_ROLES_SERVICE_BUS_SENDER_CONNECTION_STRING");
+            var queueName = Environment.GetEnvironmentVariable("CUSTOMER_MASTER_DATA_RESPONSE_QUEUE_NAME");
+            container.Register<ServiceBusSender>(
+                () =>
+                {
+                    var serviceBusClient = new ServiceBusClient(serviceBusConnectionString);
+                    return serviceBusClient.CreateSender(queueName);
+                },
+                Lifestyle.Singleton);
         }
     }
 }

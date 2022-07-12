@@ -12,15 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Api.Configuration
-{
-    public class ServiceBusMessageMetadata
-    {
-        public ServiceBusMessageMetadata(string correlationId)
-        {
-            CorrelationID = correlationId;
-        }
+namespace Processing.Api.Configuration;
 
-        public string CorrelationID { get; }
-    }
+public class CustomerMasterDataRequestMetadata
+{
+    public string? TransactionId { get; set; }
 }
