@@ -51,8 +51,8 @@ namespace Processing.Api.CustomerMasterData
             if (data == null) throw new ArgumentNullException(nameof(data));
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            var customerMasterDatayQuery = _jsonSerializer.Deserialize<GetCustomerMasterDataQuery>(data);
-            var result = await _mediator.Send(customerMasterDatayQuery).ConfigureAwait(false);
+            var customerMasterDataQuery = _jsonSerializer.Deserialize<GetCustomerMasterDataQuery>(data);
+            var result = await _mediator.Send(customerMasterDataQuery).ConfigureAwait(false);
             var resultAsJsonString = _jsonSerializer.Serialize(result);
 
             ServiceBusMessage serviceBusMessage = new(resultAsJsonString)
