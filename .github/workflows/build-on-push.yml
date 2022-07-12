@@ -18,19 +18,14 @@ name: "Build and test on push"
 on:
   push:
    branches:
-     - "sondergaard/build-on-push"
+     - "sondergaard/hybrid-build"
 
 jobs:
-  # Markdown, links and spell checking
-  #ci_base:
-  #  uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@7.6.0
+  ci_base:
+   uses: Energinet-DataHub/.github/.github/workflows/ci-base.yml@7.6.0
   csharp_build:
    runs-on: ubuntu-20.04
    steps:
-     - name: Set env variables
-       run: |
-         echo "RndPassword=$(openssl rand -base64 21)!" >> $GITHUB_ENV
-
      - name: Checkout repo
        uses: actions/checkout@v3
 
@@ -39,21 +34,30 @@ jobs:
        with:
         dotnet-version: '6.0.301'
 
-     - name: Run SQL 'Server'
-       run: docker run -e 'ACCEPT_EULA=Y' -e "SA_PASSWORD=${{ env.RndPassword }}" -p 1433:1433 --name sqlserver -d mcr.microsoft.com/mssql/server:2019-latest
-      #  with:
-      #     image: mcr.microsoft.com/mssql/server:2019-latest
-      #     options: -e 'ACCEPT_EULA=Y' -e "SA_PASSWORD=${{ env.RndPassword }}" -p 1433:1433 --name sqlserver -d  
-
      - name: "Restore nuget packages"
        run: dotnet restore source/Energinet.DataHub.MarketRoles.sln
         
      - name: Build solution
        run: dotnet build source/Energinet.DataHub.MarketRoles.sln --no-restore --configuration Release
 
-     - name: Test solution
-       env:
-        TestCommonConnectionString: 'Server=localhost;Database=B2BTransactions;Encrypt=false;User Id=sa;Password=${{ env.RndPassword }};'
-       run: |
-         dotnet tool install --tool-path ./temp/reportgenerator dotnet-reportgenerator-globaltool
-         dotnet test source/Energinet.DataHub.MarketRoles.sln --no-build --configuration Release --verbosity minimal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover --output ${{ github.workspace }}/output
+     - name: Cache build output
+       uses: actions/cache@v3
+       with:
+         path: ./source/*
+         key: 'build-${{ github.sha }}'
+
+  csharp_test:
+    runs-on: windows-latest
+    needs: [csharp_build]
+    steps:
+       - uses: actions/checkout@v3
+       - uses: actions/cache@v3
+         id: restore-build
+         with:
+           path: ./source/*
+           key: 'build-${{ github.sha }}'
+
+       - name: Test solution
+         run: |
+           dotnet tool install --tool-path ./temp/reportgenerator dotnet-reportgenerator-globaltool
+           dotnet test source/Energinet.DataHub.MarketRoles.sln --no-build --configuration Release --verbosity minimal --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover --output ${{ github.workspace }}/output
