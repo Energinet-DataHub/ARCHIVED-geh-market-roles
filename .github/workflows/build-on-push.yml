@@ -61,4 +61,4 @@ jobs:
          run: |
            dotnet tool install --tool-path ./temp/reportgenerator dotnet-reportgenerator-globaltool
            dotnet --version
-           dir .\source\*.dll /S
+           dir source\*.dll /S
