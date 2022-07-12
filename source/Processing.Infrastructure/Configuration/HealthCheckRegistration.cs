@@ -41,7 +41,7 @@ namespace Processing.Infrastructure.Configuration
             }
         }
 
-        public static void AddExternalServiceBusQueuesHealthCheck(this IServiceCollection services, string serviceBusConnectionString, [NotNull] params string[] queueNames)
+        public static void AddInternalDomainServiceBusQueuesHealthCheck(this IServiceCollection services, string serviceBusConnectionString, [NotNull] params string[] queueNames)
         {
             foreach (var name in queueNames)
             {
