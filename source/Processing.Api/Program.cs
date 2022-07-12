@@ -34,7 +34,6 @@ using Processing.Application.ChangeOfSupplier;
 using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.Common;
 using Processing.Application.Common.DomainEvents;
-using Processing.Application.Common.Processing;
 using Processing.Application.EDI;
 using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Validation;
@@ -105,6 +104,10 @@ namespace Processing.Api
             services.AddExternalServiceBusTopicsHealthCheck(
                 Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_MANAGE_FOR_INTEGRATION_EVENTS")!,
                 "consumer-moved-in");
+            services.AddInternalDomainServiceBusQueuesHealthCheck(
+                Environment.GetEnvironmentVariable("MARKET_ROLES_SERVICE_BUS_MANAGE_CONNECTION_STRING")!,
+                Environment.GetEnvironmentVariable("CUSTOMER_MASTER_DATA_RESPONSE_QUEUE_NAME")!,
+                Environment.GetEnvironmentVariable("CUSTOMER_MASTER_DATA_REQUEST_QUEUE_NAME")!);
         }
 
         protected override void ConfigureContainer(Container container)
