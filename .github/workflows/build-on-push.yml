@@ -40,25 +40,22 @@ jobs:
      - name: Build solution
        run: dotnet build source/Energinet.DataHub.MarketRoles.sln --no-restore --configuration Release
 
-     - name: Cache build output
-       uses: actions/cache@v3
+     - name: Upload build output
+       uses: actions/upload-artifact@v3
        with:
          path: ./source/*
-         key: 'build-${{ github.sha }}'
+         name: 'build-${{ github.sha }}'
 
   csharp_test:
     runs-on: windows-latest
     needs: [csharp_build]
     steps:
-       - uses: actions/checkout@v3
-       - uses: actions/cache@v3
+       - name: Download build output
+         uses: actions/download-artifact@v3
          id: restore-build
          with:
-           path: ./source/*
-           key: 'build-${{ github.sha }}'
+           name: 'build-${{ github.sha }}'
 
        - name: Test solution
          run: |
-           dotnet tool install --tool-path ./temp/reportgenerator dotnet-reportgenerator-globaltool
-           dotnet --version
-           Get-ChildItem -Path ${{ github.workspace }}\source\* -Include *.dll -Recurse
+           dotnet test source/GreenEnergyHub.Charges/GreenEnergyHub.Charges.sln --no-build --configuration Release
