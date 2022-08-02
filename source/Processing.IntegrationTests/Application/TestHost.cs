@@ -34,14 +34,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NodaTime;
 using Processing.Application.ChangeOfSupplier;
-using Processing.Application.ChangeOfSupplier.Processing.ConsumerDetails;
-using Processing.Application.ChangeOfSupplier.Processing.EndOfSupplyNotification;
-using Processing.Application.ChangeOfSupplier.Processing.MeteringPointDetails;
 using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.Common;
 using Processing.Application.Common.Commands;
 using Processing.Application.Common.DomainEvents;
-using Processing.Application.Common.Processing;
 using Processing.Application.Common.Queries;
 using Processing.Application.EDI;
 using Processing.Application.MoveIn;
@@ -59,16 +55,12 @@ using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.DataAccess.AccountingPoints;
 using Processing.Infrastructure.Configuration.DataAccess.Consumers;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
-using Processing.Infrastructure.Configuration.DataAccess.ProcessManagers;
 using Processing.Infrastructure.Configuration.DomainEventDispatching;
 using Processing.Infrastructure.Configuration.EventPublishing;
+using Processing.Infrastructure.Configuration.InternalCommands;
 using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
 using Processing.Infrastructure.EDI;
-using Processing.Infrastructure.EDI.ChangeOfSupplier.ConsumerDetails;
-using Processing.Infrastructure.EDI.ChangeOfSupplier.EndOfSupplyNotification;
-using Processing.Infrastructure.EDI.ChangeOfSupplier.MeteringPointDetails;
-using Processing.Infrastructure.InternalCommands;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Transport;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
@@ -103,10 +95,13 @@ namespace Processing.IntegrationTests.Application
             _container = new Container();
             var serviceCollection = new ServiceCollection();
 
+            serviceCollection.AddLogging();
+
             _container = new Container();
             _container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 
             _container.AddOutbox();
+            _container.AddInternalCommandsProcessing();
 
             _container.SendProtobuf<MarketRolesEnvelope>();
             _container.ReceiveProtobuf<MarketRolesEnvelope>(
@@ -122,14 +117,12 @@ namespace Processing.IntegrationTests.Application
             _container.Register<IUnitOfWork, UnitOfWork>(Lifestyle.Scoped);
             _container.Register<IAccountingPointRepository, AccountingPointRepository>(Lifestyle.Scoped);
             _container.Register<IEnergySupplierRepository, EnergySupplierRepository>(Lifestyle.Scoped);
-            _container.Register<IProcessManagerRepository, ProcessManagerRepository>(Lifestyle.Scoped);
             _container.Register<IConsumerRepository, ConsumerRepository>(Lifestyle.Scoped);
             _container.Register<IJsonSerializer, JsonSerializer>(Lifestyle.Singleton);
             _container.Register<ISystemDateTimeProvider, SystemDateTimeProviderStub>(Lifestyle.Singleton);
             _container.Register<IDomainEventsAccessor, DomainEventsAccessor>();
             _container.Register<IDomainEventsDispatcher, DomainEventsDispatcher>();
             _container.Register<IDomainEventPublisher, DomainEventPublisher>();
-            _container.Register<ICommandScheduler, CommandScheduler>(Lifestyle.Scoped);
             _container.Register<IDbConnectionFactory>(() => new SqlDbConnectionFactory(_connectionString));
             _container.Register<ICorrelationContext, CorrelationContext>(Lifestyle.Scoped);
 
@@ -153,11 +146,6 @@ namespace Processing.IntegrationTests.Application
                 typeof(MoveInRequest).Assembly, // Application
                 typeof(ConsumerMovedIn).Assembly, // Domain
                 typeof(DocumentType).Assembly); // Infrastructure
-
-            // Actor Notification handlers
-            _container.Register<IEndOfSupplyNotifier, EndOfSupplyNotifier>(Lifestyle.Scoped);
-            _container.Register<IConsumerDetailsForwarder, ConsumerDetailsForwarder>(Lifestyle.Scoped);
-            _container.Register<IMeteringPointDetailsForwarder, MeteringPointDetailsForwarder>(Lifestyle.Scoped);
 
             _container.BuildMediator(
                 new[] { typeof(RequestChangeOfSupplierHandler).Assembly, typeof(PublishWhenEnergySupplierHasChanged).Assembly, },
@@ -184,7 +172,6 @@ namespace Processing.IntegrationTests.Application
             Mediator = _container.GetInstance<IMediator>();
             AccountingPointRepository = _container.GetInstance<IAccountingPointRepository>();
             EnergySupplierRepository = _container.GetInstance<IEnergySupplierRepository>();
-            ProcessManagerRepository = _container.GetInstance<IProcessManagerRepository>();
             ConsumerRepository = _container.GetInstance<IConsumerRepository>();
             UnitOfWork = _container.GetInstance<IUnitOfWork>();
             MarketRolesContext = _container.GetInstance<MarketRolesContext>();
@@ -203,8 +190,6 @@ namespace Processing.IntegrationTests.Application
         protected IEnergySupplierRepository EnergySupplierRepository { get; }
 
         protected IConsumerRepository ConsumerRepository { get; }
-
-        protected IProcessManagerRepository ProcessManagerRepository { get; }
 
         protected IUnitOfWork UnitOfWork { get; }
 
@@ -276,23 +261,21 @@ namespace Processing.IntegrationTests.Application
             return GetService<IMediator>().Send(query, CancellationToken.None);
         }
 
-        protected async Task<TCommand?> GetEnqueuedCommandAsync<TCommand>(BusinessProcessId businessProcessId)
+        protected Task<TCommand?> GetEnqueuedCommandAsync<TCommand>()
         {
-            var type = typeof(TCommand).FullName;
+            var commandMapper = GetService<InternalCommandMapper>();
+            var commandMetadata = commandMapper.GetByType(typeof(TCommand));
             var queuedCommand = MarketRolesContext.QueuedInternalCommands
-                .FirstOrDefault(queuedInternalCommand =>
-                    queuedInternalCommand.BusinessProcessId.Equals(businessProcessId.Value) &&
-#pragma warning disable CA1309 // Warns about: "Use ordinal string comparison", but we want EF to take care of this.
-                    queuedInternalCommand.Type.Equals(type));
+                .FirstOrDefault(queuedInternalCommand => queuedInternalCommand.Type == commandMetadata.CommandName);
 
             if (queuedCommand is null)
             {
-                return default;
+                return Task.FromResult<TCommand?>(default);
             }
 
-            var messageExtractor = GetService<MessageExtractor>();
-            var command = await messageExtractor.ExtractAsync(queuedCommand!.Data).ConfigureAwait(false);
-            return (TCommand)command;
+            var serializer = GetService<IJsonSerializer>();
+            var command = (TCommand)serializer.Deserialize(queuedCommand.Data, commandMetadata.CommandType);
+            return Task.FromResult<TCommand?>(command);
         }
 
         protected Consumer CreateConsumer()

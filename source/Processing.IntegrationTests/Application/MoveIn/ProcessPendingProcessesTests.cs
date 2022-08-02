@@ -35,12 +35,11 @@ namespace Processing.IntegrationTests.Application.MoveIn
         [Fact]
         public async Task Pending_processes_are_processed()
         {
-            var businessProcessId = RegisterPendingMoveIn();
+            RegisterPendingMoveIn();
 
             await SimulateThatADayHasPassed();
 
-            var command = await GetEnqueuedCommandAsync<EffectuateConsumerMoveIn>(businessProcessId).ConfigureAwait(false);
-
+            var command = await GetEnqueuedCommandAsync<EffectuateConsumerMoveIn>().ConfigureAwait(false);
             Assert.NotNull(command);
         }
 
