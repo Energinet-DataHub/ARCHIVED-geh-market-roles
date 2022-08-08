@@ -16,7 +16,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
-using NodaTime;
 using Processing.Application.Common;
 using Processing.Application.Common.Queries;
 
@@ -37,7 +36,7 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
         var queryStatement = $"SELECT c.Name AS {nameof(CustomerMasterData.CustomerName)}, " +
                              $"cr.BusinessProcessId AS {nameof(CustomerMasterData.RegisteredByProcessId)}, " +
                              $"CASE " +
-                                $"WHEN c.CvrNumber IS NULL THEN c.CprNumber ELSE c.CvrNumber " +
+                                $"WHEN c.CvrNumber IS NULL THEN '' ELSE c.CvrNumber " +
                              $"END AS CustomerId, " +
                              $"CASE " +
                                 $"WHEN c.CvrNumber IS NULL THEN 'CPR' ELSE 'CVR' " +

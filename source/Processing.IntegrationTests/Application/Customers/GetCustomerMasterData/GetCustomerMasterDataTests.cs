@@ -34,15 +34,15 @@ namespace Processing.IntegrationTests.Application.Customers.GetCustomerMasterDat
         [Fact]
         public async Task Get_customer_master_data_test()
         {
-            var processId = await GivenAMoveInProcessHasBeenStarted().ConfigureAwait(false);
+            var processId = await GivenAMoveInProcessHasBeenStartedForACompany().ConfigureAwait(false);
 
             var query = new GetCustomerMasterDataQuery(Guid.Parse(processId));
             var result = await QueryAsync(query).ConfigureAwait(false);
 
             Assert.Equal(result.Data?.RegisteredByProcessId.ToString(), processId);
-            Assert.Equal(SampleData.CustomerId, result.Data?.CustomerId);
+            Assert.Equal(SampleData.Vat, result.Data?.CustomerId);
             Assert.Equal(SampleData.CustomerName, result.Data?.CustomerName);
-            Assert.Equal(SampleData.CustomerIdType, result.Data?.CustomerIdType);
+            Assert.Equal("CVR", result.Data?.CustomerIdType);
             Assert.Equal("01/01/0001 00:00:00", result.Data?.ElectricalHeatingEffectiveDate.ToString(CultureInfo.InvariantCulture));
         }
 
@@ -57,12 +57,40 @@ namespace Processing.IntegrationTests.Application.Customers.GetCustomerMasterDat
             Assert.NotEmpty(result.Error);
         }
 
-        private async Task<string> GivenAMoveInProcessHasBeenStarted()
+        [Fact]
+        public async Task If_customer_is_a_private_person_customer_is_not_exposed()
         {
-            GetService<IEnergySupplierRepository>().Add(new EnergySupplier(EnergySupplierId.New(), GlnNumber.Create(SampleData.EnergySupplierNumber)));
-            await InvokeCommandAsync(new CreateAccountingPoint(SampleData.MeteringPointId, SampleData.GsrnNumber, MeteringPointType.Consumption.Name)).ConfigureAwait(false);
-            var result = await SendRequestAsync(new MoveInRequest(new Consumer(SampleData.CustomerName, SampleData.CustomerId, SampleData.CustomerIdType), SampleData.EnergySupplierNumber, SampleData.GsrnNumber, SampleData.MoveInDate));
+            var processId = await GivenAMoveInProcessHasBeenStartedForAPrivatePerson().ConfigureAwait(false);
+
+            var query = new GetCustomerMasterDataQuery(Guid.Parse(processId));
+            var result = await QueryAsync(query).ConfigureAwait(false);
+
+            Assert.Equal(string.Empty, result.Data?.CustomerId);
+        }
+
+        private async Task<string> GivenAMoveInProcessHasBeenStartedForAPrivatePerson()
+        {
+            await SetupPrerequisitesAsync().ConfigureAwait(false);
+            var result = await SendRequestAsync(new MoveInRequest(new Consumer(SampleData.CustomerName, SampleData.Ssn, SampleData.CustomerIdType), SampleData.EnergySupplierNumber, SampleData.GsrnNumber, SampleData.MoveInDate));
             return result.ProcessId;
+        }
+
+        private async Task<string> GivenAMoveInProcessHasBeenStartedForACompany()
+        {
+            await SetupPrerequisitesAsync().ConfigureAwait(false);
+            var result = await SendRequestAsync(new MoveInRequest(new Consumer(SampleData.CustomerName, SampleData.Vat, "CVR"), SampleData.EnergySupplierNumber, SampleData.GsrnNumber, SampleData.MoveInDate));
+            return result.ProcessId;
+        }
+
+        private async Task SetupPrerequisitesAsync()
+        {
+            GetService<IEnergySupplierRepository>()
+                .Add(new EnergySupplier(EnergySupplierId.New(), GlnNumber.Create(SampleData.EnergySupplierNumber)));
+            await InvokeCommandAsync(new CreateAccountingPoint(
+                    SampleData.MeteringPointId,
+                    SampleData.GsrnNumber,
+                    MeteringPointType.Consumption.Name))
+                .ConfigureAwait(false);
         }
     }
 }
