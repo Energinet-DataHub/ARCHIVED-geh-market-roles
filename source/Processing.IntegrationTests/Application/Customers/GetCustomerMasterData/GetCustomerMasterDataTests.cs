@@ -42,7 +42,6 @@ namespace Processing.IntegrationTests.Application.Customers.GetCustomerMasterDat
             Assert.Equal(result.Data?.RegisteredByProcessId.ToString(), processId);
             Assert.Equal(SampleData.Vat, result.Data?.CustomerId);
             Assert.Equal(SampleData.CustomerName, result.Data?.CustomerName);
-            Assert.Equal("CVR", result.Data?.CustomerIdType);
             Assert.Equal("01/01/0001 00:00:00", result.Data?.ElectricalHeatingEffectiveDate.ToString(CultureInfo.InvariantCulture));
         }
 
@@ -71,14 +70,14 @@ namespace Processing.IntegrationTests.Application.Customers.GetCustomerMasterDat
         private async Task<string> GivenAMoveInProcessHasBeenStartedForAPrivatePerson()
         {
             await SetupPrerequisitesAsync().ConfigureAwait(false);
-            var result = await SendRequestAsync(new MoveInRequest(new Consumer(SampleData.CustomerName, SampleData.Ssn, SampleData.CustomerIdType), SampleData.EnergySupplierNumber, SampleData.GsrnNumber, SampleData.MoveInDate));
+            var result = await SendRequestAsync(new MoveInRequest(new Consumer(SampleData.CustomerName, SampleData.Ssn, SampleData.SsnTypeName), SampleData.EnergySupplierNumber, SampleData.GsrnNumber, SampleData.MoveInDate));
             return result.ProcessId;
         }
 
         private async Task<string> GivenAMoveInProcessHasBeenStartedForACompany()
         {
             await SetupPrerequisitesAsync().ConfigureAwait(false);
-            var result = await SendRequestAsync(new MoveInRequest(new Consumer(SampleData.CustomerName, SampleData.Vat, "CVR"), SampleData.EnergySupplierNumber, SampleData.GsrnNumber, SampleData.MoveInDate));
+            var result = await SendRequestAsync(new MoveInRequest(new Consumer(SampleData.CustomerName, SampleData.Vat, SampleData.VatTypeName), SampleData.EnergySupplierNumber, SampleData.GsrnNumber, SampleData.MoveInDate));
             return result.ProcessId;
         }
 

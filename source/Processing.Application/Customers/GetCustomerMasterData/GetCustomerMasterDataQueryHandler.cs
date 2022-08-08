@@ -38,9 +38,6 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
                              $"CASE " +
                                 $"WHEN c.CvrNumber IS NULL THEN '' ELSE c.CvrNumber " +
                              $"END AS CustomerId, " +
-                             $"CASE " +
-                                $"WHEN c.CvrNumber IS NULL THEN 'CPR' ELSE 'CVR' " +
-                             $"END AS CustomerIdType, " +
                              $"a.ElectricalHeating_EffectiveDate AS {nameof(CustomerMasterData.ElectricalHeatingEffectiveDate)} " +
                                 $"FROM [dbo].[Consumers] c " +
                                 $"JOIN [dbo].[ConsumerRegistrations] cr ON cr.ConsumerId = c.Id " +
@@ -60,4 +57,4 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
     }
 }
 
-public record CustomerMasterData(string CustomerName, Guid RegisteredByProcessId, string CustomerId, string CustomerIdType, DateTime ElectricalHeatingEffectiveDate);
+public record CustomerMasterData(string CustomerName, Guid RegisteredByProcessId, string CustomerId, DateTime ElectricalHeatingEffectiveDate);
