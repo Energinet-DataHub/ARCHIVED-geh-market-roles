@@ -26,7 +26,7 @@ namespace Processing.IntegrationTests.Application.Customers.GetCustomerMasterDat
 
         public static string SsnTypeName => "CPR";
 
-        public static string VatTypeName => "CPR";
+        public static string VatTypeName => "CVR";
 
         public static string Ssn => "2601211234";
 
