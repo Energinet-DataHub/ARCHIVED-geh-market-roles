@@ -24,9 +24,13 @@ namespace Processing.IntegrationTests.Application.Customers.GetCustomerMasterDat
 
         public static string CustomerName => "Test Testesen";
 
-        public static string CustomerIdType => "CPR";
+        public static string SsnTypeName => "CPR";
 
-        public static string CustomerId => "2601211234";
+        public static string VatTypeName => "CVR";
+
+        public static string Ssn => "2601211234";
+
+        public static string Vat => "10000000";
 
         public static string MoveInDate => EffectiveDateFactory.AsOfToday().ToString();
     }
