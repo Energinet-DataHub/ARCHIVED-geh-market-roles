@@ -26,14 +26,10 @@ namespace Processing.Infrastructure.BusinessRequestProcessing.Pipeline
         where TRequest : IRequest<TResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly MarketRolesContext _context;
-        private readonly ISystemDateTimeProvider _systemDateTimeProvider;
 
-        public UnitOfWorkBehaviour(IUnitOfWork unitOfWork, MarketRolesContext context, ISystemDateTimeProvider systemDateTimeProvider)
+        public UnitOfWorkBehaviour(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _systemDateTimeProvider = systemDateTimeProvider ?? throw new ArgumentNullException(nameof(systemDateTimeProvider));
         }
 
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
