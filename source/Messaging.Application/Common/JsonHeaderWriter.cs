@@ -7,6 +7,6 @@ public class JsonHeaderWriter : IHeaderWriter
 {
     public Task WriteAsync(MessageHeader messageHeader, DocumentDetails documentDetails)
     {
-        throw new System.NotImplementedException();
+        return Task.CompletedTask;
     }
 }

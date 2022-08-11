@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Messaging.Application.Common;
 using Messaging.Domain.OutgoingMessages;
+using Newtonsoft.Json;
 
 namespace Messaging.Application.OutgoingMessages.CharacteristicsOfACustomerAtAnAp;
 
@@ -35,7 +36,7 @@ public class CharacteristicsOfACustomerAtAnApDocumentWriter : DocumentWriter
     {
     }
 
-    public override Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads)
+    public override Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads, JsonTextWriter jsonTextWriter)
     {
         throw new NotImplementedException();
     }

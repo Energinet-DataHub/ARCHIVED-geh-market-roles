@@ -56,7 +56,10 @@ namespace Messaging.Tests.OutgoingMessages.CharacteristicsOfACustomerAtAnAP
                 CreateMarketActivityRecord(),
             };
 
-            var message = await _documentWriter.WriteAsync(header, marketActivityRecords.Select(record => _marketActivityRecordParser.From(record)).ToList()).ConfigureAwait(false);
+            var message = await _documentWriter.WriteAsync(
+                header,
+                marketActivityRecords.Select(record => _marketActivityRecordParser.From(record)).ToList(),
+                CimType.Xml).ConfigureAwait(false);
 
             var schema = await GetSchema().ConfigureAwait(false);
             var assertDocument = await AssertXmlDocument

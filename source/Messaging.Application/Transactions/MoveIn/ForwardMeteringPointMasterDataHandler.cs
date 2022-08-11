@@ -150,6 +150,7 @@ public class ForwardMeteringPointMasterDataHandler : IRequestHandler<ForwardMete
             "AccountingPointCharacteristics",
             "E65",
             transaction.NewEnergySupplierId,
-            _marketActivityRecordParser.From(marketActivityRecord));
+            _marketActivityRecordParser.From(marketActivityRecord),
+            CimType.Xml);
     }
 }

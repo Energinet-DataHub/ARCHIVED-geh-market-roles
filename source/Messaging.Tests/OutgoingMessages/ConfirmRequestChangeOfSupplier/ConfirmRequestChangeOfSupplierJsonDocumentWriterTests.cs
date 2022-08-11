@@ -10,6 +10,7 @@ using Messaging.Infrastructure.Common;
 using Messaging.Infrastructure.Configuration;
 using Messaging.Infrastructure.Configuration.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Messaging.Tests.OutgoingMessages.ConfirmRequestChangeOfSupplier;
@@ -33,8 +34,8 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
         var header = new MessageHeader("E03", "SenderId", "DDZ", "ReceiverId", "DDQ", Guid.NewGuid().ToString(), _systemDateTimeProvider.Now(), "A01");
         var marketActivityRecords = new List<MarketActivityRecord>()
         {
-            new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "FakeMarketEvaluationPointId"),
-            new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "FakeMarketEvaluationPointId"),
+            new("mrid1", Guid.NewGuid().ToString(), "FakeMarketEvaluationPointId"),
+            new("mrid2", Guid.NewGuid().ToString(), "FakeMarketEvaluationPointId"),
         };
 
         var message = await _documentWriter.WriteAsync(
@@ -46,12 +47,13 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
         AssertMessage(message, header, marketActivityRecords);
     }
 
-    private static object StreamToJson(Stream stream)
+    private static JObject StreamToJson(Stream stream)
     {
+        stream.Position = 0;
         var serializer = new JsonSerializer();
-        using var sr = new StreamReader(stream);
+        var sr = new StreamReader(stream);
         using var jtr = new JsonTextReader(sr);
-        var json = serializer.Deserialize(jtr);
+        var json = serializer.Deserialize<JObject>(jtr);
 
         return json;
     }
@@ -59,6 +61,7 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
     private static void AssertMessage(Stream message, MessageHeader header, List<MarketActivityRecord> marketActivityRecords)
     {
         var json = StreamToJson(message);
-        Assert.True(true);
+
+        Assert.Equal(2, json.GetValue("MktActivityRecord", StringComparison.OrdinalIgnoreCase).Count());
     }
 }

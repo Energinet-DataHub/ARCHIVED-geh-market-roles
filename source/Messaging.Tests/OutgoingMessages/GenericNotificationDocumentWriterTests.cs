@@ -58,7 +58,10 @@ namespace Messaging.Tests.OutgoingMessages
                 new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "FakeMarketEvaluationPointId", _systemDateTimeProvider.Now()),
             };
 
-            var message = await _documentWriter.WriteAsync(header, marketActivityRecords.Select(record => _marketActivityRecordParser.From(record)).ToList()).ConfigureAwait(false);
+            var message = await _documentWriter.WriteAsync(
+                header,
+                marketActivityRecords.Select(record => _marketActivityRecordParser.From(record)).ToList(),
+                CimType.Xml).ConfigureAwait(false);
 
             await AssertMessage(message, header, marketActivityRecords).ConfigureAwait(false);
         }

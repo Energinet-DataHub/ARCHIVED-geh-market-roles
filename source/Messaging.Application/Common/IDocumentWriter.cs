@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
 using Messaging.Domain.OutgoingMessages;
+using Newtonsoft.Json;
 
 namespace Messaging.Application.Common;
 
@@ -33,11 +34,12 @@ public interface IDocumentWriter
     bool HandlesDocumentType(string documentType);
 
     /// <summary>
-    /// Supah bla
+    /// blalalal
     /// </summary>
     /// <param name="marketActivityPayloads"></param>
-    /// <returns>Supah dupah bla</returns>
-    Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads);
+    /// <param name="jsonTextWriter"></param>
+    /// <returns>fkdskfs</returns>
+    Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads, JsonTextWriter jsonTextWriter);
 
     /// <summary>
     /// mcmcmc

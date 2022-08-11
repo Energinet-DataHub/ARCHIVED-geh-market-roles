@@ -174,7 +174,8 @@ namespace Messaging.Application.Transactions.MoveIn
                 DataHubDetails.IdentificationNumber,
                 MarketRoles.MeteringPointAdministrator,
                 marketActivityRecordPayload,
-                reasonCode);
+                reasonCode,
+                CimType.Xml);
         }
     }
 }

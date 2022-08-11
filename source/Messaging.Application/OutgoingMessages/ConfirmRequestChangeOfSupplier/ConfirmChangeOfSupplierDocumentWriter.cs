@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Messaging.Application.Common;
 using Messaging.Domain.OutgoingMessages;
+using Newtonsoft.Json;
 
 namespace Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier;
 
@@ -35,13 +36,34 @@ public class ConfirmChangeOfSupplierDocumentWriter : DocumentWriter
     {
     }
 
-    public override Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads)
+    public override Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads, JsonTextWriter jsonTextWriter)
     {
         if (marketActivityPayloads == null) throw new ArgumentNullException(nameof(marketActivityPayloads));
+        if (jsonTextWriter == null) throw new ArgumentNullException(nameof(jsonTextWriter));
+
+        jsonTextWriter.WriteStartObject();
+        jsonTextWriter.WritePropertyName("MktActivityRecord");
+        jsonTextWriter.WriteStartArray();
 
         foreach (var marketActivityRecord in ParseFrom<MarketActivityRecord>(marketActivityPayloads))
         {
+            jsonTextWriter.WriteStartObject();
+            jsonTextWriter.WritePropertyName("mRID");
+            jsonTextWriter.WriteValue(marketActivityRecord.Id);
+            jsonTextWriter.WritePropertyName("marketEvaluationPoint.mRID");
+            jsonTextWriter.WriteStartObject();
+            jsonTextWriter.WritePropertyName("codingScheme");
+            jsonTextWriter.WriteValue("A10");
+            jsonTextWriter.WritePropertyName("value");
+            jsonTextWriter.WriteValue(marketActivityRecord.MarketEvaluationPointId);
+            jsonTextWriter.WriteEndObject();
+            jsonTextWriter.WritePropertyName("originalTransactionIDReference_MktActivityRecord.mRID");
+            jsonTextWriter.WriteValue(marketActivityRecord.OriginalTransactionId);
+            jsonTextWriter.WriteEndObject();
         }
+
+        jsonTextWriter.WriteEndArray();
+        jsonTextWriter.WriteEndObject();
 
         return Task.CompletedTask;
     }

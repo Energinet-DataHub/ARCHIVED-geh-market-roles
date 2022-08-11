@@ -19,6 +19,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Messaging.Domain.OutgoingMessages;
+using Newtonsoft.Json;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace Messaging.Application.Common;
 
@@ -53,9 +55,9 @@ public abstract class DocumentWriter : IDocumentWriter
         return _documentDetails.Type[..documentType.Length].Equals(documentType, StringComparison.OrdinalIgnoreCase);
     }
 
-    public abstract Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads);
-
     public abstract Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads, XmlWriter xmlWriter);
+
+    public abstract Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads, JsonTextWriter jsonTextWriter);
 
     public IReadOnlyCollection<TMarketActivityRecord> ParseFrom<TMarketActivityRecord>(IReadOnlyCollection<string> payloads)
     {
@@ -69,13 +71,13 @@ public abstract class DocumentWriter : IDocumentWriter
         return marketActivityRecords;
     }
 
-    public Task WriteElementAsync(string name, string value, XmlWriter writer)
+    protected Task WriteElementAsync(string name, string value, XmlWriter writer)
     {
         if (writer == null) throw new ArgumentNullException(nameof(writer));
         return writer.WriteElementStringAsync(DocumentDetails.Prefix, name, null, value);
     }
 
-    public async Task WriteMridAsync(string localName, string id, string codingScheme, XmlWriter writer)
+    protected async Task WriteMridAsync(string localName, string id, string codingScheme, XmlWriter writer)
     {
         if (writer == null) throw new ArgumentNullException(nameof(writer));
         await writer.WriteStartElementAsync(DocumentDetails.Prefix, localName, null).ConfigureAwait(false);
@@ -109,9 +111,17 @@ public abstract class DocumentWriter : IDocumentWriter
     private async Task<Stream> WriteJsonAsync(MessageHeader header, IReadOnlyCollection<string> marketActivityRecords)
     {
         var stream = new MemoryStream();
+        var streamWriter = new StreamWriter(stream);
+        using var writer = new JsonTextWriter(streamWriter);
+        writer.Formatting = Formatting.Indented;
         await WriteHeaderAsync(header, _documentDetails).ConfigureAwait(false);
-        await WriteMarketActivityRecordsAsync(marketActivityRecords).ConfigureAwait(false);
+        await WriteMarketActivityRecordsAsync(marketActivityRecords, writer).ConfigureAwait(false);
+        writer.Flush();
+        await streamWriter.FlushAsync().ConfigureAwait(false);
         stream.Position = 0;
-        return stream;
+        var returnStream = new MemoryStream();
+        await stream.CopyToAsync(returnStream).ConfigureAwait(false);
+
+        return returnStream;
     }
 }
