@@ -106,6 +106,17 @@ public class MoveInTransactionTests
         Assert.Throws<MoveInException>(() => transaction.BusinessProcessCompleted());
     }
 
+    [Fact]
+    public void Business_process_is_completed()
+    {
+        var transaction = CreateTransaction();
+        transaction.AcceptedByBusinessProcess(SampleData.ProcessId, SampleData.MarketEvaluationPointId);
+
+        transaction.BusinessProcessCompleted();
+
+        Assert.Contains(transaction.DomainEvents, e => e is BusinessProcessWasCompleted);
+    }
+
     private static MoveInTransaction CreateTransaction()
     {
         return new MoveInTransaction(
