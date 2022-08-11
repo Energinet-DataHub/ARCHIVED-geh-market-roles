@@ -13,4 +13,11 @@
 // limitations under the License.
 
 namespace Messaging.Domain.OutgoingMessages;
-public record CimMessage(string DocumentType, MessageHeader Header, IReadOnlyList<string> MarketActivityRecordPayloads);
+
+public enum CimType
+{
+    Json,
+    Xml,
+}
+
+public record CimMessage(string DocumentType, MessageHeader Header, IReadOnlyList<string> MarketActivityRecordPayloads, CimType CimType);

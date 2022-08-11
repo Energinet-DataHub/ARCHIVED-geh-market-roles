@@ -24,6 +24,7 @@ using Messaging.Application.OutgoingMessages;
 using Messaging.Application.OutgoingMessages.AccountingPointCharacteristics;
 using Messaging.Domain.MasterData.Dictionaries;
 using Messaging.Domain.OutgoingMessages;
+using Messaging.Domain.Transactions.MoveIn;
 using NodaTime.Extensions;
 using Address = Messaging.Application.OutgoingMessages.AccountingPointCharacteristics.Address;
 using Series = Messaging.Application.OutgoingMessages.AccountingPointCharacteristics.Series;
@@ -119,7 +120,7 @@ public class ForwardMeteringPointMasterDataHandler : IRequestHandler<ForwardMete
             masterData.Address.PostCode);
     }
 
-    private static OutgoingMessage CreateOutgoingMessage(string id, string documentType, string processType, string receiverId, string marketActivityRecordPayload)
+    private static OutgoingMessage CreateOutgoingMessage(string id, string documentType, string processType, string receiverId, string marketActivityRecordPayload, CimType cimType)
     {
         return new OutgoingMessage(
             documentType,
@@ -131,7 +132,8 @@ public class ForwardMeteringPointMasterDataHandler : IRequestHandler<ForwardMete
             DataHubDetails.IdentificationNumber,
             MarketRoles.MeteringPointAdministrator,
             marketActivityRecordPayload,
-            null);
+            null,
+            cimType);
     }
 
     private OutgoingMessage AccountingPointCharacteristicsMessageFrom(MasterDataContent masterData, MoveInTransaction transaction)

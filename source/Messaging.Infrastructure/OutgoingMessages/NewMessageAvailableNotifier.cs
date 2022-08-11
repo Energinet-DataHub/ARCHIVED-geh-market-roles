@@ -16,7 +16,6 @@ using System;
 using System.Threading.Tasks;
 using Energinet.DataHub.MessageHub.Client.DataAvailable;
 using Energinet.DataHub.MessageHub.Model.Model;
-using Messaging.Application.OutgoingMessages;
 using Messaging.Domain.OutgoingMessages;
 
 namespace Messaging.Infrastructure.OutgoingMessages

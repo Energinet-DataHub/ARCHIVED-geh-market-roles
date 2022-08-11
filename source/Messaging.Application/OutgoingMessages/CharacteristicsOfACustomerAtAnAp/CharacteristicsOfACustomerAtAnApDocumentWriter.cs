@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml;
 using Messaging.Application.Common;
+using Messaging.Domain.OutgoingMessages;
 
 namespace Messaging.Application.OutgoingMessages.CharacteristicsOfACustomerAtAnAp;
 
@@ -34,19 +35,34 @@ public class CharacteristicsOfACustomerAtAnApDocumentWriter : DocumentWriter
     {
     }
 
-    protected override async Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads, XmlWriter writer)
+    public override Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override async Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads, XmlWriter xmlWriter)
     {
         if (marketActivityPayloads == null) throw new ArgumentNullException(nameof(marketActivityPayloads));
-        if (writer == null) throw new ArgumentNullException(nameof(writer));
+        if (xmlWriter == null) throw new ArgumentNullException(nameof(xmlWriter));
         foreach (var marketActivityRecord in ParseFrom<MarketActivityRecord>(marketActivityPayloads))
         {
-            await writer.WriteStartElementAsync(DocumentDetails.Prefix, "MktActivityRecord", null).ConfigureAwait(false);
-            await writer.WriteElementStringAsync(DocumentDetails.Prefix, "mRID", null, marketActivityRecord.Id).ConfigureAwait(false);
-            await writer.WriteElementStringAsync(DocumentDetails.Prefix, "originalTransactionIDReference_MktActivityRecord.mRID", null, marketActivityRecord.OriginalTransactionId).ConfigureAwait(false);
-            await writer.WriteElementStringAsync(DocumentDetails.Prefix, "validityStart_DateAndOrTime.dateTime", null, marketActivityRecord.ValidityStart.ToString()).ConfigureAwait(false);
-            await WriteMarketEvaluationPointAsync(marketActivityRecord.MarketEvaluationPoint, writer).ConfigureAwait(false);
-            await writer.WriteEndElementAsync().ConfigureAwait(false);
+            await xmlWriter.WriteStartElementAsync(DocumentDetails.Prefix, "MktActivityRecord", null).ConfigureAwait(false);
+            await xmlWriter.WriteElementStringAsync(DocumentDetails.Prefix, "mRID", null, marketActivityRecord.Id).ConfigureAwait(false);
+            await xmlWriter.WriteElementStringAsync(DocumentDetails.Prefix, "originalTransactionIDReference_MktActivityRecord.mRID", null, marketActivityRecord.OriginalTransactionId).ConfigureAwait(false);
+            await xmlWriter.WriteElementStringAsync(DocumentDetails.Prefix, "validityStart_DateAndOrTime.dateTime", null, marketActivityRecord.ValidityStart.ToString()).ConfigureAwait(false);
+            await WriteMarketEvaluationPointAsync(marketActivityRecord.MarketEvaluationPoint, xmlWriter).ConfigureAwait(false);
+            await xmlWriter.WriteEndElementAsync().ConfigureAwait(false);
         }
+    }
+
+    protected override Task WriteHeaderAsync(MessageHeader header, DocumentDetails documentDetails, XmlWriter writer)
+    {
+        return new XmlHeaderWriter(writer).WriteAsync(header, documentDetails);
+    }
+
+    protected override Task WriteHeaderAsync(MessageHeader header, DocumentDetails documentDetails)
+    {
+        throw new NotImplementedException();
     }
 
     private async Task WriteMarketEvaluationPointAsync(MarketEvaluationPoint marketEvaluationPoint, XmlWriter writer)

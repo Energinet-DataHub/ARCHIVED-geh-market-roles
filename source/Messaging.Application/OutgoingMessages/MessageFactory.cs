@@ -40,6 +40,7 @@ public class MessageFactory
 
         return documentWriter.WriteAsync(
             message.Header,
-            message.MarketActivityRecordPayloads);
+            message.MarketActivityRecordPayloads,
+            message.CimType);
     }
 }

@@ -16,7 +16,7 @@ namespace Messaging.Application.Common;
 
 public class DocumentDetails
 {
-    public DocumentDetails(string type, string schemaLocation, string xmlNamespace, string prefix, string typeCode)
+    public DocumentDetails(string type, string? schemaLocation, string? xmlNamespace, string? prefix, string? typeCode)
     {
         Type = type;
         SchemaLocation = schemaLocation;
@@ -25,13 +25,18 @@ public class DocumentDetails
         TypeCode = typeCode;
     }
 
+    public DocumentDetails(string type)
+    {
+        Type = type;
+    }
+
     public string Type { get; }
 
-    public string SchemaLocation { get; }
+    public string? SchemaLocation { get; }
 
-    public string XmlNamespace { get; }
+    public string? XmlNamespace { get; }
 
-    public string Prefix { get; }
+    public string? Prefix { get; }
 
-    public string TypeCode { get; }
+    public string? TypeCode { get; }
 }

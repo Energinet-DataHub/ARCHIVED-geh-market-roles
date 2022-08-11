@@ -28,6 +28,7 @@ using Messaging.Infrastructure.Transactions;
 using Messaging.Infrastructure.Transactions.MoveIn;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
@@ -61,6 +62,7 @@ namespace Messaging.Api
 
         public static IHost ConfigureHost(TokenValidationParameters tokenValidationParameters, RuntimeEnvironment runtime)
         {
+            IdentityModelEventSource.ShowPII = true;
             return new HostBuilder()
                 .ConfigureFunctionsWorkerDefaults(worker =>
                 {

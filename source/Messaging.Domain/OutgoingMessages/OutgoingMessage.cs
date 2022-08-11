@@ -16,7 +16,7 @@ namespace Messaging.Domain.OutgoingMessages
 {
     public class OutgoingMessage
     {
-        public OutgoingMessage(string documentType, string receiverId, string correlationId, string originalMessageId, string processType, string receiverRole, string senderId, string senderRole, string marketActivityRecordPayload, string? reasonCode)
+        public OutgoingMessage(string documentType, string receiverId, string correlationId, string originalMessageId, string processType, string receiverRole, string senderId, string senderRole, string marketActivityRecordPayload, string? reasonCode, CimType cimType)
         {
             DocumentType = documentType;
             ReceiverId = receiverId;
@@ -29,9 +29,10 @@ namespace Messaging.Domain.OutgoingMessages
             MarketActivityRecordPayload = marketActivityRecordPayload;
             ReasonCode = reasonCode;
             Id = Guid.NewGuid();
+            CimType = cimType;
         }
 
-        private OutgoingMessage(Guid id, string documentType, string receiverId, string correlationId, string originalMessageId, string processType, string receiverRole, string senderId, string senderRole, string marketActivityRecordPayload, string? reasonCode)
+        private OutgoingMessage(Guid id, string documentType, string receiverId, string correlationId, string originalMessageId, string processType, string receiverRole, string senderId, string senderRole, string marketActivityRecordPayload, string? reasonCode, CimType cimType)
         {
             DocumentType = documentType;
             ReceiverId = receiverId;
@@ -44,6 +45,7 @@ namespace Messaging.Domain.OutgoingMessages
             MarketActivityRecordPayload = marketActivityRecordPayload;
             ReasonCode = reasonCode;
             Id = id;
+            CimType = cimType;
         }
 
         public Guid Id { get; }
@@ -69,6 +71,8 @@ namespace Messaging.Domain.OutgoingMessages
         public string SenderRole { get; }
 
         public string MarketActivityRecordPayload { get; }
+
+        public CimType CimType { get; }
 
         public void Published()
         {
