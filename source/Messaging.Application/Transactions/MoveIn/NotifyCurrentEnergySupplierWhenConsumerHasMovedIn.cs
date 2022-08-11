@@ -20,11 +20,11 @@ using Messaging.Domain.Transactions.MoveIn.Events;
 
 namespace Messaging.Application.Transactions.MoveIn;
 
-public class NotifyCurrentEnergySupplier : INotificationHandler<BusinessProcessWasCompleted>
+public class NotifyCurrentEnergySupplierWhenConsumerHasMovedIn : INotificationHandler<BusinessProcessWasCompleted>
 {
     private readonly MoveInNotifications _notifications;
 
-    public NotifyCurrentEnergySupplier(MoveInNotifications notifications)
+    public NotifyCurrentEnergySupplierWhenConsumerHasMovedIn(MoveInNotifications notifications)
     {
         _notifications = notifications;
     }

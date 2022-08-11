@@ -222,7 +222,7 @@ namespace Messaging.Infrastructure.Configuration
             _services.AddTransient<IRequestHandler<ForwardMeteringPointMasterData, Unit>, ForwardMeteringPointMasterDataHandler>();
             _services.AddTransient<INotificationHandler<MoveInWasAccepted>, FetchMeteringPointMasterDataWhenAccepted>();
             _services.AddTransient<INotificationHandler<MoveInWasAccepted>, FetchCustomerMasterDataWhenAccepted>();
-            _services.AddTransient<INotificationHandler<BusinessProcessWasCompleted>, NotifyCurrentEnergySupplier>();
+            _services.AddTransient<INotificationHandler<BusinessProcessWasCompleted>, NotifyCurrentEnergySupplierWhenConsumerHasMovedIn>();
             return this;
         }
 
