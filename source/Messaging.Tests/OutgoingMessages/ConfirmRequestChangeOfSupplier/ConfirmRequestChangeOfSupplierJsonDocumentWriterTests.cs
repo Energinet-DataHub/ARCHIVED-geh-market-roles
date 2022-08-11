@@ -61,16 +61,25 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
     private static void AssertMessage(Stream message, MessageHeader header, List<MarketActivityRecord> marketActivityRecords)
     {
         var json = StreamToJson(message);
+        AssertMarketActivityRecord(json);
+    }
+
+    private static void AssertMarketActivityRecord(JObject json)
+    {
         var firstChild = json.GetValue("MktActivityRecord", StringComparison.OrdinalIgnoreCase)[0];
         var secondChild = json.GetValue("MktActivityRecord", StringComparison.OrdinalIgnoreCase)[1];
 
         Assert.Equal(2, json.GetValue("MktActivityRecord", StringComparison.OrdinalIgnoreCase).Count());
         Assert.Equal("mrid1", firstChild.Value<string>("mRID"));
-        Assert.Equal("OriginalTransactionId", firstChild.Value<string>("originalTransactionIDReference_MktActivityRecord.mRID"));
+        Assert.Equal(
+            "OriginalTransactionId",
+            firstChild.Value<string>("originalTransactionIDReference_MktActivityRecord.mRID"));
         Assert.Equal("FakeMarketEvaluationPointId", firstChild.First.Next.First.Value<string>("value"));
 
         Assert.Equal("mrid2", secondChild.Value<string>("mRID"));
-        Assert.Equal("FakeTransactionId", secondChild.Value<string>("originalTransactionIDReference_MktActivityRecord.mRID"));
+        Assert.Equal(
+            "FakeTransactionId",
+            secondChild.Value<string>("originalTransactionIDReference_MktActivityRecord.mRID"));
         Assert.Equal("FakeMarketEvaluationPointId", secondChild.First.Next.First.Value<string>("value"));
     }
 }
