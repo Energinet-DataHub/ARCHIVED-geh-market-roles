@@ -65,7 +65,7 @@ public class AccountingPointCharacteristicsDocumentWriter : DocumentWriter
         return new XmlHeaderWriter(writer).WriteAsync(header, documentDetails);
     }
 
-    protected override Task WriteHeaderAsync(MessageHeader header, DocumentDetails documentDetails)
+    protected override Task WriteHeaderAsync(MessageHeader header, DocumentDetails documentDetails, JsonTextWriter writer)
     {
         throw new NotImplementedException();
     }
