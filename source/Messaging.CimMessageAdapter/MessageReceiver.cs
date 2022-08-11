@@ -44,14 +44,12 @@ namespace Messaging.CimMessageAdapter
             _messageParser = messageParser;
         }
 
-        public async Task<Result> ReceiveAsync(Stream message, string contentType)
+        public async Task<Result> ReceiveAsync(Stream message, CimFormat cimFormat)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
 
-            var messageParserStrategy = _messageParser.GetMessageParserStrategy(contentType);
-
             var messageParserResult =
-                 await messageParserStrategy.ParseAsync(message).ConfigureAwait(false);
+                 await _messageParser.ParseAsync(message, cimFormat).ConfigureAwait(false);
 
             if (InvalidMessageHeader(messageParserResult))
             {

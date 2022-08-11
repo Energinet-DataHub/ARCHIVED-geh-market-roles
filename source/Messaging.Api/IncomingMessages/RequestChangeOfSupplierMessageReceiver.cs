@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using Messaging.Application.Configuration;
 using Messaging.CimMessageAdapter;
 using Messaging.CimMessageAdapter.Response;
+using Messaging.Infrastructure.IncomingMessages;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
@@ -32,15 +33,18 @@ namespace Messaging.Api.IncomingMessages
         private readonly ILogger<RequestChangeOfSupplierMessageReceiver> _logger;
         private readonly ICorrelationContext _correlationContext;
         private readonly MessageReceiver _messageReceiver;
+        private readonly ResponseFactory _responseFactory;
 
         public RequestChangeOfSupplierMessageReceiver(
             ILogger<RequestChangeOfSupplierMessageReceiver> logger,
             ICorrelationContext correlationContext,
-            MessageReceiver messageReceiver)
+            MessageReceiver messageReceiver,
+            ResponseFactory responseFactory)
         {
             _logger = logger;
             _correlationContext = correlationContext;
             _messageReceiver = messageReceiver ?? throw new ArgumentNullException(nameof(messageReceiver));
+            _responseFactory = responseFactory;
         }
 
         [Function("RequestChangeOfSupplier")]
@@ -53,14 +57,18 @@ namespace Messaging.Api.IncomingMessages
             if (request == null) throw new ArgumentNullException(nameof(request));
 
             var contentType = GetContentType(request.Headers);
+            var cimFormat = CimFormatParser.ParseFromContentTypeHeaderValue(contentType);
+            if (cimFormat is null)
+            {
+                _logger.LogInformation($"Could not parse desired CIM format from Content-Type header value: {contentType}");
+                return request.CreateResponse(HttpStatusCode.UnsupportedMediaType);
+            }
 
-            var responseFactory = ResponseStrategy.GetResponseFactory(contentType);
-
-            var result = await _messageReceiver.ReceiveAsync(request.Body, contentType)
+            var result = await _messageReceiver.ReceiveAsync(request.Body, cimFormat)
                 .ConfigureAwait(false);
 
             var httpStatusCode = result.Success ? HttpStatusCode.Accepted : HttpStatusCode.BadRequest;
-            return CreateResponse(request, httpStatusCode, responseFactory.From(result));
+            return CreateResponse(request, httpStatusCode, _responseFactory.From(result, cimFormat));
         }
 
         private static string GetContentType(HttpHeaders headers)

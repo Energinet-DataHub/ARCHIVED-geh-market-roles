@@ -12,21 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Domain.Transactions.MoveIn;
+using System.Text.Json.Serialization;
+using Messaging.Application.Common.Commands;
 
-public class TransactionNotFoundException : Exception
+namespace Messaging.Application.Transactions.MoveIn;
+
+public class SetConsumerHasMovedIn : InternalCommand
 {
-    public TransactionNotFoundException(string processId)
-        : base($"Could not find a transaction for business process id {processId}")
+    [JsonConstructor]
+    public SetConsumerHasMovedIn(string processId)
     {
+        ProcessId = processId;
     }
 
-    private TransactionNotFoundException()
-    {
-    }
-
-    private TransactionNotFoundException(string message, Exception innerException)
-        : base(message, innerException)
-    {
-    }
+    public string ProcessId { get; }
 }

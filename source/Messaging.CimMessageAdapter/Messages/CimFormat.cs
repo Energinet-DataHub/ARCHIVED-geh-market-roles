@@ -12,27 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+using Messaging.Domain.SeedWork;
 
 namespace Messaging.CimMessageAdapter.Messages;
 
-public class MessageParser
+public class CimFormat : EnumerationType
 {
-    private readonly IEnumerable<IMessageParser> _parsers;
+    public static readonly CimFormat Xml = new(0, nameof(Xml));
+    public static readonly CimFormat Json = new(1, nameof(Json));
 
-    public MessageParser(IEnumerable<IMessageParser> parsers)
+    private CimFormat(int id, string name)
+        : base(id, name)
     {
-        _parsers = parsers;
-    }
-
-    public Task<MessageParserResult> ParseAsync(Stream message, CimFormat cimFormat)
-    {
-        var parser = _parsers.FirstOrDefault(parser => parser.HandledFormat.Equals(cimFormat));
-        if (parser is null) throw new InvalidOperationException($"No message parser found for message format '{cimFormat}'");
-        return parser.ParseAsync(message);
     }
 }

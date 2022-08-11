@@ -12,27 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Messaging.CimMessageAdapter.Messages;
 
-public class MessageParser
+/// <summary>
+/// Parses CIM messages from a stream
+/// </summary>
+public interface IMessageParser
 {
-    private readonly IEnumerable<IMessageParser> _parsers;
+    /// <summary>
+    /// The CIM format handled
+    /// </summary>
+    CimFormat HandledFormat { get; }
 
-    public MessageParser(IEnumerable<IMessageParser> parsers)
-    {
-        _parsers = parsers;
-    }
-
-    public Task<MessageParserResult> ParseAsync(Stream message, CimFormat cimFormat)
-    {
-        var parser = _parsers.FirstOrDefault(parser => parser.HandledFormat.Equals(cimFormat));
-        if (parser is null) throw new InvalidOperationException($"No message parser found for message format '{cimFormat}'");
-        return parser.ParseAsync(message);
-    }
+    /// <summary>
+    /// Parse from stream
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns><see cref="MessageParserResult"/></returns>
+    Task<MessageParserResult> ParseAsync(Stream message);
 }

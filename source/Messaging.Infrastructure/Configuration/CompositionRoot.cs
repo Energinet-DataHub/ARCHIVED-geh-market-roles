@@ -42,7 +42,9 @@ using Messaging.Application.SchemaStore;
 using Messaging.Application.Transactions.MoveIn;
 using Messaging.CimMessageAdapter;
 using Messaging.CimMessageAdapter.Messages;
+using Messaging.CimMessageAdapter.Response;
 using Messaging.Domain.MasterData.MarketEvaluationPoints;
+using Messaging.Domain.Transactions.MoveIn;
 using Messaging.Domain.Transactions.MoveIn.Events;
 using Messaging.Infrastructure.Common;
 using Messaging.Infrastructure.Common.Reasons;
@@ -216,7 +218,7 @@ namespace Messaging.Infrastructure.Configuration
             _services.AddTransient<IRequestHandler<IncomingMessage, Unit>, MoveInRequestHandler>();
             _services.AddTransient<IRequestHandler<FetchMeteringPointMasterData, Unit>, FetchMeteringPointMasterDataHandler>();
             _services.AddTransient<IRequestHandler<FetchCustomerMasterData, Unit>, FetchCustomerMasterDataHandler>();
-            _services.AddTransient<IRequestHandler<CompleteMoveInTransaction, Unit>, CompleteMoveInTransactionHandler>();
+            _services.AddTransient<IRequestHandler<SetConsumerHasMovedIn, Unit>, SetConsumerHasMovedInHandler>();
             _services.AddTransient<IRequestHandler<ForwardMeteringPointMasterData, Unit>, ForwardMeteringPointMasterDataHandler>();
             _services.AddTransient<INotificationHandler<MoveInWasAccepted>, FetchMeteringPointMasterDataWhenAccepted>();
             _services.AddTransient<INotificationHandler<MoveInWasAccepted>, FetchCustomerMasterDataWhenAccepted>();
@@ -225,11 +227,20 @@ namespace Messaging.Infrastructure.Configuration
 
         public CompositionRoot AddMessageParserServices()
         {
-            _services.AddSingleton<MessageParser>();
-            _services.AddSingleton<XmlMessageParserStrategy>();
-            _services.AddSingleton<JsonMessageParserStrategy>();
+            _services.AddSingleton(_ => new MessageParser(new IMessageParser[]
+            {
+                new JsonMessageParser(),
+                new XmlMessageParser(),
+            }));
+            _services.AddSingleton<XmlMessageParser>();
+            _services.AddSingleton<JsonMessageParser>();
             _services.AddSingleton<XmlSchemaProvider>();
             _services.AddSingleton<JsonSchemaProvider>();
+            _services.AddSingleton(_ => new ResponseFactory(new IResponseFactory[]
+            {
+                new JsonResponseFactory(),
+                new XmlResponseFactory(),
+            }));
             return this;
         }
 

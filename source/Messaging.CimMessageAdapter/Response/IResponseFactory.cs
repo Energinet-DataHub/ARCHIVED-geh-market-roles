@@ -12,21 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Domain.Transactions.MoveIn;
+using Messaging.CimMessageAdapter.Messages;
 
-public class TransactionNotFoundException : Exception
+namespace Messaging.CimMessageAdapter.Response;
+
+/// <summary>
+/// Factory responsible for creating B2B response messages
+/// </summary>
+public interface IResponseFactory
 {
-    public TransactionNotFoundException(string processId)
-        : base($"Could not find a transaction for business process id {processId}")
-    {
-    }
+    /// <summary>
+    /// Specifies the handled CIM format
+    /// </summary>
+    public CimFormat HandledFormat { get; }
 
-    private TransactionNotFoundException()
-    {
-    }
-
-    private TransactionNotFoundException(string message, Exception innerException)
-        : base(message, innerException)
-    {
-    }
+    /// <summary>
+    /// Create response message
+    /// </summary>
+    /// <param name="result"></param>
+    /// <returns><see cref="ResponseMessage"/></returns>
+    public ResponseMessage From(Result result);
 }
