@@ -68,5 +68,9 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
         Assert.Equal("mrid1", firstChild.Value<string>("mRID"));
         Assert.Equal("OriginalTransactionId", firstChild.Value<string>("originalTransactionIDReference_MktActivityRecord.mRID"));
         Assert.Equal("FakeMarketEvaluationPointId", firstChild.First.Next.First.Value<string>("value"));
+
+        Assert.Equal("mrid2", secondChild.Value<string>("mRID"));
+        Assert.Equal("FakeTransactionId", secondChild.Value<string>("originalTransactionIDReference_MktActivityRecord.mRID"));
+        Assert.Equal("FakeMarketEvaluationPointId", secondChild.First.Next.First.Value<string>("value"));
     }
 }
