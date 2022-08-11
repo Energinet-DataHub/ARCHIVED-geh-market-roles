@@ -16,8 +16,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Messaging.Application.Common;
-using Messaging.Application.OutgoingMessages;
 using Messaging.Domain.Transactions.MoveIn;
 
 namespace Messaging.Application.Transactions.MoveIn;
@@ -25,12 +23,10 @@ namespace Messaging.Application.Transactions.MoveIn;
 public class SetConsumerHasMovedInHandler : IRequestHandler<SetConsumerHasMovedIn, Unit>
 {
     private readonly IMoveInTransactionRepository _transactionRepository;
-    private readonly MoveInNotifications _notifications;
 
-    public SetConsumerHasMovedInHandler(IMoveInTransactionRepository transactionRepository, IMarketActivityRecordParser marketActivityRecordParser, IOutgoingMessageStore outgoingMessageStore, MoveInNotifications notifications)
+    public SetConsumerHasMovedInHandler(IMoveInTransactionRepository transactionRepository)
     {
         _transactionRepository = transactionRepository;
-        _notifications = notifications;
     }
 
     public async Task<Unit> Handle(SetConsumerHasMovedIn request, CancellationToken cancellationToken)
@@ -43,15 +39,6 @@ public class SetConsumerHasMovedInHandler : IRequestHandler<SetConsumerHasMovedI
         }
 
         transaction.BusinessProcessCompleted();
-        InformSupplierIfAny(transaction);
         return Unit.Value;
-    }
-
-    private void InformSupplierIfAny(MoveInTransaction transaction)
-    {
-        if (transaction.CurrentEnergySupplierId is not null)
-        {
-            _notifications.InformCurrentEnergySupplierAboutEndOfSupply(transaction.TransactionId);
-        }
     }
 }

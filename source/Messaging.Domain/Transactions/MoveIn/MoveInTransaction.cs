@@ -74,7 +74,7 @@ namespace Messaging.Domain.Transactions.MoveIn
             }
 
             _hasBusinessProcessCompleted = true;
-            AddDomainEvent(new BusinessProcessWasCompleted());
+            AddDomainEvent(new BusinessProcessWasCompleted(TransactionId));
             CompleteTransactionIfPossible();
         }
 

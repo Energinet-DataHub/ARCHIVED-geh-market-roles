@@ -42,7 +42,7 @@ public class MoveInNotifications
 
         if (transaction.CurrentEnergySupplierId is null)
         {
-            throw new MoveInException("Energy supplier number cannot be empty.");
+            return;
         }
 
         var marketActivityRecord = new MarketActivityRecord(
