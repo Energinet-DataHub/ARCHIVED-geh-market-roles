@@ -32,6 +32,7 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
     public async Task Document_is_valid()
     {
         var header = new MessageHeader("E03", "SenderId", "DDZ", "ReceiverId", "DDQ", Guid.NewGuid().ToString(), _systemDateTimeProvider.Now(), "A01");
+        var documentDetails = new DocumentDetails();
         var marketActivityRecords = new List<MarketActivityRecord>()
         {
             new("mrid1", "OriginalTransactionId", "FakeMarketEvaluationPointId"),

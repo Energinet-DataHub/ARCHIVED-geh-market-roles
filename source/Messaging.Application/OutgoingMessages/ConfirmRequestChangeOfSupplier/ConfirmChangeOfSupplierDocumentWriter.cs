@@ -95,8 +95,8 @@ public class ConfirmChangeOfSupplierDocumentWriter : DocumentWriter
         return new XmlHeaderWriter(writer).WriteAsync(header, documentDetails);
     }
 
-    protected override Task WriteHeaderAsync(MessageHeader header, DocumentDetails documentDetails)
+    protected override Task WriteHeaderAsync(MessageHeader header, DocumentDetails documentDetails, JsonTextWriter writer)
     {
-        return new JsonHeaderWriter().WriteAsync(header, documentDetails);
+        return new JsonHeaderWriter(writer).WriteAsync(header, documentDetails);
     }
 }

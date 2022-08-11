@@ -88,7 +88,7 @@ public abstract class DocumentWriter : IDocumentWriter
 
     protected abstract Task WriteHeaderAsync(MessageHeader header, DocumentDetails documentDetails, XmlWriter writer);
 
-    protected abstract Task WriteHeaderAsync(MessageHeader header, DocumentDetails documentDetails);
+    protected abstract Task WriteHeaderAsync(MessageHeader header, DocumentDetails documentDetails, JsonTextWriter writer);
 
     private static async Task WriteEndAsync(XmlWriter writer)
     {
@@ -114,7 +114,7 @@ public abstract class DocumentWriter : IDocumentWriter
         var streamWriter = new StreamWriter(stream);
         using var writer = new JsonTextWriter(streamWriter);
         writer.Formatting = Formatting.Indented;
-        await WriteHeaderAsync(header, _documentDetails).ConfigureAwait(false);
+        await WriteHeaderAsync(header, _documentDetails, writer).ConfigureAwait(false);
         await WriteMarketActivityRecordsAsync(marketActivityRecords, writer).ConfigureAwait(false);
         writer.Flush();
         await streamWriter.FlushAsync().ConfigureAwait(false);
