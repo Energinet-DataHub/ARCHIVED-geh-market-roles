@@ -16,23 +16,28 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Messaging.Application.Configuration;
 using Messaging.Domain.Transactions.MoveIn.Events;
 
 namespace Messaging.Application.Transactions.MoveIn;
 
 public class NotifyCurrentEnergySupplierWhenConsumerHasMovedIn : INotificationHandler<EndOfSupplyNotificationChangedToPending>
 {
-    private readonly MoveInNotifications _notifications;
+    private readonly ICommandScheduler _commandScheduler;
 
-    public NotifyCurrentEnergySupplierWhenConsumerHasMovedIn(MoveInNotifications notifications)
+    public NotifyCurrentEnergySupplierWhenConsumerHasMovedIn(ICommandScheduler commandScheduler)
     {
-        _notifications = notifications;
+        _commandScheduler = commandScheduler;
     }
 
     public Task Handle(EndOfSupplyNotificationChangedToPending notification, CancellationToken cancellationToken)
     {
         if (notification == null) throw new ArgumentNullException(nameof(notification));
-        _notifications.InformCurrentEnergySupplierAboutEndOfSupply(notification.TransactionId, notification.EffectiveDate, notification.MarketEvaluationPointId, notification.EnergySupplierId);
-        return Task.CompletedTask;
+        return _commandScheduler.EnqueueAsync(
+            new CreateEndOfSupplyNotification(
+                notification.TransactionId,
+                notification.EffectiveDate,
+                notification.MarketEvaluationPointId,
+                notification.EnergySupplierId));
     }
 }

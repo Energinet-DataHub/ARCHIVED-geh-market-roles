@@ -52,6 +52,7 @@ public class WhenAConsumerHasMovedInTests : TestBase
     {
         await ConsumerHasMovedIn().ConfigureAwait(false);
 
+        AssertQueuedCommand.QueuedCommand<CreateEndOfSupplyNotification>(GetService<IDbConnectionFactory>());
         AssertTransaction()
             .BusinessProcessCompleted();
     }

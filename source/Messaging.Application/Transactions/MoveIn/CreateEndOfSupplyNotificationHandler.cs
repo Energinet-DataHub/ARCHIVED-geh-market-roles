@@ -40,6 +40,8 @@ public class CreateEndOfSupplyNotificationHandler : IRequestHandler<CreateEndOfS
             throw new TransactionNotFoundException(request.TransactionId);
         }
 
+        _notifications.InformCurrentEnergySupplierAboutEndOfSupply(request.TransactionId, request.EffectiveDate, request.MarketEvaluationPointId, request.EnergySupplierId);
+
         transaction.MarkEndOfSupplyNotificationAsSent();
         return Unit.Task;
     }

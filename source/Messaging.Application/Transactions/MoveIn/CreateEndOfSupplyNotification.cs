@@ -12,16 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json.Serialization;
 using Messaging.Application.Common.Commands;
+using NodaTime;
 
 namespace Messaging.Application.Transactions.MoveIn;
 
 public class CreateEndOfSupplyNotification : InternalCommand
 {
-    public CreateEndOfSupplyNotification(string transactionId)
+    [JsonConstructor]
+    public CreateEndOfSupplyNotification(string transactionId, Instant effectiveDate, string marketEvaluationPointId, string energySupplierId)
     {
         TransactionId = transactionId;
+        EffectiveDate = effectiveDate;
+        MarketEvaluationPointId = marketEvaluationPointId;
+        EnergySupplierId = energySupplierId;
     }
 
     public string TransactionId { get; }
+
+    public Instant EffectiveDate { get; }
+
+    public string MarketEvaluationPointId { get; }
+
+    public string EnergySupplierId { get; }
 }

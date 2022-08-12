@@ -20,11 +20,9 @@ using Messaging.Application.Configuration.DataAccess;
 using Messaging.Application.OutgoingMessages;
 using Messaging.Application.Transactions;
 using Messaging.Application.Transactions.MoveIn;
-using Messaging.Domain.MasterData.MarketEvaluationPoints;
 using Messaging.Domain.Transactions.MoveIn;
 using Messaging.IntegrationTests.Fixtures;
 using Xunit;
-using MarketEvaluationPoint = Messaging.Domain.MasterData.MarketEvaluationPoints.MarketEvaluationPoint;
 
 namespace Messaging.IntegrationTests.Application.Transactions.MoveIn;
 
@@ -44,7 +42,7 @@ public class CreateEndOfSupplyNotificationTests : TestBase
     public async Task An_exception_is_thrown_if_transaction_cannot_be_located()
     {
         var transactionId = "Not existing";
-        var command = new CreateEndOfSupplyNotification(transactionId);
+        var command = CreateCommand(transactionId);
 
         await Assert.ThrowsAsync<TransactionNotFoundException>(() => InvokeCommandAsync(command)).ConfigureAwait(false);
     }
@@ -54,7 +52,7 @@ public class CreateEndOfSupplyNotificationTests : TestBase
     {
         var transaction = await ConsumerHasMovedIn().ConfigureAwait(false);
 
-        await InvokeCommandAsync(new CreateEndOfSupplyNotification(SampleData.TransactionId)).ConfigureAwait(false);
+        await InvokeCommandAsync(CreateCommand(transaction.TransactionId)).ConfigureAwait(false);
 
         AssertTransaction()
             .HasEndOfSupplyNotificationState(MoveInTransaction.EndOfSupplyNotificationState.EnergySupplierWasNotified);
@@ -69,6 +67,11 @@ public class CreateEndOfSupplyNotificationTests : TestBase
                 .HasValidityStart(transaction.EffectiveDate.ToDateTimeUtc())
                 .HasOriginalTransactionId(transaction.TransactionId)
                 .HasMarketEvaluationPointId(transaction.MarketEvaluationPointId);
+    }
+
+    private CreateEndOfSupplyNotification CreateCommand(string transactionId)
+    {
+        return new CreateEndOfSupplyNotification(transactionId, _systemDateTimeProvider.Now(), SampleData.MeteringPointNumber, SampleData.CurrentEnergySupplierNumber);
     }
 
     private async Task<MoveInTransaction> ConsumerHasMovedIn()
