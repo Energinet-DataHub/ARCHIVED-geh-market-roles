@@ -21,14 +21,16 @@ namespace Messaging.Domain.Transactions.MoveIn
     public class MoveInTransaction : Entity
     {
         private State _state = State.Started;
+        private EndOfSupplyNotificationState _endOfSupplyNotificationState;
         private bool _hasForwardedMeteringPointMasterData;
         private bool _hasBusinessProcessCompleted;
         private bool _businessProcessIsAccepted;
-        private bool _endOfSupplyNotificationWasHandled;
 
         public MoveInTransaction(string transactionId, string marketEvaluationPointId, Instant effectiveDate, string? currentEnergySupplierId, string startedByMessageId, string newEnergySupplierId, string? consumerId, string? consumerName, string? consumerIdType)
         {
-            _endOfSupplyNotificationWasHandled = false;
+            _endOfSupplyNotificationState = currentEnergySupplierId is not null
+                ? EndOfSupplyNotificationState.Pending
+                : EndOfSupplyNotificationState.NotNeeded;
             TransactionId = transactionId;
             MarketEvaluationPointId = marketEvaluationPointId;
             EffectiveDate = effectiveDate;
@@ -38,13 +40,20 @@ namespace Messaging.Domain.Transactions.MoveIn
             ConsumerId = consumerId;
             ConsumerName = consumerName;
             ConsumerIdType = consumerIdType;
-            AddDomainEvent(new MoveInWasStarted(TransactionId, currentEnergySupplierId is not null));
+            AddDomainEvent(new MoveInWasStarted(TransactionId, _endOfSupplyNotificationState == EndOfSupplyNotificationState.Pending));
         }
 
         public enum State
         {
             Started,
             Completed,
+        }
+
+        public enum EndOfSupplyNotificationState
+        {
+            NotNeeded,
+            Pending,
+            EnergySupplierWasNotified,
         }
 
         public string TransactionId { get; }
@@ -114,8 +123,11 @@ namespace Messaging.Domain.Transactions.MoveIn
 
         public void MarkEndOfSupplyNotificationAsSent()
         {
-            _endOfSupplyNotificationWasHandled = true;
-            CompleteTransactionIfPossible();
+            if (_endOfSupplyNotificationState == EndOfSupplyNotificationState.Pending)
+            {
+                _endOfSupplyNotificationState = EndOfSupplyNotificationState.EnergySupplierWasNotified;
+                CompleteTransactionIfPossible();
+            }
         }
 
         private void CompleteTransactionIfPossible()
@@ -123,7 +135,7 @@ namespace Messaging.Domain.Transactions.MoveIn
             if (
                 _hasBusinessProcessCompleted &&
                 _hasForwardedMeteringPointMasterData &&
-                _endOfSupplyNotificationWasHandled)
+                (_endOfSupplyNotificationState == EndOfSupplyNotificationState.NotNeeded || _endOfSupplyNotificationState == EndOfSupplyNotificationState.EnergySupplierWasNotified))
             {
                 Complete();
             }
