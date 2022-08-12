@@ -41,7 +41,6 @@ public class ConfirmChangeOfSupplierDocumentWriter : DocumentWriter
         if (marketActivityPayloads == null) throw new ArgumentNullException(nameof(marketActivityPayloads));
         if (jsonTextWriter == null) throw new ArgumentNullException(nameof(jsonTextWriter));
 
-        jsonTextWriter.WriteStartObject();
         jsonTextWriter.WritePropertyName("MktActivityRecord");
         jsonTextWriter.WriteStartArray();
 

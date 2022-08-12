@@ -31,7 +31,7 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
     [Fact]
     public async Task Document_is_valid()
     {
-        var header = new MessageHeader("E03", "SenderId", "DDZ", "ReceiverId", "DDQ", Guid.NewGuid().ToString(), _systemDateTimeProvider.Now(), "A01");
+        var header = new MessageHeader("E03", "SenderId", "DDZ", "ReceiverId", "DDQ", "messageID", _systemDateTimeProvider.Now(), "A01");
         var documentDetails = new DocumentDetails("ConfirmRequestChangeOfSupplier_MarketDocument", null, null, null, typeCode: "414");
         var marketActivityRecords = new List<MarketActivityRecord>()
         {
@@ -62,15 +62,23 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
     private static void AssertMessage(Stream message, MessageHeader header, List<MarketActivityRecord> marketActivityRecords)
     {
         var json = StreamToJson(message);
+        var documentType = json.GetValue(
+            "ConfirmRequestChangeOfSupplier_MarketDocument",
+            StringComparison.OrdinalIgnoreCase);
+        Assert.Equal("messageID", documentType.Value<string>("mRID"));
+
         AssertMarketActivityRecord(json);
     }
 
     private static void AssertMarketActivityRecord(JObject json)
     {
-        var firstChild = json.GetValue("MktActivityRecord", StringComparison.OrdinalIgnoreCase)[0];
-        var secondChild = json.GetValue("MktActivityRecord", StringComparison.OrdinalIgnoreCase)[1];
+        var marketActivityRecords =
+            json.GetValue("ConfirmRequestChangeOfSupplier_MarketDocument", StringComparison.OrdinalIgnoreCase)
+                .Value<JArray>("MktActivityRecord").ToList();
+        var firstChild = marketActivityRecords[0];
+        var secondChild = marketActivityRecords[1];
 
-        Assert.Equal(2, json.GetValue("MktActivityRecord", StringComparison.OrdinalIgnoreCase).Count());
+        Assert.Equal(2, marketActivityRecords.Count);
         Assert.Equal("mrid1", firstChild.Value<string>("mRID"));
         Assert.Equal(
             "OriginalTransactionId",

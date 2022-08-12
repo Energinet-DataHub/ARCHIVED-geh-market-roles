@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Messaging.Domain.OutgoingMessages;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Messaging.Application.Common;
 
@@ -79,8 +80,6 @@ public class JsonHeaderWriter : IHeaderWriter
         _writer.WriteStartObject();
         _writer.WritePropertyName("value");
         _writer.WriteValue(documentDetails.TypeCode);
-        _writer.WriteEndObject();
-
         _writer.WriteEndObject();
 
         return Task.CompletedTask;
