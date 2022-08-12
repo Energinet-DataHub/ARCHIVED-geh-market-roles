@@ -38,7 +38,7 @@ namespace Messaging.Domain.Transactions.MoveIn
             ConsumerId = consumerId;
             ConsumerName = consumerName;
             ConsumerIdType = consumerIdType;
-            AddDomainEvent(new MoveInWasStarted(TransactionId));
+            AddDomainEvent(new MoveInWasStarted(TransactionId, currentEnergySupplierId is not null));
         }
 
         public enum State
