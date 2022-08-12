@@ -80,7 +80,6 @@ public class CreateEndOfSupplyNotificationTests : TestBase
 
     private async Task<MoveInTransaction> StartMoveInTransaction()
     {
-        await SetupMasterDataDetailsAsync();
         var transaction = new MoveInTransaction(
             SampleData.TransactionId,
             SampleData.MeteringPointNumber,
@@ -93,16 +92,9 @@ public class CreateEndOfSupplyNotificationTests : TestBase
             SampleData.ConsumerIdType);
 
         transaction.AcceptedByBusinessProcess(BusinessRequestResult.Succeeded(Guid.NewGuid().ToString()).ProcessId!, SampleData.MeteringPointNumber);
-        transaction.HasForwardedMeteringPointMasterData();
         _transactionRepository.Add(transaction);
         await GetService<IUnitOfWork>().CommitAsync().ConfigureAwait(false);
         return transaction;
-    }
-
-    private Task SetupMasterDataDetailsAsync()
-    {
-        GetService<IMarketEvaluationPointRepository>().Add(MarketEvaluationPoint.Create(SampleData.CurrentEnergySupplierNumber, SampleData.MeteringPointNumber));
-        return Task.CompletedTask;
     }
 
     private AssertOutgoingMessage AssertMessage(string transactionId, string documentType, string processType)
