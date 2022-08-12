@@ -159,7 +159,7 @@ namespace Messaging.Domain.Transactions.MoveIn
             if (_endOfSupplyNotificationState == EndOfSupplyNotificationState.Required)
             {
                 _endOfSupplyNotificationState = EndOfSupplyNotificationState.Pending;
-                AddDomainEvent(new EndOfSupplyNotificationChangedToPending());
+                AddDomainEvent(new EndOfSupplyNotificationChangedToPending(TransactionId));
             }
         }
     }

@@ -20,7 +20,7 @@ using Messaging.Domain.Transactions.MoveIn.Events;
 
 namespace Messaging.Application.Transactions.MoveIn;
 
-public class NotifyCurrentEnergySupplierWhenConsumerHasMovedIn : INotificationHandler<BusinessProcessWasCompleted>
+public class NotifyCurrentEnergySupplierWhenConsumerHasMovedIn : INotificationHandler<EndOfSupplyNotificationChangedToPending>
 {
     private readonly MoveInNotifications _notifications;
 
@@ -29,7 +29,7 @@ public class NotifyCurrentEnergySupplierWhenConsumerHasMovedIn : INotificationHa
         _notifications = notifications;
     }
 
-    public Task Handle(BusinessProcessWasCompleted notification, CancellationToken cancellationToken)
+    public Task Handle(EndOfSupplyNotificationChangedToPending notification, CancellationToken cancellationToken)
     {
         if (notification == null) throw new ArgumentNullException(nameof(notification));
         _notifications.InformCurrentEnergySupplierAboutEndOfSupply(notification.TransactionId);
