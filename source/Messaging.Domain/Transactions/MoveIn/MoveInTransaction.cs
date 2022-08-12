@@ -88,11 +88,7 @@ namespace Messaging.Domain.Transactions.MoveIn
             _hasBusinessProcessCompleted = true;
             AddDomainEvent(new BusinessProcessWasCompleted(TransactionId));
 
-            if (_endOfSupplyNotificationState == EndOfSupplyNotificationState.Required)
-            {
-                _endOfSupplyNotificationState = EndOfSupplyNotificationState.Pending;
-                AddDomainEvent(new EndOfSupplyNotificationChangedToPending());
-            }
+            SetEndOfSupplyNotificationPending();
 
             CompleteTransactionIfPossible();
         }
@@ -156,6 +152,15 @@ namespace Messaging.Domain.Transactions.MoveIn
             EnsureNotCompleted();
             _state = State.Completed;
             AddDomainEvent(new MoveInWasCompleted());
+        }
+
+        private void SetEndOfSupplyNotificationPending()
+        {
+            if (_endOfSupplyNotificationState == EndOfSupplyNotificationState.Required)
+            {
+                _endOfSupplyNotificationState = EndOfSupplyNotificationState.Pending;
+                AddDomainEvent(new EndOfSupplyNotificationChangedToPending());
+            }
         }
     }
 }
