@@ -14,10 +14,8 @@
 
 using System;
 using System.Threading.Tasks;
-using Messaging.Application.Common;
 using Messaging.Application.Configuration;
 using Messaging.Application.Configuration.DataAccess;
-using Messaging.Application.OutgoingMessages;
 using Messaging.Application.Transactions;
 using Messaging.Application.Transactions.MoveIn;
 using Messaging.Domain.MasterData.MarketEvaluationPoints;
@@ -47,24 +45,6 @@ public class WhenAConsumerHasMovedInTests : TestBase
         var command = new SetConsumerHasMovedIn(processId);
 
         await Assert.ThrowsAsync<TransactionNotFoundException>(() => InvokeCommandAsync(command)).ConfigureAwait(false);
-    }
-
-    [Fact]
-    public async Task The_current_energy_supplier_is_notified_about_end_of_supply()
-    {
-        var transaction = await ConsumerHasMovedIn().ConfigureAwait(false);
-
-        AssertMessage(transaction.TransactionId, DocumentType.GenericNotification.ToString(), BusinessReasonCode.CustomerMoveInOrMoveOut.Code)
-            .HasReceiverId(transaction.CurrentEnergySupplierId!)
-            .HasReceiverRole(MarketRoles.EnergySupplier)
-            .HasSenderId(DataHubDetails.IdentificationNumber)
-            .HasSenderRole(MarketRoles.MeteringPointAdministrator)
-            .HasReasonCode(null)
-            .WithMarketActivityRecord()
-                .HasId()
-                .HasValidityStart(transaction.EffectiveDate.ToDateTimeUtc())
-                .HasOriginalTransactionId(transaction.TransactionId)
-                .HasMarketEvaluationPointId(transaction.MarketEvaluationPointId);
     }
 
     [Fact]
@@ -108,11 +88,6 @@ public class WhenAConsumerHasMovedInTests : TestBase
     {
         GetService<IMarketEvaluationPointRepository>().Add(MarketEvaluationPoint.Create(SampleData.CurrentEnergySupplierNumber, SampleData.MeteringPointNumber));
         return Task.CompletedTask;
-    }
-
-    private AssertOutgoingMessage AssertMessage(string transactionId, string documentType, string processType)
-    {
-        return AssertOutgoingMessage.OutgoingMessage(transactionId, documentType, processType, GetService<IDbConnectionFactory>());
     }
 
     private AssertTransaction AssertTransaction()
