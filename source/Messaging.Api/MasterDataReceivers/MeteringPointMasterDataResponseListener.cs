@@ -23,7 +23,7 @@ using Messaging.Infrastructure.Configuration.Serialization;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace Messaging.Api.IncomingMessages;
+namespace Messaging.Api.MasterDataReceivers;
 
 public class MeteringPointMasterDataResponseListener
 {
