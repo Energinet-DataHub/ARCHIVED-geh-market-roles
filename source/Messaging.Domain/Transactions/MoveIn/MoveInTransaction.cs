@@ -156,10 +156,13 @@ namespace Messaging.Domain.Transactions.MoveIn
 
         private void SetEndOfSupplyNotificationPending()
         {
+            if (CurrentEnergySupplierId is null)
+                throw new MoveInException("There is no current energy supplier to notify");
+
             if (_endOfSupplyNotificationState == EndOfSupplyNotificationState.Required)
             {
                 _endOfSupplyNotificationState = EndOfSupplyNotificationState.Pending;
-                AddDomainEvent(new EndOfSupplyNotificationChangedToPending(TransactionId));
+                AddDomainEvent(new EndOfSupplyNotificationChangedToPending(TransactionId, EffectiveDate, MarketEvaluationPointId, CurrentEnergySupplierId));
             }
         }
     }

@@ -13,15 +13,25 @@
 // limitations under the License.
 
 using Messaging.Domain.SeedWork;
+using NodaTime;
 
 namespace Messaging.Domain.Transactions.MoveIn.Events;
 
 public class EndOfSupplyNotificationChangedToPending : DomainEvent
 {
-    public EndOfSupplyNotificationChangedToPending(string transactionId)
+    public EndOfSupplyNotificationChangedToPending(string transactionId, Instant effectiveDate, string marketEvaluationPointId, string energySupplierId)
     {
         TransactionId = transactionId;
+        EffectiveDate = effectiveDate;
+        MarketEvaluationPointId = marketEvaluationPointId;
+        EnergySupplierId = energySupplierId;
     }
 
     public string TransactionId { get; }
+
+    public Instant EffectiveDate { get; }
+
+    public string MarketEvaluationPointId { get; }
+
+    public string EnergySupplierId { get; }
 }
