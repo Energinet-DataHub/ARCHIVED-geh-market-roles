@@ -223,7 +223,7 @@ namespace Messaging.Infrastructure.Configuration
             _services.AddTransient<IRequestHandler<CreateEndOfSupplyNotification, Unit>, CreateEndOfSupplyNotificationHandler>();
             _services.AddTransient<INotificationHandler<MoveInWasAccepted>, FetchMeteringPointMasterDataWhenAccepted>();
             _services.AddTransient<INotificationHandler<MoveInWasAccepted>, FetchCustomerMasterDataWhenAccepted>();
-            _services.AddTransient<INotificationHandler<EndOfSupplyNotificationChangedToPending>, NotifyCurrentEnergySupplierWhenConsumerHasMovedIn>();
+            _services.AddTransient<INotificationHandler<EndOfSupplyNotificationChangedToPending>, CreateEndOfSupplyNotificationWhenConsumerHasMovedIn>();
             return this;
         }
 
