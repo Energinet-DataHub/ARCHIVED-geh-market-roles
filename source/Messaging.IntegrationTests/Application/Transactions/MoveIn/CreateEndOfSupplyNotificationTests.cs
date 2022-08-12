@@ -54,6 +54,10 @@ public class CreateEndOfSupplyNotificationTests : TestBase
     {
         var transaction = await ConsumerHasMovedIn().ConfigureAwait(false);
 
+        await InvokeCommandAsync(new CreateEndOfSupplyNotification(SampleData.TransactionId)).ConfigureAwait(false);
+
+        AssertTransaction()
+            .HasEndOfSupplyNotificationState(MoveInTransaction.EndOfSupplyNotificationState.EnergySupplierWasNotified);
         AssertMessage(transaction.TransactionId, DocumentType.GenericNotification.ToString(), BusinessReasonCode.CustomerMoveInOrMoveOut.Code)
             .HasReceiverId(transaction.CurrentEnergySupplierId!)
             .HasReceiverRole(MarketRoles.EnergySupplier)
@@ -104,5 +108,11 @@ public class CreateEndOfSupplyNotificationTests : TestBase
     private AssertOutgoingMessage AssertMessage(string transactionId, string documentType, string processType)
     {
         return AssertOutgoingMessage.OutgoingMessage(transactionId, documentType, processType, GetService<IDbConnectionFactory>());
+    }
+
+    private AssertTransaction AssertTransaction()
+    {
+        return MoveIn.AssertTransaction
+            .Transaction(SampleData.TransactionId, GetService<IDbConnectionFactory>());
     }
 }
