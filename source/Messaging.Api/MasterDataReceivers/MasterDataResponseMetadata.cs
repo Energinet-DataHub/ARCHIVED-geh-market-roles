@@ -16,7 +16,5 @@ namespace Messaging.Api.MasterDataReceivers;
 
 public class MasterDataResponseMetadata
 {
-    public string? BusinessProcessId { get; set; }
-
     public string? TransactionId { get; set; }
 }
