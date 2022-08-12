@@ -75,6 +75,12 @@ namespace Messaging.Domain.Transactions.MoveIn
 
             _hasBusinessProcessCompleted = true;
             AddDomainEvent(new BusinessProcessWasCompleted(TransactionId));
+
+            if (CurrentEnergySupplierId is not null)
+            {
+                AddDomainEvent(new EndOfSupplyNotificationChangedToPending());
+            }
+
             CompleteTransactionIfPossible();
         }
 

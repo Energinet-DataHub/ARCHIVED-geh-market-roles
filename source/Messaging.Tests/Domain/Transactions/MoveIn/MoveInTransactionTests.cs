@@ -117,6 +117,17 @@ public class MoveInTransactionTests
         Assert.Contains(transaction.DomainEvents, e => e is BusinessProcessWasCompleted);
     }
 
+    [Fact]
+    public void End_of_supply_notification_status_is_changed_to_pending_when_business_process_is_completed()
+    {
+        var transaction = CreateTransaction();
+        transaction.AcceptedByBusinessProcess(SampleData.ProcessId, SampleData.MarketEvaluationPointId);
+
+        transaction.BusinessProcessCompleted();
+
+        Assert.Contains(transaction.DomainEvents, e => e is EndOfSupplyNotificationChangedToPending);
+    }
+
     private static MoveInTransaction CreateTransaction()
     {
         return new MoveInTransaction(
