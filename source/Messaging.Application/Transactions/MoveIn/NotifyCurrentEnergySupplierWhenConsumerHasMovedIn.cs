@@ -32,7 +32,7 @@ public class NotifyCurrentEnergySupplierWhenConsumerHasMovedIn : INotificationHa
     public Task Handle(EndOfSupplyNotificationChangedToPending notification, CancellationToken cancellationToken)
     {
         if (notification == null) throw new ArgumentNullException(nameof(notification));
-        _notifications.InformCurrentEnergySupplierAboutEndOfSupply(notification.TransactionId);
+        _notifications.InformCurrentEnergySupplierAboutEndOfSupply(notification.TransactionId, notification.EffectiveDate, notification.MarketEvaluationPointId, notification.EnergySupplierId);
         return Task.CompletedTask;
     }
 }
