@@ -29,7 +29,7 @@ namespace Messaging.Domain.Transactions.MoveIn
         public MoveInTransaction(string transactionId, string marketEvaluationPointId, Instant effectiveDate, string? currentEnergySupplierId, string startedByMessageId, string newEnergySupplierId, string? consumerId, string? consumerName, string? consumerIdType)
         {
             _endOfSupplyNotificationState = currentEnergySupplierId is not null
-                ? EndOfSupplyNotificationState.Pending
+                ? EndOfSupplyNotificationState.Required
                 : EndOfSupplyNotificationState.NotNeeded;
             TransactionId = transactionId;
             MarketEvaluationPointId = marketEvaluationPointId;
@@ -51,6 +51,7 @@ namespace Messaging.Domain.Transactions.MoveIn
 
         public enum EndOfSupplyNotificationState
         {
+            Required,
             NotNeeded,
             Pending,
             EnergySupplierWasNotified,
@@ -87,8 +88,9 @@ namespace Messaging.Domain.Transactions.MoveIn
             _hasBusinessProcessCompleted = true;
             AddDomainEvent(new BusinessProcessWasCompleted(TransactionId));
 
-            if (CurrentEnergySupplierId is not null)
+            if (_endOfSupplyNotificationState == EndOfSupplyNotificationState.Required)
             {
+                _endOfSupplyNotificationState = EndOfSupplyNotificationState.Pending;
                 AddDomainEvent(new EndOfSupplyNotificationChangedToPending());
             }
 

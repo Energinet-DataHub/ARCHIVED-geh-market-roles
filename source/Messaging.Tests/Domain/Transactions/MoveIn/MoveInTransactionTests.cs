@@ -29,7 +29,7 @@ public class MoveInTransactionTests
         var startedEvent = transaction.DomainEvents.FirstOrDefault(e => e is MoveInWasStarted) as MoveInWasStarted;
         Assert.NotNull(startedEvent);
         Assert.Equal(SampleData.TransactionId, startedEvent?.TransactionId);
-        Assert.Equal(MoveInTransaction.EndOfSupplyNotificationState.Pending, startedEvent?.EndOfSupplyNotificationState);
+        Assert.Equal(MoveInTransaction.EndOfSupplyNotificationState.Required, startedEvent?.EndOfSupplyNotificationState);
     }
 
     [Fact]
