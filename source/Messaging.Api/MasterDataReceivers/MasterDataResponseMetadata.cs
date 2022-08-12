@@ -16,5 +16,10 @@ namespace Messaging.Api.MasterDataReceivers;
 
 public class MasterDataResponseMetadata
 {
-    public string? TransactionId { get; set; }
+    public MasterDataResponseMetadata(string? transactionId)
+    {
+        TransactionId = transactionId;
+    }
+
+    public string? TransactionId { get; }
 }
