@@ -40,7 +40,7 @@ namespace Messaging.Domain.Transactions.MoveIn
             ConsumerId = consumerId;
             ConsumerName = consumerName;
             ConsumerIdType = consumerIdType;
-            AddDomainEvent(new MoveInWasStarted(TransactionId, _endOfSupplyNotificationState == EndOfSupplyNotificationState.Pending));
+            AddDomainEvent(new MoveInWasStarted(TransactionId, _endOfSupplyNotificationState));
         }
 
         public enum State

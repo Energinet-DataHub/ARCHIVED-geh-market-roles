@@ -29,7 +29,7 @@ public class MoveInTransactionTests
         var startedEvent = transaction.DomainEvents.FirstOrDefault(e => e is MoveInWasStarted) as MoveInWasStarted;
         Assert.NotNull(startedEvent);
         Assert.Equal(SampleData.TransactionId, startedEvent?.TransactionId);
-        Assert.True(startedEvent?.EndOfSupplyNotificationRequired);
+        Assert.Equal(MoveInTransaction.EndOfSupplyNotificationState.Pending, startedEvent?.EndOfSupplyNotificationState);
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class MoveInTransactionTests
         var transaction = CreateTransaction(currentEnergySupplierId: null);
 
         var startedEvent = transaction.DomainEvents.FirstOrDefault(e => e is MoveInWasStarted) as MoveInWasStarted;
-        Assert.Equal(false, startedEvent?.EndOfSupplyNotificationRequired);
+        Assert.Equal(MoveInTransaction.EndOfSupplyNotificationState.NotNeeded, startedEvent?.EndOfSupplyNotificationState);
     }
 
     private static MoveInTransaction CreateTransaction()

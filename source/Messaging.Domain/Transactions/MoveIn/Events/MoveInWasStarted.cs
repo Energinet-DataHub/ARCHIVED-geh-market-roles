@@ -18,13 +18,13 @@ namespace Messaging.Domain.Transactions.MoveIn.Events;
 
 public class MoveInWasStarted : DomainEvent
 {
-    public MoveInWasStarted(string transactionId, bool endOfSupplyNotificationRequired)
+    public MoveInWasStarted(string transactionId, MoveInTransaction.EndOfSupplyNotificationState endOfSupplyNotificationState)
     {
         TransactionId = transactionId;
-        EndOfSupplyNotificationRequired = endOfSupplyNotificationRequired;
+        EndOfSupplyNotificationState = endOfSupplyNotificationState;
     }
 
     public string TransactionId { get; }
 
-    public bool EndOfSupplyNotificationRequired { get; }
+    public MoveInTransaction.EndOfSupplyNotificationState EndOfSupplyNotificationState { get; }
 }
