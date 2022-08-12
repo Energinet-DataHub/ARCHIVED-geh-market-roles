@@ -94,6 +94,7 @@ public class MoveInTransactionTests
         transaction.AcceptedByBusinessProcess(SampleData.ProcessId, SampleData.MarketEvaluationPointId);
         transaction.BusinessProcessCompleted();
         transaction.HasForwardedMeteringPointMasterData();
+        transaction.MarkEndOfSupplyNotificationAsSent();
 
         Assert.Contains(transaction.DomainEvents, e => e is MoveInWasCompleted);
     }
@@ -126,6 +127,17 @@ public class MoveInTransactionTests
         transaction.BusinessProcessCompleted();
 
         Assert.Contains(transaction.DomainEvents, e => e is EndOfSupplyNotificationChangedToPending);
+    }
+
+    [Fact]
+    public void Transaction_is_not_completed_while_end_of_supply_notification_status_is_pending()
+    {
+        var transaction = CreateTransaction();
+        transaction.AcceptedByBusinessProcess(SampleData.ProcessId, SampleData.MarketEvaluationPointId);
+        transaction.HasForwardedMeteringPointMasterData();
+        transaction.BusinessProcessCompleted();
+
+        Assert.DoesNotContain(transaction.DomainEvents, e => e is MoveInWasCompleted);
     }
 
     private static MoveInTransaction CreateTransaction()

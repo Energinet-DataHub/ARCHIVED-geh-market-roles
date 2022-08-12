@@ -24,9 +24,11 @@ namespace Messaging.Domain.Transactions.MoveIn
         private bool _hasForwardedMeteringPointMasterData;
         private bool _hasBusinessProcessCompleted;
         private bool _businessProcessIsAccepted;
+        private bool _endOfSupplyNotificationWasHandled;
 
         public MoveInTransaction(string transactionId, string marketEvaluationPointId, Instant effectiveDate, string? currentEnergySupplierId, string startedByMessageId, string newEnergySupplierId, string? consumerId, string? consumerName, string? consumerIdType)
         {
+            _endOfSupplyNotificationWasHandled = false;
             TransactionId = transactionId;
             MarketEvaluationPointId = marketEvaluationPointId;
             EffectiveDate = effectiveDate;
@@ -110,9 +112,18 @@ namespace Messaging.Domain.Transactions.MoveIn
             CompleteTransactionIfPossible();
         }
 
+        public void MarkEndOfSupplyNotificationAsSent()
+        {
+            _endOfSupplyNotificationWasHandled = true;
+            CompleteTransactionIfPossible();
+        }
+
         private void CompleteTransactionIfPossible()
         {
-            if (_hasBusinessProcessCompleted && _hasForwardedMeteringPointMasterData)
+            if (
+                _hasBusinessProcessCompleted &&
+                _hasForwardedMeteringPointMasterData &&
+                _endOfSupplyNotificationWasHandled)
             {
                 Complete();
             }
