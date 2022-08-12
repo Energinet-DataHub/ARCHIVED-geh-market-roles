@@ -40,11 +40,6 @@ public class MoveInNotifications
         var transaction = _transactionRepository.GetById(transactionId);
         if (transaction == null) throw new MoveInException($"Move in transaction {transactionId} was not found.");
 
-        if (transaction.CurrentEnergySupplierId is null)
-        {
-            return;
-        }
-
         var marketActivityRecord = new MarketActivityRecord(
             Guid.NewGuid().ToString(),
             transaction.TransactionId,
@@ -53,7 +48,7 @@ public class MoveInNotifications
 
         var message = new OutgoingMessage(
             DocumentType.GenericNotification.ToString(),
-            transaction.CurrentEnergySupplierId,
+            transaction.CurrentEnergySupplierId!,
             Guid.NewGuid().ToString(),
             transaction.TransactionId,
             BusinessReasonCode.CustomerMoveInOrMoveOut.Code,
