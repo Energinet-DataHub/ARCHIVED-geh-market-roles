@@ -15,10 +15,8 @@
 using System;
 using System.Threading.Tasks;
 using Energinet.DataHub.MeteringPoints.RequestResponse.Response;
-using Messaging.Application.Configuration;
 using Messaging.Application.MasterData;
 using Messaging.Application.Transactions.MoveIn;
-using Messaging.Infrastructure.Configuration.DataAccess;
 using Messaging.Infrastructure.Configuration.InternalCommands;
 using Messaging.Infrastructure.Configuration.Serialization;
 using Microsoft.Azure.Functions.Worker;
