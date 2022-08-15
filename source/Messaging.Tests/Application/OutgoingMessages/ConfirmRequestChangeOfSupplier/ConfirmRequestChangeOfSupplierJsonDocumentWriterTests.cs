@@ -11,8 +11,6 @@ using Messaging.Infrastructure.Configuration;
 using Messaging.Infrastructure.Configuration.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using NodaTime;
-using NodaTime.Extensions;
 using Xunit;
 
 namespace Messaging.Tests.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier;
@@ -56,7 +54,7 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
         var serializer = new JsonSerializer();
         var sr = new StreamReader(stream);
         using var jtr = new JsonTextReader(sr);
-        var json = serializer.Deserialize<JObject>(jtr);
+        var json = serializer.Deserialize<JObject>(jtr)!;
 
         return json;
     }
@@ -72,27 +70,30 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
     {
         var document = json.GetValue(
             "ConfirmRequestChangeOfSupplier_MarketDocument",
-            StringComparison.OrdinalIgnoreCase);
+            StringComparison.OrdinalIgnoreCase)!;
         Assert.Equal("messageID", document.Value<string>("mRID"));
-        Assert.Equal("23", document.Value<JToken>("businessSector.type").First.First);
+        Assert.Equal("23", document.Value<JToken>("businessSector.type")!.First!.First);
         var headerDateTime = TruncateMilliseconds(header.TimeStamp.ToDateTimeUtc());
         var documentDateTime = TruncateMilliseconds(document.Value<DateTime>("createdDateTime"));
         Assert.Equal(headerDateTime, documentDateTime);
-        Assert.Equal(header.ProcessType, document.Value<JToken>("process.processType").First.First);
-        Assert.Equal(header.ReasonCode, document.Value<JToken>("reason.code").First.First);
-        Assert.Equal(header.ReceiverId, document.Value<JToken>("receiver_MarketParticipant.mRID").Value<string>("value"));
-        Assert.Equal(header.ReceiverRole, document.Value<JToken>("receiver_MarketParticipant.marketRole.type").First.First);
-        Assert.Equal(header.SenderId, document.Value<JToken>("sender_MarketParticipant.mRID").Value<string>("value"));
-        Assert.Equal(header.SenderRole, document.Value<JToken>("sender_MarketParticipant.marketRole.type").First.First);
-        Assert.Equal(details.TypeCode, document.Value<JToken>("type").Value<string>("value"));
+        Assert.Equal(header.ProcessType, document.Value<JToken>("process.processType")!.First!.First);
+        Assert.Equal(header.ReasonCode, document.Value<JToken>("reason.code")!.First!.First);
+        Assert.Equal(header.ReceiverId, document.Value<JToken>("receiver_MarketParticipant.mRID")!.Value<string>("value"));
+        Assert.Equal(header.ReceiverRole, document.Value<JToken>("receiver_MarketParticipant.marketRole.type")!.First!.First);
+        Assert.Equal(header.SenderId, document.Value<JToken>("sender_MarketParticipant.mRID")!.Value<string>("value"));
+        Assert.Equal(header.SenderRole, document.Value<JToken>("sender_MarketParticipant.marketRole.type")!.First!.First);
+        Assert.Equal(details.TypeCode, document.Value<JToken>("type")!.Value<string>("value"));
     }
 
     private static void AssertMarketActivityRecord(JObject json)
     {
+        if (json == null) throw new ArgumentNullException(nameof(json));
         var marketActivityRecords =
-            json.GetValue("ConfirmRequestChangeOfSupplier_MarketDocument", StringComparison.OrdinalIgnoreCase)
-                .Value<JArray>("MktActivityRecord").ToList();
-        var firstChild = marketActivityRecords[0];
+            json.GetValue(
+                    "ConfirmRequestChangeOfSupplier_MarketDocument",
+                    StringComparison.OrdinalIgnoreCase)
+                ?.Value<JArray>("MktActivityRecord")?.ToList();
+        var firstChild = marketActivityRecords![0];
         var secondChild = marketActivityRecords[1];
 
         Assert.Equal(2, marketActivityRecords.Count);
@@ -100,13 +101,13 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
         Assert.Equal(
             "OriginalTransactionId",
             firstChild.Value<string>("originalTransactionIDReference_MktActivityRecord.mRID"));
-        Assert.Equal("FakeMarketEvaluationPointId", firstChild.First.Next.First.Value<string>("value"));
+        Assert.Equal("FakeMarketEvaluationPointId", firstChild.First!.Next!.First!.Value<string>("value"));
 
         Assert.Equal("mrid2", secondChild.Value<string>("mRID"));
         Assert.Equal(
             "FakeTransactionId",
             secondChild.Value<string>("originalTransactionIDReference_MktActivityRecord.mRID"));
-        Assert.Equal("FakeMarketEvaluationPointId", secondChild.First.Next.First.Value<string>("value"));
+        Assert.Equal("FakeMarketEvaluationPointId", secondChild.First!.Next!.First!.Value<string>("value"));
     }
 
     private static DateTime TruncateMilliseconds(DateTime time)
