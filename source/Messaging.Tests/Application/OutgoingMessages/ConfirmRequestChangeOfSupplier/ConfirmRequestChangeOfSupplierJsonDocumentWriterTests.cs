@@ -34,7 +34,7 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
     public async Task Document_is_valid()
     {
         var header = new MessageHeader("E03", "SenderId", "DDZ", "ReceiverId", "DDQ", "messageID", _systemDateTimeProvider.Now(), "A01");
-        var documentDetails = new DocumentDetails("ConfirmRequestChangeOfSupplier_MarketDocument", null, null, null, typeCode: "414");
+        var documentDetails = new DocumentDetails("ConfirmRequestChangeOfSupplier_MarketDocument", null, null, null, typeCode: "E44");
         var marketActivityRecords = new List<MarketActivityRecord>()
         {
             new("mrid1", "OriginalTransactionId", "FakeMarketEvaluationPointId"),
@@ -47,7 +47,7 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
             .Select(record => _marketActivityRecordParser.From(record)).ToList(),
             CimType.Json).ConfigureAwait(false);
 
-        AssertMessage(message, header, marketActivityRecords);
+        AssertMessage(message, header, documentDetails);
     }
 
     private static JObject StreamToJson(Stream stream)
@@ -61,7 +61,7 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
         return json;
     }
 
-    private static void AssertMessage(Stream message, MessageHeader header, List<MarketActivityRecord> marketActivityRecords)
+    private static void AssertMessage(Stream message, MessageHeader header, DocumentDetails details)
     {
         var json = StreamToJson(message);
         var document = json.GetValue(
@@ -69,10 +69,16 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
             StringComparison.OrdinalIgnoreCase);
         Assert.Equal("messageID", document.Value<string>("mRID"));
         Assert.Equal("23", document.Value<JToken>("businessSector.type").First.First);
-        var inst = TruncateMilliseconds(header.TimeStamp.ToDateTimeUtc());
-        var headVal = TruncateMilliseconds(document.Value<DateTime>("createdDateTime"));
-        Assert.Equal(inst, headVal);
+        var headerDateTime = TruncateMilliseconds(header.TimeStamp.ToDateTimeUtc());
+        var documentDateTime = TruncateMilliseconds(document.Value<DateTime>("createdDateTime"));
+        Assert.Equal(headerDateTime, documentDateTime);
         Assert.Equal(header.ProcessType, document.Value<JToken>("process.processType").First.First);
+        Assert.Equal(header.ReasonCode, document.Value<JToken>("reason.code").First.First);
+        Assert.Equal(header.ReceiverId, document.Value<JToken>("receiver_MarketParticipant.mRID").Value<string>("value"));
+        Assert.Equal(header.ReceiverRole, document.Value<JToken>("receiver_MarketParticipant.marketRole.type").First.First);
+        Assert.Equal(header.SenderId, document.Value<JToken>("sender_MarketParticipant.mRID").Value<string>("value"));
+        Assert.Equal(header.SenderRole, document.Value<JToken>("sender_MarketParticipant.marketRole.type").First.First);
+        Assert.Equal(details.TypeCode, document.Value<JToken>("type").Value<string>("value"));
 
         AssertMarketActivityRecord(json);
     }
