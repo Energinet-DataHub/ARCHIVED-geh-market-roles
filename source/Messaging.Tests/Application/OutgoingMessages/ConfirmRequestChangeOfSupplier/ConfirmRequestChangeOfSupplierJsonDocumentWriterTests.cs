@@ -11,6 +11,8 @@ using Messaging.Infrastructure.Configuration;
 using Messaging.Infrastructure.Configuration.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NodaTime;
+using NodaTime.Extensions;
 using Xunit;
 
 namespace Messaging.Tests.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier;
@@ -62,10 +64,15 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
     private static void AssertMessage(Stream message, MessageHeader header, List<MarketActivityRecord> marketActivityRecords)
     {
         var json = StreamToJson(message);
-        var documentType = json.GetValue(
+        var document = json.GetValue(
             "ConfirmRequestChangeOfSupplier_MarketDocument",
             StringComparison.OrdinalIgnoreCase);
-        Assert.Equal("messageID", documentType.Value<string>("mRID"));
+        Assert.Equal("messageID", document.Value<string>("mRID"));
+        Assert.Equal("23", document.Value<JToken>("businessSector.type").First.First);
+        var inst = TruncateMilliseconds(header.TimeStamp.ToDateTimeUtc());
+        var headVal = TruncateMilliseconds(document.Value<DateTime>("createdDateTime"));
+        Assert.Equal(inst, headVal);
+        Assert.Equal(header.ProcessType, document.Value<JToken>("process.processType").First.First);
 
         AssertMarketActivityRecord(json);
     }
@@ -90,5 +97,10 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
             "FakeTransactionId",
             secondChild.Value<string>("originalTransactionIDReference_MktActivityRecord.mRID"));
         Assert.Equal("FakeMarketEvaluationPointId", secondChild.First.Next.First.Value<string>("value"));
+    }
+
+    private static DateTime TruncateMilliseconds(DateTime time)
+    {
+        return new DateTime(time.Year, time.Month, time.Day, time.Hour, time.Minute, time.Second);
     }
 }
