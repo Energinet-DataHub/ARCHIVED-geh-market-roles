@@ -64,6 +64,12 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
     private static void AssertMessage(Stream message, MessageHeader header, DocumentDetails details)
     {
         var json = StreamToJson(message);
+        AssertHeader(header, details, json);
+        AssertMarketActivityRecord(json);
+    }
+
+    private static void AssertHeader(MessageHeader header, DocumentDetails details, JObject json)
+    {
         var document = json.GetValue(
             "ConfirmRequestChangeOfSupplier_MarketDocument",
             StringComparison.OrdinalIgnoreCase);
@@ -79,8 +85,6 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
         Assert.Equal(header.SenderId, document.Value<JToken>("sender_MarketParticipant.mRID").Value<string>("value"));
         Assert.Equal(header.SenderRole, document.Value<JToken>("sender_MarketParticipant.marketRole.type").First.First);
         Assert.Equal(details.TypeCode, document.Value<JToken>("type").Value<string>("value"));
-
-        AssertMarketActivityRecord(json);
     }
 
     private static void AssertMarketActivityRecord(JObject json)
