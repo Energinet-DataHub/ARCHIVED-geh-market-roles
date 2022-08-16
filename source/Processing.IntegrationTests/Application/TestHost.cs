@@ -37,7 +37,6 @@ using Processing.Application.ChangeOfSupplier;
 using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.Common;
 using Processing.Application.Common.Commands;
-using Processing.Application.Common.DomainEvents;
 using Processing.Application.Common.Queries;
 using Processing.Application.EDI;
 using Processing.Application.MoveIn;
@@ -122,7 +121,6 @@ namespace Processing.IntegrationTests.Application
             _container.Register<ISystemDateTimeProvider, SystemDateTimeProviderStub>(Lifestyle.Singleton);
             _container.Register<IDomainEventsAccessor, DomainEventsAccessor>();
             _container.Register<IDomainEventsDispatcher, DomainEventsDispatcher>();
-            _container.Register<IDomainEventPublisher, DomainEventPublisher>();
             _container.Register<IDbConnectionFactory>(() => new SqlDbConnectionFactory(_connectionString));
             _container.Register<ICorrelationContext, CorrelationContext>(Lifestyle.Scoped);
 
