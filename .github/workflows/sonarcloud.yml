@@ -11,7 +11,7 @@ on:
     types: [opened, synchronize, reopened]
 env:
   SOLUTION_PATH: 'source\Energinet.DataHub.MarketRoles.sln'
-  DOTNET_VERSION: '6.0.201'
+  DOTNET_VERSION: '6.0.300'
   SONAR_PROJECTKEY: 'geh-market-roles'
   SOURCE_PATH_ON_BUILDMACHINE: 'D:\a\geh-market-roles\geh-market-roles\source\' # We have to be speficic with this path to get around a .NET 5.0 issue in SonarCLoud
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
