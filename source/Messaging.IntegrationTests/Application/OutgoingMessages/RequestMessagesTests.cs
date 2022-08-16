@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Energinet.DataHub.MessageHub.Model.Model;
 using MediatR;
 using Messaging.Application.IncomingMessages;
 using Messaging.Application.OutgoingMessages;
@@ -47,7 +48,7 @@ namespace Messaging.IntegrationTests.Application.OutgoingMessages
             var outgoingMessage2 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage2.Message.MessageId)!;
 
             var requestedMessageIds = new List<string> { outgoingMessage1.Id.ToString(), outgoingMessage2.Id.ToString(), };
-            await RequestMessages(requestedMessageIds.AsReadOnly()).ConfigureAwait(false);
+            await RequestMessages(requestedMessageIds.AsReadOnly(), ResponseFormat.Xml, 1.0).ConfigureAwait(false);
 
             Assert.NotNull(_messageDispatcherSpy.DispatchedMessage);
         }
@@ -57,7 +58,7 @@ namespace Messaging.IntegrationTests.Application.OutgoingMessages
         {
             var nonExistingMessage = new List<string> { Guid.NewGuid().ToString() };
 
-            await RequestMessages(nonExistingMessage.AsReadOnly()).ConfigureAwait(false);
+            await RequestMessages(nonExistingMessage.AsReadOnly(), ResponseFormat.Xml, 1.0).ConfigureAwait(false);
             Assert.True(_messageDispatcherSpy.Error);
         }
 
@@ -75,9 +76,9 @@ namespace Messaging.IntegrationTests.Application.OutgoingMessages
             return incomingMessage;
         }
 
-        private Task RequestMessages(IEnumerable<string> messageIds)
+        private Task RequestMessages(IEnumerable<string> messageIds, ResponseFormat responseFormat, double responseVersion)
         {
-            return GetService<IMediator>().Send(new RequestMessages(messageIds.ToList()));
+            return GetService<IMediator>().Send(new RequestMessages(messageIds.ToList(), responseFormat, responseVersion));
         }
     }
 }

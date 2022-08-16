@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Energinet.DataHub.MessageHub.Model.Model;
 using Messaging.Application.Common;
 using Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier;
 using Messaging.Domain.OutgoingMessages;
@@ -57,7 +58,8 @@ public class ConfirmRequestChangeOfSupplierJsonDocumentWriterTests
             header,
             marketActivityRecords
             .Select(record => _marketActivityRecordParser.From(record)).ToList(),
-            CimType.Json).ConfigureAwait(false);
+            ResponseFormat.Json,
+            1.0).ConfigureAwait(false);
 
         AssertMessage(message, header, documentDetails);
     }

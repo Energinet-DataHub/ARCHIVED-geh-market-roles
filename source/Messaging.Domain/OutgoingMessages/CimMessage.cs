@@ -20,4 +20,4 @@ public enum CimType
     Xml,
 }
 
-public record CimMessage(string DocumentType, MessageHeader Header, IReadOnlyList<string> MarketActivityRecordPayloads, CimType CimType);
+public record CimMessage(string DocumentType, MessageHeader Header, IReadOnlyList<string> MarketActivityRecordPayloads);

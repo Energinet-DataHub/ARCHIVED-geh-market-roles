@@ -51,8 +51,7 @@ public class MoveInNotifications
             DataHubDetails.IdentificationNumber,
             MarketRoles.MeteringPointAdministrator,
             _marketActivityRecordParser.From(marketActivityRecord),
-            null,
-            CimType.Xml);
+            null);
 
         _outgoingMessageStore.Add(message);
     }

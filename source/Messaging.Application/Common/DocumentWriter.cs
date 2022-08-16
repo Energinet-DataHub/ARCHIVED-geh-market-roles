@@ -18,6 +18,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Energinet.DataHub.MessageHub.Model.Model;
 using Messaging.Domain.OutgoingMessages;
 using Newtonsoft.Json;
 using Formatting = Newtonsoft.Json.Formatting;
@@ -37,9 +38,9 @@ public abstract class DocumentWriter : IDocumentWriter
 
     public DocumentDetails DocumentDetails => _documentDetails;
 
-    public async Task<Stream> WriteAsync(MessageHeader header, IReadOnlyCollection<string> marketActivityRecords, CimType cimType)
+    public async Task<Stream> WriteAsync(MessageHeader header, IReadOnlyCollection<string> marketActivityRecords, ResponseFormat responseFormat, double responseVersion)
     {
-        if (cimType == CimType.Xml)
+        if (responseFormat == ResponseFormat.Xml)
         {
             return await WriteXmlAsync(header, marketActivityRecords).ConfigureAwait(false);
         }

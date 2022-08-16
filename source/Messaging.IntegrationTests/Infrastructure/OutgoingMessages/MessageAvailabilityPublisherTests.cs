@@ -76,8 +76,7 @@ namespace Messaging.IntegrationTests.Infrastructure.OutgoingMessages
                 transaction.Message.SenderId,
                 transaction.Message.SenderRole,
                 string.Empty,
-                "FakeCode",
-                CimType.Xml);
+                "FakeCode");
         }
     }
 }

@@ -82,7 +82,6 @@ public class BundleTests
             "SenderId",
             "SenderRole",
             string.Empty,
-            "ReasonCode",
-            CimType.Xml);
+            "ReasonCode");
     }
 }

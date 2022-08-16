@@ -183,8 +183,7 @@ namespace Messaging.Application.Transactions.MoveIn
                 DataHubDetails.IdentificationNumber,
                 MarketRoles.MeteringPointAdministrator,
                 marketActivityRecordPayload,
-                reasonCode,
-                cimType);
+                reasonCode);
         }
     }
 }

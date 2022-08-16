@@ -39,7 +39,6 @@ namespace Messaging.Infrastructure.Configuration.DataAccess.Outgoing
             builder.Property(x => x.SenderId);
             builder.Property(x => x.SenderRole);
             builder.Property(x => x.MarketActivityRecordPayload);
-            builder.Property(x => x.CimType);
         }
     }
 }

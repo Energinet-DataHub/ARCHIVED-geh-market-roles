@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Schema;
+using Energinet.DataHub.MessageHub.Model.Model;
 using Messaging.Application.Common;
 using Messaging.Application.Configuration;
 using Messaging.Application.OutgoingMessages;
@@ -58,7 +59,8 @@ namespace Messaging.Tests.Application.OutgoingMessages.CharacteristicsOfACustome
             var message = await _documentWriter.WriteAsync(
                 header,
                 marketActivityRecords.Select(record => _marketActivityRecordParser.From(record)).ToList(),
-                CimType.Xml).ConfigureAwait(false);
+                ResponseFormat.Xml,
+                1.0).ConfigureAwait(false);
 
             var schema = await GetSchema().ConfigureAwait(false);
             var assertDocument = await AssertXmlDocument

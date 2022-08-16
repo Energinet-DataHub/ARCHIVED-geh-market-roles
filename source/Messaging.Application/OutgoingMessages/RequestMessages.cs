@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using Energinet.DataHub.MessageHub.Model.Model;
 using MediatR;
 using Messaging.Application.Common.Commands;
 
@@ -20,10 +21,16 @@ namespace Messaging.Application.OutgoingMessages;
 
 public class RequestMessages : ICommand<Unit>
 {
-    public RequestMessages(IEnumerable<string> messageIds)
+    public RequestMessages(IEnumerable<string> messageIds, ResponseFormat responseFormat, double responseVersion)
     {
         MessageIds = messageIds;
+        ResponseFormat = responseFormat;
+        ResponseVersion = responseVersion;
     }
 
     public IEnumerable<string> MessageIds { get; }
+
+    public ResponseFormat ResponseFormat { get; }
+
+    public double ResponseVersion { get; }
 }

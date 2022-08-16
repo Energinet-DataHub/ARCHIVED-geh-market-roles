@@ -120,7 +120,7 @@ public class ForwardMeteringPointMasterDataHandler : IRequestHandler<ForwardMete
             masterData.Address.PostCode);
     }
 
-    private static OutgoingMessage CreateOutgoingMessage(string id, string documentType, string processType, string receiverId, string marketActivityRecordPayload, CimType cimType)
+    private static OutgoingMessage CreateOutgoingMessage(string id, string documentType, string processType, string receiverId, string marketActivityRecordPayload)
     {
         return new OutgoingMessage(
             documentType,
@@ -132,8 +132,7 @@ public class ForwardMeteringPointMasterDataHandler : IRequestHandler<ForwardMete
             DataHubDetails.IdentificationNumber,
             MarketRoles.MeteringPointAdministrator,
             marketActivityRecordPayload,
-            null,
-            cimType);
+            null);
     }
 
     private OutgoingMessage AccountingPointCharacteristicsMessageFrom(MasterDataContent masterData, MoveInTransaction transaction)
@@ -150,7 +149,6 @@ public class ForwardMeteringPointMasterDataHandler : IRequestHandler<ForwardMete
             "AccountingPointCharacteristics",
             "E65",
             transaction.NewEnergySupplierId,
-            _marketActivityRecordParser.From(marketActivityRecord),
-            CimType.Xml);
+            _marketActivityRecordParser.From(marketActivityRecord));
     }
 }

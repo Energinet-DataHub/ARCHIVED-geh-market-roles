@@ -52,8 +52,7 @@ public class Bundle
         }
 
         var payloads = _messages.Select(message => message.MarketActivityRecordPayload).ToList();
-        var cimType = _messages.Select(message => message.CimType).FirstOrDefault();
-        return new CimMessage(_documentType, _header, payloads, cimType);
+        return new CimMessage(_documentType, _header, payloads);
     }
 
     private void EnsureReceiverId(OutgoingMessage message)

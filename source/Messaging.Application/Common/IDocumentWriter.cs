@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
+using Energinet.DataHub.MessageHub.Model.Model;
 using Messaging.Domain.OutgoingMessages;
 using Newtonsoft.Json;
 
@@ -32,13 +33,14 @@ public interface IDocumentWriter
     DocumentDetails DocumentDetails { get; }
 
     /// <summary>
-    /// blaaaaaaaaaa
+    /// sdsds
     /// </summary>
     /// <param name="header"></param>
     /// <param name="marketActivityRecords"></param>
-    /// <param name="cimType"></param>
-    /// <returns>fsdfdsfd</returns>
-    Task<Stream> WriteAsync(MessageHeader header, IReadOnlyCollection<string> marketActivityRecords, CimType cimType);
+    /// <param name="responseFormat"></param>
+    /// <param name="responseVersion"></param>
+    /// <returns>sdsd</returns>
+    Task<Stream> WriteAsync(MessageHeader header, IReadOnlyCollection<string> marketActivityRecords, ResponseFormat responseFormat, double responseVersion);
 
     /// <summary>
     /// bla bla bla
