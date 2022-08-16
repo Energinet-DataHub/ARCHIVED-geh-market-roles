@@ -137,7 +137,8 @@ namespace Messaging.Application.Transactions.MoveIn
                 ProcessType.MoveIn.Code,
                 transaction.NewEnergySupplierId,
                 _marketActivityRecordParser.From(marketActivityRecord),
-                ProcessType.MoveIn.Confirm.BusinessReasonCode);
+                ProcessType.MoveIn.Confirm.BusinessReasonCode,
+                CimType.Xml);
         }
 
         private OutgoingMessage RejectMessageFrom(IReadOnlyCollection<Reason> reasons, MoveInTransaction transaction)
@@ -154,7 +155,8 @@ namespace Messaging.Application.Transactions.MoveIn
                 ProcessType.MoveIn.Code,
                 transaction.NewEnergySupplierId,
                 _marketActivityRecordParser.From(marketActivityRecord),
-                ProcessType.MoveIn.Reject.BusinessReasonCode);
+                ProcessType.MoveIn.Reject.BusinessReasonCode,
+                CimType.Xml);
         }
 
         private Task<ReadOnlyCollection<Reason>> CreateReasonsFromAsync(IReadOnlyCollection<string> validationErrors)
@@ -162,7 +164,14 @@ namespace Messaging.Application.Transactions.MoveIn
             return _validationErrorTranslator.TranslateAsync(validationErrors);
         }
 
-        private OutgoingMessage CreateOutgoingMessage(string id, string documentType, string processType, string receiverId, string marketActivityRecordPayload, string reasonCode)
+        private OutgoingMessage CreateOutgoingMessage(
+            string id,
+            string documentType,
+            string processType,
+            string receiverId,
+            string marketActivityRecordPayload,
+            string reasonCode,
+            CimType cimType)
         {
             return new OutgoingMessage(
                 documentType,
@@ -175,7 +184,7 @@ namespace Messaging.Application.Transactions.MoveIn
                 MarketRoles.MeteringPointAdministrator,
                 marketActivityRecordPayload,
                 reasonCode,
-                CimType.Xml);
+                cimType);
         }
     }
 }

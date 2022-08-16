@@ -41,12 +41,10 @@ namespace Messaging.Infrastructure.OutgoingMessages
 
         public static DataBundleResponseErrorDto CreateErrorDataNotFoundResponse(IReadOnlyList<string> messageIds)
         {
-            var error = new DataBundleResponseErrorDto();
+            var reason = DataBundleResponseErrorReason.DatasetNotFound;
+            var failureDescription = $"Message(s) with the following id(s) not found {messageIds}";
 
-            error.Reason = DataBundleResponseErrorReason.DatasetNotFound;
-            error.FailureDescription = $"Message(s) with the following id(s) not found {messageIds}";
-
-            return error;
+            return new DataBundleResponseErrorDto(reason, failureDescription);
         }
 
         public async Task SetMessageRequestContextAsync(byte[] data)

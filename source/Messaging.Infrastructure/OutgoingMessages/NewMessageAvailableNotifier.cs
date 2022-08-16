@@ -44,12 +44,12 @@ namespace Messaging.Infrastructure.OutgoingMessages
             var documentType = ExtractDocumentType(message);
             return new DataAvailableNotificationDto(
                 message.Id,
-                new GlobalLocationNumberDto(message.ReceiverId),
+                new ActorIdDto(Guid.Parse(message.ReceiverId)),
                 new MessageTypeDto(ExtractMessageTypeFrom(message.ProcessType, documentType)),
+                documentType,
                 DomainOrigin.MarketRoles,
                 true,
-                1,
-                documentType);
+                1);
         }
 
         private static string ExtractMessageTypeFrom(string processType, string documentType)
