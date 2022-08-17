@@ -135,7 +135,6 @@ namespace Processing.Api
             container.Register<IDomainEventsDispatcher, DomainEventsDispatcher>(Lifestyle.Scoped);
             container.Register<IProtobufMessageFactory, ProtobufMessageFactory>(Lifestyle.Singleton);
             container.Register<INotificationReceiver, NotificationReceiver>(Lifestyle.Scoped);
-            container.Register<IntegrationEventReceiver>(Lifestyle.Scoped);
             container.Register<IActorMessageService, ActorMessageService>(Lifestyle.Scoped);
             container.Register<IMessageHubDispatcher, MessageHubDispatcher>(Lifestyle.Scoped);
             container.Register<MoveInHttpTrigger>(Lifestyle.Scoped);
