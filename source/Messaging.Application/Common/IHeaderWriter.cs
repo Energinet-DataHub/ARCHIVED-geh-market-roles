@@ -19,12 +19,12 @@ using Messaging.Domain.OutgoingMessages;
 namespace Messaging.Application.Common;
 
 /// <summary>
-/// bla
+/// Interface for header writer
 /// </summary>
 public interface IHeaderWriter
 {
     /// <summary>
-    /// bla bla
+    /// Write a document header async
     /// </summary>
     /// <param name="messageHeader"></param>
     /// <param name="documentDetails"></param>

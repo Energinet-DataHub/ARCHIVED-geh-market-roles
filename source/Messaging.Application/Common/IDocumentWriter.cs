@@ -23,53 +23,53 @@ using Newtonsoft.Json;
 namespace Messaging.Application.Common;
 
 /// <summary>
-/// bla
+/// Document writer interface
 /// </summary>
 public interface IDocumentWriter
 {
     /// <summary>
-    /// bla
+    /// Object containing document details
     /// </summary>
     DocumentDetails DocumentDetails { get; }
 
     /// <summary>
-    /// sdsds
+    /// Write a document async
     /// </summary>
     /// <param name="header"></param>
     /// <param name="marketActivityRecords"></param>
     /// <param name="responseFormat"></param>
     /// <param name="responseVersion"></param>
-    /// <returns>sdsd</returns>
+    /// <returns><see cref="Task"/></returns>
     Task<Stream> WriteAsync(MessageHeader header, IReadOnlyCollection<string> marketActivityRecords, ResponseFormat responseFormat, double responseVersion);
 
     /// <summary>
-    /// bla bla bla
+    /// Document type handler
     /// </summary>
     /// <param name="documentType"></param>
-    /// <returns>bla bla too</returns>
+    /// <returns><see cref="bool"/></returns>
     bool HandlesDocumentType(string documentType);
 
     /// <summary>
-    /// blalalal
+    /// Async writer for json documents
     /// </summary>
     /// <param name="marketActivityPayloads"></param>
     /// <param name="jsonTextWriter"></param>
-    /// <returns>fkdskfs</returns>
+    /// <returns><see cref="Task"/></returns>
     Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads, JsonTextWriter jsonTextWriter);
 
     /// <summary>
-    /// mcmcmc
+    /// Async writer for xml documents
     /// </summary>
     /// <param name="marketActivityPayloads"></param>
     /// <param name="xmlWriter"></param>
-    /// <returns>dnsdujsdf</returns>
+    /// <returns><see cref="Task"/></returns>
     Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads, XmlWriter xmlWriter);
 
     /// <summary>
-    /// 123
+    /// Market activity parser
     /// </summary>
     /// <param name="payloads"></param>
     /// <typeparam name="TMarketActivityRecord">1234</typeparam>
-    /// <returns>12345</returns>
+    /// <returns><see cref="IReadOnlyCollection{T}"/></returns>
     IReadOnlyCollection<TMarketActivityRecord> ParseFrom<TMarketActivityRecord>(IReadOnlyCollection<string> payloads);
 }
