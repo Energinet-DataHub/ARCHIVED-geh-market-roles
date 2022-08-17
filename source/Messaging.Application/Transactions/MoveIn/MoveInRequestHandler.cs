@@ -137,8 +137,7 @@ namespace Messaging.Application.Transactions.MoveIn
                 ProcessType.MoveIn.Code,
                 transaction.NewEnergySupplierId,
                 _marketActivityRecordParser.From(marketActivityRecord),
-                ProcessType.MoveIn.Confirm.BusinessReasonCode,
-                CimType.Xml);
+                ProcessType.MoveIn.Confirm.BusinessReasonCode);
         }
 
         private OutgoingMessage RejectMessageFrom(IReadOnlyCollection<Reason> reasons, MoveInTransaction transaction)
@@ -155,8 +154,7 @@ namespace Messaging.Application.Transactions.MoveIn
                 ProcessType.MoveIn.Code,
                 transaction.NewEnergySupplierId,
                 _marketActivityRecordParser.From(marketActivityRecord),
-                ProcessType.MoveIn.Reject.BusinessReasonCode,
-                CimType.Xml);
+                ProcessType.MoveIn.Reject.BusinessReasonCode);
         }
 
         private Task<ReadOnlyCollection<Reason>> CreateReasonsFromAsync(IReadOnlyCollection<string> validationErrors)
@@ -170,8 +168,7 @@ namespace Messaging.Application.Transactions.MoveIn
             string processType,
             string receiverId,
             string marketActivityRecordPayload,
-            string reasonCode,
-            CimType cimType)
+            string reasonCode)
         {
             return new OutgoingMessage(
                 documentType,
