@@ -117,7 +117,7 @@ public abstract class DocumentWriter : IDocumentWriter
         writer.Formatting = Formatting.Indented;
         await WriteHeaderAsync(header, _documentDetails, writer).ConfigureAwait(false);
         await WriteMarketActivityRecordsAsync(marketActivityRecords, writer).ConfigureAwait(false);
-        writer.Flush();
+        await writer.FlushAsync().ConfigureAwait(false);
         await streamWriter.FlushAsync().ConfigureAwait(false);
         stream.Position = 0;
         var returnStream = new MemoryStream();

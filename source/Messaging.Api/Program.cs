@@ -62,7 +62,6 @@ namespace Messaging.Api
 
         public static IHost ConfigureHost(TokenValidationParameters tokenValidationParameters, RuntimeEnvironment runtime)
         {
-            IdentityModelEventSource.ShowPII = true;
             return new HostBuilder()
                 .ConfigureFunctionsWorkerDefaults(worker =>
                 {

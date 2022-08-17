@@ -36,35 +36,33 @@ public class ConfirmChangeOfSupplierDocumentWriter : DocumentWriter
     {
     }
 
-    public override Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads, JsonTextWriter jsonTextWriter)
+    public override async Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads, JsonTextWriter jsonTextWriter)
     {
         if (marketActivityPayloads == null) throw new ArgumentNullException(nameof(marketActivityPayloads));
         if (jsonTextWriter == null) throw new ArgumentNullException(nameof(jsonTextWriter));
 
-        jsonTextWriter.WritePropertyName("MktActivityRecord");
-        jsonTextWriter.WriteStartArray();
+        await jsonTextWriter.WritePropertyNameAsync("MktActivityRecord").ConfigureAwait(false);
+        await jsonTextWriter.WriteStartArrayAsync().ConfigureAwait(false);
 
         foreach (var marketActivityRecord in ParseFrom<MarketActivityRecord>(marketActivityPayloads))
         {
-            jsonTextWriter.WriteStartObject();
-            jsonTextWriter.WritePropertyName("mRID");
-            jsonTextWriter.WriteValue(marketActivityRecord.Id);
-            jsonTextWriter.WritePropertyName("marketEvaluationPoint.mRID");
-            jsonTextWriter.WriteStartObject();
-            jsonTextWriter.WritePropertyName("codingScheme");
-            jsonTextWriter.WriteValue("A10");
-            jsonTextWriter.WritePropertyName("value");
-            jsonTextWriter.WriteValue(marketActivityRecord.MarketEvaluationPointId);
-            jsonTextWriter.WriteEndObject();
-            jsonTextWriter.WritePropertyName("originalTransactionIDReference_MktActivityRecord.mRID");
-            jsonTextWriter.WriteValue(marketActivityRecord.OriginalTransactionId);
-            jsonTextWriter.WriteEndObject();
+            await jsonTextWriter.WriteStartObjectAsync().ConfigureAwait(false);
+            await jsonTextWriter.WritePropertyNameAsync("mRID").ConfigureAwait(false);
+            await jsonTextWriter.WriteValueAsync(marketActivityRecord.Id).ConfigureAwait(false);
+            await jsonTextWriter.WritePropertyNameAsync("marketEvaluationPoint.mRID").ConfigureAwait(false);
+            await jsonTextWriter.WriteStartObjectAsync().ConfigureAwait(false);
+            await jsonTextWriter.WritePropertyNameAsync("codingScheme").ConfigureAwait(false);
+            await jsonTextWriter.WriteValueAsync("A10").ConfigureAwait(false);
+            await jsonTextWriter.WritePropertyNameAsync("value").ConfigureAwait(false);
+            await jsonTextWriter.WriteValueAsync(marketActivityRecord.MarketEvaluationPointId).ConfigureAwait(false);
+            await jsonTextWriter.WriteEndObjectAsync().ConfigureAwait(false);
+            await jsonTextWriter.WritePropertyNameAsync("originalTransactionIDReference_MktActivityRecord.mRID").ConfigureAwait(false);
+            await jsonTextWriter.WriteValueAsync(marketActivityRecord.OriginalTransactionId).ConfigureAwait(false);
+            await jsonTextWriter.WriteEndObjectAsync().ConfigureAwait(false);
         }
 
-        jsonTextWriter.WriteEndArray();
-        jsonTextWriter.WriteEndObject();
-
-        return Task.CompletedTask;
+        await jsonTextWriter.WriteEndArrayAsync().ConfigureAwait(false);
+        await jsonTextWriter.WriteEndObjectAsync().ConfigureAwait(false);
     }
 
     public override async Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads, XmlWriter xmlWriter)

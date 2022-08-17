@@ -33,14 +33,14 @@ using Xunit;
 
 namespace Messaging.Tests.Application.OutgoingMessages.RejectRequestChangeOfSupplier;
 
-public class RejectRequestChangeOfSupplierDocumentWriterTests
+public class RejectRequestChangeOfSupplierXmlDocumentWriterTests
 {
     private readonly RejectRequestChangeOfSupplierDocumentWriter _documentWriter;
     private readonly ISystemDateTimeProvider _systemDateTimeProvider;
     private readonly IMarketActivityRecordParser _marketActivityRecordParser;
     private ISchemaProvider? _schemaProvider;
 
-    public RejectRequestChangeOfSupplierDocumentWriterTests()
+    public RejectRequestChangeOfSupplierXmlDocumentWriterTests()
     {
         _systemDateTimeProvider = new SystemDateTimeProvider();
         _marketActivityRecordParser = new MarketActivityRecordParser(new Serializer());

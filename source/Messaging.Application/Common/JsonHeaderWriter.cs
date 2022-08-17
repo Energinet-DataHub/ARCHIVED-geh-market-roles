@@ -14,6 +14,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Json.More;
 using Messaging.Domain.OutgoingMessages;
 using Newtonsoft.Json;
 
@@ -32,7 +33,7 @@ public class JsonHeaderWriter : IHeaderWriter
     {
         if (messageHeader == null) throw new ArgumentNullException(nameof(messageHeader));
         if (documentDetails == null) throw new ArgumentNullException(nameof(documentDetails));
-        _writer.Formatting = Newtonsoft.Json.Formatting.Indented;
+        _writer.Formatting = Formatting.Indented;
 
         await _writer.WriteStartObjectAsync().ConfigureAwait(false);
         await _writer.WritePropertyNameAsync(documentDetails.Type).ConfigureAwait(false);
