@@ -12,21 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
-using Processing.Domain.SeedWork;
+using JetBrains.Annotations;
 
-namespace Processing.Application.Common.DomainEvents
+namespace Messaging.CimMessageAdapter.Errors;
+
+public class EnergySupplierDoesNotMatchSender : ValidationError
 {
-    /// <summary>
-    /// Service for publishing domain events
-    /// </summary>
-    public interface IDomainEventPublisher
+    public EnergySupplierDoesNotMatchSender(string? energySupplier, string sender)
+        : base($"Energy supplier id '{energySupplier}' does not match sender id '{sender}'.", "999")
     {
-        /// <summary>
-        /// Publishes a domain event
-        /// </summary>
-        /// <param name="domainEvent"></param>
-        /// <returns><see cref="Task"/></returns>
-        Task PublishAsync(DomainEvent @domainEvent);
     }
 }
