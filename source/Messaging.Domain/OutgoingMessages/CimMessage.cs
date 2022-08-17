@@ -14,10 +14,4 @@
 
 namespace Messaging.Domain.OutgoingMessages;
 
-public enum CimType
-{
-    Json,
-    Xml,
-}
-
 public record CimMessage(string DocumentType, MessageHeader Header, IReadOnlyList<string> MarketActivityRecordPayloads);
