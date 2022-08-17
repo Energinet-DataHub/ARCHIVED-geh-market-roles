@@ -162,7 +162,13 @@ namespace Messaging.Application.Transactions.MoveIn
             return _validationErrorTranslator.TranslateAsync(validationErrors);
         }
 
-        private OutgoingMessage CreateOutgoingMessage(string id, string documentType, string processType, string receiverId, string marketActivityRecordPayload, string reasonCode)
+        private OutgoingMessage CreateOutgoingMessage(
+            string id,
+            string documentType,
+            string processType,
+            string receiverId,
+            string marketActivityRecordPayload,
+            string reasonCode)
         {
             return new OutgoingMessage(
                 documentType,

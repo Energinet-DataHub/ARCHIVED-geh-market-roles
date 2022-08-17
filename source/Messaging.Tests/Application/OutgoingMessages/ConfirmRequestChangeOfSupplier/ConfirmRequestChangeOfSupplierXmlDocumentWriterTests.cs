@@ -19,6 +19,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Schema;
+using Energinet.DataHub.MessageHub.Model.Model;
 using Messaging.Application.Common;
 using Messaging.Application.Configuration;
 using Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier;
@@ -32,14 +33,14 @@ using Xunit;
 
 namespace Messaging.Tests.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier
 {
-    public class ConfirmRequestChangeOfSupplierDocumentWriterTests
+    public class ConfirmRequestChangeOfSupplierXmlDocumentWriterTests
     {
         private readonly ConfirmChangeOfSupplierDocumentWriter _documentWriter;
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
         private readonly IMarketActivityRecordParser _marketActivityRecordParser;
         private ISchemaProvider? _schemaProvider;
 
-        public ConfirmRequestChangeOfSupplierDocumentWriterTests()
+        public ConfirmRequestChangeOfSupplierXmlDocumentWriterTests()
         {
             _systemDateTimeProvider = new SystemDateTimeProvider();
             _marketActivityRecordParser = new MarketActivityRecordParser(new Serializer());
@@ -56,7 +57,11 @@ namespace Messaging.Tests.Application.OutgoingMessages.ConfirmRequestChangeOfSup
                 new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "FakeMarketEvaluationPointId"),
             };
 
-            var message = await _documentWriter.WriteAsync(header, marketActivityRecords.Select(record => _marketActivityRecordParser.From(record)).ToList()).ConfigureAwait(false);
+            var message = await _documentWriter.WriteAsync(
+                header,
+                marketActivityRecords.Select(record => _marketActivityRecordParser.From(record)).ToList(),
+                ResponseFormat.Xml,
+                1.0).ConfigureAwait(false);
 
             await AssertMessage(message, header, marketActivityRecords).ConfigureAwait(false);
         }

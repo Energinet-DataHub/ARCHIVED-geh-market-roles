@@ -17,6 +17,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml;
 using Messaging.Application.Common;
+using Messaging.Domain.OutgoingMessages;
+using Newtonsoft.Json;
 
 namespace Messaging.Application.OutgoingMessages.RejectRequestChangeOfSupplier;
 
@@ -34,33 +36,92 @@ public class RejectRequestChangeOfSupplierDocumentWriter : DocumentWriter
     {
     }
 
-    protected override async Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads, XmlWriter writer)
+    public override async Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads, JsonTextWriter jsonTextWriter)
     {
         if (marketActivityPayloads == null) throw new ArgumentNullException(nameof(marketActivityPayloads));
-        if (writer == null) throw new ArgumentNullException(nameof(writer));
+        if (jsonTextWriter == null) throw new ArgumentNullException(nameof(jsonTextWriter));
+
+        await jsonTextWriter.WritePropertyNameAsync("MktActivityRecord").ConfigureAwait(false);
+        await jsonTextWriter.WriteStartArrayAsync().ConfigureAwait(false);
+
         foreach (var marketActivityRecord in ParseFrom<MarketActivityRecord>(marketActivityPayloads))
         {
-            await writer.WriteStartElementAsync(DocumentDetails.Prefix, "MktActivityRecord", null).ConfigureAwait(false);
-            await writer.WriteElementStringAsync(DocumentDetails.Prefix, "mRID", null, marketActivityRecord.Id.ToString())
+            await jsonTextWriter.WriteStartObjectAsync().ConfigureAwait(false);
+            await jsonTextWriter.WritePropertyNameAsync("mRID").ConfigureAwait(false);
+            await jsonTextWriter.WriteValueAsync(marketActivityRecord.Id).ConfigureAwait(false);
+
+            await jsonTextWriter.WritePropertyNameAsync("marketEvaluationPoint.mRID").ConfigureAwait(false);
+            await jsonTextWriter.WriteStartObjectAsync().ConfigureAwait(false);
+            await jsonTextWriter.WritePropertyNameAsync("codingScheme").ConfigureAwait(false);
+            await jsonTextWriter.WriteValueAsync("A10").ConfigureAwait(false);
+            await jsonTextWriter.WritePropertyNameAsync("value").ConfigureAwait(false);
+            await jsonTextWriter.WriteValueAsync(marketActivityRecord.MarketEvaluationPointId).ConfigureAwait(false);
+            await jsonTextWriter.WriteEndObjectAsync().ConfigureAwait(false);
+
+            await jsonTextWriter.WritePropertyNameAsync("originalTransactionIDReference_MktActivityRecord.mRID").ConfigureAwait(false);
+            await jsonTextWriter.WriteValueAsync(marketActivityRecord.OriginalTransactionId).ConfigureAwait(false);
+
+            await jsonTextWriter.WritePropertyNameAsync("Reason").ConfigureAwait(false);
+            await jsonTextWriter.WriteStartArrayAsync().ConfigureAwait(false);
+
+            foreach (var reason in marketActivityRecord.Reasons)
+            {
+                await jsonTextWriter.WriteStartObjectAsync().ConfigureAwait(false);
+                await jsonTextWriter.WritePropertyNameAsync("code").ConfigureAwait(false);
+                await jsonTextWriter.WriteStartObjectAsync().ConfigureAwait(false);
+                await jsonTextWriter.WritePropertyNameAsync("value").ConfigureAwait(false);
+                await jsonTextWriter.WriteValueAsync(reason.Code).ConfigureAwait(false);
+                await jsonTextWriter.WriteEndObjectAsync().ConfigureAwait(false);
+                await jsonTextWriter.WritePropertyNameAsync("text").ConfigureAwait(false);
+                await jsonTextWriter.WriteValueAsync(reason.Text).ConfigureAwait(false);
+                await jsonTextWriter.WriteEndObjectAsync().ConfigureAwait(false);
+            }
+
+            await jsonTextWriter.WriteEndArrayAsync().ConfigureAwait(false);
+            await jsonTextWriter.WriteEndObjectAsync().ConfigureAwait(false);
+        }
+
+        await jsonTextWriter.WriteEndArrayAsync().ConfigureAwait(false);
+        await jsonTextWriter.WriteEndObjectAsync().ConfigureAwait(false);
+    }
+
+    public override async Task WriteMarketActivityRecordsAsync(IReadOnlyCollection<string> marketActivityPayloads, XmlWriter xmlWriter)
+    {
+        if (marketActivityPayloads == null) throw new ArgumentNullException(nameof(marketActivityPayloads));
+        if (xmlWriter == null) throw new ArgumentNullException(nameof(xmlWriter));
+        foreach (var marketActivityRecord in ParseFrom<MarketActivityRecord>(marketActivityPayloads))
+        {
+            await xmlWriter.WriteStartElementAsync(DocumentDetails.Prefix, "MktActivityRecord", null).ConfigureAwait(false);
+            await xmlWriter.WriteElementStringAsync(DocumentDetails.Prefix, "mRID", null, marketActivityRecord.Id.ToString())
                 .ConfigureAwait(false);
-            await writer.WriteElementStringAsync(
+            await xmlWriter.WriteElementStringAsync(
                 DocumentDetails.Prefix,
                 "originalTransactionIDReference_MktActivityRecord.mRID",
                 null,
                 marketActivityRecord.OriginalTransactionId).ConfigureAwait(false);
-            await writer.WriteStartElementAsync(DocumentDetails.Prefix, "marketEvaluationPoint.mRID", null).ConfigureAwait(false);
-            await writer.WriteAttributeStringAsync(null, "codingScheme", null, "A10").ConfigureAwait(false);
-            writer.WriteValue(marketActivityRecord.MarketEvaluationPointId);
-            await writer.WriteEndElementAsync().ConfigureAwait(false);
+            await xmlWriter.WriteStartElementAsync(DocumentDetails.Prefix, "marketEvaluationPoint.mRID", null).ConfigureAwait(false);
+            await xmlWriter.WriteAttributeStringAsync(null, "codingScheme", null, "A10").ConfigureAwait(false);
+            xmlWriter.WriteValue(marketActivityRecord.MarketEvaluationPointId);
+            await xmlWriter.WriteEndElementAsync().ConfigureAwait(false);
             foreach (var reason in marketActivityRecord.Reasons)
             {
-                await writer.WriteStartElementAsync(DocumentDetails.Prefix, "Reason", null).ConfigureAwait(false);
-                await writer.WriteElementStringAsync(DocumentDetails.Prefix, "code", null, reason.Code).ConfigureAwait(false);
-                await writer.WriteElementStringAsync(DocumentDetails.Prefix, "text", null, reason.Text).ConfigureAwait(false);
-                await writer.WriteEndElementAsync().ConfigureAwait(false);
+                await xmlWriter.WriteStartElementAsync(DocumentDetails.Prefix, "Reason", null).ConfigureAwait(false);
+                await xmlWriter.WriteElementStringAsync(DocumentDetails.Prefix, "code", null, reason.Code).ConfigureAwait(false);
+                await xmlWriter.WriteElementStringAsync(DocumentDetails.Prefix, "text", null, reason.Text).ConfigureAwait(false);
+                await xmlWriter.WriteEndElementAsync().ConfigureAwait(false);
             }
 
-            await writer.WriteEndElementAsync().ConfigureAwait(false);
+            await xmlWriter.WriteEndElementAsync().ConfigureAwait(false);
         }
+    }
+
+    protected override Task WriteHeaderAsync(MessageHeader header, DocumentDetails documentDetails, XmlWriter writer)
+    {
+        return new XmlHeaderWriter(writer).WriteAsync(header, documentDetails);
+    }
+
+    protected override Task WriteHeaderAsync(MessageHeader header, DocumentDetails documentDetails, JsonTextWriter writer)
+    {
+        return new JsonHeaderWriter(writer).WriteAsync(header, documentDetails);
     }
 }

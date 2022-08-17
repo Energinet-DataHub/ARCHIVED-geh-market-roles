@@ -19,6 +19,7 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Schema;
+using Energinet.DataHub.MessageHub.Model.Model;
 using Messaging.Application.Configuration.DataAccess;
 using Messaging.Application.IncomingMessages;
 using Messaging.Application.OutgoingMessages;
@@ -155,7 +156,7 @@ namespace Messaging.IntegrationTests.Application.Transactions.MoveIn
 
         private async Task RequestMessage(string id)
         {
-            await InvokeCommandAsync(new RequestMessages(new[] { id })).ConfigureAwait(false);
+            await InvokeCommandAsync(new RequestMessages(new[] { id }, ResponseFormat.Xml, 1.0)).ConfigureAwait(false);
         }
 
         private async Task AssertRejectMessage(OutgoingMessage rejectMessage)

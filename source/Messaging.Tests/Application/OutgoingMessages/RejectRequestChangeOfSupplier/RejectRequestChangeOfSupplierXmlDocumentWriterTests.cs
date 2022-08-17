@@ -19,6 +19,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Schema;
+using Energinet.DataHub.MessageHub.Model.Model;
 using Messaging.Application.Common;
 using Messaging.Application.Configuration;
 using Messaging.Application.OutgoingMessages.RejectRequestChangeOfSupplier;
@@ -32,14 +33,14 @@ using Xunit;
 
 namespace Messaging.Tests.Application.OutgoingMessages.RejectRequestChangeOfSupplier;
 
-public class RejectRequestChangeOfSupplierDocumentWriterTests
+public class RejectRequestChangeOfSupplierXmlDocumentWriterTests
 {
     private readonly RejectRequestChangeOfSupplierDocumentWriter _documentWriter;
     private readonly ISystemDateTimeProvider _systemDateTimeProvider;
     private readonly IMarketActivityRecordParser _marketActivityRecordParser;
     private ISchemaProvider? _schemaProvider;
 
-    public RejectRequestChangeOfSupplierDocumentWriterTests()
+    public RejectRequestChangeOfSupplierXmlDocumentWriterTests()
     {
         _systemDateTimeProvider = new SystemDateTimeProvider();
         _marketActivityRecordParser = new MarketActivityRecordParser(new Serializer());
@@ -65,7 +66,11 @@ public class RejectRequestChangeOfSupplierDocumentWriterTests
             }),
         };
 
-        var message = await _documentWriter.WriteAsync(header, marketActivityRecords.Select(record => _marketActivityRecordParser.From(record)).ToList()).ConfigureAwait(false);
+        var message = await _documentWriter.WriteAsync(
+            header,
+            marketActivityRecords.Select(record => _marketActivityRecordParser.From(record)).ToList(),
+            ResponseFormat.Xml,
+            1.0).ConfigureAwait(false);
 
         await AssertMessage(message, header, marketActivityRecords).ConfigureAwait(false);
     }

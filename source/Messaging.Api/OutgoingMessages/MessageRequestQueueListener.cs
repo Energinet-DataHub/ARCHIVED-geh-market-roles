@@ -46,8 +46,10 @@ namespace Messaging.Api.OutgoingMessages
         public async Task RunAsync([ServiceBusTrigger("%MESSAGE_REQUEST_QUEUE%", Connection = "MESSAGEHUB_QUEUE_CONNECTION_STRING", IsSessionsEnabled = true)] byte[] data)
         {
             await _messageRequestContext.SetMessageRequestContextAsync(data).ConfigureAwait(false);
-            await _mediator.Send(new RequestMessages(_messageRequestContext.DataAvailableIds
-                                                     ?? throw new InvalidOperationException())).ConfigureAwait(false);
+            await _mediator.Send(new RequestMessages(
+                _messageRequestContext.DataAvailableIds ?? throw new InvalidOperationException(),
+                _messageRequestContext.ResponseFormat,
+                _messageRequestContext.ResponseVersion)).ConfigureAwait(false);
             _logger.LogInformation($"Dequeued with correlation id: {_correlationContext.Id}");
         }
     }

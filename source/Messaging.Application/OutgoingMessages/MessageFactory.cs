@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Energinet.DataHub.MessageHub.Model.Model;
 using Messaging.Application.Common;
 using Messaging.Domain.OutgoingMessages;
 
@@ -32,7 +33,7 @@ public class MessageFactory
         _documentWriters = documentWriters.ToList();
     }
 
-    public Task<Stream> CreateFromAsync(CimMessage message)
+    public Task<Stream> CreateFromAsync(CimMessage message, ResponseFormat responseFormat, double responseVersion)
     {
         if (message == null) throw new ArgumentNullException(nameof(message));
         var documentWriter =
@@ -40,6 +41,8 @@ public class MessageFactory
 
         return documentWriter.WriteAsync(
             message.Header,
-            message.MarketActivityRecordPayloads);
+            message.MarketActivityRecordPayloads,
+            responseFormat,
+            responseVersion);
     }
 }

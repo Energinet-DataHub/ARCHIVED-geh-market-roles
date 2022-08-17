@@ -112,8 +112,8 @@ public class JsonMessageParser : IMessageParser
         using (var jsonTextReader = new JsonTextReader(streamReader))
         {
             var serializer = new JsonSerializer();
-            var deserialized = (JObject)serializer.Deserialize(jsonTextReader);
-            var path = deserialized.First.Path;
+            var deserialized = (JObject)serializer.Deserialize(jsonTextReader)!;
+            var path = deserialized.First!.Path;
             split = path.Split('_');
         }
 
@@ -132,10 +132,10 @@ public class JsonMessageParser : IMessageParser
     {
         var marketActivityRecords = new List<MarketActivityRecord>();
         var serializer = new JsonSerializer();
-        var jsonRequest = serializer.Deserialize<JObject>(jsonTextReader);
-        var headerToken = jsonRequest.SelectToken(HeaderElementName);
+        var jsonRequest = serializer.Deserialize<JObject>(jsonTextReader)!;
+        var headerToken = jsonRequest.SelectToken(HeaderElementName)!;
         var messageHeader = MessageHeaderFrom(headerToken);
-        marketActivityRecords.AddRange(headerToken[MarketActivityRecordElementName].Select(MarketActivityRecordFrom));
+        marketActivityRecords.AddRange(headerToken[MarketActivityRecordElementName]!.Select(MarketActivityRecordFrom));
 
         return MessageParserResult.Succeeded(messageHeader, marketActivityRecords);
     }
@@ -154,26 +154,26 @@ public class JsonMessageParser : IMessageParser
     private static MessageHeader MessageHeaderFrom(JToken token)
     {
         return new MessageHeader(
-            token["mRID"].ToString(),
-            token["process.processType"]["value"].ToString(),
-            token["sender_MarketParticipant.mRID"]["value"].ToString(),
-            token["sender_MarketParticipant.marketRole.type"]["value"].ToString(),
-            token["receiver_MarketParticipant.mRID"]["value"].ToString(),
-            token["receiver_MarketParticipant.marketRole.type"]["value"].ToString(),
-            token["createdDateTime"].ToString());
+            token["mRID"]!.ToString(),
+            token["process.processType"]!["value"]!.ToString(),
+            token["sender_MarketParticipant.mRID"]!["value"]!.ToString(),
+            token["sender_MarketParticipant.marketRole.type"]!["value"]!.ToString(),
+            token["receiver_MarketParticipant.mRID"]!["value"]!.ToString(),
+            token["receiver_MarketParticipant.marketRole.type"]!["value"]!.ToString(),
+            token["createdDateTime"]!.ToString());
     }
 
     private static MarketActivityRecord MarketActivityRecordFrom(JToken token)
     {
         return new MarketActivityRecord()
         {
-            Id = token["mRID"].ToString(),
-            ConsumerId = token["marketEvaluationPoint.customer_MarketParticipant.mRID"]["value"].ToString(),
-            BalanceResponsibleId = token["marketEvaluationPoint.balanceResponsibleParty_MarketParticipant.mRID"]["value"].ToString(),
-            EnergySupplierId = token["marketEvaluationPoint.energySupplier_MarketParticipant.mRID"]["value"].ToString(),
-            MarketEvaluationPointId = token["marketEvaluationPoint.mRID"]["value"].ToString(),
-            ConsumerName = token["marketEvaluationPoint.customer_MarketParticipant.name"].ToString(),
-            EffectiveDate = token["start_DateAndOrTime.dateTime"].ToString(),
+            Id = token["mRID"]!.ToString(),
+            ConsumerId = token["marketEvaluationPoint.customer_MarketParticipant.mRID"]!["value"]!.ToString(),
+            BalanceResponsibleId = token["marketEvaluationPoint.balanceResponsibleParty_MarketParticipant.mRID"]!["value"]!.ToString(),
+            EnergySupplierId = token["marketEvaluationPoint.energySupplier_MarketParticipant.mRID"]!["value"]!.ToString(),
+            MarketEvaluationPointId = token["marketEvaluationPoint.mRID"]!["value"]!.ToString(),
+            ConsumerName = token["marketEvaluationPoint.customer_MarketParticipant.name"]!.ToString(),
+            EffectiveDate = token["start_DateAndOrTime.dateTime"]!.ToString(),
         };
     }
 

@@ -39,14 +39,16 @@ namespace Messaging.Infrastructure.OutgoingMessages
 
         public IReadOnlyCollection<string>? DataAvailableIds { get; private set; }
 
+        public ResponseFormat ResponseFormat { get; private set; }
+
+        public double ResponseVersion { get; private set; }
+
         public static DataBundleResponseErrorDto CreateErrorDataNotFoundResponse(IReadOnlyList<string> messageIds)
         {
-            var error = new DataBundleResponseErrorDto();
+            var reason = DataBundleResponseErrorReason.DatasetNotFound;
+            var failureDescription = $"Message(s) with the following id(s) not found {messageIds}";
 
-            error.Reason = DataBundleResponseErrorReason.DatasetNotFound;
-            error.FailureDescription = $"Message(s) with the following id(s) not found {messageIds}";
-
-            return error;
+            return new DataBundleResponseErrorDto(reason, failureDescription);
         }
 
         public async Task SetMessageRequestContextAsync(byte[] data)
@@ -55,6 +57,8 @@ namespace Messaging.Infrastructure.OutgoingMessages
             var dataAvailableIds = await _storageHandler.GetDataAvailableNotificationIdsAsync(DataBundleRequestDto)
                 .ConfigureAwait(false);
             DataAvailableIds = dataAvailableIds.Select(x => x.ToString()).ToList();
+            ResponseFormat = DataBundleRequestDto.ResponseFormat;
+            ResponseVersion = DataBundleRequestDto.ResponseVersion;
         }
     }
 }

@@ -12,31 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
+using System.Xml;
+using Messaging.Domain.OutgoingMessages;
+
 namespace Messaging.Application.Common;
 
-public class DocumentDetails
+/// <summary>
+/// Interface for header writer
+/// </summary>
+public interface IHeaderWriter
 {
-    public DocumentDetails(string type, string? schemaLocation, string? xmlNamespace, string? prefix, string? typeCode)
-    {
-        Type = type;
-        SchemaLocation = schemaLocation;
-        XmlNamespace = xmlNamespace;
-        Prefix = prefix;
-        TypeCode = typeCode;
-    }
-
-    public DocumentDetails(string type)
-    {
-        Type = type;
-    }
-
-    public string Type { get; }
-
-    public string? SchemaLocation { get; }
-
-    public string? XmlNamespace { get; }
-
-    public string? Prefix { get; }
-
-    public string? TypeCode { get; }
+    /// <summary>
+    /// Write a document header async
+    /// </summary>
+    /// <param name="messageHeader"></param>
+    /// <param name="documentDetails"></param>
+    /// <returns>bla</returns>
+    public Task WriteAsync(MessageHeader messageHeader, DocumentDetails documentDetails);
 }

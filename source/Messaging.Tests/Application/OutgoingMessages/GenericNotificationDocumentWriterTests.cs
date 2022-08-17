@@ -19,6 +19,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Schema;
+using Energinet.DataHub.MessageHub.Model.Model;
 using Messaging.Application.Common;
 using Messaging.Application.Configuration;
 using Messaging.Application.OutgoingMessages.GenericNotification;
@@ -56,7 +57,11 @@ namespace Messaging.Tests.Application.OutgoingMessages
                 new(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "FakeMarketEvaluationPointId", _systemDateTimeProvider.Now()),
             };
 
-            var message = await _documentWriter.WriteAsync(header, marketActivityRecords.Select(record => _marketActivityRecordParser.From(record)).ToList()).ConfigureAwait(false);
+            var message = await _documentWriter.WriteAsync(
+                header,
+                marketActivityRecords.Select(record => _marketActivityRecordParser.From(record)).ToList(),
+                ResponseFormat.Xml,
+                1.0).ConfigureAwait(false);
 
             await AssertMessage(message, header, marketActivityRecords).ConfigureAwait(false);
         }
