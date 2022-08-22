@@ -12,10 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Processing.Api
+using Messaging.Domain.SeedWork;
+
+namespace Messaging.Domain.OutgoingMessages;
+
+public class CimFormat : EnumerationType
 {
-        public class EventMetadata
-        {
-            public string? MessageType { get; set; }
-        }
+    public static readonly CimFormat Xml = new(0, nameof(Xml));
+    public static readonly CimFormat Json = new(1, nameof(Json));
+
+    private CimFormat(int id, string name)
+        : base(id, name)
+    {
+    }
 }

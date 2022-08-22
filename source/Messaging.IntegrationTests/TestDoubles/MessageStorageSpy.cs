@@ -12,21 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.IO;
 using System.Threading.Tasks;
-using Processing.Domain.SeedWork;
+using Messaging.Application.OutgoingMessages;
+using Messaging.Application.OutgoingMessages.Requesting;
+using Xunit;
 
-namespace Processing.Application.Common.DomainEvents
+namespace Messaging.IntegrationTests.TestDoubles;
+
+public class MessageStorageSpy : IMessageStorage
 {
-    /// <summary>
-    /// Service for publishing domain events
-    /// </summary>
-    public interface IDomainEventPublisher
+    public Stream? SavedMessage { get; private set; }
+
+    public Task<Uri> SaveAsync(Stream bundledMessage)
     {
-        /// <summary>
-        /// Publishes a domain event
-        /// </summary>
-        /// <param name="domainEvent"></param>
-        /// <returns><see cref="Task"/></returns>
-        Task PublishAsync(DomainEvent @domainEvent);
+        SavedMessage = bundledMessage;
+        return Task.FromResult(new Uri("http://someuri"));
+    }
+
+    public void MessageHasBeenSavedInStorage()
+    {
+        Assert.NotNull(SavedMessage);
     }
 }

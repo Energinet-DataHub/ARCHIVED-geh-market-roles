@@ -14,24 +14,26 @@
 
 using System;
 using System.Threading.Tasks;
-using MediatR;
-using Processing.Application.Common.DomainEvents;
-using Processing.Domain.SeedWork;
+using Dapper;
+using Messaging.Application.Configuration.DataAccess;
 
-namespace Processing.Infrastructure.Configuration.DomainEventDispatching
+namespace Messaging.Infrastructure.OutgoingMessages;
+
+public class ActorLookup
 {
-    public class DomainEventPublisher : IDomainEventPublisher
+    private readonly IDbConnectionFactory _dbConnectionFactory;
+
+    public ActorLookup(IDbConnectionFactory dbConnectionFactory)
     {
-        private readonly IMediator _mediator;
+        _dbConnectionFactory = dbConnectionFactory;
+    }
 
-        public DomainEventPublisher(IMediator mediator)
-        {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-        }
-
-        public Task PublishAsync(DomainEvent domainEvent)
-        {
-            return _mediator.Publish(domainEvent);
-        }
+    public Task<Guid> GetIdByActorNumberAsync(string actorNumber)
+    {
+        return _dbConnectionFactory
+            .GetOpenConnection()
+            .ExecuteScalarAsync<Guid>(
+                "SELECT Id FROM [b2b].[Actor] WHERE IdentificationNumber = @ActorNumber",
+                new { ActorNumber = actorNumber, });
     }
 }
