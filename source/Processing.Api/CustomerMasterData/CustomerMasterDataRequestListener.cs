@@ -15,10 +15,10 @@
 using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.EnergySupplying.RequestResponse.Requests;
 using MediatR;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using Processing.Api.Configuration;
 using Processing.Application.Customers.GetCustomerMasterData;
 using Processing.Infrastructure.Configuration.Serialization;
 
@@ -45,13 +45,15 @@ namespace Processing.Api.CustomerMasterData
 
         [Function("CustomerMasterDataRequestListener")]
         public async Task RunAsync(
-            [ServiceBusTrigger("%CUSTOMER_MASTER_DATA_REQUEST_QUEUE_NAME%", Connection = "MARKET_ROLES_SERVICE_BUS_LISTEN_CONNECTION_STRING")] string data,
+            [ServiceBusTrigger("%CUSTOMER_MASTER_DATA_REQUEST_QUEUE_NAME%", Connection = "MARKET_ROLES_SERVICE_BUS_LISTEN_CONNECTION_STRING")] byte[] data,
             FunctionContext context)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            var customerMasterDataQuery = _jsonSerializer.Deserialize<GetCustomerMasterDataQuery>(data);
+            var metaData = GetMetaData(context);
+            var request = CustomerMasterDataRequest.Parser.ParseFrom(data);
+            var customerMasterDataQuery = new GetCustomerMasterDataQuery(Guid.Parse(request.Processid));
             var result = await _mediator.Send(customerMasterDataQuery).ConfigureAwait(false);
             var resultAsJsonString = _jsonSerializer.Serialize(result);
 
@@ -59,9 +61,30 @@ namespace Processing.Api.CustomerMasterData
             {
                 ContentType = "application/json",
             };
+            serviceBusMessage.ApplicationProperties.Add(
+                "BusinessProcessId",
+                metaData.BusinessProcessId ?? throw new InvalidOperationException("Service bus metadata property BusinessProcessId is missing"));
+            serviceBusMessage.ApplicationProperties.Add(
+                "TransactionId",
+                metaData.TransactionId ?? throw new InvalidOperationException("Service bus metadata property TransactionId is missing"));
+
             await _serviceBusSender.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
 
             _logger.LogInformation($"Received request for customer master data: {data}");
+        }
+
+        private MasterDataRequestMetadata GetMetaData(FunctionContext context)
+        {
+            context.BindingContext.BindingData.TryGetValue("UserProperties", out var metadata);
+
+            if (metadata is null)
+            {
+                throw new InvalidOperationException(
+                    $"Service bus metadata must be specified as User Properties attributes");
+            }
+
+            return _jsonSerializer.Deserialize<MasterDataRequestMetadata>(metadata.ToString() ??
+                                                                          throw new InvalidOperationException());
         }
     }
 }

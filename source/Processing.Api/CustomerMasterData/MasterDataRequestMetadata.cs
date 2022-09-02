@@ -12,22 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json.Serialization;
-using Messaging.Application.Common.Commands;
-using Messaging.Application.MasterData;
-
-namespace Messaging.Application.Transactions.MoveIn;
-
-public class ForwardCustomerMasterData : InternalCommand
+namespace Processing.Api.CustomerMasterData
 {
-    [JsonConstructor]
-    public ForwardCustomerMasterData(string transactionId, CustomerMasterDataContent customerMasterDataContent)
+    public class MasterDataRequestMetadata
     {
-        TransactionId = transactionId;
-        CustomerMasterDataContent = customerMasterDataContent;
+        public string? BusinessProcessId { get; set; }
+
+        public string? TransactionId { get; set; }
     }
-
-    public string TransactionId { get; }
-
-    public CustomerMasterDataContent CustomerMasterDataContent { get; }
 }
