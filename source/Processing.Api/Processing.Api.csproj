@@ -68,5 +68,6 @@ limitations under the License.
   <ItemGroup>
     <ProjectReference Include="..\Energinet.DataHub.MarketRoles.EntryPoints.Common\Energinet.DataHub.MarketRoles.EntryPoints.Common.csproj" />
     <ProjectReference Include="..\Processing.Infrastructure\Processing.Infrastructure.csproj" />
+    <ProjectReference Include="..\RequestResponse\source\RequestResponse\RequestResponse.csproj" />
   </ItemGroup>
 </Project>
