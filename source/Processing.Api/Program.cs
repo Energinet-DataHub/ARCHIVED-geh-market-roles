@@ -27,6 +27,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Processing.Api.Configuration;
+using Processing.Api.CustomerMasterData;
 using Processing.Api.EventListeners;
 using Processing.Api.Monitor;
 using Processing.Api.MoveIn;
@@ -140,6 +141,7 @@ namespace Processing.Api
             container.Register<MoveInHttpTrigger>(Lifestyle.Scoped);
             container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
             container.Register<SystemTimer>();
+            container.Register<CustomerMasterDataRequestListener>();
 
             container.ConfigureMoveInProcessTimePolicy(7, 60, TimeOfDay.Create(0, 0, 0));
 
