@@ -52,8 +52,6 @@ namespace Processing.Api.CustomerMasterData
             if (context == null) throw new ArgumentNullException(nameof(context));
 
             var correlationId = ParseCorrelationIdFromMessage(context);
-
-            var metaData = GetMetaData(context);
             var request = CustomerMasterDataRequest.Parser.ParseFrom(data);
             var customerMasterDataQuery = new GetCustomerMasterDataQuery(Guid.Parse(request.Processid));
             var result = await _mediator.Send(customerMasterDataQuery).ConfigureAwait(false);
@@ -63,13 +61,6 @@ namespace Processing.Api.CustomerMasterData
             {
                 ContentType = "application/json",
             };
-            serviceBusMessage.ApplicationProperties.Add(
-                "BusinessProcessId",
-                metaData.BusinessProcessId ?? throw new InvalidOperationException("Service bus metadata property BusinessProcessId is missing"));
-            serviceBusMessage.ApplicationProperties.Add(
-                "TransactionId",
-                metaData.TransactionId ?? throw new InvalidOperationException("Service bus metadata property TransactionId is missing"));
-
             serviceBusMessage.CorrelationId = correlationId;
             await _serviceBusSender.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
 
@@ -85,20 +76,6 @@ namespace Processing.Api.CustomerMasterData
             }
 
             throw new InvalidOperationException("Correlation id is not set on customer master data request message.");
-        }
-
-        private MasterDataRequestMetadata GetMetaData(FunctionContext context)
-        {
-            context.BindingContext.BindingData.TryGetValue("UserProperties", out var metadata);
-
-            if (metadata is null)
-            {
-                throw new InvalidOperationException(
-                    $"Service bus metadata must be specified as User Properties attributes");
-            }
-
-            return _jsonSerializer.Deserialize<MasterDataRequestMetadata>(metadata.ToString() ??
-                                                                          throw new InvalidOperationException());
         }
     }
 }
