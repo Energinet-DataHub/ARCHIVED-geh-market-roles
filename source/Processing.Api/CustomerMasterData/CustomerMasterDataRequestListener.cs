@@ -51,6 +51,8 @@ namespace Processing.Api.CustomerMasterData
             if (data == null) throw new ArgumentNullException(nameof(data));
             if (context == null) throw new ArgumentNullException(nameof(context));
 
+            var correlationId = ParseCorrelationIdFromMessage(context);
+
             var metaData = GetMetaData(context);
             var request = CustomerMasterDataRequest.Parser.ParseFrom(data);
             var customerMasterDataQuery = new GetCustomerMasterDataQuery(Guid.Parse(request.Processid));
@@ -68,9 +70,21 @@ namespace Processing.Api.CustomerMasterData
                 "TransactionId",
                 metaData.TransactionId ?? throw new InvalidOperationException("Service bus metadata property TransactionId is missing"));
 
+            serviceBusMessage.CorrelationId = correlationId;
             await _serviceBusSender.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
 
             _logger.LogInformation($"Received request for customer master data: {data}");
+        }
+
+        private static string ParseCorrelationIdFromMessage(FunctionContext context)
+        {
+            context.BindingContext.BindingData.TryGetValue("CorrelationId", out var correlationIdValue);
+            if (correlationIdValue is string correlationId)
+            {
+                return correlationId;
+            }
+
+            throw new InvalidOperationException("Correlation id is not set on customer master data request message.");
         }
 
         private MasterDataRequestMetadata GetMetaData(FunctionContext context)
