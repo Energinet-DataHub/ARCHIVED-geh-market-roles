@@ -51,7 +51,7 @@ namespace Processing.Api.CustomerMasterData
             if (data == null) throw new ArgumentNullException(nameof(data));
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            var metaData = GetMetaData(context);
+            var correlationId = ParseCorrelationIdFromMessage(context);
             var request = CustomerMasterDataRequest.Parser.ParseFrom(data);
             var customerMasterDataQuery = new GetCustomerMasterDataQuery(Guid.Parse(request.Processid));
             var result = await _mediator.Send(customerMasterDataQuery).ConfigureAwait(false);
@@ -61,30 +61,21 @@ namespace Processing.Api.CustomerMasterData
             {
                 ContentType = "application/json",
             };
-            serviceBusMessage.ApplicationProperties.Add(
-                "BusinessProcessId",
-                metaData.BusinessProcessId ?? throw new InvalidOperationException("Service bus metadata property BusinessProcessId is missing"));
-            serviceBusMessage.ApplicationProperties.Add(
-                "TransactionId",
-                metaData.TransactionId ?? throw new InvalidOperationException("Service bus metadata property TransactionId is missing"));
-
+            serviceBusMessage.CorrelationId = correlationId;
             await _serviceBusSender.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
 
             _logger.LogInformation($"Received request for customer master data: {data}");
         }
 
-        private MasterDataRequestMetadata GetMetaData(FunctionContext context)
+        private static string ParseCorrelationIdFromMessage(FunctionContext context)
         {
-            context.BindingContext.BindingData.TryGetValue("UserProperties", out var metadata);
-
-            if (metadata is null)
+            context.BindingContext.BindingData.TryGetValue("CorrelationId", out var correlationIdValue);
+            if (correlationIdValue is string correlationId)
             {
-                throw new InvalidOperationException(
-                    $"Service bus metadata must be specified as User Properties attributes");
+                return correlationId;
             }
 
-            return _jsonSerializer.Deserialize<MasterDataRequestMetadata>(metadata.ToString() ??
-                                                                          throw new InvalidOperationException());
+            throw new InvalidOperationException("Correlation id is not set on customer master data request message.");
         }
     }
 }
