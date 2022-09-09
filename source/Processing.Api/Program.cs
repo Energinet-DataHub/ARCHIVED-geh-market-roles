@@ -15,6 +15,8 @@
 using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using Dapper;
+using Dapper.NodaTime;
 using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
@@ -115,6 +117,8 @@ namespace Processing.Api
             if (container == null)
                 throw new ArgumentNullException(nameof(container));
             base.ConfigureContainer(container);
+
+            SqlMapper.AddTypeHandler(InstantHandler.Default);
 
             container.AddOutbox();
             container.AddInternalCommandsProcessing();
