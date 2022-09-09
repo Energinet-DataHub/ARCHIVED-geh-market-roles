@@ -16,11 +16,12 @@ using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.EnergySupplying.RequestResponse.Requests;
+using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 using MediatR;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Processing.Application.Customers.GetCustomerMasterData;
-using Processing.Infrastructure.Configuration.Serialization;
 
 namespace Processing.Api.CustomerMasterData
 {
@@ -29,18 +30,15 @@ namespace Processing.Api.CustomerMasterData
         private readonly ILogger _logger;
         private readonly IMediator _mediator;
         private readonly ServiceBusSender _serviceBusSender;
-        private readonly IJsonSerializer _jsonSerializer;
 
         public CustomerMasterDataRequestListener(
             ILogger logger,
             IMediator mediator,
-            ServiceBusSender serviceBusSender,
-            IJsonSerializer jsonSerializer)
+            ServiceBusSender serviceBusSender)
         {
             _logger = logger;
             _mediator = mediator;
             _serviceBusSender = serviceBusSender;
-            _jsonSerializer = jsonSerializer;
         }
 
         [Function("CustomerMasterDataRequestListener")]
@@ -53,16 +51,23 @@ namespace Processing.Api.CustomerMasterData
 
             var correlationId = ParseCorrelationIdFromMessage(context);
             var request = CustomerMasterDataRequest.Parser.ParseFrom(data);
-            var customerMasterDataQuery = new GetCustomerMasterDataQuery(Guid.Parse(request.Processid));
-            var result = await _mediator.Send(customerMasterDataQuery).ConfigureAwait(false);
-            var resultAsJsonString = _jsonSerializer.Serialize(result);
+            var result = await _mediator.Send(new GetCustomerMasterDataQuery(Guid.Parse(request.Processid))).ConfigureAwait(false);
 
-            ServiceBusMessage serviceBusMessage = new(resultAsJsonString)
+            var response = new CustomerMasterDataResponse
             {
-                ContentType = "application/json",
+                Error = result.Error,
+                MasterData = new Energinet.DataHub.EnergySupplying.RequestResponse.Requests.CustomerMasterData
+                {
+                    CustomerId = result.Data?.CustomerId,
+                    CustomerName = result.Data?.CustomerName,
+                    ElectricalHeatingEffectiveDate = result.Data?.ElectricalHeatingEffectiveDate
+                        .ToUniversalTime()
+                        .ToTimestamp(),
+                    RegisteredByProcessId = result.Data?.RegisteredByProcessId.ToString(),
+                },
             };
-            serviceBusMessage.CorrelationId = correlationId;
-            await _serviceBusSender.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
+
+            await RespondAsync(response, correlationId).ConfigureAwait(false);
 
             _logger.LogInformation($"Received request for customer master data: {data}");
         }
@@ -76,6 +81,16 @@ namespace Processing.Api.CustomerMasterData
             }
 
             throw new InvalidOperationException("Correlation id is not set on customer master data request message.");
+        }
+
+        private async Task RespondAsync(CustomerMasterDataResponse response, string correlationId)
+        {
+            ServiceBusMessage serviceBusMessage = new(response.ToByteArray())
+            {
+                ContentType = "application/json",
+            };
+            serviceBusMessage.CorrelationId = correlationId;
+            await _serviceBusSender.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
         }
     }
 }
