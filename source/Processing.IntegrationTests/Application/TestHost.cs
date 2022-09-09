@@ -18,6 +18,8 @@ using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Dapper;
+using Dapper.NodaTime;
 using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.MarketRoles.Contracts;
@@ -99,6 +101,7 @@ namespace Processing.IntegrationTests.Application
             _container = new Container();
             _container.Options.DefaultScopedLifestyle = new AsyncScopedLifestyle();
 
+            SqlMapper.AddTypeHandler(InstantHandler.Default);
             _container.AddOutbox();
             _container.AddInternalCommandsProcessing();
 

@@ -17,10 +17,10 @@ using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.EnergySupplying.RequestResponse.Requests;
 using Google.Protobuf;
-using Google.Protobuf.WellKnownTypes;
 using MediatR;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using NodaTime.Serialization.Protobuf;
 using Processing.Application.Customers.GetCustomerMasterData;
 
 namespace Processing.Api.CustomerMasterData
@@ -61,7 +61,6 @@ namespace Processing.Api.CustomerMasterData
                     CustomerId = result.Data?.CustomerId,
                     CustomerName = result.Data?.CustomerName,
                     ElectricalHeatingEffectiveDate = result.Data?.ElectricalHeatingEffectiveDate
-                        .ToUniversalTime()
                         .ToTimestamp(),
                     RegisteredByProcessId = result.Data?.RegisteredByProcessId.ToString(),
                 },
