@@ -64,5 +64,5 @@ public record CustomerMasterData(
     string CustomerName,
     Guid RegisteredByProcessId,
     string CustomerId,
-    Instant ElectricalHeatingEffectiveDate,
+    Instant? ElectricalHeatingEffectiveDate,
     string AccountingPointNumber);
