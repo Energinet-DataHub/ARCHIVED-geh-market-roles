@@ -63,6 +63,7 @@ namespace Processing.Api.CustomerMasterData
                     ElectricalHeatingEffectiveDate = result.Data?.ElectricalHeatingEffectiveDate
                         .ToTimestamp(),
                     RegisteredByProcessId = result.Data?.RegisteredByProcessId.ToString(),
+                    AccountingPointNumber = result.Data?.AccountingPointNumber,
                 },
             };
 

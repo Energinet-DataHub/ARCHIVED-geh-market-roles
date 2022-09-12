@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
@@ -39,7 +40,8 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
                              $"CASE " +
                                 $"WHEN c.CvrNumber IS NULL THEN '' ELSE c.CvrNumber " +
                              $"END AS CustomerId, " +
-                             $"a.ElectricalHeating_EffectiveDate AS {nameof(CustomerMasterData.ElectricalHeatingEffectiveDate)} " +
+                             $"a.ElectricalHeating_EffectiveDate AS {nameof(CustomerMasterData.ElectricalHeatingEffectiveDate)}, " +
+                             $"a.GsrnNumber AS {nameof(CustomerMasterData.AccountingPointNumber)} " +
                                 $"FROM [dbo].[Consumers] c " +
                                 $"JOIN [dbo].[ConsumerRegistrations] cr ON cr.ConsumerId = c.Id " +
                                 $"JOIN [dbo].[AccountingPoints] a ON a.Id = cr.AccountingPointId " +
@@ -58,4 +60,9 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
     }
 }
 
-public record CustomerMasterData(string CustomerName, Guid RegisteredByProcessId, string CustomerId, Instant ElectricalHeatingEffectiveDate);
+public record CustomerMasterData(
+    string CustomerName,
+    Guid RegisteredByProcessId,
+    string CustomerId,
+    Instant ElectricalHeatingEffectiveDate,
+    string AccountingPointNumber);
