@@ -16,11 +16,12 @@ using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.EnergySupplying.RequestResponse.Requests;
+using Google.Protobuf;
 using MediatR;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using NodaTime.Serialization.Protobuf;
 using Processing.Application.Customers.GetCustomerMasterData;
-using Processing.Infrastructure.Configuration.Serialization;
 
 namespace Processing.Api.CustomerMasterData
 {
@@ -29,18 +30,15 @@ namespace Processing.Api.CustomerMasterData
         private readonly ILogger _logger;
         private readonly IMediator _mediator;
         private readonly ServiceBusSender _serviceBusSender;
-        private readonly IJsonSerializer _jsonSerializer;
 
         public CustomerMasterDataRequestListener(
             ILogger logger,
             IMediator mediator,
-            ServiceBusSender serviceBusSender,
-            IJsonSerializer jsonSerializer)
+            ServiceBusSender serviceBusSender)
         {
             _logger = logger;
             _mediator = mediator;
             _serviceBusSender = serviceBusSender;
-            _jsonSerializer = jsonSerializer;
         }
 
         [Function("CustomerMasterDataRequestListener")]
@@ -51,40 +49,47 @@ namespace Processing.Api.CustomerMasterData
             if (data == null) throw new ArgumentNullException(nameof(data));
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            var metaData = GetMetaData(context);
+            var correlationId = ParseCorrelationIdFromMessage(context);
             var request = CustomerMasterDataRequest.Parser.ParseFrom(data);
-            var customerMasterDataQuery = new GetCustomerMasterDataQuery(Guid.Parse(request.Processid));
-            var result = await _mediator.Send(customerMasterDataQuery).ConfigureAwait(false);
-            var resultAsJsonString = _jsonSerializer.Serialize(result);
+            var result = await _mediator.Send(new GetCustomerMasterDataQuery(Guid.Parse(request.Processid))).ConfigureAwait(false);
 
-            ServiceBusMessage serviceBusMessage = new(resultAsJsonString)
+            var response = new CustomerMasterDataResponse
             {
-                ContentType = "application/json",
+                Error = result.Error,
+                MasterData = new Energinet.DataHub.EnergySupplying.RequestResponse.Requests.CustomerMasterData
+                {
+                    CustomerId = result.Data?.CustomerId,
+                    CustomerName = result.Data?.CustomerName,
+                    ElectricalHeatingEffectiveDate = result.Data?.ElectricalHeatingEffectiveDate
+                        .ToTimestamp(),
+                    RegisteredByProcessId = result.Data?.RegisteredByProcessId.ToString(),
+                },
             };
-            serviceBusMessage.ApplicationProperties.Add(
-                "BusinessProcessId",
-                metaData.BusinessProcessId ?? throw new InvalidOperationException("Service bus metadata property BusinessProcessId is missing"));
-            serviceBusMessage.ApplicationProperties.Add(
-                "TransactionId",
-                metaData.TransactionId ?? throw new InvalidOperationException("Service bus metadata property TransactionId is missing"));
 
-            await _serviceBusSender.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
+            await RespondAsync(response, correlationId).ConfigureAwait(false);
 
             _logger.LogInformation($"Received request for customer master data: {data}");
         }
 
-        private MasterDataRequestMetadata GetMetaData(FunctionContext context)
+        private static string ParseCorrelationIdFromMessage(FunctionContext context)
         {
-            context.BindingContext.BindingData.TryGetValue("UserProperties", out var metadata);
-
-            if (metadata is null)
+            context.BindingContext.BindingData.TryGetValue("CorrelationId", out var correlationIdValue);
+            if (correlationIdValue is string correlationId)
             {
-                throw new InvalidOperationException(
-                    $"Service bus metadata must be specified as User Properties attributes");
+                return correlationId;
             }
 
-            return _jsonSerializer.Deserialize<MasterDataRequestMetadata>(metadata.ToString() ??
-                                                                          throw new InvalidOperationException());
+            throw new InvalidOperationException("Correlation id is not set on customer master data request message.");
+        }
+
+        private async Task RespondAsync(CustomerMasterDataResponse response, string correlationId)
+        {
+            ServiceBusMessage serviceBusMessage = new(response.ToByteArray())
+            {
+                ContentType = "application/json",
+            };
+            serviceBusMessage.CorrelationId = correlationId;
+            await _serviceBusSender.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
         }
     }
 }
