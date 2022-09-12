@@ -16,6 +16,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
+using NodaTime;
 using Processing.Application.Common;
 using Processing.Application.Common.Queries;
 
@@ -57,4 +58,4 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
     }
 }
 
-public record CustomerMasterData(string CustomerName, Guid RegisteredByProcessId, string CustomerId, DateTime ElectricalHeatingEffectiveDate);
+public record CustomerMasterData(string CustomerName, Guid RegisteredByProcessId, string CustomerId, Instant ElectricalHeatingEffectiveDate);

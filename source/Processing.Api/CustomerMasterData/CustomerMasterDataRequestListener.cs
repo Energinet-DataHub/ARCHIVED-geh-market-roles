@@ -15,12 +15,13 @@
 using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.EnergySupplying.RequestResponse.Requests;
+using Google.Protobuf;
 using MediatR;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using Processing.Api.Configuration;
+using NodaTime.Serialization.Protobuf;
 using Processing.Application.Customers.GetCustomerMasterData;
-using Processing.Infrastructure.Configuration.Serialization;
 
 namespace Processing.Api.CustomerMasterData
 {
@@ -29,39 +30,66 @@ namespace Processing.Api.CustomerMasterData
         private readonly ILogger _logger;
         private readonly IMediator _mediator;
         private readonly ServiceBusSender _serviceBusSender;
-        private readonly IJsonSerializer _jsonSerializer;
 
         public CustomerMasterDataRequestListener(
             ILogger logger,
             IMediator mediator,
-            ServiceBusSender serviceBusSender,
-            IJsonSerializer jsonSerializer)
+            ServiceBusSender serviceBusSender)
         {
             _logger = logger;
             _mediator = mediator;
             _serviceBusSender = serviceBusSender;
-            _jsonSerializer = jsonSerializer;
         }
 
         [Function("CustomerMasterDataRequestListener")]
         public async Task RunAsync(
-            [ServiceBusTrigger("%CUSTOMER_MASTER_DATA_REQUEST_QUEUE_NAME%", Connection = "MARKET_ROLES_SERVICE_BUS_LISTEN_CONNECTION_STRING")] string data,
+            [ServiceBusTrigger("%CUSTOMER_MASTER_DATA_REQUEST_QUEUE_NAME%", Connection = "MARKET_ROLES_SERVICE_BUS_LISTEN_CONNECTION_STRING")] byte[] data,
             FunctionContext context)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             if (context == null) throw new ArgumentNullException(nameof(context));
 
-            var customerMasterDataQuery = _jsonSerializer.Deserialize<GetCustomerMasterDataQuery>(data);
-            var result = await _mediator.Send(customerMasterDataQuery).ConfigureAwait(false);
-            var resultAsJsonString = _jsonSerializer.Serialize(result);
+            var correlationId = ParseCorrelationIdFromMessage(context);
+            var request = CustomerMasterDataRequest.Parser.ParseFrom(data);
+            var result = await _mediator.Send(new GetCustomerMasterDataQuery(Guid.Parse(request.Processid))).ConfigureAwait(false);
 
-            ServiceBusMessage serviceBusMessage = new(resultAsJsonString)
+            var response = new CustomerMasterDataResponse
+            {
+                Error = result.Error,
+                MasterData = new Energinet.DataHub.EnergySupplying.RequestResponse.Requests.CustomerMasterData
+                {
+                    CustomerId = result.Data?.CustomerId,
+                    CustomerName = result.Data?.CustomerName,
+                    ElectricalHeatingEffectiveDate = result.Data?.ElectricalHeatingEffectiveDate
+                        .ToTimestamp(),
+                    RegisteredByProcessId = result.Data?.RegisteredByProcessId.ToString(),
+                },
+            };
+
+            await RespondAsync(response, correlationId).ConfigureAwait(false);
+
+            _logger.LogInformation($"Received request for customer master data: {data}");
+        }
+
+        private static string ParseCorrelationIdFromMessage(FunctionContext context)
+        {
+            context.BindingContext.BindingData.TryGetValue("CorrelationId", out var correlationIdValue);
+            if (correlationIdValue is string correlationId)
+            {
+                return correlationId;
+            }
+
+            throw new InvalidOperationException("Correlation id is not set on customer master data request message.");
+        }
+
+        private async Task RespondAsync(CustomerMasterDataResponse response, string correlationId)
+        {
+            ServiceBusMessage serviceBusMessage = new(response.ToByteArray())
             {
                 ContentType = "application/json",
             };
+            serviceBusMessage.CorrelationId = correlationId;
             await _serviceBusSender.SendMessageAsync(serviceBusMessage).ConfigureAwait(false);
-
-            _logger.LogInformation($"Received request for customer master data: {data}");
         }
     }
 }

@@ -15,6 +15,8 @@
 using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using Dapper;
+using Dapper.NodaTime;
 using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.Core.App.FunctionApp.Middleware;
@@ -27,6 +29,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Processing.Api.Configuration;
+using Processing.Api.CustomerMasterData;
 using Processing.Api.EventListeners;
 using Processing.Api.Monitor;
 using Processing.Api.MoveIn;
@@ -115,6 +118,8 @@ namespace Processing.Api
                 throw new ArgumentNullException(nameof(container));
             base.ConfigureContainer(container);
 
+            SqlMapper.AddTypeHandler(InstantHandler.Default);
+
             container.AddOutbox();
             container.AddInternalCommandsProcessing();
 
@@ -140,6 +145,7 @@ namespace Processing.Api
             container.Register<MoveInHttpTrigger>(Lifestyle.Scoped);
             container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
             container.Register<SystemTimer>();
+            container.Register<CustomerMasterDataRequestListener>();
 
             container.ConfigureMoveInProcessTimePolicy(7, 60, TimeOfDay.Create(0, 0, 0));
 
