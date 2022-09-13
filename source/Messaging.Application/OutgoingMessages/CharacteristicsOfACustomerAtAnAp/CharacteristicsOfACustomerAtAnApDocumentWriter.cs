@@ -53,9 +53,13 @@ public class CharacteristicsOfACustomerAtAnApDocumentWriter : DocumentWriter
     {
         await writer.WriteStartElementAsync(DocumentDetails.Prefix, "MarketEvaluationPoint", null).ConfigureAwait(false);
 
+        var electricalHeatingStart = marketEvaluationPoint.ElectricalHeating == false
+            ? string.Empty
+            : marketEvaluationPoint.ElectricalHeatingStart.ToString();
+
         await WriteMridAsync("mRID", marketEvaluationPoint.MarketEvaluationPointId, "A10", writer).ConfigureAwait(false);
         await WriteElementAsync("serviceCategory.ElectricalHeating", marketEvaluationPoint.ElectricalHeating.ToStringValue(), writer).ConfigureAwait(false);
-        await WriteElementAsync("eletricalHeating_DateAndOrTime.dateTime", marketEvaluationPoint.ElectricalHeatingStart.ToString(), writer).ConfigureAwait(false);
+        await WriteElementAsync("eletricalHeating_DateAndOrTime.dateTime", electricalHeatingStart, writer).ConfigureAwait(false);
         await WriteMridAsync("firstCustomer_MarketParticipant.mRID", marketEvaluationPoint.FirstCustomerId.Id, marketEvaluationPoint.FirstCustomerId.CodingScheme, writer).ConfigureAwait(false);
         await WriteElementAsync("firstCustomer_MarketParticipant.name", marketEvaluationPoint.FirstCustomerName, writer).ConfigureAwait(false);
         await WriteMridAsync("secondCustomer_MarketParticipant.mRID", marketEvaluationPoint.SecondCustomerId.Id, marketEvaluationPoint.FirstCustomerId.CodingScheme, writer).ConfigureAwait(false);
