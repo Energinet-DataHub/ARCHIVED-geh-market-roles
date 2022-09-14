@@ -21,7 +21,7 @@ namespace Processing.Api.EventListeners
     public static class MarketParticipantChangedListener
     {
         [Function("MarketParticipantChangedListener")]
-        public static Task RunAsync([ServiceBusTrigger("%MARKET_PARTICIPANT_CHANGED_TOPIC_NAME%", "%MARKET_PARTICIPANT_CHANGED_SUBSCRIPTION_NAME%", Connection = "SHARED_SERVICE_BUS_LISTEN_CONNECTION_STRING")] byte[] data, FunctionContext context)
+        public static Task RunAsync([ServiceBusTrigger("%MARKET_PARTICIPANT_CHANGED_TOPIC_NAME%", "%MARKET_PARTICIPANT_CHANGED_SUBSCRIPTION_NAME%", Connection = "SERVICE_BUS_CONNECTION_STRING_LISTENER_FOR_INTEGRATION_EVENTS")] byte[] data, FunctionContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
             return Task.CompletedTask;
