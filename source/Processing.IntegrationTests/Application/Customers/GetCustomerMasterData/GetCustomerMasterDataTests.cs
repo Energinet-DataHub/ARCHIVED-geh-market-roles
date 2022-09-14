@@ -43,6 +43,7 @@ namespace Processing.IntegrationTests.Application.Customers.GetCustomerMasterDat
             Assert.Equal(SampleData.Vat, result.Data?.CustomerId);
             Assert.Equal(SampleData.CustomerName, result.Data?.CustomerName);
             Assert.Equal("1970-01-01T00:00:00Z", result.Data?.ElectricalHeatingEffectiveDate.ToString());
+            Assert.Equal("1970-01-01T00:00:00Z", result.Data?.SupplyStart.ToString());
         }
 
         [Fact]
