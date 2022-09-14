@@ -64,6 +64,7 @@ namespace Processing.Api.CustomerMasterData
                         .ToTimestamp(),
                     RegisteredByProcessId = result.Data?.RegisteredByProcessId.ToString(),
                     AccountingPointNumber = result.Data?.AccountingPointNumber,
+                    SupplyStart = result.Data?.SupplyStart.ToTimestamp(),
                 },
             };
 

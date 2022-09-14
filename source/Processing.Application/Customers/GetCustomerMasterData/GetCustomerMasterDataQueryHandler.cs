@@ -37,6 +37,7 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
         if (request == null) throw new ArgumentNullException(nameof(request));
         var queryStatement = $"SELECT c.Name AS {nameof(CustomerMasterData.CustomerName)}, " +
                              $"cr.BusinessProcessId AS {nameof(CustomerMasterData.RegisteredByProcessId)}, " +
+                             $"cr.MoveInDate AS {nameof(CustomerMasterData.SupplyStart)}, " +
                              $"CASE " +
                                 $"WHEN c.CvrNumber IS NULL THEN '' ELSE c.CvrNumber " +
                              $"END AS CustomerId, " +
@@ -63,6 +64,7 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
 public record CustomerMasterData(
     string CustomerName,
     Guid RegisteredByProcessId,
+    Instant SupplyStart,
     string CustomerId,
     Instant? ElectricalHeatingEffectiveDate,
     string AccountingPointNumber);
