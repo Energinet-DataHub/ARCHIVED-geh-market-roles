@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Energinet.DataHub.MarketParticipant.Integration.Model.Protobuf;
 using Microsoft.Azure.Functions.Worker;
@@ -31,16 +32,21 @@ namespace Processing.Api.EventListeners
         }
 
         [Function("ActorCreatedListener")]
-        public async Task RunAsync([ServiceBusTrigger("%MARKET_PARTICIPANT_CHANGED_TOPIC_NAME%", "%MARKET_PARTICIPANT_CHANGED_SUBSCRIPTION_NAME%", Connection = "SERVICE_BUS_CONNECTION_STRING_LISTENER_FOR_INTEGRATION_EVENTS")] byte[] data, FunctionContext context)
+        public async Task RunAsync([ServiceBusTrigger("%MARKET_PARTICIPANT_CHANGED_TOPIC_NAME%", "%MARKET_PARTICIPANT_CHANGED_ACTOR_CREATED_SUBSCRIPTION_NAME%", Connection = "SERVICE_BUS_CONNECTION_STRING_LISTENER_FOR_INTEGRATION_EVENTS")] byte[] data, FunctionContext context)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
             var integrationEvent = ActorCreatedIntegrationEventContract.Parser.ParseFrom(data);
 
-            var command = new CreateEnergySupplier(
-                integrationEvent.ActorId,
-                integrationEvent.ActorNumber);
+            var isEnergySupplier = integrationEvent.BusinessRoles.Contains(12);
 
-            await _commandSchedulerFacade.EnqueueAsync(command).ConfigureAwait(false);
+            if (isEnergySupplier)
+            {
+                var command = new CreateEnergySupplier(
+                    integrationEvent.ActorId,
+                    integrationEvent.ActorNumber);
+
+                await _commandSchedulerFacade.EnqueueAsync(command).ConfigureAwait(false);
+            }
         }
     }
 }
