@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json.Serialization;
 using Processing.Application.Common.Commands;
 
 namespace Processing.Application.EnergySuppliers;
 
 public class CreateEnergySupplier : InternalCommand
 {
+    [JsonConstructor]
     public CreateEnergySupplier(string energySupplierId, string glnNumber)
     {
         EnergySupplierId = energySupplierId;
