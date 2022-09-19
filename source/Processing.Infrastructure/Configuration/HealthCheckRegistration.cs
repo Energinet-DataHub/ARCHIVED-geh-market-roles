@@ -36,7 +36,7 @@ namespace Processing.Infrastructure.Configuration
             {
                 services.AddHealthChecks()
                     .AddAzureServiceBusTopic(
-                        name: name + "Exists",
+                        name: name + "Exists" + Guid.NewGuid(),
                         connectionString: serviceBusConnectionString,
                         topicName: name);
             }
@@ -52,7 +52,7 @@ namespace Processing.Infrastructure.Configuration
             {
                 services.AddHealthChecks()
                     .AddAzureServiceBusSubscription(
-                        name: name + "Exists",
+                        name: name + "Exists" + Guid.NewGuid(),
                         connectionString: serviceBusConnectionString,
                         topicName: topicName,
                         subscriptionName: name);
@@ -65,7 +65,7 @@ namespace Processing.Infrastructure.Configuration
             {
                 services.AddHealthChecks()
                     .AddAzureServiceBusQueue(
-                        name: name + "Exists",
+                        name: name + "Exists" + Guid.NewGuid(),
                         connectionString: serviceBusConnectionString,
                         queueName: name);
             }
