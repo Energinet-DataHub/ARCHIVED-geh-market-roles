@@ -17,6 +17,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Energinet.DataHub.MarketParticipant.Integration.Model.Protobuf;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
 using Processing.Application.EnergySuppliers;
 using Processing.Infrastructure.Configuration.InternalCommands;
 
@@ -25,10 +26,12 @@ namespace Processing.Api.EventListeners
     public class ActorCreatedListener
     {
         private readonly CommandSchedulerFacade _commandSchedulerFacade;
+        private readonly ILogger<ActorCreatedListener> _logger;
 
-        public ActorCreatedListener(CommandSchedulerFacade commandSchedulerFacade)
+        public ActorCreatedListener(CommandSchedulerFacade commandSchedulerFacade, ILogger<ActorCreatedListener> logger)
         {
             _commandSchedulerFacade = commandSchedulerFacade;
+            _logger = logger;
         }
 
         [Function("ActorCreatedListener")]
@@ -36,6 +39,8 @@ namespace Processing.Api.EventListeners
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
             var integrationEvent = ActorCreatedIntegrationEventContract.Parser.ParseFrom(data);
+
+            _logger.LogInformation($"actor created event received for actor: {integrationEvent.Name}");
 
             var isEnergySupplier = integrationEvent.BusinessRoles.Contains(12);
 
