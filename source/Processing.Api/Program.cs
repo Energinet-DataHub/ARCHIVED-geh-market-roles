@@ -132,6 +132,7 @@ namespace Processing.Api
             container.Register<EntryPointTelemetryScopeMiddleware>(Lifestyle.Scoped);
             container.Register<ServiceBusActorContextMiddleware>(Lifestyle.Scoped);
             container.Register<IActorContext, ActorContext>(Lifestyle.Scoped);
+            container.Register<IActorProvider, ActorProvider>(Lifestyle.Scoped);
             container.Register<UserIdentityFactory>(Lifestyle.Singleton);
             container.Register<IUnitOfWork, UnitOfWork>(Lifestyle.Scoped);
             container.Register<ISystemDateTimeProvider, SystemDateTimeProvider>(Lifestyle.Scoped);
