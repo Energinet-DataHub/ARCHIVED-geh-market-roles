@@ -16,34 +16,30 @@ using System;
 using System.Threading.Tasks;
 using Dapper;
 using JetBrains.Annotations;
-using NodaTime;
+using MediatR;
 using Processing.Application.Common;
-using Processing.Application.Common.Commands;
 using Processing.Application.EnergySuppliers;
-using Processing.Domain.EnergySuppliers;
-using Processing.Infrastructure.Configuration.InternalCommands;
 using Xunit;
 
-namespace Processing.IntegrationTests.Application.EnegySuppliers
+namespace Processing.IntegrationTests.Application.EnergySuppliers
 {
     public class CreateEnergySupplierTests : TestHost
     {
-        private readonly InternalCommandProcessor _processor;
-        private readonly CommandSchedulerFacade _scheduler;
         private readonly IDbConnectionFactory _connectionFactory;
+        private readonly IMediator _mediator;
 
         public CreateEnergySupplierTests([NotNull] DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
-            _processor = GetService<InternalCommandProcessor>();
-            _scheduler = GetService<CommandSchedulerFacade>();
+            _mediator = GetService<IMediator>();
             _connectionFactory = GetService<IDbConnectionFactory>();
         }
 
         [Fact]
         public async Task Energy_supplier_is_created()
         {
-            await EventIsReceivedAndProcessed().ConfigureAwait(false);
+            var command = CreateCommand();
+            await _mediator.Send(command).ConfigureAwait(false);
 
             var energySupplier = await GetActor().ConfigureAwait(false);
 
@@ -63,23 +59,6 @@ namespace Processing.IntegrationTests.Application.EnegySuppliers
         {
             var sql = $"SELECT Id, GlnNumber FROM [dbo].[EnergySuppliers] WHERE Id = '{SampleData.EnergySupplierId}'";
             return await _connectionFactory.GetOpenConnection().QuerySingleOrDefaultAsync<EnergySupplier>(sql).ConfigureAwait(false);
-        }
-
-        private async Task EventIsReceivedAndProcessed()
-        {
-            var command = CreateCommand();
-            await Schedule(command).ConfigureAwait(false);
-            await ProcessPendingCommands().ConfigureAwait(false);
-        }
-
-        private async Task ProcessPendingCommands()
-        {
-            await _processor.ProcessPendingAsync().ConfigureAwait(false);
-        }
-
-        private async Task Schedule(InternalCommand command)
-        {
-            await _scheduler.EnqueueAsync(command).ConfigureAwait(false);
         }
 
 #pragma warning disable
