@@ -42,9 +42,10 @@ namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBu
         {
             if (integrationEvent == null) throw new ArgumentNullException(nameof(integrationEvent));
             var eventMetadata = _integrationEventMapper.GetByType(integrationEvent.GetType());
+            var serviceBusMessage = CreateMessage(integrationEvent, eventMetadata);
             return Task.WhenAll(
-                    _serviceBusSenderFactory.GetSender(eventMetadata.TopicName).SendAsync(CreateMessage(integrationEvent, eventMetadata)),
-                    _serviceBusSenderFactory.GetSender(_publishToTopic).SendAsync(CreateMessage(integrationEvent, eventMetadata)));
+                    _serviceBusSenderFactory.GetSender(eventMetadata.TopicName).SendAsync(serviceBusMessage),
+                    _serviceBusSenderFactory.GetSender(_publishToTopic).SendAsync(serviceBusMessage));
         }
 
         private ServiceBusMessage CreateMessage(IMessage integrationEvent, EventMetadata eventMetadata)
