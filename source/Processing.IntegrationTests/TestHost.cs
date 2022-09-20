@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,7 +28,6 @@ using FluentValidation;
 using MediatR;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -64,6 +62,7 @@ using Processing.Infrastructure.ContainerExtensions;
 using Processing.Infrastructure.EDI;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
+using Processing.IntegrationTests.Application;
 using Processing.IntegrationTests.Fixtures;
 using Processing.IntegrationTests.TestDoubles;
 using SimpleInjector;
@@ -72,7 +71,7 @@ using Xunit;
 using Consumer = Processing.Domain.Consumers.Consumer;
 using RequestChangeOfSupplier = Processing.Application.ChangeOfSupplier.RequestChangeOfSupplier;
 
-namespace Processing.IntegrationTests.Application
+namespace Processing.IntegrationTests
 {
     [Collection("IntegrationTest")]
 #pragma warning disable CA1724 // TODO: TestHost is reserved. Maybe refactor to base EntryPoint?
