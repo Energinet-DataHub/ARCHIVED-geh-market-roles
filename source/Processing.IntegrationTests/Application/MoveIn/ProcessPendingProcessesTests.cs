@@ -18,6 +18,7 @@ using Processing.Application.Common.TimeEvents;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
 using Processing.IntegrationTests.Fixtures;
+using Processing.IntegrationTests.TestDoubles;
 using Xunit;
 using EffectuateConsumerMoveIn = Processing.Application.MoveIn.Processing.EffectuateConsumerMoveIn;
 
