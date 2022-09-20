@@ -20,7 +20,7 @@ using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 
 namespace Processing.IntegrationTests.TestDoubles
 {
-    public sealed class ServiceBusSenderFactoryStub : IServiceBusSenderFactory
+    public sealed class ServiceBusSenderFactorySpy : IServiceBusSenderFactory
     {
         private readonly List<IServiceBusSenderAdapter> _senders = new();
 

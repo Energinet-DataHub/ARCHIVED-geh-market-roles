@@ -61,7 +61,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
 
         private void AddSenderSpy(ServiceBusSenderSpy senderSpy)
         {
-            (_serviceBusSenderFactory as ServiceBusSenderFactoryStub)!.AddSenderSpy(senderSpy);
+            (_serviceBusSenderFactory as ServiceBusSenderFactorySpy)!.AddSenderSpy(senderSpy);
         }
     }
 }
