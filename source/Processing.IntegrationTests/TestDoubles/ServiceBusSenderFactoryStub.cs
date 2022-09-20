@@ -26,7 +26,14 @@ namespace Processing.IntegrationTests.TestDoubles
 
         public IServiceBusSenderAdapter GetSender(string topicName)
         {
-            return _senders.First(a => a.TopicName.Equals(topicName, StringComparison.OrdinalIgnoreCase));
+            var sender = _senders.FirstOrDefault(a => a.TopicName.Equals(topicName, StringComparison.OrdinalIgnoreCase));
+            if (sender is null)
+            {
+                sender = new ServiceBusSenderSpy(topicName);
+                _senders.Add(sender);
+            }
+
+            return sender;
         }
 
         #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
