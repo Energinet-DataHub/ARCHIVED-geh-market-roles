@@ -23,7 +23,6 @@ using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.MarketRoles.Contracts;
 using Energinet.DataHub.MarketRoles.EntryPoints.Common.MediatR;
-using FluentAssertions;
 using FluentValidation;
 using MediatR;
 using Microsoft.ApplicationInsights;
@@ -194,8 +193,6 @@ namespace Processing.IntegrationTests
 
         protected IJsonSerializer Serializer { get; }
 
-        protected Instant EffectiveDate => SystemDateTimeProvider.Now();
-
         public void Dispose()
         {
             Dispose(true);
@@ -307,18 +304,6 @@ namespace Processing.IntegrationTests
             accountingPoint.EffectuateConsumerMoveIn(businessProcessId, systemTimeProvider.Now());
         }
 
-        protected void RegisterChangeOfSupplier(AccountingPoint accountingPoint, EnergySupplierId energySupplierId, BusinessProcessId processId)
-        {
-            if (accountingPoint == null)
-                throw new ArgumentNullException(nameof(accountingPoint));
-
-            var systemTimeProvider = GetService<ISystemDateTimeProvider>();
-
-            var changeSupplierDate = systemTimeProvider.Now();
-
-            accountingPoint.AcceptChangeOfSupplier(energySupplierId, changeSupplierDate, systemTimeProvider, processId);
-        }
-
         protected IEnumerable<TMessage> GetOutboxMessages<TMessage>()
         {
             var jsonSerializer = GetService<IJsonSerializer>();
@@ -329,14 +314,6 @@ namespace Processing.IntegrationTests
             return context.OutboxMessages
                 .Where(message => message.Type == messageType)
                 .Select(message => jsonSerializer.Deserialize<TMessage>(message.Data));
-        }
-
-        protected void AssertOutboxMessage<TMessage>()
-        {
-            var message = GetOutboxMessages<TMessage>().SingleOrDefault();
-
-            message.Should().NotBeNull();
-            message.Should().BeOfType<TMessage>();
         }
 
         private string? GetIntegrationEventNameFromType<TIntegrationEventType>()
