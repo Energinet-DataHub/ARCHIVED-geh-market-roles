@@ -38,7 +38,7 @@ public class MeteringPointCreatedListener
 
     [Function("MeteringPointCreatedListener")]
     public Task RunAsync(
-        [ServiceBusTrigger("%INTEGRATION_EVENT_RECEIVED_TOPIC_NAME%", "%METERING_POINT_CREATED_EVENT_SUBSCRIPTION_NAME%", Connection = "SERVICE_BUS_CONNECTION_STRING_LISTENER_FOR_INTEGRATION_EVENTS")] byte[] data,
+        [ServiceBusTrigger("%INTEGRATION_EVENT_TOPIC_NAME%", "%METERING_POINT_CREATED_EVENT_SUBSCRIPTION_NAME%", Connection = "SERVICE_BUS_CONNECTION_STRING_LISTENER_FOR_INTEGRATION_EVENTS")] byte[] data,
         FunctionContext context)
     {
         if (data == null) throw new ArgumentNullException(nameof(data));
