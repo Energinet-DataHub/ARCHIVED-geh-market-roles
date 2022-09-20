@@ -17,14 +17,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
 using Processing.Application.ChangeOfSupplier;
-using Processing.Infrastructure.EDI;
+using Processing.IntegrationTests.Fixtures;
 using Xunit;
 using Xunit.Categories;
 
 namespace Processing.IntegrationTests.Application.ChangeOfSupplier
 {
     [IntegrationTest]
-    public sealed class RequestTests : TestHost
+    public sealed class RequestTests : TestBase
     {
         public RequestTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)

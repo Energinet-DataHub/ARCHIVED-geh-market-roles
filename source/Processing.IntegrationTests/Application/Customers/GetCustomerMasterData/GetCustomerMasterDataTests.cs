@@ -19,11 +19,12 @@ using Processing.Application.Customers.GetCustomerMasterData;
 using Processing.Application.MoveIn;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
+using Processing.IntegrationTests.Fixtures;
 using Xunit;
 
 namespace Processing.IntegrationTests.Application.Customers.GetCustomerMasterData
 {
-    public class GetCustomerMasterDataTests : TestHost
+    public class GetCustomerMasterDataTests : TestBase
     {
         public GetCustomerMasterDataTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)

@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,12 +23,10 @@ using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
 using Energinet.DataHub.MarketRoles.Contracts;
 using Energinet.DataHub.MarketRoles.EntryPoints.Common.MediatR;
-using FluentAssertions;
 using FluentValidation;
 using MediatR;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -63,8 +60,9 @@ using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
 using Processing.Infrastructure.EDI;
 using Processing.Infrastructure.RequestAdapters;
-using Processing.Infrastructure.Transport;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
+using Processing.IntegrationTests.Application;
+using Processing.IntegrationTests.Fixtures;
 using Processing.IntegrationTests.TestDoubles;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
@@ -72,26 +70,21 @@ using Xunit;
 using Consumer = Processing.Domain.Consumers.Consumer;
 using RequestChangeOfSupplier = Processing.Application.ChangeOfSupplier.RequestChangeOfSupplier;
 
-namespace Processing.IntegrationTests.Application
+namespace Processing.IntegrationTests
 {
     [Collection("IntegrationTest")]
-#pragma warning disable CA1724 // TODO: TestHost is reserved. Maybe refactor to base EntryPoint?
-    public class TestHost : IDisposable
+    public class TestBase : IDisposable
     {
         private readonly Scope _scope;
         private readonly Container _container;
-        private readonly string _connectionString;
         private readonly ServiceBusSenderFactorySpy _serviceBusSenderFactorySpy;
         private bool _disposed;
-        private SqlConnection? _sqlConnection;
 
-        protected TestHost(DatabaseFixture databaseFixture)
+        protected TestBase(DatabaseFixture databaseFixture)
         {
             if (databaseFixture == null)
                 throw new ArgumentNullException(nameof(databaseFixture));
-
-            databaseFixture.DatabaseManager.UpgradeDatabase();
-            _connectionString = databaseFixture.DatabaseManager.ConnectionString;
+            databaseFixture.CleanupDatabase();
 
             _container = new Container();
             var serviceCollection = new ServiceCollection();
@@ -112,7 +105,7 @@ namespace Processing.IntegrationTests.Application
                     .WithParser(() => MarketRolesEnvelope.Parser));
 
             serviceCollection.AddDbContext<MarketRolesContext>(x =>
-                x.UseSqlServer(_connectionString, y => y.UseNodaTime()));
+                x.UseSqlServer(databaseFixture.ConnectionString, y => y.UseNodaTime()));
             serviceCollection.AddSimpleInjector(_container);
             var serviceProvider = serviceCollection.BuildServiceProvider().UseSimpleInjector(_container);
 
@@ -124,7 +117,7 @@ namespace Processing.IntegrationTests.Application
             _container.Register<ISystemDateTimeProvider, SystemDateTimeProviderStub>(Lifestyle.Singleton);
             _container.Register<IDomainEventsAccessor, DomainEventsAccessor>();
             _container.Register<IDomainEventsDispatcher, DomainEventsDispatcher>();
-            _container.Register<IDbConnectionFactory>(() => new SqlDbConnectionFactory(_connectionString));
+            _container.Register<IDbConnectionFactory>(() => new SqlDbConnectionFactory(databaseFixture.ConnectionString));
             _container.Register<ICorrelationContext, CorrelationContext>(Lifestyle.Scoped);
 
             _container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
@@ -167,8 +160,6 @@ namespace Processing.IntegrationTests.Application
             correlationContext.SetId(Guid.NewGuid().ToString().Replace("-", string.Empty, StringComparison.Ordinal));
             correlationContext.SetParentId(Guid.NewGuid().ToString().Replace("-", string.Empty, StringComparison.Ordinal)[..16]);
 
-            CleanupDatabase();
-
             ServiceProvider = serviceProvider;
             Mediator = _container.GetInstance<IMediator>();
             AccountingPointRepository = _container.GetInstance<IAccountingPointRepository>();
@@ -202,8 +193,6 @@ namespace Processing.IntegrationTests.Application
 
         protected IJsonSerializer Serializer { get; }
 
-        protected Instant EffectiveDate => SystemDateTimeProvider.Now();
-
         public void Dispose()
         {
             Dispose(true);
@@ -217,10 +206,7 @@ namespace Processing.IntegrationTests.Application
                 return;
             }
 
-            CleanupDatabase();
-
             _serviceBusSenderFactorySpy.Dispose();
-            _sqlConnection?.Dispose();
             _scope.Dispose();
             _container.Dispose();
 
@@ -231,15 +217,6 @@ namespace Processing.IntegrationTests.Application
             where TService : class
         {
             return _container.GetInstance<TService>();
-        }
-
-        protected SqlConnection GetSqlDbConnection()
-        {
-            if (_sqlConnection is null)
-                _sqlConnection = new SqlConnection(_connectionString);
-            if (_sqlConnection.State == ConnectionState.Closed)
-                _sqlConnection.Open();
-            return _sqlConnection;
         }
 
         protected void SaveChanges()
@@ -327,18 +304,6 @@ namespace Processing.IntegrationTests.Application
             accountingPoint.EffectuateConsumerMoveIn(businessProcessId, systemTimeProvider.Now());
         }
 
-        protected void RegisterChangeOfSupplier(AccountingPoint accountingPoint, EnergySupplierId energySupplierId, BusinessProcessId processId)
-        {
-            if (accountingPoint == null)
-                throw new ArgumentNullException(nameof(accountingPoint));
-
-            var systemTimeProvider = GetService<ISystemDateTimeProvider>();
-
-            var changeSupplierDate = systemTimeProvider.Now();
-
-            accountingPoint.AcceptChangeOfSupplier(energySupplierId, changeSupplierDate, systemTimeProvider, processId);
-        }
-
         protected IEnumerable<TMessage> GetOutboxMessages<TMessage>()
         {
             var jsonSerializer = GetService<IJsonSerializer>();
@@ -349,30 +314,6 @@ namespace Processing.IntegrationTests.Application
             return context.OutboxMessages
                 .Where(message => message.Type == messageType)
                 .Select(message => jsonSerializer.Deserialize<TMessage>(message.Data));
-        }
-
-        protected void AssertOutboxMessage<TMessage>()
-        {
-            var message = GetOutboxMessages<TMessage>().SingleOrDefault();
-
-            message.Should().NotBeNull();
-            message.Should().BeOfType<TMessage>();
-        }
-
-        private void CleanupDatabase()
-        {
-            var cleanupStatement = $"DELETE FROM [dbo].[ConsumerRegistrations] " +
-                                   $"DELETE FROM [dbo].[SupplierRegistrations] " +
-                                   $"DELETE FROM [dbo].[ProcessManagers] " +
-                                   $"DELETE FROM [dbo].[BusinessProcesses] " +
-                                   $"DELETE FROM [dbo].[Consumers] " +
-                                   $"DELETE FROM [dbo].[EnergySuppliers] " +
-                                   $"DELETE FROM [dbo].[AccountingPoints] " +
-                                   $"DELETE FROM [dbo].[OutboxMessages] " +
-                                   $"DELETE FROM [dbo].[QueuedInternalCommands]";
-
-            using var sqlCommand = new SqlCommand(cleanupStatement, GetSqlDbConnection());
-            sqlCommand.ExecuteNonQuery();
         }
 
         private string? GetIntegrationEventNameFromType<TIntegrationEventType>()

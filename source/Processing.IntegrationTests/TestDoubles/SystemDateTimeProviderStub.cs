@@ -15,7 +15,7 @@
 using NodaTime;
 using Processing.Domain.SeedWork;
 
-namespace Processing.IntegrationTests.Application
+namespace Processing.IntegrationTests.TestDoubles
 {
     public class SystemDateTimeProviderStub : ISystemDateTimeProvider
     {
