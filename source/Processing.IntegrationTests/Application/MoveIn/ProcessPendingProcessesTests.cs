@@ -23,7 +23,7 @@ using EffectuateConsumerMoveIn = Processing.Application.MoveIn.Processing.Effect
 
 namespace Processing.IntegrationTests.Application.MoveIn
 {
-    public class ProcessPendingProcessesTests : TestHost
+    public class ProcessPendingProcessesTests : TestBase
     {
         private readonly SystemDateTimeProviderStub _systemDateTimeProvider;
 

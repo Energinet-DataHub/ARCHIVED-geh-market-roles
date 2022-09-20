@@ -27,7 +27,7 @@ using Xunit;
 
 namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishing
 {
-    public class EventDispatcherTests : TestHost
+    public class EventDispatcherTests : TestBase
     {
         private readonly IEventPublisher _eventPublisher;
         private readonly EventDispatcher _eventDispatcher;

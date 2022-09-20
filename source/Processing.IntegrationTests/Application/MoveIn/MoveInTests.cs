@@ -41,7 +41,7 @@ using Consumer = Processing.Application.MoveIn.Consumer;
 namespace Processing.IntegrationTests.Application.MoveIn
 {
     [IntegrationTest]
-    public class MoveInTests : TestHost
+    public class MoveInTests : TestBase
     {
         public MoveInTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)

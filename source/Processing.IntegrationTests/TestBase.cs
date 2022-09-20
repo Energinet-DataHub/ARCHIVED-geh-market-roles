@@ -74,15 +74,14 @@ using RequestChangeOfSupplier = Processing.Application.ChangeOfSupplier.RequestC
 namespace Processing.IntegrationTests
 {
     [Collection("IntegrationTest")]
-#pragma warning disable CA1724 // TODO: TestHost is reserved. Maybe refactor to base EntryPoint?
-    public class TestHost : IDisposable
+    public class TestBase : IDisposable
     {
         private readonly Scope _scope;
         private readonly Container _container;
         private readonly ServiceBusSenderFactorySpy _serviceBusSenderFactorySpy;
         private bool _disposed;
 
-        protected TestHost(DatabaseFixture databaseFixture)
+        protected TestBase(DatabaseFixture databaseFixture)
         {
             if (databaseFixture == null)
                 throw new ArgumentNullException(nameof(databaseFixture));

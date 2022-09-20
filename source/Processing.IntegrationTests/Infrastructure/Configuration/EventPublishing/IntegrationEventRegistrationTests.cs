@@ -24,7 +24,7 @@ using Xunit;
 
 namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishing
 {
-    public class IntegrationEventRegistrationTests : TestHost
+    public class IntegrationEventRegistrationTests : TestBase
     {
         private readonly IntegrationEventMapper _mapper;
 

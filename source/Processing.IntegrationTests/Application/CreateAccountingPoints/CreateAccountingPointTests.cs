@@ -23,7 +23,7 @@ using Xunit;
 
 namespace Processing.IntegrationTests.Application.CreateAccountingPoints
 {
-    public class CreateAccountingPointTests : TestHost
+    public class CreateAccountingPointTests : TestBase
     {
         public CreateAccountingPointTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)

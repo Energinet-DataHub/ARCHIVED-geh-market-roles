@@ -24,7 +24,7 @@ using Xunit;
 
 namespace Processing.IntegrationTests.Application.Customers.GetCustomerMasterData
 {
-    public class GetCustomerMasterDataTests : TestHost
+    public class GetCustomerMasterDataTests : TestBase
     {
         public GetCustomerMasterDataTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)

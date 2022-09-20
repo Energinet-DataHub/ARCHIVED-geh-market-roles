@@ -23,7 +23,7 @@ using Xunit;
 
 namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishing
 {
-    public class ServiceBusMessageDispatcherTests : TestHost
+    public class ServiceBusMessageDispatcherTests : TestBase
     {
         private readonly ServiceBusMessageDispatcher _serviceBusMessageDispatcher;
         private readonly ServiceBusSenderFactorySpy _serviceBusSenderFactory;

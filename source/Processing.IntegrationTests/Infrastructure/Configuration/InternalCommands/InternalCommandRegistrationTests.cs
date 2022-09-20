@@ -23,7 +23,7 @@ using Xunit;
 
 namespace Processing.IntegrationTests.Infrastructure.Configuration.InternalCommands
 {
-    public class InternalCommandRegistrationTests : TestHost
+    public class InternalCommandRegistrationTests : TestBase
     {
         private readonly InternalCommandMapper _mapper;
 

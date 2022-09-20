@@ -26,7 +26,7 @@ using Xunit.Categories;
 namespace Processing.IntegrationTests.Infrastructure.Configuration.InternalCommands
 {
     [IntegrationTest]
-    public class InternalCommandProcessorTests : TestHost
+    public class InternalCommandProcessorTests : TestBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly InternalCommandProcessor _processor;
