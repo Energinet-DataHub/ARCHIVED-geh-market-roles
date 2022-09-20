@@ -19,11 +19,12 @@ using Processing.Infrastructure;
 using Processing.Infrastructure.Configuration;
 using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.IntegrationTests.Application;
+using Processing.IntegrationTests.Fixtures;
 using Xunit;
 
 namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishing
 {
-    public class IntegrationEventRegistrationTests : TestHost
+    public class IntegrationEventRegistrationTests : TestBase
     {
         private readonly IntegrationEventMapper _mapper;
 

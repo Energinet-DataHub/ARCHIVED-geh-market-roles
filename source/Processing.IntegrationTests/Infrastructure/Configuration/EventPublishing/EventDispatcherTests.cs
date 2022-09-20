@@ -21,12 +21,13 @@ using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 using Processing.Infrastructure.Configuration.Outbox;
 using Processing.IntegrationTests.Application;
+using Processing.IntegrationTests.Fixtures;
 using Processing.IntegrationTests.TestDoubles;
 using Xunit;
 
 namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishing
 {
-    public class EventDispatcherTests : TestHost
+    public class EventDispatcherTests : TestBase
     {
         private readonly IEventPublisher _eventPublisher;
         private readonly EventDispatcher _eventDispatcher;

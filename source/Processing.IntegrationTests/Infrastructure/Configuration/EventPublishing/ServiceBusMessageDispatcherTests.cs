@@ -17,12 +17,13 @@ using System.Threading.Tasks;
 using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 using Processing.IntegrationTests.Application;
+using Processing.IntegrationTests.Fixtures;
 using Processing.IntegrationTests.TestDoubles;
 using Xunit;
 
 namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishing
 {
-    public class ServiceBusMessageDispatcherTests : TestHost
+    public class ServiceBusMessageDispatcherTests : TestBase
     {
         private readonly ServiceBusMessageDispatcher _serviceBusMessageDispatcher;
         private readonly ServiceBusSenderFactorySpy _serviceBusSenderFactory;
