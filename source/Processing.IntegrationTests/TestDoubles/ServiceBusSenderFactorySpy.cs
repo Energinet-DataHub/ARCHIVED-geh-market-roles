@@ -17,16 +17,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
+using Xunit;
 
 namespace Processing.IntegrationTests.TestDoubles
 {
-    public sealed class ServiceBusSenderFactoryStub : IServiceBusSenderFactory
+    public sealed class ServiceBusSenderFactorySpy : IServiceBusSenderFactory
     {
         private readonly List<IServiceBusSenderAdapter> _senders = new();
 
         public IServiceBusSenderAdapter GetSender(string topicName)
         {
-            return _senders.First(a => a.TopicName.Equals(topicName, StringComparison.OrdinalIgnoreCase));
+            var sender = _senders.FirstOrDefault(a => a.TopicName.Equals(topicName, StringComparison.OrdinalIgnoreCase));
+            if (sender is null)
+            {
+                sender = new ServiceBusSenderSpy(topicName);
+                _senders.Add(sender);
+            }
+
+            return sender;
         }
 
         #pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
@@ -50,9 +58,17 @@ namespace Processing.IntegrationTests.TestDoubles
             GC.SuppressFinalize(this);
         }
 
-        internal void AddSenderSpy(IServiceBusSenderAdapter senderAdapter)
+        internal void AssertPublishedMessage(int expectedMessageVersion, string expectedMessageType)
         {
-            _senders.Add(senderAdapter);
+            var senderSpy = _senders.First() as ServiceBusSenderSpy;
+            Assert.NotNull(senderSpy!.Message);
+            Assert.Equal("application/octet-stream;charset=utf-8", senderSpy.Message!.ContentType);
+            Assert.NotNull(senderSpy.Message!.Body);
+            Assert.NotNull(senderSpy.Message!.ApplicationProperties["OperationTimestamp"]);
+            Assert.Equal(expectedMessageVersion, senderSpy.Message!.ApplicationProperties["MessageVersion"]);
+            Assert.Equal(expectedMessageType, senderSpy.Message!.ApplicationProperties["MessageType"]);
+            Assert.NotNull(senderSpy.Message!.ApplicationProperties["EventIdentification"]);
+            Assert.NotNull(senderSpy.Message!.ApplicationProperties["OperationCorrelationId"]);
         }
     }
 }

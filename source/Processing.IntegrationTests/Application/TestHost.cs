@@ -81,7 +81,7 @@ namespace Processing.IntegrationTests.Application
         private readonly Scope _scope;
         private readonly Container _container;
         private readonly string _connectionString;
-        private readonly ServiceBusSenderFactoryStub _serviceBusSenderFactoryStub;
+        private readonly ServiceBusSenderFactorySpy _serviceBusSenderFactorySpy;
         private bool _disposed;
         private SqlConnection? _sqlConnection;
 
@@ -131,8 +131,8 @@ namespace Processing.IntegrationTests.Application
             _container.ConfigureMoveInProcessTimePolicy(0, 0, TimeOfDay.Create(0, 0, 0));
 
             // Integration event publishing
-            _serviceBusSenderFactoryStub = new ServiceBusSenderFactoryStub();
-            _container.AddEventPublishing(_serviceBusSenderFactoryStub);
+            _serviceBusSenderFactorySpy = new ServiceBusSenderFactorySpy();
+            _container.AddEventPublishing(_serviceBusSenderFactorySpy, "Non_existing_topic");
 
             // Business process responders
             _container.Register<IActorMessageService, ActorMessageService>(Lifestyle.Scoped);
@@ -219,7 +219,7 @@ namespace Processing.IntegrationTests.Application
 
             CleanupDatabase();
 
-            _serviceBusSenderFactoryStub.Dispose();
+            _serviceBusSenderFactorySpy.Dispose();
             _sqlConnection?.Dispose();
             _scope.Dispose();
             _container.Dispose();
