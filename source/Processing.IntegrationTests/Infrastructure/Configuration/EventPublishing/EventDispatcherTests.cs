@@ -56,10 +56,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
         {
             var integrationEvent = new ConsumerMovedIn() { AccountingPointId = Guid.NewGuid().ToString(), };
             var eventMetadata = GetService<IntegrationEventMapper>().GetByType(integrationEvent.GetType())!;
-            var senderFactory = GetService<IServiceBusSenderFactory>() as ServiceBusSenderFactoryStub;
             await using var serviceBusSenderAdapter = new ServiceBusSenderSpy(eventMetadata.TopicName);
-            senderFactory!.AddSenderSpy(serviceBusSenderAdapter);
-
             await _eventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }
