@@ -106,6 +106,10 @@ namespace Processing.Api
             services.AddExternalServiceBusTopicsHealthCheck(
                 Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_MANAGE_FOR_INTEGRATION_EVENTS")!,
                 "consumer-moved-in");
+            services.AddExternalServiceBusSubscriptionsHealthCheck(
+                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_MANAGE_FOR_INTEGRATION_EVENTS")!,
+                Environment.GetEnvironmentVariable("INTEGRATION_EVENT_RECEIVED_TOPIC_NAME")!,
+                Environment.GetEnvironmentVariable("METERING_POINT_CREATED_EVENT_SUBSCRIPTION_NAME")!);
             services.AddInternalDomainServiceBusQueuesHealthCheck(
                 Environment.GetEnvironmentVariable("MARKET_ROLES_SERVICE_BUS_MANAGE_CONNECTION_STRING")!,
                 Environment.GetEnvironmentVariable("CUSTOMER_MASTER_DATA_RESPONSE_QUEUE_NAME")!,
