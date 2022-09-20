@@ -27,20 +27,24 @@ namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBu
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
         private readonly ICorrelationContext _correlationContext;
         private readonly IntegrationEventMapper _integrationEventMapper;
+        private readonly string _publishToTopic;
 
-        public ServiceBusMessageDispatcher(IServiceBusSenderFactory serviceBusSenderFactory, ISystemDateTimeProvider systemDateTimeProvider, ICorrelationContext correlationContext, IntegrationEventMapper integrationEventMapper)
+        public ServiceBusMessageDispatcher(IServiceBusSenderFactory serviceBusSenderFactory, ISystemDateTimeProvider systemDateTimeProvider, ICorrelationContext correlationContext, IntegrationEventMapper integrationEventMapper, string publishToTopic)
         {
             _serviceBusSenderFactory = serviceBusSenderFactory;
             _systemDateTimeProvider = systemDateTimeProvider;
             _correlationContext = correlationContext;
             _integrationEventMapper = integrationEventMapper;
+            _publishToTopic = publishToTopic;
         }
 
         public Task DispatchAsync(IMessage integrationEvent)
         {
             if (integrationEvent == null) throw new ArgumentNullException(nameof(integrationEvent));
             var eventMetadata = _integrationEventMapper.GetByType(integrationEvent.GetType());
-            return _serviceBusSenderFactory.GetSender(eventMetadata.TopicName).SendAsync(CreateMessage(integrationEvent, eventMetadata));
+            return Task.WhenAll(
+                    _serviceBusSenderFactory.GetSender(eventMetadata.TopicName).SendAsync(CreateMessage(integrationEvent, eventMetadata)),
+                    _serviceBusSenderFactory.GetSender(_publishToTopic).SendAsync(CreateMessage(integrationEvent, eventMetadata)));
         }
 
         private ServiceBusMessage CreateMessage(IMessage integrationEvent, EventMetadata eventMetadata)

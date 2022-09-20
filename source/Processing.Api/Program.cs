@@ -186,7 +186,9 @@ namespace Processing.Api
                 typeof(ErrorMessageFactory).Assembly); // Infrastructure
 
             // Integration event publishing
-            container.AddEventPublishing(Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_INTEGRATION_EVENTS")!);
+            container.AddEventPublishing(
+                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_INTEGRATION_EVENTS")!,
+                Environment.GetEnvironmentVariable("PUBLISH_INTEGRATION_EVENTS_TO_TOPIC")!);
 
             // Health check
             container.Register<HealthCheckEndpoint>(Lifestyle.Scoped);

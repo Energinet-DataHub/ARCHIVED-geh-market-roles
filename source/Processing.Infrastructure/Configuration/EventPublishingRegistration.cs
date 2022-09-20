@@ -16,6 +16,8 @@ using System;
 using Azure.Messaging.ServiceBus;
 using Energinet.DataHub.EnergySupplying.IntegrationEvents;
 using Processing.Application.Common;
+using Processing.Domain.SeedWork;
+using Processing.Infrastructure.Configuration.Correlation;
 using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 using Processing.Infrastructure.Configuration.EventPublishing.Protobuf;
@@ -33,13 +35,22 @@ namespace Processing.Infrastructure.Configuration
             container.Register<IServiceBusSenderFactory>(() => serviceBusSenderFactory, Lifestyle.Singleton);
         }
 
-        public static void AddEventPublishing(this Container container, string serviceBusConnectionStringForIntegrationEvents)
+        public static void AddEventPublishing(this Container container, string serviceBusConnectionStringForIntegrationEvents, string publishEventsToTopic)
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
 
             RegisterCommonServices(container);
             container.Register<IServiceBusSenderFactory, ServiceBusSenderFactory>(Lifestyle.Singleton);
             container.RegisterSingleton<ServiceBusClient>(() => new ServiceBusClient(serviceBusConnectionStringForIntegrationEvents));
+            container.Register(
+                () =>
+                    new ServiceBusMessageDispatcher(
+                        container.GetInstance<IServiceBusSenderFactory>(),
+                        container.GetInstance<ISystemDateTimeProvider>(),
+                        container.GetInstance<ICorrelationContext>(),
+                        container.GetInstance<IntegrationEventMapper>(),
+                        publishEventsToTopic),
+                Lifestyle.Scoped);
         }
 
         private static void RegisterCommonServices(Container container)
@@ -47,7 +58,6 @@ namespace Processing.Infrastructure.Configuration
             RegisterIntegrationEvents(container);
             container.Register<IEventPublisher, EventPublisher>(Lifestyle.Scoped);
             container.Register<EventDispatcher>(Lifestyle.Scoped);
-            container.Register<ServiceBusMessageDispatcher>(Lifestyle.Scoped);
             container.Register<MessageParser>(Lifestyle.Singleton);
         }
 
