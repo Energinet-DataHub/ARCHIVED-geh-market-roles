@@ -12,28 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading.Tasks;
 using Xunit;
 
-namespace Processing.IntegrationTests.Application
+namespace Processing.IntegrationTests.Fixtures
 {
-    public class DatabaseFixture : IAsyncLifetime
+    [CollectionDefinition("IntegrationTest")]
+    public class IntegrationTestFixture : ICollectionFixture<DatabaseFixture>
     {
-        public DatabaseFixture()
-        {
-            DatabaseManager = new MarketRolesDatabaseManager();
-        }
-
-        public MarketRolesDatabaseManager DatabaseManager { get; }
-
-        public Task InitializeAsync()
-        {
-            return DatabaseManager.CreateDatabaseAsync();
-        }
-
-        public Task DisposeAsync()
-        {
-            return DatabaseManager.DeleteDatabaseAsync();
-        }
+        // This class has no code, and is never created. Its purpose is simply
+        // to be the place to apply [CollectionDefinition] and all the
+        // ICollectionFixture<> interfaces.
     }
 }

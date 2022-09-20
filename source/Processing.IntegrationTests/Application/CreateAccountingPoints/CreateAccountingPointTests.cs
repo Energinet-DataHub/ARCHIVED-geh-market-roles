@@ -18,11 +18,12 @@ using Dapper;
 using Processing.Application.AccountingPoints;
 using Processing.Application.Common;
 using Processing.Domain.MeteringPoints;
+using Processing.IntegrationTests.Fixtures;
 using Xunit;
 
 namespace Processing.IntegrationTests.Application.CreateAccountingPoints
 {
-    public class CreateAccountingPointTests : TestHost
+    public class CreateAccountingPointTests : TestBase
     {
         public CreateAccountingPointTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
