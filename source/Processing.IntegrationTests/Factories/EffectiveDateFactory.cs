@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using FluentAssertions.Extensions;
 using NodaTime;
 using Processing.Domain.Common;
 
-namespace Processing.IntegrationTests
+namespace Processing.IntegrationTests.Factories
 {
     internal static class EffectiveDateFactory
     {

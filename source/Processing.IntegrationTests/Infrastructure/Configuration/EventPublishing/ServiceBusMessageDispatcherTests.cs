@@ -17,22 +17,23 @@ using System.Threading.Tasks;
 using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 using Processing.IntegrationTests.Application;
+using Processing.IntegrationTests.Fixtures;
 using Processing.IntegrationTests.TestDoubles;
 using Xunit;
 
 namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishing
 {
-    public class ServiceBusMessageDispatcherTests : TestHost
+    public class ServiceBusMessageDispatcherTests : TestBase
     {
         private readonly ServiceBusMessageDispatcher _serviceBusMessageDispatcher;
-        private readonly IServiceBusSenderFactory _serviceBusSenderFactory;
+        private readonly ServiceBusSenderFactorySpy _serviceBusSenderFactory;
         private readonly IntegrationEventMapper _integrationEventMapper;
 
         public ServiceBusMessageDispatcherTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
             _serviceBusMessageDispatcher = GetService<ServiceBusMessageDispatcher>();
-            _serviceBusSenderFactory = GetService<IServiceBusSenderFactory>();
+            _serviceBusSenderFactory = (ServiceBusSenderFactorySpy)GetService<IServiceBusSenderFactory>();
             _integrationEventMapper = GetService<IntegrationEventMapper>();
         }
 
@@ -44,24 +45,10 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
                 AccountingPointId = Guid.NewGuid().ToString(),
             };
             var eventMetadata = _integrationEventMapper.GetByType(integrationEvent.GetType());
-            await using var senderSpy = new ServiceBusSenderSpy(eventMetadata!.TopicName);
-            AddSenderSpy(senderSpy);
 
             await _serviceBusMessageDispatcher.DispatchAsync(integrationEvent);
 
-            Assert.NotNull(senderSpy.Message);
-            Assert.Equal("application/octet-stream;charset=utf-8", senderSpy.Message!.ContentType);
-            Assert.NotNull(senderSpy.Message!.Body);
-            Assert.NotNull(senderSpy.Message!.ApplicationProperties["OperationTimestamp"]);
-            Assert.Equal(eventMetadata!.Version, senderSpy.Message!.ApplicationProperties["MessageVersion"]);
-            Assert.Equal(eventMetadata!.EventName, senderSpy.Message!.ApplicationProperties["MessageType"]);
-            Assert.NotNull(senderSpy.Message!.ApplicationProperties["EventIdentification"]);
-            Assert.NotNull(senderSpy.Message!.ApplicationProperties["OperationCorrelationId"]);
-        }
-
-        private void AddSenderSpy(ServiceBusSenderSpy senderSpy)
-        {
-            (_serviceBusSenderFactory as ServiceBusSenderFactoryStub)!.AddSenderSpy(senderSpy);
+            _serviceBusSenderFactory.AssertPublishedMessage(eventMetadata.Version, eventMetadata.EventName);
         }
     }
 }

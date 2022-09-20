@@ -17,12 +17,15 @@ using MediatR;
 using Processing.Application.Common.TimeEvents;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
+using Processing.IntegrationTests.Factories;
+using Processing.IntegrationTests.Fixtures;
+using Processing.IntegrationTests.TestDoubles;
 using Xunit;
 using EffectuateConsumerMoveIn = Processing.Application.MoveIn.Processing.EffectuateConsumerMoveIn;
 
 namespace Processing.IntegrationTests.Application.MoveIn
 {
-    public class ProcessPendingProcessesTests : TestHost
+    public class ProcessPendingProcessesTests : TestBase
     {
         private readonly SystemDateTimeProviderStub _systemDateTimeProvider;
 

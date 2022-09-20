@@ -19,13 +19,14 @@ using Processing.Application.Common;
 using Processing.Application.Common.Commands;
 using Processing.Infrastructure.Configuration.InternalCommands;
 using Processing.IntegrationTests.Application;
+using Processing.IntegrationTests.Fixtures;
 using Xunit;
 using Xunit.Categories;
 
 namespace Processing.IntegrationTests.Infrastructure.Configuration.InternalCommands
 {
     [IntegrationTest]
-    public class InternalCommandProcessorTests : TestHost
+    public class InternalCommandProcessorTests : TestBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly InternalCommandProcessor _processor;

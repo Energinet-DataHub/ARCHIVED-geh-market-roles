@@ -33,6 +33,7 @@ using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.EventPublishing.Protobuf;
 using Processing.Infrastructure.RequestAdapters;
+using Processing.IntegrationTests.Fixtures;
 using Xunit;
 using Xunit.Categories;
 using Consumer = Processing.Application.MoveIn.Consumer;
@@ -40,7 +41,7 @@ using Consumer = Processing.Application.MoveIn.Consumer;
 namespace Processing.IntegrationTests.Application.MoveIn
 {
     [IntegrationTest]
-    public class MoveInTests : TestHost
+    public class MoveInTests : TestBase
     {
         public MoveInTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
