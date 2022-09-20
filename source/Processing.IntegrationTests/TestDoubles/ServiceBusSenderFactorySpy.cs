@@ -58,11 +58,6 @@ namespace Processing.IntegrationTests.TestDoubles
             GC.SuppressFinalize(this);
         }
 
-        internal void AddSenderSpy(IServiceBusSenderAdapter senderAdapter)
-        {
-            _senders.Add(senderAdapter);
-        }
-
         internal void AssertPublishedMessage(int expectedMessageVersion, string expectedMessageType)
         {
             var senderSpy = _senders.First() as ServiceBusSenderSpy;

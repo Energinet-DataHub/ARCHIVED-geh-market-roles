@@ -44,17 +44,10 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
                 AccountingPointId = Guid.NewGuid().ToString(),
             };
             var eventMetadata = _integrationEventMapper.GetByType(integrationEvent.GetType());
-            await using var senderSpy = new ServiceBusSenderSpy(eventMetadata!.TopicName);
-            AddSenderSpy(senderSpy);
 
             await _serviceBusMessageDispatcher.DispatchAsync(integrationEvent);
 
             _serviceBusSenderFactory.AssertPublishedMessage(eventMetadata.Version, eventMetadata.EventName);
-        }
-
-        private void AddSenderSpy(ServiceBusSenderSpy senderSpy)
-        {
-            (_serviceBusSenderFactory as ServiceBusSenderFactorySpy)!.AddSenderSpy(senderSpy);
         }
     }
 }
