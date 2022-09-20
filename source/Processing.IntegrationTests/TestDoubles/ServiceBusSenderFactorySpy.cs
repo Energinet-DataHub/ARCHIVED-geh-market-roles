@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
+using Xunit;
 
 namespace Processing.IntegrationTests.TestDoubles
 {
@@ -60,6 +61,19 @@ namespace Processing.IntegrationTests.TestDoubles
         internal void AddSenderSpy(IServiceBusSenderAdapter senderAdapter)
         {
             _senders.Add(senderAdapter);
+        }
+
+        internal void AssertPublishedMessage(int expectedMessageVersion, string expectedMessageType)
+        {
+            var senderSpy = _senders.First() as ServiceBusSenderSpy;
+            Assert.NotNull(senderSpy!.Message);
+            Assert.Equal("application/octet-stream;charset=utf-8", senderSpy.Message!.ContentType);
+            Assert.NotNull(senderSpy.Message!.Body);
+            Assert.NotNull(senderSpy.Message!.ApplicationProperties["OperationTimestamp"]);
+            Assert.Equal(expectedMessageVersion, senderSpy.Message!.ApplicationProperties["MessageVersion"]);
+            Assert.Equal(expectedMessageType, senderSpy.Message!.ApplicationProperties["MessageType"]);
+            Assert.NotNull(senderSpy.Message!.ApplicationProperties["EventIdentification"]);
+            Assert.NotNull(senderSpy.Message!.ApplicationProperties["OperationCorrelationId"]);
         }
     }
 }
