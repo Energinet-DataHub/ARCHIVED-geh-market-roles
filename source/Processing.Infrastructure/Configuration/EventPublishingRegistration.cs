@@ -27,11 +27,11 @@ namespace Processing.Infrastructure.Configuration
 {
     public static class EventPublishingRegistration
     {
-        public static void AddEventPublishing(this Container container, IServiceBusSenderFactory serviceBusSenderFactory)
+        public static void AddEventPublishing(this Container container, IServiceBusSenderFactory serviceBusSenderFactory, string publishEventsToTopic)
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
 
-            RegisterCommonServices(container);
+            RegisterCommonServices(container, publishEventsToTopic);
             container.Register<IServiceBusSenderFactory>(() => serviceBusSenderFactory, Lifestyle.Singleton);
         }
 
@@ -39,9 +39,17 @@ namespace Processing.Infrastructure.Configuration
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
 
-            RegisterCommonServices(container);
+            RegisterCommonServices(container, publishEventsToTopic);
             container.Register<IServiceBusSenderFactory, ServiceBusSenderFactory>(Lifestyle.Singleton);
             container.RegisterSingleton<ServiceBusClient>(() => new ServiceBusClient(serviceBusConnectionStringForIntegrationEvents));
+        }
+
+        private static void RegisterCommonServices(Container container, string publishEventsToTopic)
+        {
+            RegisterIntegrationEvents(container);
+            container.Register<IEventPublisher, EventPublisher>(Lifestyle.Scoped);
+            container.Register<EventDispatcher>(Lifestyle.Scoped);
+            container.Register<MessageParser>(Lifestyle.Singleton);
             container.Register(
                 () =>
                     new ServiceBusMessageDispatcher(
@@ -51,14 +59,6 @@ namespace Processing.Infrastructure.Configuration
                         container.GetInstance<IntegrationEventMapper>(),
                         publishEventsToTopic),
                 Lifestyle.Scoped);
-        }
-
-        private static void RegisterCommonServices(Container container)
-        {
-            RegisterIntegrationEvents(container);
-            container.Register<IEventPublisher, EventPublisher>(Lifestyle.Scoped);
-            container.Register<EventDispatcher>(Lifestyle.Scoped);
-            container.Register<MessageParser>(Lifestyle.Singleton);
         }
 
         private static void RegisterIntegrationEvents(Container container)

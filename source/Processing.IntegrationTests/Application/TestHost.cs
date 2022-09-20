@@ -132,7 +132,7 @@ namespace Processing.IntegrationTests.Application
 
             // Integration event publishing
             _serviceBusSenderFactorySpy = new ServiceBusSenderFactorySpy();
-            _container.AddEventPublishing(_serviceBusSenderFactorySpy);
+            _container.AddEventPublishing(_serviceBusSenderFactorySpy, "Non_existing_topic");
 
             // Business process responders
             _container.Register<IActorMessageService, ActorMessageService>(Lifestyle.Scoped);
