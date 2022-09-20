@@ -17,7 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
 using Processing.Application.ChangeOfSupplier;
-using Processing.Infrastructure.EDI;
+using Processing.IntegrationTests.Fixtures;
 using Xunit;
 using Xunit.Categories;
 

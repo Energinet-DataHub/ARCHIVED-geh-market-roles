@@ -19,6 +19,7 @@ using Processing.Application.Common;
 using Processing.Application.Common.Commands;
 using Processing.Infrastructure.Configuration.InternalCommands;
 using Processing.IntegrationTests.Application;
+using Processing.IntegrationTests.Fixtures;
 using Xunit;
 using Xunit.Categories;
 

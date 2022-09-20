@@ -63,8 +63,8 @@ using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
 using Processing.Infrastructure.EDI;
 using Processing.Infrastructure.RequestAdapters;
-using Processing.Infrastructure.Transport;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
+using Processing.IntegrationTests.Fixtures;
 using Processing.IntegrationTests.TestDoubles;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
@@ -80,18 +80,14 @@ namespace Processing.IntegrationTests.Application
     {
         private readonly Scope _scope;
         private readonly Container _container;
-        private readonly string _connectionString;
         private readonly ServiceBusSenderFactorySpy _serviceBusSenderFactorySpy;
         private bool _disposed;
-        private SqlConnection? _sqlConnection;
 
         protected TestHost(DatabaseFixture databaseFixture)
         {
             if (databaseFixture == null)
                 throw new ArgumentNullException(nameof(databaseFixture));
-
-            databaseFixture.DatabaseManager.UpgradeDatabase();
-            _connectionString = databaseFixture.DatabaseManager.ConnectionString;
+            databaseFixture.CleanupDatabase();
 
             _container = new Container();
             var serviceCollection = new ServiceCollection();
@@ -112,7 +108,7 @@ namespace Processing.IntegrationTests.Application
                     .WithParser(() => MarketRolesEnvelope.Parser));
 
             serviceCollection.AddDbContext<MarketRolesContext>(x =>
-                x.UseSqlServer(_connectionString, y => y.UseNodaTime()));
+                x.UseSqlServer(databaseFixture.ConnectionString, y => y.UseNodaTime()));
             serviceCollection.AddSimpleInjector(_container);
             var serviceProvider = serviceCollection.BuildServiceProvider().UseSimpleInjector(_container);
 
@@ -124,7 +120,7 @@ namespace Processing.IntegrationTests.Application
             _container.Register<ISystemDateTimeProvider, SystemDateTimeProviderStub>(Lifestyle.Singleton);
             _container.Register<IDomainEventsAccessor, DomainEventsAccessor>();
             _container.Register<IDomainEventsDispatcher, DomainEventsDispatcher>();
-            _container.Register<IDbConnectionFactory>(() => new SqlDbConnectionFactory(_connectionString));
+            _container.Register<IDbConnectionFactory>(() => new SqlDbConnectionFactory(databaseFixture.ConnectionString));
             _container.Register<ICorrelationContext, CorrelationContext>(Lifestyle.Scoped);
 
             _container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
@@ -166,8 +162,6 @@ namespace Processing.IntegrationTests.Application
             var correlationContext = _container.GetInstance<ICorrelationContext>();
             correlationContext.SetId(Guid.NewGuid().ToString().Replace("-", string.Empty, StringComparison.Ordinal));
             correlationContext.SetParentId(Guid.NewGuid().ToString().Replace("-", string.Empty, StringComparison.Ordinal)[..16]);
-
-            CleanupDatabase();
 
             ServiceProvider = serviceProvider;
             Mediator = _container.GetInstance<IMediator>();
@@ -217,10 +211,7 @@ namespace Processing.IntegrationTests.Application
                 return;
             }
 
-            CleanupDatabase();
-
             _serviceBusSenderFactorySpy.Dispose();
-            _sqlConnection?.Dispose();
             _scope.Dispose();
             _container.Dispose();
 
@@ -231,15 +222,6 @@ namespace Processing.IntegrationTests.Application
             where TService : class
         {
             return _container.GetInstance<TService>();
-        }
-
-        protected SqlConnection GetSqlDbConnection()
-        {
-            if (_sqlConnection is null)
-                _sqlConnection = new SqlConnection(_connectionString);
-            if (_sqlConnection.State == ConnectionState.Closed)
-                _sqlConnection.Open();
-            return _sqlConnection;
         }
 
         protected void SaveChanges()
@@ -357,22 +339,6 @@ namespace Processing.IntegrationTests.Application
 
             message.Should().NotBeNull();
             message.Should().BeOfType<TMessage>();
-        }
-
-        private void CleanupDatabase()
-        {
-            var cleanupStatement = $"DELETE FROM [dbo].[ConsumerRegistrations] " +
-                                   $"DELETE FROM [dbo].[SupplierRegistrations] " +
-                                   $"DELETE FROM [dbo].[ProcessManagers] " +
-                                   $"DELETE FROM [dbo].[BusinessProcesses] " +
-                                   $"DELETE FROM [dbo].[Consumers] " +
-                                   $"DELETE FROM [dbo].[EnergySuppliers] " +
-                                   $"DELETE FROM [dbo].[AccountingPoints] " +
-                                   $"DELETE FROM [dbo].[OutboxMessages] " +
-                                   $"DELETE FROM [dbo].[QueuedInternalCommands]";
-
-            using var sqlCommand = new SqlCommand(cleanupStatement, GetSqlDbConnection());
-            sqlCommand.ExecuteNonQuery();
         }
 
         private string? GetIntegrationEventNameFromType<TIntegrationEventType>()

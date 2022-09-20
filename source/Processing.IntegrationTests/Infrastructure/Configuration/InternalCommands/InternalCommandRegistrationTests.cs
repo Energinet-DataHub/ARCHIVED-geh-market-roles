@@ -18,6 +18,7 @@ using Processing.Application.Common.Commands;
 using Processing.Infrastructure.Configuration;
 using Processing.Infrastructure.Configuration.InternalCommands;
 using Processing.IntegrationTests.Application;
+using Processing.IntegrationTests.Fixtures;
 using Xunit;
 
 namespace Processing.IntegrationTests.Infrastructure.Configuration.InternalCommands

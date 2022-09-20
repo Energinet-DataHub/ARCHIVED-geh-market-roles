@@ -33,6 +33,7 @@ using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.EventPublishing.Protobuf;
 using Processing.Infrastructure.RequestAdapters;
+using Processing.IntegrationTests.Fixtures;
 using Xunit;
 using Xunit.Categories;
 using Consumer = Processing.Application.MoveIn.Consumer;
