@@ -58,7 +58,6 @@ using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.InternalCommands;
 using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
-using Processing.Infrastructure.EDI;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
 using Processing.IntegrationTests.Application;

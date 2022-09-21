@@ -56,7 +56,6 @@ using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
 using Processing.Infrastructure.Configuration.DomainEventDispatching;
 using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
-using Processing.Infrastructure.EDI;
 using Processing.Infrastructure.Integration.Notifications;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Transport.Protobuf;
