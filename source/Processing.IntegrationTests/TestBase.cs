@@ -128,8 +128,6 @@ namespace Processing.IntegrationTests
             _container.AddEventPublishing(_serviceBusSenderFactorySpy, "Non_existing_topic");
 
             // Business process responders
-            _container.Register<IActorMessageService, ActorMessageService>(Lifestyle.Scoped);
-            _container.Register<IMessageHubDispatcher, MessageHubDispatcher>(Lifestyle.Scoped);
             _container.Register<IActorContext>(() => new ActorContext { CurrentActor = new Actor(Guid.NewGuid(), "GLN", "8200000001409", "GridAccessProvider") }, Lifestyle.Singleton);
 
             // Input validation(
@@ -139,7 +137,7 @@ namespace Processing.IntegrationTests
                 validateRegistrations: false,
                 typeof(MoveInRequest).Assembly, // Application
                 typeof(ConsumerMovedIn).Assembly, // Domain
-                typeof(DocumentType).Assembly); // Infrastructure
+                typeof(JsonMoveInAdapter).Assembly); // Infrastructure
 
             _container.BuildMediator(
                 new[] { typeof(RequestChangeOfSupplierHandler).Assembly, typeof(PublishWhenEnergySupplierHasChanged).Assembly, },
