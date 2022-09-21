@@ -12,16 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+using System.Text.Json.Serialization;
+using Processing.Application.Common.Commands;
 
-namespace Messaging.Domain.OutgoingMessages
+namespace Processing.Application.EnergySuppliers;
+
+public class CreateEnergySupplier : InternalCommand
 {
-    public record MessageHeader(
-        string ProcessType,
-        string SenderId,
-        string SenderRole,
-        string ReceiverId,
-        string ReceiverRole,
-        string MessageId,
-        Instant TimeStamp);
+    [JsonConstructor]
+    public CreateEnergySupplier(string energySupplierId, string glnNumber)
+    {
+        EnergySupplierId = energySupplierId;
+        GlnNumber = glnNumber;
+    }
+
+    public string EnergySupplierId { get; }
+
+    public string GlnNumber { get; }
 }
