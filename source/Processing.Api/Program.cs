@@ -56,8 +56,6 @@ using Processing.Infrastructure.Configuration.DomainEventDispatching;
 using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
 using Processing.Infrastructure.RequestAdapters;
-using Processing.Infrastructure.Transport.Protobuf;
-using Processing.Infrastructure.Transport.Protobuf.Integration;
 using Processing.Infrastructure.Users;
 using SimpleInjector;
 
@@ -139,7 +137,6 @@ namespace Processing.Api
             container.Register<IJsonSerializer, JsonSerializer>(Lifestyle.Scoped);
             container.Register<IDomainEventsAccessor, DomainEventsAccessor>(Lifestyle.Scoped);
             container.Register<IDomainEventsDispatcher, DomainEventsDispatcher>(Lifestyle.Scoped);
-            container.Register<IProtobufMessageFactory, ProtobufMessageFactory>(Lifestyle.Singleton);
             container.Register<MoveInHttpTrigger>(Lifestyle.Scoped);
             container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
             container.Register<SystemTimer>();
