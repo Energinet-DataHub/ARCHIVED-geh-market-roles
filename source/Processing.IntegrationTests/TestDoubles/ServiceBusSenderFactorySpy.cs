@@ -16,6 +16,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Google.Protobuf;
+using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 using Xunit;
 
@@ -58,15 +60,15 @@ namespace Processing.IntegrationTests.TestDoubles
             GC.SuppressFinalize(this);
         }
 
-        internal void AssertPublishedMessage(int expectedMessageVersion, string expectedMessageType)
+        internal void AssertPublishedMessage(EventMetadata metadata)
         {
             var senderSpy = _senders.First() as ServiceBusSenderSpy;
             Assert.NotNull(senderSpy!.Message);
             Assert.Equal("application/octet-stream;charset=utf-8", senderSpy.Message!.ContentType);
             Assert.NotNull(senderSpy.Message!.Body);
             Assert.NotNull(senderSpy.Message!.ApplicationProperties["OperationTimestamp"]);
-            Assert.Equal(expectedMessageVersion, senderSpy.Message!.ApplicationProperties["MessageVersion"]);
-            Assert.Equal(expectedMessageType, senderSpy.Message!.ApplicationProperties["MessageType"]);
+            Assert.Equal(metadata.Version, senderSpy.Message!.ApplicationProperties["MessageVersion"]);
+            Assert.Equal(metadata.EventName, senderSpy.Message!.ApplicationProperties["MessageType"]);
             Assert.NotNull(senderSpy.Message!.ApplicationProperties["EventIdentification"]);
             Assert.NotNull(senderSpy.Message!.ApplicationProperties["OperationCorrelationId"]);
         }

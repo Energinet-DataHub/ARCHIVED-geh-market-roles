@@ -48,7 +48,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
 
             await _serviceBusMessageDispatcher.DispatchAsync(integrationEvent);
 
-            _serviceBusSenderFactory.AssertPublishedMessage(eventMetadata.Version, eventMetadata.EventName);
+            _serviceBusSenderFactory.AssertPublishedMessage(eventMetadata);
         }
     }
 }
