@@ -15,6 +15,7 @@
 using System;
 using Processing.Application.AccountingPoints;
 using Processing.Application.Common.Commands;
+using Processing.Application.EnergySuppliers;
 using Processing.Application.MoveIn.Processing;
 using Processing.Infrastructure.Configuration.InternalCommands;
 using SimpleInjector;
@@ -39,6 +40,7 @@ namespace Processing.Infrastructure.Configuration
             var mapper = new InternalCommandMapper();
             mapper.Add("CreateAccountingPoint", typeof(CreateAccountingPoint));
             mapper.Add("EffectuateConsumerMoveIn", typeof(EffectuateConsumerMoveIn));
+            mapper.Add("CreateEnergySupplier", typeof(CreateEnergySupplier));
 
             container.Register<InternalCommandMapper>(() => mapper, Lifestyle.Singleton);
         }
