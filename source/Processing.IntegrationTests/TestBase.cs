@@ -55,7 +55,6 @@ using Processing.Infrastructure.Configuration.DomainEventDispatching;
 using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.InternalCommands;
 using Processing.Infrastructure.Configuration.Serialization;
-using Processing.Infrastructure.ContainerExtensions;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.IntegrationTests.Application;
 using Processing.IntegrationTests.Fixtures;
@@ -123,11 +122,6 @@ namespace Processing.IntegrationTests
             // Input validation(
             _container.Register<IValidator<RequestChangeOfSupplier>, RequestChangeOfSupplierRuleSet>(Lifestyle.Scoped);
             _container.Register<IValidator<MoveInRequest>, InputValidationSet>(Lifestyle.Scoped);
-            _container.AddValidationErrorConversion(
-                validateRegistrations: false,
-                typeof(MoveInRequest).Assembly, // Application
-                typeof(ConsumerMovedIn).Assembly, // Domain
-                typeof(JsonMoveInAdapter).Assembly); // Infrastructure
 
             _container.BuildMediator(
                 new[] { typeof(RequestChangeOfSupplierHandler).Assembly, typeof(PublishWhenEnergySupplierHasChanged).Assembly, },

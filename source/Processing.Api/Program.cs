@@ -36,7 +36,6 @@ using Processing.Api.MoveIn;
 using Processing.Application.ChangeOfSupplier;
 using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.Common;
-using Processing.Application.EDI;
 using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Validation;
 using Processing.Domain.BusinessProcesses.MoveIn;
@@ -54,7 +53,6 @@ using Processing.Infrastructure.Configuration.DataAccess.Consumers;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
 using Processing.Infrastructure.Configuration.DomainEventDispatching;
 using Processing.Infrastructure.Configuration.Serialization;
-using Processing.Infrastructure.ContainerExtensions;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Users;
 using SimpleInjector;
@@ -167,11 +165,6 @@ namespace Processing.Api
             // Input validation(
             container.Register<IValidator<RequestChangeOfSupplier>, RequestChangeOfSupplierRuleSet>(Lifestyle.Scoped);
             container.Register<IValidator<MoveInRequest>, InputValidationSet>(Lifestyle.Scoped);
-            container.AddValidationErrorConversion(
-                validateRegistrations: false,
-                typeof(MoveInRequest).Assembly, // Application
-                typeof(ConsumerMovedIn).Assembly, // Domain
-                typeof(ErrorMessageFactory).Assembly); // Infrastructure
 
             // Integration event publishing
             container.AddEventPublishing(
