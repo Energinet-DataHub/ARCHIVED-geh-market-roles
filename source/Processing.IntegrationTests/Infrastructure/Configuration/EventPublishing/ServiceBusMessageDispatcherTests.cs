@@ -16,7 +16,6 @@ using System;
 using System.Threading.Tasks;
 using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
-using Processing.IntegrationTests.Application;
 using Processing.IntegrationTests.Fixtures;
 using Processing.IntegrationTests.TestDoubles;
 using Xunit;
@@ -42,6 +41,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
         {
             var integrationEvent = new Energinet.DataHub.EnergySupplying.IntegrationEvents.ConsumerMovedIn()
             {
+                Id = Guid.NewGuid().ToString(),
                 AccountingPointId = Guid.NewGuid().ToString(),
             };
             var eventMetadata = _integrationEventMapper.GetByType(integrationEvent.GetType());
@@ -49,6 +49,17 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
             await _serviceBusMessageDispatcher.DispatchAsync(integrationEvent);
 
             _serviceBusSenderFactory.AssertPublishedMessage(eventMetadata);
+        }
+
+        [Fact]
+        public async Task Integration_event_id_is_required()
+        {
+            var integrationEvent = new Energinet.DataHub.EnergySupplying.IntegrationEvents.ConsumerMovedIn()
+            {
+                AccountingPointId = Guid.NewGuid().ToString(),
+            };
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _serviceBusMessageDispatcher.DispatchAsync(integrationEvent));
         }
     }
 }

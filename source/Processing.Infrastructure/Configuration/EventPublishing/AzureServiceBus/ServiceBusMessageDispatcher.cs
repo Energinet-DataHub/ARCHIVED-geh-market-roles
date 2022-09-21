@@ -41,11 +41,27 @@ namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBu
         public Task DispatchAsync(IMessage integrationEvent)
         {
             if (integrationEvent == null) throw new ArgumentNullException(nameof(integrationEvent));
+            EnsureEventId(integrationEvent);
             var eventMetadata = _integrationEventMapper.GetByType(integrationEvent.GetType());
             var serviceBusMessage = CreateMessage(integrationEvent, eventMetadata);
             return Task.WhenAll(
                     _serviceBusSenderFactory.GetSender(eventMetadata.TopicName).SendAsync(serviceBusMessage),
                     _serviceBusSenderFactory.GetSender(_publishToTopic).SendAsync(serviceBusMessage));
+        }
+
+        private static void EnsureEventId(IMessage integrationEvent)
+        {
+            var field = integrationEvent.Descriptor.FindFieldByName("id");
+            if (field is null)
+            {
+                throw new InvalidOperationException($"Integration event '{integrationEvent.Descriptor.Name}' does not have an id field defined");
+            }
+
+            var id = field.Accessor.GetValue(integrationEvent).ToString();
+            if (string.IsNullOrEmpty(id))
+            {
+                throw new InvalidOperationException($"Integration event '{integrationEvent.Descriptor.Name}' does not have a value assigned for the id field");
+            }
         }
 
         private ServiceBusMessage CreateMessage(IMessage integrationEvent, EventMetadata eventMetadata)
