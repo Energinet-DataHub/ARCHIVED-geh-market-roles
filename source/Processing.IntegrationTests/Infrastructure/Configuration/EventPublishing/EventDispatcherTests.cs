@@ -21,12 +21,13 @@ using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBus;
 using Processing.Infrastructure.Configuration.Outbox;
 using Processing.IntegrationTests.Application;
+using Processing.IntegrationTests.Fixtures;
 using Processing.IntegrationTests.TestDoubles;
 using Xunit;
 
 namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishing
 {
-    public class EventDispatcherTests : TestHost
+    public class EventDispatcherTests : TestBase
     {
         private readonly IEventPublisher _eventPublisher;
         private readonly EventDispatcher _eventDispatcher;
@@ -56,10 +57,7 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
         {
             var integrationEvent = new ConsumerMovedIn() { AccountingPointId = Guid.NewGuid().ToString(), };
             var eventMetadata = GetService<IntegrationEventMapper>().GetByType(integrationEvent.GetType())!;
-            var senderFactory = GetService<IServiceBusSenderFactory>() as ServiceBusSenderFactoryStub;
             await using var serviceBusSenderAdapter = new ServiceBusSenderSpy(eventMetadata.TopicName);
-            senderFactory!.AddSenderSpy(serviceBusSenderAdapter);
-
             await _eventPublisher.PublishAsync(integrationEvent).ConfigureAwait(false);
             await _unitOfWork.CommitAsync().ConfigureAwait(false);
         }

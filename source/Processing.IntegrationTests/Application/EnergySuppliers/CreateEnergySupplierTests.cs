@@ -19,11 +19,12 @@ using JetBrains.Annotations;
 using MediatR;
 using Processing.Application.Common;
 using Processing.Application.EnergySuppliers;
+using Processing.IntegrationTests.Fixtures;
 using Xunit;
 
 namespace Processing.IntegrationTests.Application.EnergySuppliers
 {
-    public class CreateEnergySupplierTests : TestHost
+    public class CreateEnergySupplierTests : TestBase
     {
         private readonly IDbConnectionFactory _connectionFactory;
         private readonly IMediator _mediator;
