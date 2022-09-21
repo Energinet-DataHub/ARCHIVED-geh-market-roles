@@ -35,6 +35,7 @@ public class PublishEventOnConsumerMovedIn : INotificationHandler<ConsumerMovedI
         if (notification == null) throw new ArgumentNullException(nameof(notification));
         var integrationEvent = new Energinet.DataHub.EnergySupplying.IntegrationEvents.ConsumerMovedIn()
         {
+            Id = Guid.NewGuid().ToString(),
             AccountingPointId = notification.AccountingPointId.ToString(),
             ProcessId = notification.BusinessProcessId.ToString(),
         };
