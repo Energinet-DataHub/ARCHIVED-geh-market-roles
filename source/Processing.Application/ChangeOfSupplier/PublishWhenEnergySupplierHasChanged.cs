@@ -41,6 +41,7 @@ namespace Processing.Application.ChangeOfSupplier
             var supplierGlnNumber = await GetSupplierGlnNumberAsync(new EnergySupplierId(notification.EnergySupplierId)).ConfigureAwait(false);
             var integrationEvent = new Energinet.DataHub.EnergySupplying.IntegrationEvents.EnergySupplierChanged()
             {
+                Id = Guid.NewGuid().ToString(),
                 AccountingpointId = notification.AccountingPointId.ToString(),
                 GsrnNumber = notification.GsrnNumber,
                 EnergySupplierGln = supplierGlnNumber,
