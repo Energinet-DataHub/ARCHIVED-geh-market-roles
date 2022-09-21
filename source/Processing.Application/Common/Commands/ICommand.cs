@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using MediatR;
-using Processing.Application.Common.Transport;
 
 namespace Processing.Application.Common.Commands
 {
@@ -21,7 +20,7 @@ namespace Processing.Application.Common.Commands
     /// <summary>
     /// CQRS command object
     /// </summary>
-    public interface ICommand : IRequest, IOutboundMessage, IInboundMessage
+    public interface ICommand : IRequest
     {
     }
 
@@ -29,7 +28,7 @@ namespace Processing.Application.Common.Commands
     /// CQRS command with result
     /// </summary>
     /// <typeparam name="TResult"><see cref="IRequest"/></typeparam>
-    public interface ICommand<out TResult> : IRequest<TResult>, IOutboundMessage, IInboundMessage
+    public interface ICommand<out TResult> : IRequest<TResult>
     {
     }
     #pragma warning restore
