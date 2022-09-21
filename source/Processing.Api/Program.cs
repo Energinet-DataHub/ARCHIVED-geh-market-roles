@@ -45,7 +45,6 @@ using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.MeteringPoints.Events;
 using Processing.Domain.SeedWork;
-using Processing.Infrastructure;
 using Processing.Infrastructure.BusinessRequestProcessing.Pipeline;
 using Processing.Infrastructure.Configuration;
 using Processing.Infrastructure.Configuration.Correlation;
@@ -56,7 +55,6 @@ using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
 using Processing.Infrastructure.Configuration.DomainEventDispatching;
 using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
-using Processing.Infrastructure.Integration.Notifications;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Transport.Protobuf;
 using Processing.Infrastructure.Transport.Protobuf.Integration;
@@ -142,7 +140,6 @@ namespace Processing.Api
             container.Register<IDomainEventsAccessor, DomainEventsAccessor>(Lifestyle.Scoped);
             container.Register<IDomainEventsDispatcher, DomainEventsDispatcher>(Lifestyle.Scoped);
             container.Register<IProtobufMessageFactory, ProtobufMessageFactory>(Lifestyle.Singleton);
-            container.Register<INotificationReceiver, NotificationReceiver>(Lifestyle.Scoped);
             container.Register<MoveInHttpTrigger>(Lifestyle.Scoped);
             container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
             container.Register<SystemTimer>();
@@ -169,13 +166,6 @@ namespace Processing.Api
                     typeof(DomainEventsDispatcherBehaviour<,>),
                     typeof(InternalCommandHandlingBehaviour<,>),
                 });
-
-            container.ReceiveProtobuf<Energinet.DataHub.MarketRoles.Contracts.MarketRolesEnvelope>(
-                config => config
-                    .FromOneOf(envelope => envelope.MarketRolesMessagesCase)
-                    .WithParser(() => Energinet.DataHub.MarketRoles.Contracts.MarketRolesEnvelope.Parser));
-
-            container.SendProtobuf<Energinet.DataHub.EnergySupplying.IntegrationEvents.EnergySupplierChanged>(ApplicationAssemblies.Infrastructure);
 
             // Input validation(
             container.Register<IValidator<RequestChangeOfSupplier>, RequestChangeOfSupplierRuleSet>(Lifestyle.Scoped);

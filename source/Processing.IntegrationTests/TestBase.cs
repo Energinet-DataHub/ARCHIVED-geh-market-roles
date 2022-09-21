@@ -21,7 +21,6 @@ using Dapper;
 using Dapper.NodaTime;
 using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
-using Energinet.DataHub.MarketRoles.Contracts;
 using Energinet.DataHub.MarketRoles.EntryPoints.Common.MediatR;
 using FluentValidation;
 using MediatR;
@@ -37,7 +36,6 @@ using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.Common;
 using Processing.Application.Common.Commands;
 using Processing.Application.Common.Queries;
-using Processing.Application.EDI;
 using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Validation;
 using Processing.Domain.BusinessProcesses.MoveIn;
@@ -59,7 +57,6 @@ using Processing.Infrastructure.Configuration.InternalCommands;
 using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.ContainerExtensions;
 using Processing.Infrastructure.RequestAdapters;
-using Processing.Infrastructure.Transport.Protobuf.Integration;
 using Processing.IntegrationTests.Application;
 using Processing.IntegrationTests.Fixtures;
 using Processing.IntegrationTests.TestDoubles;
@@ -96,12 +93,6 @@ namespace Processing.IntegrationTests
             SqlMapper.AddTypeHandler(InstantHandler.Default);
             _container.AddOutbox();
             _container.AddInternalCommandsProcessing();
-
-            _container.SendProtobuf<MarketRolesEnvelope>();
-            _container.ReceiveProtobuf<MarketRolesEnvelope>(
-                config => config
-                    .FromOneOf(envelope => envelope.MarketRolesMessagesCase)
-                    .WithParser(() => MarketRolesEnvelope.Parser));
 
             serviceCollection.AddDbContext<MarketRolesContext>(x =>
                 x.UseSqlServer(databaseFixture.ConnectionString, y => y.UseNodaTime()));
