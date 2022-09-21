@@ -16,6 +16,7 @@ using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
 using Google.Protobuf;
+using Google.Protobuf.Reflection;
 using Processing.Domain.SeedWork;
 using Processing.Infrastructure.Configuration.Correlation;
 
@@ -51,17 +52,27 @@ namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBu
 
         private static void EnsureEventId(IMessage integrationEvent)
         {
-            var field = integrationEvent.Descriptor.FindFieldByName("id");
+            var field = GetIdField(integrationEvent);
             if (field is null)
             {
                 throw new InvalidOperationException($"Integration event '{integrationEvent.Descriptor.Name}' does not have an id field defined");
             }
 
-            var id = field.Accessor.GetValue(integrationEvent).ToString();
+            var id = GetEventId(integrationEvent);
             if (string.IsNullOrEmpty(id))
             {
                 throw new InvalidOperationException($"Integration event '{integrationEvent.Descriptor.Name}' does not have a value assigned for the id field");
             }
+        }
+
+        private static string? GetEventId(IMessage integrationEvent)
+        {
+            return GetIdField(integrationEvent)?.Accessor.GetValue(integrationEvent).ToString();
+        }
+
+        private static FieldDescriptor? GetIdField(IMessage integrationEvent)
+        {
+            return integrationEvent.Descriptor.FindFieldByName("id");
         }
 
         private ServiceBusMessage CreateMessage(IMessage integrationEvent, EventMetadata eventMetadata)
@@ -69,6 +80,7 @@ namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBu
             var serviceBusMessage = new ServiceBusMessage();
             serviceBusMessage.Body = new BinaryData(integrationEvent.ToByteArray());
             serviceBusMessage.ContentType = "application/octet-stream;charset=utf-8";
+            serviceBusMessage.MessageId = GetEventId(integrationEvent);
             serviceBusMessage.ApplicationProperties.Add("OperationCorrelationId", _correlationContext.Id);
             serviceBusMessage.ApplicationProperties.Add("OperationTimestamp", _systemDateTimeProvider.Now().ToDateTimeUtc());
             serviceBusMessage.ApplicationProperties.Add("MessageVersion", eventMetadata.Version);

@@ -60,7 +60,7 @@ namespace Processing.IntegrationTests.TestDoubles
             GC.SuppressFinalize(this);
         }
 
-        internal void AssertPublishedMessage(EventMetadata metadata)
+        internal void AssertPublishedMessage(EventMetadata metadata, IMessage integrationEvent)
         {
             var senderSpy = _senders.First() as ServiceBusSenderSpy;
             var message = senderSpy?.Message!;
@@ -72,6 +72,12 @@ namespace Processing.IntegrationTests.TestDoubles
             Assert.Equal(metadata.EventName, message.ApplicationProperties["MessageType"]);
             Assert.NotNull(message.ApplicationProperties["EventIdentification"]);
             Assert.NotNull(message.ApplicationProperties["OperationCorrelationId"]);
+            Assert.Equal(message.MessageId, GetEventId(integrationEvent));
+        }
+
+        private static string? GetEventId(IMessage integrationEvent)
+        {
+            return integrationEvent.Descriptor.FindFieldByName("id").Accessor.GetValue(integrationEvent).ToString();
         }
     }
 }
