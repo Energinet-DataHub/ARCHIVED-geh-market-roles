@@ -49,6 +49,7 @@ namespace Processing.Application.ChangeOfSupplier
                 .ConfigureAwait(false);
             var integrationEvent = new FutureEnergySupplierChangeRegistered()
             {
+                Id = Guid.NewGuid().ToString(),
                 AccountingpointId = notification.AccountingPointId.Value.ToString(),
                 GsrnNumber = notification.GsrnNumber.Value,
                 EnergySupplierGln = supplierGlnNumber,
