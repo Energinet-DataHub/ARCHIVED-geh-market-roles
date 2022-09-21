@@ -62,6 +62,7 @@ namespace Processing.IntegrationTests.TestDoubles
 
         internal void AssertPublishedMessage(EventMetadata metadata, IMessage integrationEvent)
         {
+            var eventId = GetEventId(integrationEvent);
             var senderSpy = _senders.First() as ServiceBusSenderSpy;
             var message = senderSpy?.Message!;
             Assert.NotNull(message);
@@ -70,9 +71,9 @@ namespace Processing.IntegrationTests.TestDoubles
             Assert.NotNull(message.ApplicationProperties["OperationTimestamp"]);
             Assert.Equal(metadata.Version, message.ApplicationProperties["MessageVersion"]);
             Assert.Equal(metadata.EventName, message.ApplicationProperties["MessageType"]);
-            Assert.Equal(message.ApplicationProperties["EventIdentification"], GetEventId(integrationEvent));
+            Assert.Equal(message.ApplicationProperties["EventIdentification"], eventId);
             Assert.NotNull(message.ApplicationProperties["OperationCorrelationId"]);
-            Assert.Equal(message.MessageId, GetEventId(integrationEvent));
+            Assert.Equal(message.MessageId, eventId);
         }
 
         private static string? GetEventId(IMessage integrationEvent)
