@@ -63,14 +63,15 @@ namespace Processing.IntegrationTests.TestDoubles
         internal void AssertPublishedMessage(EventMetadata metadata)
         {
             var senderSpy = _senders.First() as ServiceBusSenderSpy;
-            Assert.NotNull(senderSpy!.Message);
-            Assert.Equal("application/octet-stream;charset=utf-8", senderSpy.Message!.ContentType);
-            Assert.NotNull(senderSpy.Message!.Body);
-            Assert.NotNull(senderSpy.Message!.ApplicationProperties["OperationTimestamp"]);
-            Assert.Equal(metadata.Version, senderSpy.Message!.ApplicationProperties["MessageVersion"]);
-            Assert.Equal(metadata.EventName, senderSpy.Message!.ApplicationProperties["MessageType"]);
-            Assert.NotNull(senderSpy.Message!.ApplicationProperties["EventIdentification"]);
-            Assert.NotNull(senderSpy.Message!.ApplicationProperties["OperationCorrelationId"]);
+            var message = senderSpy?.Message!;
+            Assert.NotNull(message);
+            Assert.Equal("application/octet-stream;charset=utf-8", message.ContentType);
+            Assert.NotNull(message.Body);
+            Assert.NotNull(message.ApplicationProperties["OperationTimestamp"]);
+            Assert.Equal(metadata.Version, message.ApplicationProperties["MessageVersion"]);
+            Assert.Equal(metadata.EventName, message.ApplicationProperties["MessageType"]);
+            Assert.NotNull(message.ApplicationProperties["EventIdentification"]);
+            Assert.NotNull(message.ApplicationProperties["OperationCorrelationId"]);
         }
     }
 }
