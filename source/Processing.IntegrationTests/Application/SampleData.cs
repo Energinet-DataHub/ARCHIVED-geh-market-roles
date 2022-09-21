@@ -22,6 +22,8 @@ namespace Processing.IntegrationTests.Application
     {
         public static string GsrnNumber => "571234567891234568";
 
+        public static string EnergySupplierId => "03b97a60-8145-4599-981f-c4ab5035d978";
+
         public static string ConsumerSSN => "2601211234";
 
         public static string ConsumerVAT => "10000000";
