@@ -85,7 +85,7 @@ namespace Processing.Infrastructure.Configuration.EventPublishing.AzureServiceBu
             serviceBusMessage.ApplicationProperties.Add("OperationTimestamp", _systemDateTimeProvider.Now().ToDateTimeUtc());
             serviceBusMessage.ApplicationProperties.Add("MessageVersion", eventMetadata.Version);
             serviceBusMessage.ApplicationProperties.Add("MessageType", eventMetadata.EventName);
-            serviceBusMessage.ApplicationProperties.Add("EventIdentification", Guid.NewGuid());
+            serviceBusMessage.ApplicationProperties.Add("EventIdentification", GetEventId(integrationEvent));
             return serviceBusMessage;
         }
     }

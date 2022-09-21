@@ -70,7 +70,7 @@ namespace Processing.IntegrationTests.TestDoubles
             Assert.NotNull(message.ApplicationProperties["OperationTimestamp"]);
             Assert.Equal(metadata.Version, message.ApplicationProperties["MessageVersion"]);
             Assert.Equal(metadata.EventName, message.ApplicationProperties["MessageType"]);
-            Assert.NotNull(message.ApplicationProperties["EventIdentification"]);
+            Assert.Equal(message.ApplicationProperties["EventIdentification"], GetEventId(integrationEvent));
             Assert.NotNull(message.ApplicationProperties["OperationCorrelationId"]);
             Assert.Equal(message.MessageId, GetEventId(integrationEvent));
         }
