@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Processing.Application.Common;
-using Processing.Application.Common.Transport;
 
 namespace Processing.Application.ChangeOfSupplier
 {
@@ -23,5 +22,5 @@ namespace Processing.Application.ChangeOfSupplier
             string VATNumber = "",
             string AccountingPointGsrnNumber = "",
             string StartDate = "")
-        : IBusinessRequest, IOutboundMessage, IInboundMessage;
+        : IBusinessRequest;
 }
