@@ -14,12 +14,12 @@
 
 using System;
 using System.Threading.Tasks;
+using Energinet.DataHub.MeteringPoints.IntegrationEvents.CreateMeteringPoint;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Processing.Application.AccountingPoints;
 using Processing.Domain.MeteringPoints;
 using Processing.Infrastructure.Configuration.InternalCommands;
-using MeteringPointCreated = Energinet.DataHub.MeteringPoints.IntegrationEvents.Contracts.MeteringPointCreated;
 
 namespace Processing.Api.EventListeners;
 
@@ -38,7 +38,7 @@ public class MeteringPointCreatedListener
 
     [Function("MeteringPointCreatedListener")]
     public Task RunAsync(
-        [ServiceBusTrigger("%INTEGRATION_EVENT_TOPIC_NAME%", "%METERING_POINT_CREATED_EVENT_SUBSCRIPTION_NAME%", Connection = "SERVICE_BUS_CONNECTION_STRING_LISTENER_FOR_INTEGRATION_EVENTS")] byte[] data,
+        [ServiceBusTrigger("%INTEGRATION_EVENT_TOPIC_NAME%", "%METERING_POINT_CREATED_EVENT_ENERGY_SUPPLYING_SUBSCRIPTION_NAME%", Connection = "SERVICE_BUS_CONNECTION_STRING_LISTENER_FOR_INTEGRATION_EVENTS")] byte[] data,
         FunctionContext context)
     {
         if (data == null) throw new ArgumentNullException(nameof(data));
