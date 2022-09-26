@@ -21,7 +21,6 @@ using Dapper;
 using Dapper.NodaTime;
 using Energinet.DataHub.Core.App.Common;
 using Energinet.DataHub.Core.App.Common.Abstractions.Actor;
-using Energinet.DataHub.MarketRoles.Contracts;
 using Energinet.DataHub.MarketRoles.EntryPoints.Common.MediatR;
 using FluentValidation;
 using MediatR;
@@ -37,7 +36,6 @@ using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.Common;
 using Processing.Application.Common.Commands;
 using Processing.Application.Common.Queries;
-using Processing.Application.EDI;
 using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Validation;
 using Processing.Domain.BusinessProcesses.MoveIn;
@@ -57,10 +55,7 @@ using Processing.Infrastructure.Configuration.DomainEventDispatching;
 using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.InternalCommands;
 using Processing.Infrastructure.Configuration.Serialization;
-using Processing.Infrastructure.ContainerExtensions;
-using Processing.Infrastructure.EDI;
 using Processing.Infrastructure.RequestAdapters;
-using Processing.Infrastructure.Transport.Protobuf.Integration;
 using Processing.IntegrationTests.Application;
 using Processing.IntegrationTests.Fixtures;
 using Processing.IntegrationTests.TestDoubles;
@@ -98,12 +93,6 @@ namespace Processing.IntegrationTests
             _container.AddOutbox();
             _container.AddInternalCommandsProcessing();
 
-            _container.SendProtobuf<MarketRolesEnvelope>();
-            _container.ReceiveProtobuf<MarketRolesEnvelope>(
-                config => config
-                    .FromOneOf(envelope => envelope.MarketRolesMessagesCase)
-                    .WithParser(() => MarketRolesEnvelope.Parser));
-
             serviceCollection.AddDbContext<MarketRolesContext>(x =>
                 x.UseSqlServer(databaseFixture.ConnectionString, y => y.UseNodaTime()));
             serviceCollection.AddSimpleInjector(_container);
@@ -128,18 +117,11 @@ namespace Processing.IntegrationTests
             _container.AddEventPublishing(_serviceBusSenderFactorySpy, "Non_existing_topic");
 
             // Business process responders
-            _container.Register<IActorMessageService, ActorMessageService>(Lifestyle.Scoped);
-            _container.Register<IMessageHubDispatcher, MessageHubDispatcher>(Lifestyle.Scoped);
             _container.Register<IActorContext>(() => new ActorContext { CurrentActor = new Actor(Guid.NewGuid(), "GLN", "8200000001409", "GridAccessProvider") }, Lifestyle.Singleton);
 
             // Input validation(
             _container.Register<IValidator<RequestChangeOfSupplier>, RequestChangeOfSupplierRuleSet>(Lifestyle.Scoped);
             _container.Register<IValidator<MoveInRequest>, InputValidationSet>(Lifestyle.Scoped);
-            _container.AddValidationErrorConversion(
-                validateRegistrations: false,
-                typeof(MoveInRequest).Assembly, // Application
-                typeof(ConsumerMovedIn).Assembly, // Domain
-                typeof(DocumentType).Assembly); // Infrastructure
 
             _container.BuildMediator(
                 new[] { typeof(RequestChangeOfSupplierHandler).Assembly, typeof(PublishWhenEnergySupplierHasChanged).Assembly, },
