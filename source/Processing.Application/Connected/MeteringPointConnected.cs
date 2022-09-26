@@ -14,10 +14,9 @@
 
 using MediatR;
 using NodaTime;
-using Processing.Application.Common.Transport;
 
 namespace Processing.Application.Connected
 {
     public record MeteringPointConnected(string MeteringPointId, string GsrnNumber, Instant EffectiveDate)
-        : INotification, IInboundMessage;
+        : INotification;
 }
