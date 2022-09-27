@@ -46,6 +46,7 @@ namespace Processing.Api.EventListeners
 
             if (isEnergySupplier)
             {
+                _logger.LogInformation($" {integrationEvent.ActorCreatedIntegrationEvent.Name} businessRoles contained role 12 (Energy Supplier)");
                 var command = new CreateEnergySupplier(
                     integrationEvent.ActorCreatedIntegrationEvent.ActorId,
                     integrationEvent.ActorCreatedIntegrationEvent.ActorNumber);
