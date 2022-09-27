@@ -12,17 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
-using Processing.Application.EDI;
-using Processing.Domain.Consumers.Rules;
+using Messaging.Domain.SeedWork;
 
-namespace Processing.Infrastructure.EDI.Errors.Converters
+namespace Messaging.Domain.Transactions.MoveIn.Events;
+
+public class GridOperatorWasNotified : DomainEvent
 {
-    public class CvrNumberFormatRuleErrorConverter : ErrorConverter<CvrNumberFormatRuleError>
-    {
-        protected override ErrorMessage Convert([NotNull] CvrNumberFormatRuleError validationError)
-        {
-            return new("D17", $"Invalid VAT number: {validationError.CvrNumber}");
-        }
-    }
 }
