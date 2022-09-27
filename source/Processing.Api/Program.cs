@@ -139,6 +139,7 @@ namespace Processing.Api
             container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
             container.Register<SystemTimer>();
             container.Register<CustomerMasterDataRequestListener>();
+            container.Register<ActorCreatedListener>();
 
             container.ConfigureMoveInProcessTimePolicy(7, 60, TimeOfDay.Create(0, 0, 0));
 
