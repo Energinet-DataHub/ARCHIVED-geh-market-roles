@@ -22,6 +22,7 @@ public class CustomerNumberTests
     [Theory]
     [InlineData("1212567890", true)]
     [InlineData("12345678911", false)]
+    [InlineData("aserdfgtyh", false)]
     public void Accept_cpr_number(string cprNumber, bool willAccept)
     {
         Assert.Equal(willAccept, CustomerNumber.Validate(cprNumber).Success);
