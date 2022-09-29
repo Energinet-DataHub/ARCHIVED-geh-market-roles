@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using Processing.Domain.SeedWork;
+using Processing.Domain.Consumers;
 using Xunit;
 
 namespace Processing.Tests.Domain.Consumers;
@@ -21,30 +20,10 @@ namespace Processing.Tests.Domain.Consumers;
 public class CustomerNumberTests
 {
     [Theory]
-    [InlineData("1234567890", true)]
+    [InlineData("1212567890", true)]
+    [InlineData("12345678911", false)]
     public void Accept_cpr_number(string cprNumber, bool isValid)
     {
         Assert.Equal(isValid, CustomerNumber.Validate(cprNumber).Success);
-    }
-}
-
-#pragma warning disable
-public class CustomerNumber : ValueObject
-{
-    private CustomerNumber(string cprNumber)
-    {
-        Value = cprNumber;
-    }
-
-    public static CustomerNumber Create(string cprNumber)
-    {
-        return new CustomerNumber(cprNumber);
-    }
-
-    public string Value { get; }
-
-    public static BusinessRulesValidationResult Validate(string cprNumber)
-    {
-        return BusinessRulesValidationResult.Succeeded();
     }
 }
