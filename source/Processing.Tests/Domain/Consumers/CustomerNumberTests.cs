@@ -29,6 +29,8 @@ public class CustomerNumberTests
 
     [Theory]
     [InlineData("12125678", true)]
+    [InlineData("1212567", false)]
+    [InlineData("121256789", false)]
     public void Accept_cvr_number(string cvrNumber, bool isValid)
     {
         Assert.Equal(isValid, CustomerNumber.Validate(cvrNumber).Success);
