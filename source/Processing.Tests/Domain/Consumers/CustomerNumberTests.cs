@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Processing.Domain.Consumers;
+using Processing.Domain.Consumers.Rules;
 using Xunit;
 
 namespace Processing.Tests.Domain.Consumers;
@@ -49,5 +50,11 @@ public class CustomerNumberTests
     public void Accept_cvr_number(string cvrNumber, bool willAccept)
     {
         Assert.Equal(willAccept, CustomerNumber.Validate(cvrNumber).Success);
+    }
+
+    [Fact]
+    public void Cannot_create()
+    {
+        Assert.Throws<InvalidCustomerNumberException>(() => CustomerNumber.Create("NOT VALID"));
     }
 }

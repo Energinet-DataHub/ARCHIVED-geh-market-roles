@@ -27,6 +27,11 @@ namespace Processing.Domain.Consumers
 
         public static CustomerNumber Create(string cprNumber)
         {
+            if (Validate(cprNumber).Success == false)
+            {
+                throw new InvalidCustomerNumberException($"{cprNumber} is not a valid customer number");
+            }
+
             return new CustomerNumber(cprNumber);
         }
 
