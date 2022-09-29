@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Processing.Domain.Consumers.Rules;
 using Processing.Domain.SeedWork;
 
@@ -18,10 +19,21 @@ namespace Processing.Domain.Consumers
             return new CustomerNumber(cprNumber);
         }
 
-        public static BusinessRulesValidationResult Validate(string cprNumber)
+        public static BusinessRulesValidationResult Validate(string customerNumber)
         {
-            var rules = new List<IBusinessRule>() { new CprNumberFormatRule(cprNumber), };
-            return new BusinessRulesValidationResult(rules);
+            ArgumentNullException.ThrowIfNull(customerNumber);
+            if (customerNumber.Length == 10)
+            {
+                var rules = new List<IBusinessRule>() { new CprNumberFormatRule(customerNumber), };
+                return new BusinessRulesValidationResult(rules);
+            }
+
+            if (customerNumber.Length == 8)
+            {
+                return BusinessRulesValidationResult.Succeeded();
+            }
+
+            return BusinessRulesValidationResult.Failed(new CprNumberFormatRuleError(customerNumber));
         }
     }
 }
