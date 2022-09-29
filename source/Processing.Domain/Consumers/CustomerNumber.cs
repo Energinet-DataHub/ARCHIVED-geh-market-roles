@@ -64,9 +64,19 @@ namespace Processing.Domain.Consumers
             return customerNumber.Length == 10;
         }
 
-        private static CustomerNumberType DetermineType()
+        private CustomerNumberType DetermineType()
         {
+            if (IsCprNumber(Value))
+            {
+                return IsFictionalCpr() ? CustomerNumberType.FictionalCpr : CustomerNumberType.Cpr;
+            }
+
             return CustomerNumberType.FictionalCpr;
+        }
+
+        private bool IsFictionalCpr()
+        {
+            return Value.Substring(Value.Length - 4) == "0000";
         }
     }
 }
