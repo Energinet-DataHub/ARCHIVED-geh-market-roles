@@ -37,14 +37,12 @@ namespace Processing.Domain.Consumers
 
         private static BusinessRulesValidationResult ValidateCvrNumber(string customerNumber)
         {
-            var rules = new List<IBusinessRule>() { new CvrNumberFormatRule(customerNumber), };
-            return new BusinessRulesValidationResult(rules);
+            return new BusinessRulesValidationResult(new List<IBusinessRule>() { new CvrNumberFormatRule(customerNumber), });
         }
 
         private static BusinessRulesValidationResult ValidateCprNumber(string customerNumber)
         {
-            var rules = new List<IBusinessRule>() { new CprNumberFormatRule(customerNumber), };
-            return new BusinessRulesValidationResult(rules);
+            return new BusinessRulesValidationResult(new List<IBusinessRule>() { new CprNumberFormatRule(customerNumber), });
         }
 
         private static bool IsCvrNumber(string customerNumber)
