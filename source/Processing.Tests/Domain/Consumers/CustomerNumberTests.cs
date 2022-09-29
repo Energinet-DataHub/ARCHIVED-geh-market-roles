@@ -20,12 +20,11 @@ namespace Processing.Tests.Domain.Consumers;
 
 public class CustomerNumberTests
 {
-    [Fact]
-    public void Accept_cpr_number()
+    [Theory]
+    [InlineData("1234567890", true)]
+    public void Accept_cpr_number(string cprNumber, bool isValid)
     {
-        var customerNumber = CustomerNumber.Create("1234567890");
-
-        Assert.Equal("1234567890", customerNumber.Value);
+        Assert.Equal(isValid, CustomerNumber.Validate(cprNumber).Success);
     }
 }
 
@@ -43,4 +42,9 @@ public class CustomerNumber : ValueObject
     }
 
     public string Value { get; }
+
+    public static BusinessRulesValidationResult Validate(string cprNumber)
+    {
+        return BusinessRulesValidationResult.Succeeded();
+    }
 }

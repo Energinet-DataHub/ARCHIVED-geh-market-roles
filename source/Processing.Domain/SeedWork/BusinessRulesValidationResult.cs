@@ -14,7 +14,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 
 namespace Processing.Domain.SeedWork
 {
