@@ -29,11 +29,16 @@ namespace Processing.Domain.Consumers
 
             if (IsCvrNumber(customerNumber))
             {
-                var rules = new List<IBusinessRule>() { new CvrNumberFormatRule(customerNumber), };
-                return new BusinessRulesValidationResult(rules);
+                return ValidateCvrNumber(customerNumber);
             }
 
             return BusinessRulesValidationResult.Failed(new CprNumberFormatRuleError(customerNumber));
+        }
+
+        private static BusinessRulesValidationResult ValidateCvrNumber(string customerNumber)
+        {
+            var rules = new List<IBusinessRule>() { new CvrNumberFormatRule(customerNumber), };
+            return new BusinessRulesValidationResult(rules);
         }
 
         private static BusinessRulesValidationResult ValidateCprNumber(string customerNumber)
