@@ -28,18 +28,15 @@ public class CustomerNumberTests
         Assert.Equal(willAccept, CustomerNumber.Validate(cprNumber).Success);
     }
 
-    [Fact]
-    public void Use_fictional_cpr_number()
+    [Theory]
+    [InlineData("1212567890", CustomerNumber.CustomerNumberType.Cpr)]
+    [InlineData("1212120000", CustomerNumber.CustomerNumberType.FictionalCpr)]
+    public void Can_create(string customerNumber, CustomerNumber.CustomerNumberType expectedType)
     {
-        var customerNumber = CustomerNumber.Create("1212120000");
-        Assert.Equal(CustomerNumber.CustomerNumberType.FictionalCpr, customerNumber.Type);
-    }
+        var sut = CustomerNumber.Create(customerNumber);
 
-    [Fact]
-    public void Use_cpr_number()
-    {
-        var customerNumber = CustomerNumber.Create("1212121111");
-        Assert.Equal(CustomerNumber.CustomerNumberType.Cpr, customerNumber.Type);
+        Assert.Equal(customerNumber, sut.Value);
+        Assert.Equal(expectedType, sut.Type);
     }
 
     [Theory]
