@@ -56,4 +56,11 @@ public class CustomerNumberTests
         var customerNumber = CustomerNumber.Create("11111111");
         Assert.Equal(CustomerNumber.CustomerNumberType.FictionalCvr, customerNumber.Type);
     }
+
+    [Fact]
+    public void Use_cvr_number()
+    {
+        var customerNumber = CustomerNumber.Create("123456");
+        Assert.Equal(CustomerNumber.CustomerNumberType.Cvr, customerNumber.Type);
+    }
 }

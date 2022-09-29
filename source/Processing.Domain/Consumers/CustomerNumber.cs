@@ -17,6 +17,7 @@ namespace Processing.Domain.Consumers
         {
             Cpr,
             FictionalCpr,
+            Cvr,
             FictionalCvr,
         }
 
@@ -72,7 +73,12 @@ namespace Processing.Domain.Consumers
                 return IsFictionalCpr() ? CustomerNumberType.FictionalCpr : CustomerNumberType.Cpr;
             }
 
-            return CustomerNumberType.FictionalCvr;
+            return IsFictionalCvr() ? CustomerNumberType.FictionalCvr : CustomerNumberType.Cvr;
+        }
+
+        private bool IsFictionalCvr()
+        {
+            return Value == "11111111";
         }
 
         private bool IsFictionalCpr()
