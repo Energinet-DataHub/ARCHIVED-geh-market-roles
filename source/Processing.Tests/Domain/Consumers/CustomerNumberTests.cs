@@ -27,6 +27,13 @@ public class CustomerNumberTests
         Assert.Equal(willAccept, CustomerNumber.Validate(cprNumber).Success);
     }
 
+    [Fact]
+    public void Use_fictional_cpr_number()
+    {
+        var customerNumber = CustomerNumber.Create("1212120000");
+        Assert.Equal(CustomerNumber.CustomerNumberType.FictionalCpr, customerNumber.Type);
+    }
+
     [Theory]
     [InlineData("12125678", true)]
     [InlineData("1212567", false)]

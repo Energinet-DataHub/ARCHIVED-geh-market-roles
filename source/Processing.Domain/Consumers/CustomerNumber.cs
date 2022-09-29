@@ -7,12 +7,21 @@ namespace Processing.Domain.Consumers
 {
     public class CustomerNumber : ValueObject
     {
-        private CustomerNumber(string cprNumber)
+        private CustomerNumber(string customerNumber)
         {
-            Value = cprNumber;
+            Value = customerNumber;
+            Type = DetermineType();
+        }
+
+        public enum CustomerNumberType
+        {
+            Cpr,
+            FictionalCpr,
         }
 
         public string Value { get; }
+
+        public CustomerNumberType Type { get; }
 
         public static CustomerNumber Create(string cprNumber)
         {
@@ -53,6 +62,11 @@ namespace Processing.Domain.Consumers
         private static bool IsCprNumber(string customerNumber)
         {
             return customerNumber.Length == 10;
+        }
+
+        private static CustomerNumberType DetermineType()
+        {
+            return CustomerNumberType.FictionalCpr;
         }
     }
 }
