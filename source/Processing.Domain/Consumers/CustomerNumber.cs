@@ -28,12 +28,17 @@ namespace Processing.Domain.Consumers
                 return new BusinessRulesValidationResult(rules);
             }
 
-            if (customerNumber.Length == 8)
+            if (IsCvrNumber(customerNumber))
             {
                 return BusinessRulesValidationResult.Succeeded();
             }
 
             return BusinessRulesValidationResult.Failed(new CprNumberFormatRuleError(customerNumber));
+        }
+
+        private static bool IsCvrNumber(string customerNumber)
+        {
+            return customerNumber.Length == 8;
         }
 
         private static bool IsCprNumber(string customerNumber)
