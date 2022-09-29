@@ -49,4 +49,11 @@ public class CustomerNumberTests
     {
         Assert.Equal(willAccept, CustomerNumber.Validate(cvrNumber).Success);
     }
+
+    [Fact]
+    public void Use_fictional_cvr_number()
+    {
+        var customerNumber = CustomerNumber.Create("11111111");
+        Assert.Equal(CustomerNumber.CustomerNumberType.FictionalCvr, customerNumber.Type);
+    }
 }

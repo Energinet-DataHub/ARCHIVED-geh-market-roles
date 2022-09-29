@@ -17,6 +17,7 @@ namespace Processing.Domain.Consumers
         {
             Cpr,
             FictionalCpr,
+            FictionalCvr,
         }
 
         public string Value { get; }
@@ -71,7 +72,7 @@ namespace Processing.Domain.Consumers
                 return IsFictionalCpr() ? CustomerNumberType.FictionalCpr : CustomerNumberType.Cpr;
             }
 
-            return CustomerNumberType.FictionalCpr;
+            return CustomerNumberType.FictionalCvr;
         }
 
         private bool IsFictionalCpr()
