@@ -31,6 +31,8 @@ public class CustomerNumberTests
     [Theory]
     [InlineData("1212567890", CustomerNumber.CustomerNumberType.Cpr)]
     [InlineData("1212120000", CustomerNumber.CustomerNumberType.FictionalCpr)]
+    [InlineData("12125678", CustomerNumber.CustomerNumberType.Cvr)]
+    [InlineData("11111111", CustomerNumber.CustomerNumberType.FictionalCvr)]
     public void Can_create(string customerNumber, CustomerNumber.CustomerNumberType expectedType)
     {
         var sut = CustomerNumber.Create(customerNumber);
@@ -47,19 +49,5 @@ public class CustomerNumberTests
     public void Accept_cvr_number(string cvrNumber, bool willAccept)
     {
         Assert.Equal(willAccept, CustomerNumber.Validate(cvrNumber).Success);
-    }
-
-    [Fact]
-    public void Use_fictional_cvr_number()
-    {
-        var customerNumber = CustomerNumber.Create("11111111");
-        Assert.Equal(CustomerNumber.CustomerNumberType.FictionalCvr, customerNumber.Type);
-    }
-
-    [Fact]
-    public void Use_cvr_number()
-    {
-        var customerNumber = CustomerNumber.Create("123456");
-        Assert.Equal(CustomerNumber.CustomerNumberType.Cvr, customerNumber.Type);
     }
 }
