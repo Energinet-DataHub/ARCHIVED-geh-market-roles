@@ -48,7 +48,7 @@ namespace Processing.Domain.Consumers
                 return ValidateCvrNumber(customerNumber);
             }
 
-            return BusinessRulesValidationResult.Failed(new CprNumberFormatRuleError(customerNumber));
+            return BusinessRulesValidationResult.Failed(new InvalidCustomerNumber());
         }
 
         private static BusinessRulesValidationResult ValidateCvrNumber(string customerNumber)
