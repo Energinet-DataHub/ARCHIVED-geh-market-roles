@@ -24,16 +24,22 @@ namespace Processing.Domain.Consumers
             ArgumentNullException.ThrowIfNull(customerNumber);
             if (IsCprNumber(customerNumber))
             {
-                var rules = new List<IBusinessRule>() { new CprNumberFormatRule(customerNumber), };
-                return new BusinessRulesValidationResult(rules);
+                return ValidateCprNumber(customerNumber);
             }
 
             if (IsCvrNumber(customerNumber))
             {
-                return BusinessRulesValidationResult.Succeeded();
+                var rules = new List<IBusinessRule>() { new CvrNumberFormatRule(customerNumber), };
+                return new BusinessRulesValidationResult(rules);
             }
 
             return BusinessRulesValidationResult.Failed(new CprNumberFormatRuleError(customerNumber));
+        }
+
+        private static BusinessRulesValidationResult ValidateCprNumber(string customerNumber)
+        {
+            var rules = new List<IBusinessRule>() { new CprNumberFormatRule(customerNumber), };
+            return new BusinessRulesValidationResult(rules);
         }
 
         private static bool IsCvrNumber(string customerNumber)
