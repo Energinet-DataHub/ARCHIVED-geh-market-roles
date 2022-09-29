@@ -25,14 +25,14 @@ namespace Processing.Domain.Consumers
 
         public CustomerNumberType Type { get; }
 
-        public static CustomerNumber Create(string cprNumber)
+        public static CustomerNumber Create(string customerNumber)
         {
-            if (Validate(cprNumber).Success == false)
+            if (Validate(customerNumber).Success == false)
             {
-                throw new InvalidCustomerNumberException($"{cprNumber} is not a valid customer number");
+                throw new InvalidCustomerNumberException($"{customerNumber} is not a valid customer number");
             }
 
-            return new CustomerNumber(cprNumber);
+            return new CustomerNumber(customerNumber);
         }
 
         public static BusinessRulesValidationResult Validate(string customerNumber)
