@@ -22,17 +22,17 @@ public class CustomerNumberTests
     [Theory]
     [InlineData("1212567890", true)]
     [InlineData("12345678911", false)]
-    public void Accept_cpr_number(string cprNumber, bool isValid)
+    public void Accept_cpr_number(string cprNumber, bool willAccept)
     {
-        Assert.Equal(isValid, CustomerNumber.Validate(cprNumber).Success);
+        Assert.Equal(willAccept, CustomerNumber.Validate(cprNumber).Success);
     }
 
     [Theory]
     [InlineData("12125678", true)]
     [InlineData("1212567", false)]
     [InlineData("121256789", false)]
-    public void Accept_cvr_number(string cvrNumber, bool isValid)
+    public void Accept_cvr_number(string cvrNumber, bool willAccept)
     {
-        Assert.Equal(isValid, CustomerNumber.Validate(cvrNumber).Success);
+        Assert.Equal(willAccept, CustomerNumber.Validate(cvrNumber).Success);
     }
 }
