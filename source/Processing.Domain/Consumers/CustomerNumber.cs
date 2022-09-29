@@ -22,7 +22,7 @@ namespace Processing.Domain.Consumers
         public static BusinessRulesValidationResult Validate(string customerNumber)
         {
             ArgumentNullException.ThrowIfNull(customerNumber);
-            if (customerNumber.Length == 10)
+            if (IsCprNumber(customerNumber))
             {
                 var rules = new List<IBusinessRule>() { new CprNumberFormatRule(customerNumber), };
                 return new BusinessRulesValidationResult(rules);
@@ -34,6 +34,11 @@ namespace Processing.Domain.Consumers
             }
 
             return BusinessRulesValidationResult.Failed(new CprNumberFormatRuleError(customerNumber));
+        }
+
+        private static bool IsCprNumber(string customerNumber)
+        {
+            return customerNumber.Length == 10;
         }
     }
 }
