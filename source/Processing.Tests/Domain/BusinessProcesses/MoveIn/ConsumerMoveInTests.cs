@@ -30,9 +30,10 @@ public class ConsumerMoveInTests : TestBase
 {
     private readonly AccountingPoint _accountingPoint;
     private readonly Consumer _consumer;
-    private readonly Processing.Domain.EnergySuppliers.EnergySupplier _energySupplier;
+    private readonly EnergySupplier _energySupplier;
     private readonly ConsumerMoveIn _consumerMoveInProcess;
     private readonly BusinessProcessId _processId;
+    private readonly Customer _customer;
 
     public ConsumerMoveInTests()
     {
@@ -40,8 +41,9 @@ public class ConsumerMoveInTests : TestBase
         _consumerMoveInProcess = new ConsumerMoveIn(EffectiveDatePolicyFactory.CreateEffectiveDatePolicy());
         _accountingPoint = AccountingPoint.CreateProduction(AccountingPointId.New(), GsrnNumber.Create(SampleData.GsrnNumber), true);
         _consumer = new Consumer(ConsumerId.New(), CprNumber.Create(SampleData.ConsumerSocialSecurityNumber), ConsumerName.Create(SampleData.ConsumerName));
-        _energySupplier = new Processing.Domain.EnergySuppliers.EnergySupplier(EnergySupplierId.New(), GlnNumber.Create(SampleData.GlnNumber));
+        _energySupplier = new EnergySupplier(EnergySupplierId.New(), GlnNumber.Create(SampleData.GlnNumber));
         _processId = BusinessProcessId.New();
+        _customer = Customer.Create(CustomerNumber.Create(SampleData.ConsumerSocialSecurityNumber), SampleData.ConsumerName);
     }
 
     [Fact]
@@ -127,6 +129,13 @@ public class ConsumerMoveInTests : TestBase
 
     private void StartProcess(EffectiveDate moveInDate)
     {
-        _consumerMoveInProcess.StartProcess(_accountingPoint, _consumer, _energySupplier, moveInDate, SystemDateTimeProvider.Now(), _processId);
+        _consumerMoveInProcess.StartProcess(
+            _accountingPoint,
+            _consumer,
+            _energySupplier,
+            moveInDate,
+            SystemDateTimeProvider.Now(),
+            _processId,
+            _customer);
     }
 }
