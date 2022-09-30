@@ -57,7 +57,7 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
             var nonExistingProcessId = BusinessProcessId.New();
 
             Assert.Throws<BusinessProcessException>(() =>
-                _accountingPoint.EffectuateConsumerMoveIn(nonExistingProcessId, _systemDateTimeProvider.Now()));
+                WhenCompletingMoveIn(nonExistingProcessId));
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         {
             GivenMoveInHasBeenAccepted(_systemDateTimeProvider.Now());
 
-            _accountingPoint.EffectuateConsumerMoveIn(_businessProcessId, _systemDateTimeProvider.Now());
+            WhenCompletingMoveIn();
 
             Assert.Contains(_accountingPoint.DomainEvents, @event => @event is EnergySupplierChanged);
             Assert.Contains(_accountingPoint.DomainEvents, @event => @event is ConsumerMovedIn);
