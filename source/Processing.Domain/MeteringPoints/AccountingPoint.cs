@@ -182,7 +182,7 @@ namespace Processing.Domain.MeteringPoints
 
             var businessProcess = CreateBusinessProcess(moveInDate, BusinessProcessType.MoveIn, businessProcessId);
             _businessProcesses.Add(businessProcess);
-            _consumerRegistrations.Add(new ConsumerRegistration(consumerId, businessProcess.BusinessProcessId));
+            _consumerRegistrations.Add(new ConsumerRegistration(customer, consumerId, businessProcess.BusinessProcessId));
             _supplierRegistrations.Add(new SupplierRegistration(energySupplierId, businessProcess.BusinessProcessId));
 
             AddDomainEvent(new ConsumerMoveInAccepted(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, consumerId.Value, energySupplierId.Value, moveInDate));

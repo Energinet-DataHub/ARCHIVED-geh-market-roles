@@ -12,16 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.Consumers
 {
     public class Customer : ValueObject
     {
-        private Customer(CustomerNumber customerNumber, string fullname)
+        private Customer(CustomerNumber number, string name)
         {
-            Number = customerNumber;
-            Name = fullname;
+            Number = number;
+            Name = name;
         }
 
         public string Name { get;  }
