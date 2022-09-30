@@ -45,8 +45,7 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         [Fact]
         public void Effectuate_WhenAheadOfEffectiveDate_IsNotPossible()
         {
-            var moveInDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(1));
-            _accountingPoint.AcceptConsumerMoveIn(_consumerId, _energySupplierId, moveInDate, _businessProcessId);
+            GivenMoveInHasBeenAccepted(_systemDateTimeProvider.Now().Plus(Duration.FromDays(1)));
 
             Assert.Throws<BusinessProcessException>(() =>
                 _accountingPoint.EffectuateConsumerMoveIn(_businessProcessId, _systemDateTimeProvider.Now()));
