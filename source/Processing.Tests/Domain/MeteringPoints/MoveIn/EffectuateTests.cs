@@ -64,8 +64,7 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         [Fact]
         public void Effectuate_WhenEffectiveDateIsDue_IsSuccessful()
         {
-            var moveInDate = _systemDateTimeProvider.Now();
-            _accountingPoint.AcceptConsumerMoveIn(_consumerId, _energySupplierId, moveInDate, _businessProcessId);
+            GivenMoveInHasBeenAccepted(_systemDateTimeProvider.Now());
 
             _accountingPoint.EffectuateConsumerMoveIn(_businessProcessId, _systemDateTimeProvider.Now());
 
@@ -75,6 +74,11 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
             var consumerMovedIn = _accountingPoint.DomainEvents.FirstOrDefault(de => de is ConsumerMovedIn) as ConsumerMovedIn;
 
             if (consumerMovedIn != null) Assert.NotNull(consumerMovedIn.MoveInDate);
+        }
+
+        private void GivenMoveInHasBeenAccepted(Instant moveInDate)
+        {
+            _accountingPoint.AcceptConsumerMoveIn(_consumerId, _energySupplierId, moveInDate, _businessProcessId);
         }
     }
 }
