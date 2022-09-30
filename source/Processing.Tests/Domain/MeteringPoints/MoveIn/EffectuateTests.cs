@@ -28,57 +28,53 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
     public class EffectuateTests
     {
         private readonly SystemDateTimeProviderStub _systemDateTimeProvider = new SystemDateTimeProviderStub();
+        private readonly AccountingPoint _accountingPoint;
+        private readonly ConsumerId _consumerId;
+        private readonly EnergySupplierId _energySupplierId;
+        private readonly BusinessProcessId _businessProcessId;
 
         public EffectuateTests()
         {
             _systemDateTimeProvider.SetNow(Instant.FromUtc(2020, 1, 1, 0, 0));
+            _accountingPoint = AccountingPoint.CreateConsumption(AccountingPointId.New(), GsrnNumber.Create(SampleData.GsrnNumber));
+            _consumerId = new ConsumerId(Guid.NewGuid());
+            _energySupplierId = new EnergySupplierId(Guid.NewGuid());
+            _businessProcessId = BusinessProcessId.New();
         }
 
         [Fact]
         public void Effectuate_WhenAheadOfEffectiveDate_IsNotPossible()
         {
-            var (accountingPoint, consumerId, energySupplierId, businessProcessId) = SetupScenario();
             var moveInDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(1));
-            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, businessProcessId);
+            _accountingPoint.AcceptConsumerMoveIn(_consumerId, _energySupplierId, moveInDate, _businessProcessId);
 
             Assert.Throws<BusinessProcessException>(() =>
-                accountingPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now()));
+                _accountingPoint.EffectuateConsumerMoveIn(_businessProcessId, _systemDateTimeProvider.Now()));
         }
 
         [Fact]
         public void Effectuate_WhenProcessIdDoesNotExists_IsNotPossible()
         {
-            var (accountingPoint, _, _, _) = SetupScenario();
             var nonExistingProcessId = BusinessProcessId.New();
 
             Assert.Throws<BusinessProcessException>(() =>
-                accountingPoint.EffectuateConsumerMoveIn(nonExistingProcessId, _systemDateTimeProvider.Now()));
+                _accountingPoint.EffectuateConsumerMoveIn(nonExistingProcessId, _systemDateTimeProvider.Now()));
         }
 
         [Fact]
         public void Effectuate_WhenEffectiveDateIsDue_IsSuccessful()
         {
-            var (accountingPoint, consumerId, energySupplierId, businessProcessId) = SetupScenario();
             var moveInDate = _systemDateTimeProvider.Now();
-            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, businessProcessId);
+            _accountingPoint.AcceptConsumerMoveIn(_consumerId, _energySupplierId, moveInDate, _businessProcessId);
 
-            accountingPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
+            _accountingPoint.EffectuateConsumerMoveIn(_businessProcessId, _systemDateTimeProvider.Now());
 
-            Assert.Contains(accountingPoint.DomainEvents, @event => @event is EnergySupplierChanged);
-            Assert.Contains(accountingPoint.DomainEvents, @event => @event is ConsumerMovedIn);
+            Assert.Contains(_accountingPoint.DomainEvents, @event => @event is EnergySupplierChanged);
+            Assert.Contains(_accountingPoint.DomainEvents, @event => @event is ConsumerMovedIn);
 
-            var consumerMovedIn = accountingPoint.DomainEvents.FirstOrDefault(de => de is ConsumerMovedIn) as ConsumerMovedIn;
+            var consumerMovedIn = _accountingPoint.DomainEvents.FirstOrDefault(de => de is ConsumerMovedIn) as ConsumerMovedIn;
 
             if (consumerMovedIn != null) Assert.NotNull(consumerMovedIn.MoveInDate);
-        }
-
-        private static (AccountingPoint AccountingPoint, ConsumerId ConsumerId, EnergySupplierId EnergySupplierId, BusinessProcessId ProcessId) SetupScenario()
-        {
-            return (
-                AccountingPoint.CreateConsumption(AccountingPointId.New(), GsrnNumber.Create(SampleData.GsrnNumber)),
-                new ConsumerId(Guid.NewGuid()),
-                new EnergySupplierId(Guid.NewGuid()),
-                BusinessProcessId.New());
         }
     }
 }
