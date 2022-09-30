@@ -32,6 +32,7 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         private readonly ConsumerId _consumerId;
         private readonly EnergySupplierId _energySupplierId;
         private readonly BusinessProcessId _businessProcessId;
+        private readonly Customer _customer;
 
         public EffectuateTests()
         {
@@ -40,6 +41,9 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
             _consumerId = new ConsumerId(Guid.NewGuid());
             _energySupplierId = new EnergySupplierId(Guid.NewGuid());
             _businessProcessId = BusinessProcessId.New();
+            _customer = Customer.Create(
+                CustomerNumber.Create(SampleData.ConsumerSocialSecurityNumber),
+                SampleData.ConsumerName);
         }
 
         [Fact]
@@ -77,7 +81,7 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
 
         private void GivenMoveInHasBeenAccepted(Instant moveInDate)
         {
-            _accountingPoint.RegisterMoveIn(_consumerId, _energySupplierId, moveInDate, _businessProcessId);
+            _accountingPoint.RegisterMoveIn(_customer, _consumerId, _energySupplierId, moveInDate, _businessProcessId);
         }
 
         private void WhenCompletingMoveIn(BusinessProcessId? businessProcessId = null)

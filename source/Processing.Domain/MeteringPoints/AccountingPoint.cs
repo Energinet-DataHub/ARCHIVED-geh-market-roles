@@ -169,7 +169,7 @@ namespace Processing.Domain.MeteringPoints
             return new BusinessRulesValidationResult(rules);
         }
 
-        public void RegisterMoveIn(ConsumerId consumerId, EnergySupplierId energySupplierId, Instant moveInDate, BusinessProcessId businessProcessId)
+        public void RegisterMoveIn(Customer customer, ConsumerId consumerId, EnergySupplierId energySupplierId, Instant moveInDate, BusinessProcessId businessProcessId)
         {
             if (consumerId == null) throw new ArgumentNullException(nameof(consumerId));
             if (energySupplierId == null) throw new ArgumentNullException(nameof(energySupplierId));

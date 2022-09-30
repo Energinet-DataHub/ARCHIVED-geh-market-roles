@@ -67,11 +67,16 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             return new ConsumerId(Guid.NewGuid());
         }
 
+        private static Customer CreateCustomer()
+        {
+            return Customer.Create(CustomerNumber.Create(SampleData.ConsumerSocialSecurityNumber), SampleData.ConsumerName);
+        }
+
         private (AccountingPoint AccountingPoint, BusinessProcessId ProcessId) CreateWithActiveMoveIn()
         {
             var accountingPoint = AccountingPoint.CreateConsumption(AccountingPointId.New(), GsrnNumber.Create("571234567891234568"));
             var businessProcessId = BusinessProcessId.New();
-            accountingPoint.RegisterMoveIn(CreateConsumerId(), CreateEnergySupplierId(), _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)), businessProcessId);
+            accountingPoint.RegisterMoveIn(CreateCustomer(), CreateConsumerId(), CreateEnergySupplierId(), _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)), businessProcessId);
             accountingPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
             return (accountingPoint, businessProcessId);
         }
