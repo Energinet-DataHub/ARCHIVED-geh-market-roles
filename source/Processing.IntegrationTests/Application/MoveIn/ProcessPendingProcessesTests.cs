@@ -58,7 +58,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var consumer = CreateConsumer();
             var accountingPoint = CreateAccountingPoint();
             var businessProcessId = BusinessProcessId.New();
-            accountingPoint.AcceptConsumerMoveIn(consumer.ConsumerId, supplier.EnergySupplierId, EffectiveDateFactory.InstantAsOfToday(), businessProcessId);
+            accountingPoint.RegisterMoveIn(consumer.ConsumerId, supplier.EnergySupplierId, EffectiveDateFactory.InstantAsOfToday(), businessProcessId);
             SaveChanges();
             return businessProcessId;
         }

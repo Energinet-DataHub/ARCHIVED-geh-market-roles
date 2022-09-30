@@ -282,7 +282,7 @@ namespace Processing.IntegrationTests
 
             var systemTimeProvider = GetService<ISystemDateTimeProvider>();
             var businessProcessId = BusinessProcessId.New();
-            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, businessProcessId);
+            accountingPoint.RegisterMoveIn(consumerId, energySupplierId, moveInDate, businessProcessId);
             accountingPoint.EffectuateConsumerMoveIn(businessProcessId, systemTimeProvider.Now());
         }
 

@@ -77,7 +77,7 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
 
         private void GivenMoveInHasBeenAccepted(Instant moveInDate)
         {
-            _accountingPoint.AcceptConsumerMoveIn(_consumerId, _energySupplierId, moveInDate, _businessProcessId);
+            _accountingPoint.RegisterMoveIn(_consumerId, _energySupplierId, moveInDate, _businessProcessId);
         }
 
         private void WhenCompletingMoveIn(BusinessProcessId? businessProcessId = null)
