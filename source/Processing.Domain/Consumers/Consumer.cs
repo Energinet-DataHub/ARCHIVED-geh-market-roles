@@ -13,27 +13,19 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using Processing.Domain.Consumers.Events;
-using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.Consumers
 {
     public class Consumer : AggregateRootBase
     {
-        private readonly ConsumerName _name;
-
-        #pragma warning disable
-        private readonly List<ConsumerRegistration> _consumerRegistrations = new List<ConsumerRegistration>();
-        #pragma warning restore
-
         public Consumer(ConsumerId consumerId, CprNumber cprNumber, ConsumerName name)
             : this(consumerId, name)
         {
             ConsumerId = consumerId ?? throw new ArgumentNullException(nameof(consumerId));
             CprNumber = cprNumber ?? throw new ArgumentNullException(nameof(cprNumber));
-            AddDomainEvent(new ConsumerCreated(ConsumerId.Value, CprNumber.Value, null, _name.FullName));
+            AddDomainEvent(new ConsumerCreated(ConsumerId.Value, CprNumber.Value, null, Name.FullName));
         }
 
         public Consumer(ConsumerId consumerId, CvrNumber cvrNumber, ConsumerName name)
@@ -41,16 +33,18 @@ namespace Processing.Domain.Consumers
         {
             ConsumerId = consumerId ?? throw new ArgumentNullException(nameof(consumerId));
             CvrNumber = cvrNumber ?? throw new ArgumentNullException(nameof(cvrNumber));
-            AddDomainEvent(new ConsumerCreated(ConsumerId.Value, null, CvrNumber.Value, _name.FullName));
+            AddDomainEvent(new ConsumerCreated(ConsumerId.Value, null, CvrNumber.Value, Name.FullName));
         }
 
         private Consumer(ConsumerId consumerId, ConsumerName name)
         {
             ConsumerId = consumerId ?? throw new ArgumentNullException(nameof(consumerId));
-            _name = name ?? throw new ArgumentNullException(nameof(name));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
-        public ConsumerId ConsumerId { get; } = null!;
+        public ConsumerName Name { get; }
+
+        public ConsumerId ConsumerId { get; }
 
         public CprNumber? CprNumber { get; }
 

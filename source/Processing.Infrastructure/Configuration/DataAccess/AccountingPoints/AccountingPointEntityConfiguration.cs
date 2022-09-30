@@ -84,12 +84,7 @@ namespace Processing.Infrastructure.Configuration.DataAccess.AccountingPoints
             builder.OwnsMany<ConsumerRegistration>("_consumerRegistrations", y =>
             {
                 y.Property("AccountingPointId")
-                    .HasColumnName("AccountingPointId")
-                    .HasColumnType("uniqueidentifier");
-                y.WithOwner()
-                    .HasForeignKey("AccountingPointId")
-                    .HasPrincipalKey(z => z.Id);
-
+                    .HasColumnName("AccountingPointId");
                 y.ToTable("ConsumerRegistrations", "dbo");
                 y.HasKey(z => z.Id);
                 y.Property(z => z.Id)
@@ -103,9 +98,17 @@ namespace Processing.Infrastructure.Configuration.DataAccess.AccountingPoints
                     .HasConversion(toDbValue => toDbValue.Value, fromDbValue => new BusinessProcessId(fromDbValue));
                 y.Property(z => z.MoveInDate)
                     .HasColumnName("MoveInDate");
-
+                y.OwnsOne<Customer>(x => x.Customer, b =>
+                {
+                    b.Property(n => n.Number)
+                        .HasColumnName("CustomerNumber")
+                        .HasConversion(
+                            toDbValue => toDbValue.Value,
+                            fromDbValue => CustomerNumber.Create(fromDbValue));
+                    b.Property(n => n.Name)
+                        .HasColumnName("CustomerName");
+                });
                 y.Ignore(z => z.DomainEvents);
-
                 y.HasOne<Consumer>();
             });
 

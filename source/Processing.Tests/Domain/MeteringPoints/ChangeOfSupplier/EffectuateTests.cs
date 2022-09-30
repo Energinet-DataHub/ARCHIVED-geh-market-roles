@@ -28,36 +28,35 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
     public class EffectuateTests
     {
         private readonly SystemDateTimeProviderStub _systemDateTimeProvider;
+        private readonly AccountingPoint _accountingPoint;
 
         public EffectuateTests()
         {
             _systemDateTimeProvider = new SystemDateTimeProviderStub();
+            _accountingPoint = AccountingPoint.CreateConsumption(AccountingPointId.New(), GsrnNumber.Create("571234567891234568"));
+            GivenAccountingPointHasEnergySupplier();
         }
 
         [Fact]
         public void Effectuate_WhenBeforeOfEffectiveDate_IsNotPossible()
         {
-            var accountingPoint = CreateTestObject();
-
             var businessProcessId = BusinessProcessId.New();
             var supplyStartDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(5));
-            accountingPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), supplyStartDate, _systemDateTimeProvider, businessProcessId);
+            _accountingPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), supplyStartDate, _systemDateTimeProvider, businessProcessId);
 
-            Assert.Throws<BusinessProcessException>(() => accountingPoint.EffectuateChangeOfSupplier(businessProcessId, _systemDateTimeProvider));
+            Assert.Throws<BusinessProcessException>(() => _accountingPoint.EffectuateChangeOfSupplier(businessProcessId, _systemDateTimeProvider));
         }
 
         [Fact]
         public void Effectuate_WhenCurrentDateIsEffectiveDate_IsSuccess()
         {
-            var accountingPoint = CreateTestObject();
-
             var supplyStartDate = _systemDateTimeProvider.Now();
             var businessProcessId = BusinessProcessId.New();
-            accountingPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), supplyStartDate, _systemDateTimeProvider, businessProcessId);
-            accountingPoint.EffectuateChangeOfSupplier(businessProcessId, _systemDateTimeProvider);
+            _accountingPoint.AcceptChangeOfSupplier(CreateEnergySupplierId(), supplyStartDate, _systemDateTimeProvider, businessProcessId);
+            _accountingPoint.EffectuateChangeOfSupplier(businessProcessId, _systemDateTimeProvider);
 
             var @event =
-                accountingPoint.DomainEvents.FirstOrDefault(e => e is EnergySupplierChanged) as EnergySupplierChanged;
+                _accountingPoint.DomainEvents.FirstOrDefault(e => e is EnergySupplierChanged) as EnergySupplierChanged;
 
             Assert.NotNull(@event);
         }
@@ -67,18 +66,16 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             return new EnergySupplierId(Guid.NewGuid());
         }
 
-        private static ConsumerId CreateConsumerId()
+        private void GivenAccountingPointHasEnergySupplier()
         {
-            return new ConsumerId(Guid.NewGuid());
-        }
-
-        private AccountingPoint CreateTestObject()
-        {
-            var accountingPoint = AccountingPoint.CreateConsumption(AccountingPointId.New(), GsrnNumber.Create("571234567891234568"));
             var businessProcessId = BusinessProcessId.New();
-            accountingPoint.AcceptConsumerMoveIn(CreateConsumerId(), CreateEnergySupplierId(), _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)), businessProcessId);
-            accountingPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
-            return accountingPoint;
+            _accountingPoint.RegisterMoveIn(
+                Customer.Create(CustomerNumber.Create(SampleData.ConsumerSocialSecurityNumber), SampleData.ConsumerName),
+                ConsumerId.New(),
+                CreateEnergySupplierId(),
+                _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)),
+                businessProcessId);
+            _accountingPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
         }
     }
 }

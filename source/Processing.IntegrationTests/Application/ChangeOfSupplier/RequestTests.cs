@@ -70,28 +70,6 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier
             //AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.RejectChangeOfSupplier);
         }
 
-        [Fact]
-        public async Task Request_WhenNoRulesAreBroken_IsSuccessful()
-        {
-            var accountingPoint = CreateAccountingPoint();
-            var consumer = CreateConsumer();
-            var supplier = CreateEnergySupplier();
-            CreateEnergySupplier(Guid.NewGuid(), "7495563456235");
-            SetConsumerMovedIn(accountingPoint, consumer.ConsumerId, supplier.EnergySupplierId);
-            await MarketRolesContext.SaveChangesAsync().ConfigureAwait(false);
-
-            var request = CreateRequest()
-                with
-                {
-                    EnergySupplierGlnNumber = "7495563456235",
-                };
-
-            await Mediator.Send(request, CancellationToken.None).ConfigureAwait(false);
-
-            //TODO: Generation of accept/reject message has been moved to messaging layer - We will handle these test when a full implementation of this process is due
-            //AssertOutboxMessage<MessageHubEnvelope>(envelope => envelope.MessageType == DocumentType.ConfirmChangeOfSupplier);
-        }
-
         private static RequestChangeOfSupplier CreateRequest(string energySupplierGln, string consumerId, string gsrnNumber, string startDate)
         {
             return new RequestChangeOfSupplier(
