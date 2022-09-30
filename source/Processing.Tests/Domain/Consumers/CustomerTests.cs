@@ -27,5 +27,6 @@ public class CustomerTests
         var customer = Customer.Create(customerNumber, customerFullname);
 
         Assert.Equal(customerNumber, customer.Number);
+        Assert.Equal(customerFullname, customer.Name);
     }
 }
