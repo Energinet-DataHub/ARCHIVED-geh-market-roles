@@ -199,8 +199,9 @@ namespace Processing.IntegrationTests.Application.MoveIn
         [Fact]
         public async Task Integration_event_is_published_when_move_in_is_effectuated()
         {
-            var processId = await SetupScenarioAsync().ConfigureAwait(false);
-            var command = new EffectuateConsumerMoveIn(_accountingPoint!.Id.Value, processId.Value.ToString());
+            await SendRequestAsync(CreateRequest()).ConfigureAwait(false);
+            var consumerRegistration = await GetCustomerRegistrationAsync().ConfigureAwait(false);
+            var command = new EffectuateConsumerMoveIn(_accountingPoint!.Id.Value, consumerRegistration?.BusinessProcessId.ToString());
 
             await InvokeCommandAsync(command).ConfigureAwait(false);
 
@@ -246,18 +247,6 @@ namespace Processing.IntegrationTests.Application.MoveIn
             return stream;
         }
 
-        private async Task<BusinessProcessId> SetupScenarioAsync()
-        {
-            var result = await SendRequestAsync(CreateRequest()).ConfigureAwait(false);
-
-            if (result.ProcessId is null)
-            {
-                throw new InvalidOperationException("Failed to setup scenario.");
-            }
-
-            return BusinessProcessId.Create(result.ProcessId);
-        }
-
         private TEvent? FindIntegrationEvent<TEvent>()
         {
             var mapper = GetService<IntegrationEventMapper>();
@@ -277,7 +266,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         {
             return await GetService<IDbConnectionFactory>()
                 .GetOpenConnection()
-                .ExecuteAsync(
+                .QuerySingleOrDefaultAsync(
                     $"SELECT * FROM [dbo].[ConsumerRegistrations] WHERE AccountingPointId = @AccountingPointId AND CustomerName = @CustomerName AND CustomerNumber = @CustomerNumber",
                     new
                     {
