@@ -67,22 +67,12 @@ namespace Processing.IntegrationTests.Application.MoveIn
         }
 
         [Fact]
-        public async Task Consumer_is_registered()
+        public async Task Customer_is_registered()
         {
             await SendRequestAsync(CreateRequest()).ConfigureAwait(false);
 
-            var registered = await GetService<IDbConnectionFactory>()
-                .GetOpenConnection()
-                .ExecuteScalarAsync<bool>(
-                    $"SELECT COUNT(1) FROM [dbo].[ConsumerRegistrations] WHERE AccountingPointId = @AccountingPointId AND CustomerName = @CustomerName AND CustomerNumber = @CustomerNumber",
-                    new
-                    {
-                        AccountingPointId = _accountingPoint?.Id.Value,
-                        CustomerNumber = SampleData.ConsumerSSN,
-                        CustomerName = SampleData.ConsumerName,
-                    }).ConfigureAwait(false);
-
-            Assert.True(registered);
+            var registration = await GetCustomerRegistrationAsync().ConfigureAwait(false);
+            Assert.NotNull(registration);
         }
 
         [Fact]
@@ -281,6 +271,20 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
             var parser = GetService<MessageParser>();
             return (TEvent)parser.GetFrom(eventMetadata.EventName, message.Data);
+        }
+
+        private async Task<dynamic?> GetCustomerRegistrationAsync()
+        {
+            return await GetService<IDbConnectionFactory>()
+                .GetOpenConnection()
+                .ExecuteAsync(
+                    $"SELECT * FROM [dbo].[ConsumerRegistrations] WHERE AccountingPointId = @AccountingPointId AND CustomerName = @CustomerName AND CustomerNumber = @CustomerNumber",
+                    new
+                    {
+                        AccountingPointId = _accountingPoint?.Id.Value,
+                        CustomerNumber = SampleData.ConsumerSSN,
+                        CustomerName = SampleData.ConsumerName,
+                    }).ConfigureAwait(false);
         }
     }
 }
