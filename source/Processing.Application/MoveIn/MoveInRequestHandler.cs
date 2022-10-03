@@ -36,7 +36,7 @@ namespace Processing.Application.MoveIn
         private readonly IEnergySupplierRepository _energySupplierRepository;
         private readonly IConsumerRepository _consumerRepository;
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
-        private readonly ConsumerMoveIn _consumerMoveInProcess;
+        private readonly CustomerMoveIn _customerMoveInProcess;
 
         public MoveInRequestHandler(
             IAccountingPointRepository accountingPointRepository,
@@ -49,7 +49,7 @@ namespace Processing.Application.MoveIn
             _energySupplierRepository = energySupplierRepository ?? throw new ArgumentNullException(nameof(energySupplierRepository));
             _consumerRepository = consumerRepository ?? throw new ArgumentNullException(nameof(consumerRepository));
             _systemDateTimeProvider = systemDateTimeProvider;
-            _consumerMoveInProcess = new ConsumerMoveIn(effectiveDatePolicy);
+            _customerMoveInProcess = new CustomerMoveIn(effectiveDatePolicy);
         }
 
         public async Task<BusinessProcessResult> Handle(MoveInRequest request, CancellationToken cancellationToken)
@@ -69,7 +69,7 @@ namespace Processing.Application.MoveIn
             }
 
             var consumerMovesInOn = EffectiveDate.Create(request.EffectiveDate);
-            var checkResult = _consumerMoveInProcess.CanStartProcess(accountingPoint, consumerMovesInOn, _systemDateTimeProvider.Now());
+            var checkResult = _customerMoveInProcess.CanStartProcess(accountingPoint, consumerMovesInOn, _systemDateTimeProvider.Now());
 
             if (!checkResult.Success)
             {
@@ -79,7 +79,7 @@ namespace Processing.Application.MoveIn
             var consumer = await GetOrCreateConsumerAsync(request).ConfigureAwait(false);
 
             var businessProcessId = BusinessProcessId.New();
-            _consumerMoveInProcess.StartProcess(
+            _customerMoveInProcess.StartProcess(
                 accountingPoint,
                 consumer,
                 energySupplier,

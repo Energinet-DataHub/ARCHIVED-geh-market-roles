@@ -22,11 +22,11 @@ using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.BusinessProcesses.MoveIn
 {
-    public class ConsumerMoveIn
+    public class CustomerMoveIn
     {
         private readonly EffectiveDatePolicy _policy;
 
-        public ConsumerMoveIn(EffectiveDatePolicy policy)
+        public CustomerMoveIn(EffectiveDatePolicy policy)
         {
             _policy = policy;
         }
