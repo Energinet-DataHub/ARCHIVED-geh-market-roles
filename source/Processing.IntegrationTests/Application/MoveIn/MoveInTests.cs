@@ -179,7 +179,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
                 AccountingPointNumber: SampleData.GsrnNumber,
                 EnergySupplierNumber: SampleData.EnergySupplierId,
                 EffectiveDate: SampleData.MoveInDate.ToString(),
-                Customer: new Customer(SampleData.ConsumerName, SampleData.ConsumerSSN));
+                Customer: new Customer(SampleData.ConsumerName, SampleData.CustomerNumber));
 
             var response = await requestAdapter.ReceiveAsync(SerializeToStream(request));
 
@@ -218,7 +218,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         private static MoveInRequest CreateRequest()
         {
             return new MoveInRequest(
-                new Processing.Application.MoveIn.Customer(SampleData.ConsumerName, SampleData.ConsumerSSN),
+                new Processing.Application.MoveIn.Customer(SampleData.ConsumerName, SampleData.CustomerNumber),
                 SampleData.GlnNumber,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);
@@ -260,7 +260,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
                     new
                     {
                         AccountingPointId = _accountingPoint?.Id.Value,
-                        CustomerNumber = SampleData.ConsumerSSN,
+                        CustomerNumber = SampleData.CustomerNumber,
                         CustomerName = SampleData.ConsumerName,
                     }).ConfigureAwait(false);
         }
