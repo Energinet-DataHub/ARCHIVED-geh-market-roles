@@ -75,7 +75,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         }
 
         [Fact]
-        public async Task Consumer_identifier_is_required()
+        public async Task Customer_number_is_required()
         {
             var request = CreateRequest() with
             {
@@ -101,7 +101,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         }
 
         [Fact]
-        public async Task Consumer_name_is_required()
+        public async Task Customer_name_is_required()
         {
             var request = CreateRequest() with
             {
