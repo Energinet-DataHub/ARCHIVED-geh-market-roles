@@ -88,6 +88,19 @@ namespace Processing.IntegrationTests.Application.MoveIn
         }
 
         [Fact]
+        public async Task Customer_number_must_be_valid()
+        {
+            var request = CreateRequest() with
+            {
+                Consumer = new Consumer("ConsumerName", "Invalid_customer_number"),
+            };
+
+            var result = await SendRequestAsync(request).ConfigureAwait(false);
+
+            AssertValidationError<InvalidCustomerNumber>(result);
+        }
+
+        [Fact]
         public async Task Consumer_name_is_required()
         {
             var request = CreateRequest() with
