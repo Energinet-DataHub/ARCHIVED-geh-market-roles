@@ -267,48 +267,5 @@ namespace Processing.IntegrationTests
 
             return meteringPoint;
         }
-
-        protected void SetConsumerMovedIn(AccountingPoint accountingPoint, ConsumerId consumerId, EnergySupplierId energySupplierId)
-        {
-            var systemTimeProvider = GetService<ISystemDateTimeProvider>();
-            var moveInDate = systemTimeProvider.Now().Minus(Duration.FromDays(365));
-            SetConsumerMovedIn(accountingPoint, consumerId, energySupplierId, moveInDate);
-        }
-
-        protected void SetConsumerMovedIn(AccountingPoint accountingPoint, ConsumerId consumerId, EnergySupplierId energySupplierId, Instant moveInDate)
-        {
-            if (accountingPoint == null)
-                throw new ArgumentNullException(nameof(accountingPoint));
-
-            var systemTimeProvider = GetService<ISystemDateTimeProvider>();
-            var businessProcessId = BusinessProcessId.New();
-            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, businessProcessId);
-            accountingPoint.EffectuateConsumerMoveIn(businessProcessId, systemTimeProvider.Now());
-        }
-
-        protected IEnumerable<TMessage> GetOutboxMessages<TMessage>()
-        {
-            var jsonSerializer = GetService<IJsonSerializer>();
-            var context = GetService<MarketRolesContext>();
-
-            var messageType = GetIntegrationEventNameFromType<TMessage>() ?? typeof(TMessage).FullName;
-
-            return context.OutboxMessages
-                .Where(message => message.Type == messageType)
-                .Select(message => jsonSerializer.Deserialize<TMessage>(message.Data));
-        }
-
-        private string? GetIntegrationEventNameFromType<TIntegrationEventType>()
-        {
-            var mapper = GetService<IntegrationEventMapper>();
-            try
-            {
-                return mapper.GetByType(typeof(TIntegrationEventType)).EventName;
-            }
-            catch (InvalidOperationException)
-            {
-                return null;
-            }
-        }
     }
 }
