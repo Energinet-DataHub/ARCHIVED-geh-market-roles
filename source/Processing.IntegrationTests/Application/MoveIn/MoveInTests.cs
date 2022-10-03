@@ -209,8 +209,8 @@ namespace Processing.IntegrationTests.Application.MoveIn
         [Fact]
         public async Task Integration_event_is_published_when_move_in_is_effectuated()
         {
-            var (accountingPoint, processId) = await SetupScenarioAsync().ConfigureAwait(false);
-            var command = new EffectuateConsumerMoveIn(accountingPoint.Id.Value, processId.Value.ToString());
+            var processId = await SetupScenarioAsync().ConfigureAwait(false);
+            var command = new EffectuateConsumerMoveIn(_accountingPoint!.Id.Value, processId.Value.ToString());
 
             await InvokeCommandAsync(command).ConfigureAwait(false);
 
@@ -256,7 +256,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             return stream;
         }
 
-        private async Task<(AccountingPoint AccountingPoint, BusinessProcessId ProcessId)> SetupScenarioAsync()
+        private async Task<BusinessProcessId> SetupScenarioAsync()
         {
             var result = await SendRequestAsync(CreateRequest()).ConfigureAwait(false);
 
@@ -265,7 +265,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
                 throw new InvalidOperationException("Failed to setup scenario.");
             }
 
-            return (_accountingPoint!, BusinessProcessId.Create(result.ProcessId));
+            return BusinessProcessId.Create(result.ProcessId);
         }
 
         private TEvent? FindIntegrationEvent<TEvent>()
