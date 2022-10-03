@@ -43,23 +43,32 @@ using Customer = Contracts.BusinessRequests.MoveIn.Customer;
 namespace Processing.IntegrationTests.Application.MoveIn
 {
     [IntegrationTest]
-    public class MoveInTests : TestBase
+    public class MoveInTests : TestBase, IAsyncLifetime
     {
+        private AccountingPoint? _accountingPoint;
+
         public MoveInTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
         }
 
+        public Task InitializeAsync()
+        {
+            _accountingPoint = AccountingPoint.CreateConsumption(AccountingPointId.New(), GsrnNumber.Create(SampleData.GsrnNumber));
+            GetService<IAccountingPointRepository>().Add(_accountingPoint);
+            var energySupplier = new EnergySupplier(EnergySupplierId.New(), GlnNumber.Create(SampleData.GlnNumber));
+            GetService<IEnergySupplierRepository>().Add(energySupplier);
+            return GetService<IUnitOfWork>().CommitAsync();
+        }
+
+        public Task DisposeAsync()
+        {
+            return Task.CompletedTask;
+        }
+
         [Fact]
         public async Task Consumer_is_registered()
         {
-            var accountingPoint =
-                AccountingPoint.CreateConsumption(AccountingPointId.New(), GsrnNumber.Create(SampleData.GsrnNumber));
-            GetService<IAccountingPointRepository>().Add(accountingPoint);
-            var energySupplier = new EnergySupplier(EnergySupplierId.New(), GlnNumber.Create(SampleData.GlnNumber));
-            GetService<IEnergySupplierRepository>().Add(energySupplier);
-            await GetService<IUnitOfWork>().CommitAsync().ConfigureAwait(false);
-
             await SendRequestAsync(CreateRequest()).ConfigureAwait(false);
 
             var registered = await GetService<IDbConnectionFactory>()
@@ -68,7 +77,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
                     $"SELECT COUNT(1) FROM [dbo].[ConsumerRegistrations] WHERE AccountingPointId = @AccountingPointId AND CustomerName = @CustomerName AND CustomerNumber = @CustomerNumber",
                     new
                     {
-                        AccountingPointId = accountingPoint.Id.Value,
+                        AccountingPointId = _accountingPoint?.Id.Value,
                         CustomerNumber = SampleData.ConsumerSSN,
                         CustomerName = SampleData.ConsumerName,
                     }).ConfigureAwait(false);
@@ -144,10 +153,11 @@ namespace Processing.IntegrationTests.Application.MoveIn
         [Fact]
         public async Task Energy_supplier_must_be_known()
         {
-            CreateAccountingPoint();
-            SaveChanges();
-
-            var request = CreateRequest();
+            var request = CreateRequest()
+                with
+                {
+                    EnergySupplierNumber = "1234",
+                };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
@@ -158,10 +168,11 @@ namespace Processing.IntegrationTests.Application.MoveIn
         [Fact]
         public async Task Accounting_point_must_exist()
         {
-            CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
-            SaveChanges();
-
-            var request = CreateRequest();
+            var request = CreateRequest()
+                with
+                {
+                    AccountingPointNumber = "571234567891234551",
+                };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
@@ -173,9 +184,6 @@ namespace Processing.IntegrationTests.Application.MoveIn
         public async Task Request_succeeds()
         {
             var requestAdapter = GetService<JsonMoveInAdapter>();
-            CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
-            CreateAccountingPoint();
-            SaveChanges();
 
             var request = new RequestV2(
                 AccountingPointNumber: SampleData.GsrnNumber,
@@ -193,10 +201,6 @@ namespace Processing.IntegrationTests.Application.MoveIn
         [Fact]
         public async Task Move_in_on_top_of_move_in_should_result_in_reject_message()
         {
-            CreateEnergySupplier();
-            CreateAccountingPoint();
-            SaveChanges();
-
             var request = CreateRequest(false);
             await SendRequestAsync(request).ConfigureAwait(false);
             await SendRequestAsync(request).ConfigureAwait(false);
@@ -254,10 +258,6 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
         private async Task<(AccountingPoint AccountingPoint, BusinessProcessId ProcessId)> SetupScenarioAsync()
         {
-            var accountingPoint = CreateAccountingPoint();
-            CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
-            SaveChanges();
-
             var requestMoveIn = new MoveInRequest(
                 new Processing.Application.MoveIn.Customer(SampleData.ConsumerName, SampleData.ConsumerSSN),
                 SampleData.GlnNumber,
@@ -271,7 +271,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
                 throw new InvalidOperationException("Failed to setup scenario.");
             }
 
-            return (accountingPoint, BusinessProcessId.Create(result.ProcessId));
+            return (_accountingPoint!, BusinessProcessId.Create(result.ProcessId));
         }
 
         private TEvent? FindIntegrationEvent<TEvent>()
