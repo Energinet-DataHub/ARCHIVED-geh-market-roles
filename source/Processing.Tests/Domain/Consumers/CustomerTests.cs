@@ -12,24 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json.Serialization;
-using Messaging.Application.Configuration.Commands.Commands;
+using Processing.Domain.Consumers;
+using Xunit;
 
-namespace Messaging.Application.Actors;
+namespace Processing.Tests.Domain.Consumers;
 
-public class CreateActor : InternalCommand
+public class CustomerTests
 {
-    [JsonConstructor]
-    public CreateActor(string actorId, string b2cId, string identificationNumber)
+    [Fact]
+    public void Create_test()
     {
-        ActorId = actorId;
-        IdentificationNumber = identificationNumber;
-        B2CId = b2cId;
+        var customerNumber = CustomerNumber.Create("12345678");
+        var customerFullname = "Customer fullname";
+        var customer = Customer.Create(customerNumber, customerFullname);
+
+        Assert.Equal(customerNumber, customer.Number);
+        Assert.Equal(customerFullname, customer.Name);
     }
-
-    public string B2CId { get; }
-
-    public string ActorId { get; }
-
-    public string IdentificationNumber { get; }
 }

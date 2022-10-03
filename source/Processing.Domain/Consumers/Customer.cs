@@ -12,24 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json.Serialization;
-using Messaging.Application.Configuration.Commands.Commands;
+using Processing.Domain.SeedWork;
 
-namespace Messaging.Application.Actors;
-
-public class CreateActor : InternalCommand
+namespace Processing.Domain.Consumers
 {
-    [JsonConstructor]
-    public CreateActor(string actorId, string b2cId, string identificationNumber)
+    public class Customer : ValueObject
     {
-        ActorId = actorId;
-        IdentificationNumber = identificationNumber;
-        B2CId = b2cId;
+        private Customer(CustomerNumber customerNumber, string fullname)
+        {
+            Number = customerNumber;
+            Name = fullname;
+        }
+
+        public string Name { get;  }
+
+        public CustomerNumber Number { get; }
+
+        public static Customer Create(CustomerNumber customerNumber, string fullname)
+        {
+            return new Customer(customerNumber, fullname);
+        }
     }
-
-    public string B2CId { get; }
-
-    public string ActorId { get; }
-
-    public string IdentificationNumber { get; }
 }

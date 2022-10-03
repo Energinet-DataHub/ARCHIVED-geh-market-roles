@@ -12,24 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text.Json.Serialization;
-using Messaging.Application.Configuration.Commands.Commands;
+using Processing.Domain.SeedWork;
 
-namespace Messaging.Application.Actors;
-
-public class CreateActor : InternalCommand
+namespace Processing.Domain.Consumers
 {
-    [JsonConstructor]
-    public CreateActor(string actorId, string b2cId, string identificationNumber)
+    public class InvalidCustomerNumber : ValidationError
     {
-        ActorId = actorId;
-        IdentificationNumber = identificationNumber;
-        B2CId = b2cId;
+        public override string Code { get; protected set; } = "InvalidCustomerNumber";
     }
-
-    public string B2CId { get; }
-
-    public string ActorId { get; }
-
-    public string IdentificationNumber { get; }
 }
