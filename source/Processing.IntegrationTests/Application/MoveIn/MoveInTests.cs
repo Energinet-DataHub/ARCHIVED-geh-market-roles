@@ -53,7 +53,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         {
             var request = CreateRequest() with
             {
-                AccountingPointGsrnNumber = string.Empty,
+                AccountingPointNumber = string.Empty,
             };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
@@ -66,7 +66,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         {
             var request = CreateRequest() with
             {
-                AccountingPointGsrnNumber = "Not a valid GSRN number",
+                AccountingPointNumber = "Not a valid GSRN number",
             };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
@@ -138,7 +138,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest();
             await SendRequestAsync(request).ConfigureAwait(false);
 
-            var consumer = await GetService<IConsumerRepository>().GetBySSNAsync(CprNumber.Create(request.Customer.Identifier)).ConfigureAwait(false);
+            var consumer = await GetService<IConsumerRepository>().GetBySSNAsync(CprNumber.Create(request.Customer.Number)).ConfigureAwait(false);
             Assert.NotNull(consumer);
         }
 
@@ -152,7 +152,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest(false);
             await SendRequestAsync(request).ConfigureAwait(false);
 
-            var consumer = await GetService<IConsumerRepository>().GetByVATNumberAsync(CvrNumber.Create(request.Customer.Identifier)).ConfigureAwait(false);
+            var consumer = await GetService<IConsumerRepository>().GetByVATNumberAsync(CvrNumber.Create(request.Customer.Number)).ConfigureAwait(false);
             Assert.NotNull(consumer);
         }
 

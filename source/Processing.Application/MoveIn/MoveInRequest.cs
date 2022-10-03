@@ -18,10 +18,10 @@ namespace Processing.Application.MoveIn
 {
     public record MoveInRequest(
         Customer Customer,
-        string EnergySupplierGlnNumber = "",
-        string AccountingPointGsrnNumber = "",
-        string MoveInDate = "")
+        string EnergySupplierNumber = "",
+        string AccountingPointNumber = "",
+        string EffectiveDate = "")
         : IBusinessRequest;
 
-    public record Customer(string Name = "", string Identifier = "", string Type = "");
+    public record Customer(string Name = "", string Number = "", string Type = "");
 }
