@@ -31,14 +31,14 @@ public class ConsumerMoveInTests : TestBase
     private readonly AccountingPoint _accountingPoint;
     private readonly Consumer _consumer;
     private readonly EnergySupplier _energySupplier;
-    private readonly ConsumerMoveIn _consumerMoveInProcess;
+    private readonly CustomerMoveIn _customerMoveInProcess;
     private readonly BusinessProcessId _processId;
     private readonly Customer _customer;
 
     public ConsumerMoveInTests()
     {
         CurrentSystemTimeIsSummertime();
-        _consumerMoveInProcess = new ConsumerMoveIn(EffectiveDatePolicyFactory.CreateEffectiveDatePolicy());
+        _customerMoveInProcess = new CustomerMoveIn(EffectiveDatePolicyFactory.CreateEffectiveDatePolicy());
         _accountingPoint = AccountingPoint.CreateProduction(AccountingPointId.New(), GsrnNumber.Create(SampleData.GsrnNumber), true);
         _consumer = new Consumer(ConsumerId.New(), CprNumber.Create(SampleData.ConsumerSocialSecurityNumber), ConsumerName.Create(SampleData.ConsumerName));
         _energySupplier = new EnergySupplier(EnergySupplierId.New(), GlnNumber.Create(SampleData.GlnNumber));
@@ -99,7 +99,7 @@ public class ConsumerMoveInTests : TestBase
     {
         var maxNumberOfDaysAheadOfcurrentDate = 5;
         var policy = EffectiveDatePolicyFactory.CreateEffectiveDatePolicy(maxNumberOfDaysAheadOfcurrentDate);
-        var moveProcess = new ConsumerMoveIn(policy);
+        var moveProcess = new CustomerMoveIn(policy);
 
         var moveInDate = AsOf(SystemDateTimeProvider.Now().Plus(Duration.FromDays(10)));
         var result = moveProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now());
@@ -114,7 +114,7 @@ public class ConsumerMoveInTests : TestBase
 
     private BusinessRulesValidationResult CanStartProcess(EffectiveDate moveInDate)
     {
-        return _consumerMoveInProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now());
+        return _customerMoveInProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now());
     }
 
     private EffectiveDate AsOfToday()
@@ -129,7 +129,7 @@ public class ConsumerMoveInTests : TestBase
 
     private void StartProcess(EffectiveDate moveInDate)
     {
-        _consumerMoveInProcess.StartProcess(
+        _customerMoveInProcess.StartProcess(
             _accountingPoint,
             _consumer,
             _energySupplier,
