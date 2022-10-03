@@ -13,10 +13,12 @@
 // limitations under the License.
 
 using System;
+using System.Linq;
 using FluentValidation;
 using Processing.Application.Common.Validation;
 using Processing.Application.Common.Validation.Consumers;
 using Processing.Domain.BusinessProcesses.MoveIn.Errors;
+using Processing.Domain.Consumers;
 using Processing.Domain.MeteringPoints;
 
 namespace Processing.Application.MoveIn.Validation
@@ -38,6 +40,9 @@ namespace Processing.Application.MoveIn.Validation
             RuleFor(request => request.Consumer.Identifier)
                 .NotEmpty()
                 .WithState(_ => new ConsumerIdentifierIsRequired());
+            RuleFor(request => CustomerNumber.Validate(request.Consumer.Identifier))
+                .Must(result => result.Success)
+                .WithState((_, result) => result.Errors.First());
             When(request => request.Consumer.Type.Equals(ConsumerIdentifierType.CPR, StringComparison.OrdinalIgnoreCase), () =>
             {
                 RuleFor(request => request.Consumer.Identifier)
