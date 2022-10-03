@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Linq;
 using FluentValidation;
-using Processing.Application.Common.Validation.Consumers;
 using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 using Processing.Domain.Consumers;
 using Processing.Domain.MeteringPoints;
@@ -42,16 +40,6 @@ namespace Processing.Application.MoveIn.Validation
             RuleFor(request => CustomerNumber.Validate(request.Customer.Number))
                 .Must(result => result.Success)
                 .WithState((_, result) => result.Errors.First());
-            When(request => request.Customer.Type.Equals(ConsumerIdentifierType.CPR, StringComparison.OrdinalIgnoreCase), () =>
-            {
-                RuleFor(request => request.Customer.Number)
-                    .SetValidator(new SocialSecurityNumberMustBeValid());
-            });
-            When(request => request.Customer.Type.Equals(ConsumerIdentifierType.CVR, StringComparison.OrdinalIgnoreCase), () =>
-            {
-                RuleFor(request => request.Customer.Number)
-                    .SetValidator(new VATNumberMustBeValidRule());
-            });
         }
     }
 }

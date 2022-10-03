@@ -26,10 +26,6 @@ namespace Processing.Application.Common.Validation.Consumers
             RuleFor(socialSecurityNumber => socialSecurityNumber)
                 .NotEmpty()
                 .WithState(CreateValidationError);
-
-            RuleFor(socialSecurityNumber => CprNumber.CheckRules(socialSecurityNumber))
-                .Must(x => x.Success)
-                .WithState(CreateValidationError);
         }
 
         private static ValidationError CreateValidationError(string socialSecurityNumber)

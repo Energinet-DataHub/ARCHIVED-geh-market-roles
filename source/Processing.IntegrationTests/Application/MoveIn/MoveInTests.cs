@@ -142,34 +142,6 @@ namespace Processing.IntegrationTests.Application.MoveIn
         }
 
         [Fact]
-        public async Task Accept_WhenConsumerIsRegisteredBySSN_ConsumerIsRegistered()
-        {
-            CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
-            CreateAccountingPoint();
-            SaveChanges();
-
-            var request = CreateRequest();
-            await SendRequestAsync(request).ConfigureAwait(false);
-
-            var consumer = await GetService<IConsumerRepository>().GetBySSNAsync(CprNumber.Create(request.Customer.Number)).ConfigureAwait(false);
-            Assert.NotNull(consumer);
-        }
-
-        [Fact]
-        public async Task Accept_WhenConsumerIsRegisteredByVAT_ConsumerIsRegistered()
-        {
-            CreateEnergySupplier(Guid.NewGuid(), SampleData.GlnNumber);
-            CreateAccountingPoint();
-            SaveChanges();
-
-            var request = CreateRequest(false);
-            await SendRequestAsync(request).ConfigureAwait(false);
-
-            var consumer = await GetService<IConsumerRepository>().GetByVATNumberAsync(CvrNumber.Create(request.Customer.Number)).ConfigureAwait(false);
-            Assert.NotNull(consumer);
-        }
-
-        [Fact]
         public async Task Request_succeeds()
         {
             var requestAdapter = GetService<JsonMoveInAdapter>();
@@ -234,7 +206,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var consumerId = consumerIdType == ConsumerIdentifierType.CPR ? SampleData.ConsumerSSN : SampleData.ConsumerVAT;
 
             return new MoveInRequest(
-                new Processing.Application.MoveIn.Customer(SampleData.ConsumerName, consumerId, consumerIdType),
+                new Processing.Application.MoveIn.Customer(SampleData.ConsumerName, SampleData.ConsumerSSN),
                 SampleData.GlnNumber,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);
@@ -259,7 +231,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             SaveChanges();
 
             var requestMoveIn = new MoveInRequest(
-                new Processing.Application.MoveIn.Customer(SampleData.ConsumerName, SampleData.ConsumerSSN, ConsumerIdentifierType.CPR),
+                new Processing.Application.MoveIn.Customer(SampleData.ConsumerName, SampleData.ConsumerSSN),
                 SampleData.GlnNumber,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);

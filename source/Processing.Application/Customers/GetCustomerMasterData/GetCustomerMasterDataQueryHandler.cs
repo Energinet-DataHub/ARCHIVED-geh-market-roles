@@ -20,6 +20,7 @@ using Dapper;
 using NodaTime;
 using Processing.Application.Common;
 using Processing.Application.Common.Queries;
+using Processing.Domain.Consumers;
 
 namespace Processing.Application.Customers.GetCustomerMasterData;
 
@@ -35,16 +36,13 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
     public async Task<QueryResult<CustomerMasterData>> Handle(GetCustomerMasterDataQuery request, CancellationToken cancellationToken)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
-        var queryStatement = $"SELECT c.Name AS {nameof(CustomerMasterData.CustomerName)}, " +
+        var queryStatement = $"SELECT cr.CustomerName AS {nameof(CustomerMasterData.CustomerName)}, " +
                              $"cr.BusinessProcessId AS {nameof(CustomerMasterData.RegisteredByProcessId)}, " +
                              $"cr.MoveInDate AS {nameof(CustomerMasterData.SupplyStart)}, " +
-                             $"CASE " +
-                                $"WHEN c.CvrNumber IS NULL THEN '' ELSE c.CvrNumber " +
-                             $"END AS CustomerId, " +
+                             $"cr.CustomerNumber AS CustomerId, " +
                              $"a.ElectricalHeating_EffectiveDate AS {nameof(CustomerMasterData.ElectricalHeatingEffectiveDate)}, " +
                              $"a.GsrnNumber AS {nameof(CustomerMasterData.AccountingPointNumber)} " +
-                                $"FROM [dbo].[Consumers] c " +
-                                $"JOIN [dbo].[ConsumerRegistrations] cr ON cr.ConsumerId = c.Id " +
+                             $"FROM [dbo].[ConsumerRegistrations] cr " +
                                 $"JOIN [dbo].[AccountingPoints] a ON a.Id = cr.AccountingPointId " +
                                 $"WHERE cr.BusinessProcessId = @ProcessId";
 
@@ -55,9 +53,31 @@ public class GetCustomerMasterDataQueryHandler : IQueryHandler<GetCustomerMaster
                 ProcessId = request.ProcessId,
             }).ConfigureAwait(false);
 
-        return dataModel == null
-            ? new QueryResult<CustomerMasterData>($"Could not find customer data for process id {request.ProcessId}")
-            : new QueryResult<CustomerMasterData>(dataModel);
+        if (dataModel is null)
+        {
+            return new QueryResult<CustomerMasterData>(
+                $"Could not find customer data for process id {request.ProcessId}");
+        }
+
+        return new QueryResult<CustomerMasterData>(RemoveCustomerNumberIfPersonal(dataModel));
+    }
+
+    private static CustomerMasterData RemoveCustomerNumberIfPersonal(CustomerMasterData input)
+    {
+        var customerNumber = CustomerNumber.Create(input.CustomerId);
+        if (customerNumber.Type == CustomerNumber.CustomerNumberType.Cpr ||
+            customerNumber.Type == CustomerNumber.CustomerNumberType.FictionalCpr)
+        {
+            return new CustomerMasterData(
+                input.CustomerName,
+                input.RegisteredByProcessId,
+                input.SupplyStart,
+                string.Empty,
+                input.ElectricalHeatingEffectiveDate,
+                input.AccountingPointNumber);
+        }
+
+        return input;
     }
 }
 

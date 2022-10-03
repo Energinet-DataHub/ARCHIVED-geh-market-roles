@@ -56,13 +56,11 @@ namespace Processing.IntegrationTests.Application.MoveIn
         private BusinessProcessId RegisterPendingMoveIn()
         {
             var supplier = CreateEnergySupplier();
-            var consumer = CreateConsumer();
             var accountingPoint = CreateAccountingPoint();
             var businessProcessId = BusinessProcessId.New();
             var customer =
-                Customer.Create(
-                    CustomerNumber.Create(consumer.CprNumber is not null ? consumer.CprNumber.Value : consumer.CvrNumber!.Value), consumer.Name.FullName);
-            accountingPoint.RegisterMoveIn(customer, consumer.ConsumerId, supplier.EnergySupplierId, EffectiveDateFactory.InstantAsOfToday(), businessProcessId);
+                Customer.Create(CustomerNumber.Create(SampleData.ConsumerSSN), SampleData.ConsumerName);
+            accountingPoint.RegisterMoveIn(customer, supplier.EnergySupplierId, EffectiveDateFactory.InstantAsOfToday(), businessProcessId);
             SaveChanges();
             return businessProcessId;
         }
