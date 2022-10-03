@@ -92,7 +92,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         {
             var request = CreateRequest() with
             {
-                Consumer = new Consumer("ConsumerName", "Invalid_customer_number"),
+                Customer = new Processing.Application.MoveIn.Customer("ConsumerName", "Invalid_customer_number"),
             };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
