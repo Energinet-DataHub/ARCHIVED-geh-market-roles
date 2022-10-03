@@ -191,7 +191,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         [Fact]
         public async Task Move_in_on_top_of_move_in_should_result_in_reject_message()
         {
-            var request = CreateRequest(false);
+            var request = CreateRequest();
             await SendRequestAsync(request).ConfigureAwait(false);
             await SendRequestAsync(request).ConfigureAwait(false);
         }
@@ -223,11 +223,8 @@ namespace Processing.IntegrationTests.Application.MoveIn
             }
         }
 
-        private static MoveInRequest CreateRequest(bool registerConsumerBySSN = true)
+        private static MoveInRequest CreateRequest()
         {
-            var consumerIdType = registerConsumerBySSN ? ConsumerIdentifierType.CPR : ConsumerIdentifierType.CVR;
-            var consumerId = consumerIdType == ConsumerIdentifierType.CPR ? SampleData.ConsumerSSN : SampleData.ConsumerVAT;
-
             return new MoveInRequest(
                 new Processing.Application.MoveIn.Customer(SampleData.ConsumerName, SampleData.ConsumerSSN),
                 SampleData.GlnNumber,
