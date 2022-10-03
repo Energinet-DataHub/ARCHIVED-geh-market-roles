@@ -37,6 +37,7 @@ using Processing.IntegrationTests.Fixtures;
 using Xunit;
 using Xunit.Categories;
 using Consumer = Processing.Application.MoveIn.Consumer;
+using Customer = Contracts.BusinessRequests.MoveIn.Customer;
 
 namespace Processing.IntegrationTests.Application.MoveIn
 {
@@ -164,13 +165,11 @@ namespace Processing.IntegrationTests.Application.MoveIn
             CreateAccountingPoint();
             SaveChanges();
 
-            var request = new Request(
-                ConsumerId: SampleData.ConsumerSSN,
-                ConsumerName: SampleData.ConsumerName,
-                StartDate: SampleData.MoveInDate,
-                ConsumerIdType: ConsumerIdentifierType.CPR,
-                AccountingPointGsrnNumber: SampleData.GsrnNumber,
-                EnergySupplierGlnNumber: SampleData.GlnNumber);
+            var request = new RequestV2(
+                AccountingPointNumber: SampleData.GsrnNumber,
+                EnergySupplierNumber: SampleData.EnergySupplierId,
+                EffectiveDate: SampleData.MoveInDate.ToString(),
+                Customer: new Customer(SampleData.ConsumerName, SampleData.ConsumerSSN));
 
             var response = await requestAdapter.ReceiveAsync(SerializeToStream(request));
 
