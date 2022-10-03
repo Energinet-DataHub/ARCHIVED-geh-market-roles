@@ -22,6 +22,7 @@ using MediatR;
 using Processing.Application.Common;
 using Processing.Application.MoveIn;
 using Processing.Infrastructure.Configuration.Serialization;
+using Customer = Processing.Application.MoveIn.Customer;
 
 namespace Processing.Infrastructure.RequestAdapters
 {
@@ -47,13 +48,14 @@ namespace Processing.Infrastructure.RequestAdapters
             return CreateResult(businessProcessResult);
         }
 
-        private static MoveInRequest MapToCommandFrom(Request request)
+        private static MoveInRequest MapToCommandFrom(RequestV2 request)
         {
             var command = new MoveInRequest(
-                ExtractConsumerFrom(request),
-                request.EnergySupplierGlnNumber ?? string.Empty,
-                request.AccountingPointGsrnNumber,
-                request.StartDate);
+                new Customer(
+                    request.Customer?.Name!, request.Customer?.Number!, "CPR"),
+                request.EnergySupplierNumber!,
+                request.AccountingPointNumber!,
+                request.EffectiveDate!);
             return command;
         }
 
@@ -63,21 +65,16 @@ namespace Processing.Infrastructure.RequestAdapters
             return await streamReader.ReadToEndAsync().ConfigureAwait(false);
         }
 
-        private static Consumer ExtractConsumerFrom(Request request)
-        {
-            return new Consumer(request.ConsumerName ?? string.Empty, request.ConsumerId ?? string.Empty, request.ConsumerIdType ?? string.Empty);
-        }
-
-        private async Task<Request> ExtractRequestFromAsync(Stream request)
+        private async Task<RequestV2> ExtractRequestFromAsync(Stream request)
         {
             var json = await ExtractJsonFromAsync(request).ConfigureAwait(false);
             var requestDto = DeserializeToRequest(json);
             return requestDto;
         }
 
-        private Request DeserializeToRequest(string json)
+        private RequestV2 DeserializeToRequest(string json)
         {
-            var requestDto = _serializer.Deserialize<Request>(json);
+            var requestDto = _serializer.Deserialize<RequestV2>(json);
             return requestDto;
         }
 

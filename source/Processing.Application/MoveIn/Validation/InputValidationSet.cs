@@ -15,7 +15,6 @@
 using System;
 using System.Linq;
 using FluentValidation;
-using Processing.Application.Common.Validation;
 using Processing.Application.Common.Validation.Consumers;
 using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 using Processing.Domain.Consumers;
@@ -27,30 +26,30 @@ namespace Processing.Application.MoveIn.Validation
     {
         public InputValidationSet()
         {
-            RuleFor(request => request.Consumer.Name)
+            RuleFor(request => request.Customer.Name)
                 .NotEmpty()
                 .WithState(_ => new ConsumerNameIsRequired());
-            RuleFor(request => request.AccountingPointGsrnNumber)
+            RuleFor(request => request.AccountingPointNumber)
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty()
                 .WithState(_ => new GsrnNumberIsRequired());
-            RuleFor(request => GsrnNumber.CheckRules(request.AccountingPointGsrnNumber))
+            RuleFor(request => GsrnNumber.CheckRules(request.AccountingPointNumber))
                 .Must(x => x.Success)
                 .WithState(_ => new InvalidGsrnNumber());
-            RuleFor(request => request.Consumer.Identifier)
+            RuleFor(request => request.Customer.Number)
                 .NotEmpty()
                 .WithState(_ => new ConsumerIdentifierIsRequired());
-            RuleFor(request => CustomerNumber.Validate(request.Consumer.Identifier))
+            RuleFor(request => CustomerNumber.Validate(request.Customer.Number))
                 .Must(result => result.Success)
                 .WithState((_, result) => result.Errors.First());
-            When(request => request.Consumer.Type.Equals(ConsumerIdentifierType.CPR, StringComparison.OrdinalIgnoreCase), () =>
+            When(request => request.Customer.Type.Equals(ConsumerIdentifierType.CPR, StringComparison.OrdinalIgnoreCase), () =>
             {
-                RuleFor(request => request.Consumer.Identifier)
+                RuleFor(request => request.Customer.Number)
                     .SetValidator(new SocialSecurityNumberMustBeValid());
             });
-            When(request => request.Consumer.Type.Equals(ConsumerIdentifierType.CVR, StringComparison.OrdinalIgnoreCase), () =>
+            When(request => request.Customer.Type.Equals(ConsumerIdentifierType.CVR, StringComparison.OrdinalIgnoreCase), () =>
             {
-                RuleFor(request => request.Consumer.Identifier)
+                RuleFor(request => request.Customer.Number)
                     .SetValidator(new VATNumberMustBeValidRule());
             });
         }

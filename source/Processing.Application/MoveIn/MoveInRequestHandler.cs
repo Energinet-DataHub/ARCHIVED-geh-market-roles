@@ -36,7 +36,7 @@ namespace Processing.Application.MoveIn
         private readonly IEnergySupplierRepository _energySupplierRepository;
         private readonly IConsumerRepository _consumerRepository;
         private readonly ISystemDateTimeProvider _systemDateTimeProvider;
-        private readonly ConsumerMoveIn _consumerMoveInProcess;
+        private readonly CustomerMoveIn _customerMoveInProcess;
 
         public MoveInRequestHandler(
             IAccountingPointRepository accountingPointRepository,
@@ -49,27 +49,27 @@ namespace Processing.Application.MoveIn
             _energySupplierRepository = energySupplierRepository ?? throw new ArgumentNullException(nameof(energySupplierRepository));
             _consumerRepository = consumerRepository ?? throw new ArgumentNullException(nameof(consumerRepository));
             _systemDateTimeProvider = systemDateTimeProvider;
-            _consumerMoveInProcess = new ConsumerMoveIn(effectiveDatePolicy);
+            _customerMoveInProcess = new CustomerMoveIn(effectiveDatePolicy);
         }
 
         public async Task<BusinessProcessResult> Handle(MoveInRequest request, CancellationToken cancellationToken)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
 
-            var accountingPoint = await _accountingPointRepository.GetByGsrnNumberAsync(GsrnNumber.Create(request.AccountingPointGsrnNumber)).ConfigureAwait(false);
+            var accountingPoint = await _accountingPointRepository.GetByGsrnNumberAsync(GsrnNumber.Create(request.AccountingPointNumber)).ConfigureAwait(false);
             if (accountingPoint is null)
             {
                 return BusinessProcessResult.Fail(new UnknownAccountingPoint());
             }
 
-            var energySupplier = await _energySupplierRepository.GetByGlnNumberAsync(new GlnNumber(request.EnergySupplierGlnNumber)).ConfigureAwait(false);
+            var energySupplier = await _energySupplierRepository.GetByGlnNumberAsync(new GlnNumber(request.EnergySupplierNumber)).ConfigureAwait(false);
             if (energySupplier is null)
             {
                 return BusinessProcessResult.Fail(new UnknownEnergySupplier());
             }
 
-            var consumerMovesInOn = EffectiveDate.Create(request.MoveInDate);
-            var checkResult = _consumerMoveInProcess.CanStartProcess(accountingPoint, consumerMovesInOn, _systemDateTimeProvider.Now());
+            var consumerMovesInOn = EffectiveDate.Create(request.EffectiveDate);
+            var checkResult = _customerMoveInProcess.CanStartProcess(accountingPoint, consumerMovesInOn, _systemDateTimeProvider.Now());
 
             if (!checkResult.Success)
             {
@@ -79,7 +79,7 @@ namespace Processing.Application.MoveIn
             var consumer = await GetOrCreateConsumerAsync(request).ConfigureAwait(false);
 
             var businessProcessId = BusinessProcessId.New();
-            _consumerMoveInProcess.StartProcess(
+            _customerMoveInProcess.StartProcess(
                 accountingPoint,
                 consumer,
                 energySupplier,
@@ -91,21 +91,21 @@ namespace Processing.Application.MoveIn
             return BusinessProcessResult.Ok(businessProcessId.Value.ToString());
         }
 
-        private static Customer CreateCustomer(MoveInRequest request)
+        private static Domain.Consumers.Customer CreateCustomer(MoveInRequest request)
         {
-            return Customer.Create(CustomerNumber.Create(request.Consumer.Identifier), request.Consumer.Name);
+            return Domain.Consumers.Customer.Create(CustomerNumber.Create(request.Customer.Number), request.Customer.Name);
         }
 
         private async Task<Domain.Consumers.Consumer> GetOrCreateConsumerAsync(MoveInRequest moveInRequest)
         {
             Domain.Consumers.Consumer? consumer;
-            if (moveInRequest.Consumer.Type.Equals("CPR", StringComparison.OrdinalIgnoreCase))
+            if (moveInRequest.Customer.Type.Equals("CPR", StringComparison.OrdinalIgnoreCase))
             {
-                consumer = await _consumerRepository.GetBySSNAsync(CprNumber.Create(moveInRequest.Consumer.Identifier)).ConfigureAwait(false);
+                consumer = await _consumerRepository.GetBySSNAsync(CprNumber.Create(moveInRequest.Customer.Number)).ConfigureAwait(false);
             }
             else
             {
-                consumer = await _consumerRepository.GetByVATNumberAsync(CvrNumber.Create(moveInRequest.Consumer.Identifier)).ConfigureAwait(false);
+                consumer = await _consumerRepository.GetByVATNumberAsync(CvrNumber.Create(moveInRequest.Customer.Number)).ConfigureAwait(false);
             }
 
             return consumer ?? CreateConsumer(moveInRequest);
@@ -113,10 +113,10 @@ namespace Processing.Application.MoveIn
 
         private Domain.Consumers.Consumer CreateConsumer(MoveInRequest moveInRequest)
         {
-            var consumerName = ConsumerName.Create(moveInRequest.Consumer.Name);
-            var consumer = moveInRequest.Consumer.Type.Equals("CPR", StringComparison.OrdinalIgnoreCase)
-                ? new Domain.Consumers.Consumer(ConsumerId.New(), CprNumber.Create(moveInRequest.Consumer.Identifier), consumerName)
-                : new Domain.Consumers.Consumer(ConsumerId.New(), CvrNumber.Create(moveInRequest.Consumer.Identifier), consumerName);
+            var consumerName = ConsumerName.Create(moveInRequest.Customer.Name);
+            var consumer = moveInRequest.Customer.Type.Equals("CPR", StringComparison.OrdinalIgnoreCase)
+                ? new Domain.Consumers.Consumer(ConsumerId.New(), CprNumber.Create(moveInRequest.Customer.Number), consumerName)
+                : new Domain.Consumers.Consumer(ConsumerId.New(), CvrNumber.Create(moveInRequest.Customer.Number), consumerName);
             _consumerRepository.Add(consumer);
             return consumer;
         }

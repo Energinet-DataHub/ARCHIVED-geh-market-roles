@@ -36,7 +36,7 @@ using Processing.Infrastructure.RequestAdapters;
 using Processing.IntegrationTests.Fixtures;
 using Xunit;
 using Xunit.Categories;
-using Consumer = Processing.Application.MoveIn.Consumer;
+using Customer = Contracts.BusinessRequests.MoveIn.Customer;
 
 namespace Processing.IntegrationTests.Application.MoveIn
 {
@@ -53,7 +53,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         {
             var request = CreateRequest() with
             {
-                AccountingPointGsrnNumber = string.Empty,
+                AccountingPointNumber = string.Empty,
             };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
@@ -66,7 +66,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         {
             var request = CreateRequest() with
             {
-                AccountingPointGsrnNumber = "Not a valid GSRN number",
+                AccountingPointNumber = "Not a valid GSRN number",
             };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
@@ -79,7 +79,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         {
             var request = CreateRequest() with
             {
-                Consumer = new Consumer("ConsumerName", string.Empty),
+                Customer = new Processing.Application.MoveIn.Customer("ConsumerName", string.Empty),
             };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
@@ -92,7 +92,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         {
             var request = CreateRequest() with
             {
-                Consumer = new Consumer("ConsumerName", "Invalid_customer_number"),
+                Customer = new Processing.Application.MoveIn.Customer("ConsumerName", "Invalid_customer_number"),
             };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
@@ -105,7 +105,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         {
             var request = CreateRequest() with
             {
-                Consumer = new Consumer(),
+                Customer = new Processing.Application.MoveIn.Customer(),
             };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
@@ -151,7 +151,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest();
             await SendRequestAsync(request).ConfigureAwait(false);
 
-            var consumer = await GetService<IConsumerRepository>().GetBySSNAsync(CprNumber.Create(request.Consumer.Identifier)).ConfigureAwait(false);
+            var consumer = await GetService<IConsumerRepository>().GetBySSNAsync(CprNumber.Create(request.Customer.Number)).ConfigureAwait(false);
             Assert.NotNull(consumer);
         }
 
@@ -165,7 +165,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest(false);
             await SendRequestAsync(request).ConfigureAwait(false);
 
-            var consumer = await GetService<IConsumerRepository>().GetByVATNumberAsync(CvrNumber.Create(request.Consumer.Identifier)).ConfigureAwait(false);
+            var consumer = await GetService<IConsumerRepository>().GetByVATNumberAsync(CvrNumber.Create(request.Customer.Number)).ConfigureAwait(false);
             Assert.NotNull(consumer);
         }
 
@@ -177,13 +177,11 @@ namespace Processing.IntegrationTests.Application.MoveIn
             CreateAccountingPoint();
             SaveChanges();
 
-            var request = new Request(
-                ConsumerId: SampleData.ConsumerSSN,
-                ConsumerName: SampleData.ConsumerName,
-                StartDate: SampleData.MoveInDate,
-                ConsumerIdType: ConsumerIdentifierType.CPR,
-                AccountingPointGsrnNumber: SampleData.GsrnNumber,
-                EnergySupplierGlnNumber: SampleData.GlnNumber);
+            var request = new RequestV2(
+                AccountingPointNumber: SampleData.GsrnNumber,
+                EnergySupplierNumber: SampleData.EnergySupplierId,
+                EffectiveDate: SampleData.MoveInDate.ToString(),
+                Customer: new Customer(SampleData.ConsumerName, SampleData.ConsumerSSN));
 
             var response = await requestAdapter.ReceiveAsync(SerializeToStream(request));
 
@@ -236,7 +234,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var consumerId = consumerIdType == ConsumerIdentifierType.CPR ? SampleData.ConsumerSSN : SampleData.ConsumerVAT;
 
             return new MoveInRequest(
-                new Consumer(SampleData.ConsumerName, consumerId, consumerIdType),
+                new Processing.Application.MoveIn.Customer(SampleData.ConsumerName, consumerId, consumerIdType),
                 SampleData.GlnNumber,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);
@@ -261,7 +259,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             SaveChanges();
 
             var requestMoveIn = new MoveInRequest(
-                new Consumer(SampleData.ConsumerName, SampleData.ConsumerSSN, ConsumerIdentifierType.CPR),
+                new Processing.Application.MoveIn.Customer(SampleData.ConsumerName, SampleData.ConsumerSSN, ConsumerIdentifierType.CPR),
                 SampleData.GlnNumber,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);
