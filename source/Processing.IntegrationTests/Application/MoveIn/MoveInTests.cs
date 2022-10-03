@@ -189,14 +189,6 @@ namespace Processing.IntegrationTests.Application.MoveIn
         }
 
         [Fact]
-        public async Task Move_in_on_top_of_move_in_should_result_in_reject_message()
-        {
-            var request = CreateRequest();
-            await SendRequestAsync(request).ConfigureAwait(false);
-            await SendRequestAsync(request).ConfigureAwait(false);
-        }
-
-        [Fact]
         public async Task Integration_event_is_published_when_move_in_is_effectuated()
         {
             await SendRequestAsync(CreateRequest()).ConfigureAwait(false);
