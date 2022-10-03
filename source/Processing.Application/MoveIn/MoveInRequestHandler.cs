@@ -91,21 +91,21 @@ namespace Processing.Application.MoveIn
             return BusinessProcessResult.Ok(businessProcessId.Value.ToString());
         }
 
-        private static Customer CreateCustomer(MoveInRequest request)
+        private static Domain.Consumers.Customer CreateCustomer(MoveInRequest request)
         {
-            return Customer.Create(CustomerNumber.Create(request.Consumer.Identifier), request.Consumer.Name);
+            return Domain.Consumers.Customer.Create(CustomerNumber.Create(request.Customer.Identifier), request.Customer.Name);
         }
 
         private async Task<Domain.Consumers.Consumer> GetOrCreateConsumerAsync(MoveInRequest moveInRequest)
         {
             Domain.Consumers.Consumer? consumer;
-            if (moveInRequest.Consumer.Type.Equals("CPR", StringComparison.OrdinalIgnoreCase))
+            if (moveInRequest.Customer.Type.Equals("CPR", StringComparison.OrdinalIgnoreCase))
             {
-                consumer = await _consumerRepository.GetBySSNAsync(CprNumber.Create(moveInRequest.Consumer.Identifier)).ConfigureAwait(false);
+                consumer = await _consumerRepository.GetBySSNAsync(CprNumber.Create(moveInRequest.Customer.Identifier)).ConfigureAwait(false);
             }
             else
             {
-                consumer = await _consumerRepository.GetByVATNumberAsync(CvrNumber.Create(moveInRequest.Consumer.Identifier)).ConfigureAwait(false);
+                consumer = await _consumerRepository.GetByVATNumberAsync(CvrNumber.Create(moveInRequest.Customer.Identifier)).ConfigureAwait(false);
             }
 
             return consumer ?? CreateConsumer(moveInRequest);
@@ -113,10 +113,10 @@ namespace Processing.Application.MoveIn
 
         private Domain.Consumers.Consumer CreateConsumer(MoveInRequest moveInRequest)
         {
-            var consumerName = ConsumerName.Create(moveInRequest.Consumer.Name);
-            var consumer = moveInRequest.Consumer.Type.Equals("CPR", StringComparison.OrdinalIgnoreCase)
-                ? new Domain.Consumers.Consumer(ConsumerId.New(), CprNumber.Create(moveInRequest.Consumer.Identifier), consumerName)
-                : new Domain.Consumers.Consumer(ConsumerId.New(), CvrNumber.Create(moveInRequest.Consumer.Identifier), consumerName);
+            var consumerName = ConsumerName.Create(moveInRequest.Customer.Name);
+            var consumer = moveInRequest.Customer.Type.Equals("CPR", StringComparison.OrdinalIgnoreCase)
+                ? new Domain.Consumers.Consumer(ConsumerId.New(), CprNumber.Create(moveInRequest.Customer.Identifier), consumerName)
+                : new Domain.Consumers.Consumer(ConsumerId.New(), CvrNumber.Create(moveInRequest.Customer.Identifier), consumerName);
             _consumerRepository.Add(consumer);
             return consumer;
         }

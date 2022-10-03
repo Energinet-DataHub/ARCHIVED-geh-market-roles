@@ -72,14 +72,14 @@ namespace Processing.IntegrationTests.Application.Customers.GetCustomerMasterDat
         private async Task<string> GivenAMoveInProcessHasBeenStartedForAPrivatePerson()
         {
             await SetupPrerequisitesAsync().ConfigureAwait(false);
-            var result = await SendRequestAsync(new MoveInRequest(new Consumer(SampleData.CustomerName, SampleData.Ssn, SampleData.SsnTypeName), SampleData.EnergySupplierNumber, SampleData.GsrnNumber, SampleData.MoveInDate));
+            var result = await SendRequestAsync(new MoveInRequest(new Customer(SampleData.CustomerName, SampleData.Ssn, SampleData.SsnTypeName), SampleData.EnergySupplierNumber, SampleData.GsrnNumber, SampleData.MoveInDate));
             return result.ProcessId;
         }
 
         private async Task<string> GivenAMoveInProcessHasBeenStartedForACompany()
         {
             await SetupPrerequisitesAsync().ConfigureAwait(false);
-            var result = await SendRequestAsync(new MoveInRequest(new Consumer(SampleData.CustomerName, SampleData.Vat, SampleData.VatTypeName), SampleData.EnergySupplierNumber, SampleData.GsrnNumber, SampleData.MoveInDate));
+            var result = await SendRequestAsync(new MoveInRequest(new Customer(SampleData.CustomerName, SampleData.Vat, SampleData.VatTypeName), SampleData.EnergySupplierNumber, SampleData.GsrnNumber, SampleData.MoveInDate));
             return result.ProcessId;
         }
 

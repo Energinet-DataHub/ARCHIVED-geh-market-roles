@@ -36,7 +36,6 @@ using Processing.Infrastructure.RequestAdapters;
 using Processing.IntegrationTests.Fixtures;
 using Xunit;
 using Xunit.Categories;
-using Consumer = Processing.Application.MoveIn.Consumer;
 using Customer = Contracts.BusinessRequests.MoveIn.Customer;
 
 namespace Processing.IntegrationTests.Application.MoveIn
@@ -80,7 +79,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         {
             var request = CreateRequest() with
             {
-                Consumer = new Consumer("ConsumerName", string.Empty),
+                Customer = new Processing.Application.MoveIn.Customer("ConsumerName", string.Empty),
             };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
@@ -93,7 +92,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
         {
             var request = CreateRequest() with
             {
-                Consumer = new Consumer(),
+                Customer = new Processing.Application.MoveIn.Customer(),
             };
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
@@ -139,7 +138,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest();
             await SendRequestAsync(request).ConfigureAwait(false);
 
-            var consumer = await GetService<IConsumerRepository>().GetBySSNAsync(CprNumber.Create(request.Consumer.Identifier)).ConfigureAwait(false);
+            var consumer = await GetService<IConsumerRepository>().GetBySSNAsync(CprNumber.Create(request.Customer.Identifier)).ConfigureAwait(false);
             Assert.NotNull(consumer);
         }
 
@@ -153,7 +152,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var request = CreateRequest(false);
             await SendRequestAsync(request).ConfigureAwait(false);
 
-            var consumer = await GetService<IConsumerRepository>().GetByVATNumberAsync(CvrNumber.Create(request.Consumer.Identifier)).ConfigureAwait(false);
+            var consumer = await GetService<IConsumerRepository>().GetByVATNumberAsync(CvrNumber.Create(request.Customer.Identifier)).ConfigureAwait(false);
             Assert.NotNull(consumer);
         }
 
@@ -222,7 +221,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var consumerId = consumerIdType == ConsumerIdentifierType.CPR ? SampleData.ConsumerSSN : SampleData.ConsumerVAT;
 
             return new MoveInRequest(
-                new Consumer(SampleData.ConsumerName, consumerId, consumerIdType),
+                new Processing.Application.MoveIn.Customer(SampleData.ConsumerName, consumerId, consumerIdType),
                 SampleData.GlnNumber,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);
@@ -247,7 +246,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             SaveChanges();
 
             var requestMoveIn = new MoveInRequest(
-                new Consumer(SampleData.ConsumerName, SampleData.ConsumerSSN, ConsumerIdentifierType.CPR),
+                new Processing.Application.MoveIn.Customer(SampleData.ConsumerName, SampleData.ConsumerSSN, ConsumerIdentifierType.CPR),
                 SampleData.GlnNumber,
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate);

@@ -25,7 +25,7 @@ namespace Processing.Application.MoveIn.Validation
     {
         public InputValidationSet()
         {
-            RuleFor(request => request.Consumer.Name)
+            RuleFor(request => request.Customer.Name)
                 .NotEmpty()
                 .WithState(_ => new ConsumerNameIsRequired());
             RuleFor(request => request.AccountingPointGsrnNumber)
@@ -35,17 +35,17 @@ namespace Processing.Application.MoveIn.Validation
             RuleFor(request => GsrnNumber.CheckRules(request.AccountingPointGsrnNumber))
                 .Must(x => x.Success)
                 .WithState(_ => new InvalidGsrnNumber());
-            RuleFor(request => request.Consumer.Identifier)
+            RuleFor(request => request.Customer.Identifier)
                 .NotEmpty()
                 .WithState(_ => new ConsumerIdentifierIsRequired());
-            When(request => request.Consumer.Type.Equals(ConsumerIdentifierType.CPR, StringComparison.OrdinalIgnoreCase), () =>
+            When(request => request.Customer.Type.Equals(ConsumerIdentifierType.CPR, StringComparison.OrdinalIgnoreCase), () =>
             {
-                RuleFor(request => request.Consumer.Identifier)
+                RuleFor(request => request.Customer.Identifier)
                     .SetValidator(new SocialSecurityNumberMustBeValid());
             });
-            When(request => request.Consumer.Type.Equals(ConsumerIdentifierType.CVR, StringComparison.OrdinalIgnoreCase), () =>
+            When(request => request.Customer.Type.Equals(ConsumerIdentifierType.CVR, StringComparison.OrdinalIgnoreCase), () =>
             {
-                RuleFor(request => request.Consumer.Identifier)
+                RuleFor(request => request.Customer.Identifier)
                     .SetValidator(new VATNumberMustBeValidRule());
             });
         }

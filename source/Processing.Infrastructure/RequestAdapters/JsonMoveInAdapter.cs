@@ -22,6 +22,7 @@ using MediatR;
 using Processing.Application.Common;
 using Processing.Application.MoveIn;
 using Processing.Infrastructure.Configuration.Serialization;
+using Customer = Processing.Application.MoveIn.Customer;
 
 namespace Processing.Infrastructure.RequestAdapters
 {
@@ -50,7 +51,7 @@ namespace Processing.Infrastructure.RequestAdapters
         private static MoveInRequest MapToCommandFrom(RequestV2 request)
         {
             var command = new MoveInRequest(
-                new Consumer(
+                new Customer(
                     request.Customer?.Name!, request.Customer?.Number!, "CPR"),
                 request.EnergySupplierNumber!,
                 request.AccountingPointNumber!,
