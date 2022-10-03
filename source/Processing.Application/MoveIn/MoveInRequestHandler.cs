@@ -79,9 +79,21 @@ namespace Processing.Application.MoveIn
             var consumer = await GetOrCreateConsumerAsync(request).ConfigureAwait(false);
 
             var businessProcessId = BusinessProcessId.New();
-            _consumerMoveInProcess.StartProcess(accountingPoint, consumer, energySupplier, consumerMovesInOn, _systemDateTimeProvider.Now(), businessProcessId);
+            _consumerMoveInProcess.StartProcess(
+                accountingPoint,
+                consumer,
+                energySupplier,
+                consumerMovesInOn,
+                _systemDateTimeProvider.Now(),
+                businessProcessId,
+                CreateCustomer(request));
 
             return BusinessProcessResult.Ok(businessProcessId.Value.ToString());
+        }
+
+        private static Customer CreateCustomer(MoveInRequest request)
+        {
+            return Customer.Create(CustomerNumber.Create(request.Consumer.Identifier), request.Consumer.Name);
         }
 
         private async Task<Domain.Consumers.Consumer> GetOrCreateConsumerAsync(MoveInRequest moveInRequest)

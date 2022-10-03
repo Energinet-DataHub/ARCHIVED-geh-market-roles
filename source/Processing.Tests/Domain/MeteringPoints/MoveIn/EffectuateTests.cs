@@ -27,58 +27,66 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
     [UnitTest]
     public class EffectuateTests
     {
-        private readonly SystemDateTimeProviderStub _systemDateTimeProvider = new SystemDateTimeProviderStub();
+        private readonly SystemDateTimeProviderStub _systemDateTimeProvider = new();
+        private readonly AccountingPoint _accountingPoint;
+        private readonly ConsumerId _consumerId;
+        private readonly EnergySupplierId _energySupplierId;
+        private readonly BusinessProcessId _businessProcessId;
+        private readonly Customer _customer;
 
         public EffectuateTests()
         {
             _systemDateTimeProvider.SetNow(Instant.FromUtc(2020, 1, 1, 0, 0));
+            _accountingPoint = AccountingPoint.CreateConsumption(AccountingPointId.New(), GsrnNumber.Create(SampleData.GsrnNumber));
+            _consumerId = new ConsumerId(Guid.NewGuid());
+            _energySupplierId = new EnergySupplierId(Guid.NewGuid());
+            _businessProcessId = BusinessProcessId.New();
+            _customer = Customer.Create(
+                CustomerNumber.Create(SampleData.ConsumerSocialSecurityNumber),
+                SampleData.ConsumerName);
         }
 
         [Fact]
         public void Effectuate_WhenAheadOfEffectiveDate_IsNotPossible()
         {
-            var (accountingPoint, consumerId, energySupplierId, businessProcessId) = SetupScenario();
-            var moveInDate = _systemDateTimeProvider.Now().Plus(Duration.FromDays(1));
-            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, businessProcessId);
+            GivenMoveInHasBeenAccepted(_systemDateTimeProvider.Now().Plus(Duration.FromDays(1)));
 
             Assert.Throws<BusinessProcessException>(() =>
-                accountingPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now()));
+                WhenCompletingMoveIn());
         }
 
         [Fact]
         public void Effectuate_WhenProcessIdDoesNotExists_IsNotPossible()
         {
-            var (accountingPoint, _, _, _) = SetupScenario();
             var nonExistingProcessId = BusinessProcessId.New();
 
             Assert.Throws<BusinessProcessException>(() =>
-                accountingPoint.EffectuateConsumerMoveIn(nonExistingProcessId, _systemDateTimeProvider.Now()));
+                WhenCompletingMoveIn(nonExistingProcessId));
         }
 
         [Fact]
         public void Effectuate_WhenEffectiveDateIsDue_IsSuccessful()
         {
-            var (accountingPoint, consumerId, energySupplierId, businessProcessId) = SetupScenario();
-            var moveInDate = _systemDateTimeProvider.Now();
-            accountingPoint.AcceptConsumerMoveIn(consumerId, energySupplierId, moveInDate, businessProcessId);
+            GivenMoveInHasBeenAccepted(_systemDateTimeProvider.Now());
 
-            accountingPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
+            WhenCompletingMoveIn();
 
-            Assert.Contains(accountingPoint.DomainEvents, @event => @event is EnergySupplierChanged);
-            Assert.Contains(accountingPoint.DomainEvents, @event => @event is ConsumerMovedIn);
+            Assert.Contains(_accountingPoint.DomainEvents, @event => @event is EnergySupplierChanged);
+            Assert.Contains(_accountingPoint.DomainEvents, @event => @event is ConsumerMovedIn);
 
-            var consumerMovedIn = accountingPoint.DomainEvents.FirstOrDefault(de => de is ConsumerMovedIn) as ConsumerMovedIn;
+            var consumerMovedIn = _accountingPoint.DomainEvents.FirstOrDefault(de => de is ConsumerMovedIn) as ConsumerMovedIn;
 
             if (consumerMovedIn != null) Assert.NotNull(consumerMovedIn.MoveInDate);
         }
 
-        private static (AccountingPoint AccountingPoint, ConsumerId ConsumerId, EnergySupplierId EnergySupplierId, BusinessProcessId ProcessId) SetupScenario()
+        private void GivenMoveInHasBeenAccepted(Instant moveInDate)
         {
-            return (
-                AccountingPoint.CreateConsumption(AccountingPointId.New(), GsrnNumber.Create(SampleData.GsrnNumber)),
-                new ConsumerId(Guid.NewGuid()),
-                new EnergySupplierId(Guid.NewGuid()),
-                BusinessProcessId.New());
+            _accountingPoint.RegisterMoveIn(_customer, _consumerId, _energySupplierId, moveInDate, _businessProcessId);
+        }
+
+        private void WhenCompletingMoveIn(BusinessProcessId? businessProcessId = null)
+        {
+            _accountingPoint.EffectuateConsumerMoveIn(businessProcessId ?? _businessProcessId, _systemDateTimeProvider.Now());
         }
     }
 }
