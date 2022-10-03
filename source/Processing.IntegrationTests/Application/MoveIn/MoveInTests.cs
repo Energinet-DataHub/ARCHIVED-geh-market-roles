@@ -258,13 +258,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
 
         private async Task<(AccountingPoint AccountingPoint, BusinessProcessId ProcessId)> SetupScenarioAsync()
         {
-            var requestMoveIn = new MoveInRequest(
-                new Processing.Application.MoveIn.Customer(SampleData.ConsumerName, SampleData.ConsumerSSN),
-                SampleData.GlnNumber,
-                SampleData.GsrnNumber,
-                SampleData.MoveInDate);
-
-            var result = await SendRequestAsync(requestMoveIn).ConfigureAwait(false);
+            var result = await SendRequestAsync(CreateRequest()).ConfigureAwait(false);
 
             if (result.ProcessId is null)
             {
