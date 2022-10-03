@@ -18,6 +18,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts.BusinessRequests.MoveIn;
+using Dapper;
 using Energinet.DataHub.EnergySupplying.IntegrationEvents;
 using Newtonsoft.Json;
 using Processing.Application.Common;
@@ -25,6 +26,7 @@ using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Processing;
 using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 using Processing.Domain.Consumers;
+using Processing.Domain.EnergySuppliers;
 using Processing.Domain.EnergySuppliers.Errors;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.MeteringPoints.Errors;
@@ -46,6 +48,32 @@ namespace Processing.IntegrationTests.Application.MoveIn
         public MoveInTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
+        }
+
+        [Fact]
+        public async Task Consumer_is_registered()
+        {
+            var accountingPoint =
+                AccountingPoint.CreateConsumption(AccountingPointId.New(), GsrnNumber.Create(SampleData.GsrnNumber));
+            GetService<IAccountingPointRepository>().Add(accountingPoint);
+            var energySupplier = new EnergySupplier(EnergySupplierId.New(), GlnNumber.Create(SampleData.GlnNumber));
+            GetService<IEnergySupplierRepository>().Add(energySupplier);
+            await GetService<IUnitOfWork>().CommitAsync().ConfigureAwait(false);
+
+            await SendRequestAsync(CreateRequest()).ConfigureAwait(false);
+
+            var registered = await GetService<IDbConnectionFactory>()
+                .GetOpenConnection()
+                .ExecuteScalarAsync<bool>(
+                    $"SELECT COUNT(1) FROM [dbo].[ConsumerRegistrations] WHERE AccountingPointId = @AccountingPointId AND CustomerName = @CustomerName AND CustomerNumber = @CustomerNumber",
+                    new
+                    {
+                        AccountingPointId = accountingPoint.Id.Value,
+                        CustomerNumber = SampleData.ConsumerSSN,
+                        CustomerName = SampleData.ConsumerName,
+                    }).ConfigureAwait(false);
+
+            Assert.True(registered);
         }
 
         [Fact]
