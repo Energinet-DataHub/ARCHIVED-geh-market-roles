@@ -151,14 +151,6 @@ namespace Processing.Domain.MeteringPoints
             }
         }
 
-        public void Connect()
-        {
-            if (_physicalState != PhysicalState.ClosedDown && _physicalState != PhysicalState.Connected)
-            {
-                _physicalState = PhysicalState.Connected;
-            }
-        }
-
         public BusinessRulesValidationResult ConsumerMoveInAcceptable(Instant moveInDate)
         {
             var rules = new Collection<IBusinessRule>()
