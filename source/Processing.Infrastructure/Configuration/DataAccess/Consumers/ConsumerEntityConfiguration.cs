@@ -38,7 +38,7 @@ namespace Processing.Infrastructure.Configuration.DataAccess.Consumers
                 .HasColumnName("CvrNumber")
                 .HasConversion(toDbValue => toDbValue == null ? null : toDbValue.Value, fromDbValue => fromDbValue == null ? null : new CvrNumber(fromDbValue));
 
-            builder.Property<ConsumerName>("_name")
+            builder.Property<ConsumerName>(x => x.Name)
                 .HasColumnName("Name")
                 .HasConversion(toDbValue => toDbValue.FullName, fromDbValue => ConsumerName.Create(fromDbValue));
 

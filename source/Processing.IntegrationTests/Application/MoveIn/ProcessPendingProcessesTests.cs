@@ -15,6 +15,7 @@
 using System.Threading.Tasks;
 using MediatR;
 using Processing.Application.Common.TimeEvents;
+using Processing.Domain.Consumers;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
 using Processing.IntegrationTests.Factories;
@@ -58,7 +59,10 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var consumer = CreateConsumer();
             var accountingPoint = CreateAccountingPoint();
             var businessProcessId = BusinessProcessId.New();
-            accountingPoint.AcceptConsumerMoveIn(consumer.ConsumerId, supplier.EnergySupplierId, EffectiveDateFactory.InstantAsOfToday(), businessProcessId);
+            var customer =
+                Customer.Create(
+                    CustomerNumber.Create(consumer.CprNumber is not null ? consumer.CprNumber.Value : consumer.CvrNumber!.Value), consumer.Name.FullName);
+            accountingPoint.RegisterMoveIn(customer, consumer.ConsumerId, supplier.EnergySupplierId, EffectiveDateFactory.InstantAsOfToday(), businessProcessId);
             SaveChanges();
             return businessProcessId;
         }
