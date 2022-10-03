@@ -15,7 +15,7 @@
 using Processing.Domain.Consumers;
 using Xunit;
 
-namespace Processing.Tests.Domain.Consumers;
+namespace Processing.Tests.Domain.Customers;
 
 public class CustomerTests
 {
