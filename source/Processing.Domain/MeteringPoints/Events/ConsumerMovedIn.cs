@@ -20,12 +20,11 @@ namespace Processing.Domain.MeteringPoints.Events
 {
     public class ConsumerMovedIn : DomainEvent
     {
-        public ConsumerMovedIn(Guid accountingPointId, string gsrnNumber, Guid businessProcessId, Guid consumerId, Instant? moveInDate)
+        public ConsumerMovedIn(Guid accountingPointId, string gsrnNumber, Guid businessProcessId, Instant? moveInDate)
         {
             AccountingPointId = accountingPointId;
             GsrnNumber = gsrnNumber;
             BusinessProcessId = businessProcessId;
-            ConsumerId = consumerId;
             MoveInDate = moveInDate;
         }
 
@@ -34,8 +33,6 @@ namespace Processing.Domain.MeteringPoints.Events
         public string GsrnNumber { get; }
 
         public Guid BusinessProcessId { get; }
-
-        public Guid ConsumerId { get; }
 
         public Instant? MoveInDate { get; }
     }

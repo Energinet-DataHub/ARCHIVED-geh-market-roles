@@ -23,5 +23,5 @@ namespace Processing.Application.MoveIn
         string EffectiveDate = "")
         : IBusinessRequest;
 
-    public record Customer(string Name = "", string Number = "", string Type = "");
+    public record Customer(string Name = "", string Number = "");
 }

@@ -24,13 +24,9 @@ namespace Processing.IntegrationTests.Application
 
         public static string EnergySupplierId => "03b97a60-8145-4599-981f-c4ab5035d978";
 
-        public static string ConsumerSSN => "2601211234";
-
-        public static string ConsumerVAT => "10000000";
+        public static string CustomerNumber => "2601211234";
 
         public static string GlnNumber => "5790000555550";
-
-        public static string Transaction => Guid.NewGuid().ToString();
 
         public static string ConsumerName => "Test Testesen";
 

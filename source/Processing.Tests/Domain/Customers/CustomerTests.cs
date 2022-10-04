@@ -12,17 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Processing.Domain.SeedWork;
+using Processing.Domain.Consumers;
+using Xunit;
 
-namespace Processing.Domain.Consumers
+namespace Processing.Tests.Domain.Customers;
+
+public class CustomerTests
 {
-    public abstract class CustomerId : ValueObject
+    [Fact]
+    public void Create_test()
     {
-        protected CustomerId(string value)
-        {
-            Value = value;
-        }
+        var customerNumber = CustomerNumber.Create("12345678");
+        var customerFullname = "Customer fullname";
+        var customer = Customer.Create(customerNumber, customerFullname);
 
-        public string Value { get; }
+        Assert.Equal(customerNumber, customer.Number);
+        Assert.Equal(customerFullname, customer.Name);
     }
 }

@@ -27,10 +27,6 @@ namespace Processing.Application.Common.Validation.Consumers
             RuleFor(vatNumber => vatNumber)
                 .NotEmpty()
                 .WithState(CreateValidationError);
-
-            RuleFor(vatNumber => CvrNumber.CheckRules(vatNumber))
-                .Must(x => x.Success)
-                .WithState(CreateValidationError);
         }
 
         private static ValidationError CreateValidationError(string vatNumber)

@@ -161,9 +161,8 @@ namespace Processing.Domain.MeteringPoints
             return new BusinessRulesValidationResult(rules);
         }
 
-        public void RegisterMoveIn(Customer customer, ConsumerId consumerId, EnergySupplierId energySupplierId, Instant moveInDate, BusinessProcessId businessProcessId)
+        public void RegisterMoveIn(Customer customer, EnergySupplierId energySupplierId, Instant moveInDate, BusinessProcessId businessProcessId)
         {
-            if (consumerId == null) throw new ArgumentNullException(nameof(consumerId));
             if (energySupplierId == null) throw new ArgumentNullException(nameof(energySupplierId));
             if (businessProcessId == null) throw new ArgumentNullException(nameof(businessProcessId));
             if (!ConsumerMoveInAcceptable(moveInDate).Success)
@@ -174,10 +173,10 @@ namespace Processing.Domain.MeteringPoints
 
             var businessProcess = CreateBusinessProcess(moveInDate, BusinessProcessType.MoveIn, businessProcessId);
             _businessProcesses.Add(businessProcess);
-            _consumerRegistrations.Add(new ConsumerRegistration(customer, consumerId, businessProcess.BusinessProcessId));
+            _consumerRegistrations.Add(new ConsumerRegistration(customer, businessProcess.BusinessProcessId));
             _supplierRegistrations.Add(new SupplierRegistration(energySupplierId, businessProcess.BusinessProcessId));
 
-            AddDomainEvent(new ConsumerMoveInAccepted(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, consumerId.Value, energySupplierId.Value, moveInDate));
+            AddDomainEvent(new ConsumerMoveInAccepted(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, energySupplierId.Value, moveInDate));
         }
 
         public void EffectuateConsumerMoveIn(BusinessProcessId processId, Instant today)
@@ -196,7 +195,6 @@ namespace Processing.Domain.MeteringPoints
                 Id.Value,
                 GsrnNumber.Value,
                 businessProcess.BusinessProcessId.Value,
-                consumer.ConsumerId.Value,
                 businessProcess.EffectiveDate));
 
             AddDomainEvent(new EnergySupplierChanged(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, newSupplier.EnergySupplierId.Value, businessProcess.EffectiveDate));
