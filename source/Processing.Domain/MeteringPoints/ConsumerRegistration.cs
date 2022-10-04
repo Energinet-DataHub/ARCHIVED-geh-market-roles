@@ -20,26 +20,22 @@ namespace Processing.Domain.MeteringPoints
 {
     public class ConsumerRegistration : Entity
     {
-        public ConsumerRegistration(Customer customer, ConsumerId consumerId, BusinessProcessId businessProcessId)
+        public ConsumerRegistration(Customer customer, BusinessProcessId businessProcessId)
         {
             Id = ConsumerRegistrationId.New();
             Customer = customer;
-            ConsumerId = consumerId;
             BusinessProcessId = businessProcessId;
         }
 
-        private ConsumerRegistration(ConsumerId consumerId, BusinessProcessId businessProcessId)
+        private ConsumerRegistration(BusinessProcessId businessProcessId)
         {
             Id = ConsumerRegistrationId.New();
-            ConsumerId = consumerId;
             BusinessProcessId = businessProcessId;
         }
 
         public ConsumerRegistrationId Id { get; }
 
         public Customer? Customer { get; }
-
-        public ConsumerId ConsumerId { get; }
 
         public Instant? MoveInDate { get; private set; }
 

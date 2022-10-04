@@ -60,7 +60,7 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier
         {
             var request = CreateRequest(
                 SampleData.GlnNumber,
-                SampleData.ConsumerSSN,
+                SampleData.CustomerNumber,
                 "THIS_IS_NOT_VALID_GSRN_NUMBER",
                 SampleData.MoveInDate);
 
@@ -83,7 +83,7 @@ namespace Processing.IntegrationTests.Application.ChangeOfSupplier
         {
             return CreateRequest(
                 SampleData.GlnNumber,
-                SampleData.ConsumerSSN,
+                SampleData.CustomerNumber,
                 SampleData.GsrnNumber,
                 Instant.FromDateTimeUtc(DateTime.UtcNow.AddHours(1)).ToString());
         }

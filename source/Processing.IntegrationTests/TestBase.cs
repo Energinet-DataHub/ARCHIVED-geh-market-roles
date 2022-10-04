@@ -30,7 +30,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using NodaTime;
 using Processing.Application.ChangeOfSupplier;
 using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.Common;
@@ -39,20 +38,16 @@ using Processing.Application.Common.Queries;
 using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Validation;
 using Processing.Domain.BusinessProcesses.MoveIn;
-using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
-using Processing.Domain.MeteringPoints.Events;
 using Processing.Domain.SeedWork;
 using Processing.Infrastructure.BusinessRequestProcessing.Pipeline;
 using Processing.Infrastructure.Configuration;
 using Processing.Infrastructure.Configuration.Correlation;
 using Processing.Infrastructure.Configuration.DataAccess;
 using Processing.Infrastructure.Configuration.DataAccess.AccountingPoints;
-using Processing.Infrastructure.Configuration.DataAccess.Consumers;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
 using Processing.Infrastructure.Configuration.DomainEventDispatching;
-using Processing.Infrastructure.Configuration.EventPublishing;
 using Processing.Infrastructure.Configuration.InternalCommands;
 using Processing.Infrastructure.Configuration.Serialization;
 using Processing.Infrastructure.RequestAdapters;
@@ -62,7 +57,6 @@ using Processing.IntegrationTests.TestDoubles;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using Xunit;
-using Consumer = Processing.Domain.Consumers.Consumer;
 using RequestChangeOfSupplier = Processing.Application.ChangeOfSupplier.RequestChangeOfSupplier;
 
 namespace Processing.IntegrationTests
@@ -101,7 +95,6 @@ namespace Processing.IntegrationTests
             _container.Register<IUnitOfWork, UnitOfWork>(Lifestyle.Scoped);
             _container.Register<IAccountingPointRepository, AccountingPointRepository>(Lifestyle.Scoped);
             _container.Register<IEnergySupplierRepository, EnergySupplierRepository>(Lifestyle.Scoped);
-            _container.Register<IConsumerRepository, ConsumerRepository>(Lifestyle.Scoped);
             _container.Register<IJsonSerializer, JsonSerializer>(Lifestyle.Singleton);
             _container.Register<ISystemDateTimeProvider, SystemDateTimeProviderStub>(Lifestyle.Singleton);
             _container.Register<IDomainEventsAccessor, DomainEventsAccessor>();
@@ -146,7 +139,6 @@ namespace Processing.IntegrationTests
             Mediator = _container.GetInstance<IMediator>();
             AccountingPointRepository = _container.GetInstance<IAccountingPointRepository>();
             EnergySupplierRepository = _container.GetInstance<IEnergySupplierRepository>();
-            ConsumerRepository = _container.GetInstance<IConsumerRepository>();
             UnitOfWork = _container.GetInstance<IUnitOfWork>();
             MarketRolesContext = _container.GetInstance<MarketRolesContext>();
             SystemDateTimeProvider = _container.GetInstance<ISystemDateTimeProvider>();
@@ -162,8 +154,6 @@ namespace Processing.IntegrationTests
         protected IAccountingPointRepository AccountingPointRepository { get; }
 
         protected IEnergySupplierRepository EnergySupplierRepository { get; }
-
-        protected IConsumerRepository ConsumerRepository { get; }
 
         protected IUnitOfWork UnitOfWork { get; }
 
@@ -236,16 +226,6 @@ namespace Processing.IntegrationTests
             var serializer = GetService<IJsonSerializer>();
             var command = (TCommand)serializer.Deserialize(queuedCommand.Data, commandMetadata.CommandType);
             return Task.FromResult<TCommand?>(command);
-        }
-
-        protected Consumer CreateConsumer()
-        {
-            var consumerId = new ConsumerId(Guid.NewGuid());
-            var consumer = new Consumer(consumerId, CprNumber.Create(SampleData.ConsumerSSN), ConsumerName.Create(SampleData.ConsumerName));
-
-            ConsumerRepository.Add(consumer);
-
-            return consumer;
         }
 
         protected Domain.EnergySuppliers.EnergySupplier CreateEnergySupplier(Guid? id = null, string? glnNumber = null)

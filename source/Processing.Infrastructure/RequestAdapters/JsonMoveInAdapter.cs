@@ -52,7 +52,7 @@ namespace Processing.Infrastructure.RequestAdapters
         {
             var command = new MoveInRequest(
                 new Customer(
-                    request.Customer?.Name!, request.Customer?.Number!, "CPR"),
+                    request.Customer?.Name!, request.Customer?.Number!),
                 request.EnergySupplierNumber!,
                 request.AccountingPointNumber!,
                 request.EffectiveDate!);
