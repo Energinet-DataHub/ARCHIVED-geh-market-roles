@@ -15,7 +15,7 @@
 using System;
 using System.Linq;
 using NodaTime;
-using Processing.Domain.Consumers;
+using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.MeteringPoints.Events;

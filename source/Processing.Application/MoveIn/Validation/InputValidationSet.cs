@@ -15,7 +15,7 @@
 using System.Linq;
 using FluentValidation;
 using Processing.Domain.BusinessProcesses.MoveIn.Errors;
-using Processing.Domain.Consumers;
+using Processing.Domain.Customers;
 using Processing.Domain.MeteringPoints;
 
 namespace Processing.Application.MoveIn.Validation
