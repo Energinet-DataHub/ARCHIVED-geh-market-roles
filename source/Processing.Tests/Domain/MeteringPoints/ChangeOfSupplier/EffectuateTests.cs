@@ -71,7 +71,6 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             var businessProcessId = BusinessProcessId.New();
             _accountingPoint.RegisterMoveIn(
                 Customer.Create(CustomerNumber.Create(SampleData.ConsumerSocialSecurityNumber), SampleData.ConsumerName),
-                ConsumerId.New(),
                 CreateEnergySupplierId(),
                 _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)),
                 businessProcessId);

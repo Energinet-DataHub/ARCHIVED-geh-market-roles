@@ -69,13 +69,12 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
         [Fact]
         public void Accept_WhenChangeOfSupplierIsRegisteredOnSameDate_IsNotPossible()
         {
-            var consumerId = CreateConsumerId();
             var energySupplierId = CreateSupplierId();
             var meteringPoint = CreateMeteringPoint(MeteringPointType.Consumption);
             var moveInDate = _systemDateTimeProvider.Now().Minus(Duration.FromDays(1));
             var businessProcessId = BusinessProcessId.New();
 
-            meteringPoint.RegisterMoveIn(CreateCustomer(), consumerId, energySupplierId, moveInDate, businessProcessId);
+            meteringPoint.RegisterMoveIn(CreateCustomer(), energySupplierId, moveInDate, businessProcessId);
             meteringPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
             meteringPoint.AcceptChangeOfSupplier(CreateSupplierId(), _systemDateTimeProvider.Now(), _systemDateTimeProvider, BusinessProcessId.New());
 
@@ -90,7 +89,7 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             var meteringPoint = CreateMeteringPoint(MeteringPointType.Consumption);
             var moveInDate = _systemDateTimeProvider.Now();
             var businessProcessId = BusinessProcessId.New();
-            meteringPoint.RegisterMoveIn(CreateCustomer(), CreateConsumerId(), CreateSupplierId(), moveInDate,  businessProcessId);
+            meteringPoint.RegisterMoveIn(CreateCustomer(), CreateSupplierId(), moveInDate,  businessProcessId);
 
             var result = CanChangeSupplier(meteringPoint);
 
@@ -126,11 +125,10 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
         public void Accept_WhenAllRulesAreSatisfied_Success()
         {
             var meteringPoint = CreateMeteringPoint(MeteringPointType.Consumption);
-            var consumerId = CreateConsumerId();
             var energySupplierId = CreateSupplierId();
             var moveInDate = _systemDateTimeProvider.Now().Minus(Duration.FromDays(1));
             var businessProcessId = BusinessProcessId.New();
-            meteringPoint.RegisterMoveIn(CreateCustomer(), consumerId, energySupplierId, moveInDate, businessProcessId);
+            meteringPoint.RegisterMoveIn(CreateCustomer(), energySupplierId, moveInDate, businessProcessId);
             meteringPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
 
             meteringPoint.AcceptChangeOfSupplier(CreateSupplierId(), _systemDateTimeProvider.Now(), _systemDateTimeProvider, BusinessProcessId.New());
@@ -141,11 +139,6 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
         private static Customer CreateCustomer()
         {
             return Customer.Create(CustomerNumber.Create(SampleData.ConsumerSocialSecurityNumber), SampleData.ConsumerName);
-        }
-
-        private static ConsumerId CreateConsumerId()
-        {
-            return new ConsumerId(Guid.NewGuid());
         }
 
         private static EnergySupplierId CreateSupplierId()

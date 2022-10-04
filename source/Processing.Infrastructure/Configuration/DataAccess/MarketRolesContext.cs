@@ -14,10 +14,8 @@
 
 using System;
 using Microsoft.EntityFrameworkCore;
-using Processing.Domain.Consumers;
 using Processing.Domain.MeteringPoints;
 using Processing.Infrastructure.Configuration.DataAccess.AccountingPoints;
-using Processing.Infrastructure.Configuration.DataAccess.Consumers;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
 using Processing.Infrastructure.Configuration.InternalCommands;
 using Processing.Infrastructure.Configuration.Outbox;
@@ -38,8 +36,6 @@ namespace Processing.Infrastructure.Configuration.DataAccess
 
         public DbSet<Domain.EnergySuppliers.EnergySupplier> EnergySuppliers { get; private set; }
 
-        public DbSet<Consumer> Consumers { get; private set; }
-
         public DbSet<AccountingPoint> AccountingPoints { get; private set; }
 
         public DbSet<OutboxMessage> OutboxMessages { get; private set; }
@@ -52,7 +48,6 @@ namespace Processing.Infrastructure.Configuration.DataAccess
 
             modelBuilder.ApplyConfiguration(new EnergySupplierEntityConfiguration());
             modelBuilder.ApplyConfiguration(new AccountingPointEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new ConsumerEntityConfiguration());
             modelBuilder.ApplyConfiguration(new OutboxMessageEntityConfiguration());
             modelBuilder.ApplyConfiguration(new QueuedInternalCommandEntityConfiguration());
         }

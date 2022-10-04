@@ -90,9 +90,6 @@ namespace Processing.Infrastructure.Configuration.DataAccess.AccountingPoints
                 y.Property(z => z.Id)
                     .HasColumnName("Id")
                     .HasConversion(toDbValue => toDbValue.Value, fromDbValue => new ConsumerRegistrationId(fromDbValue));
-                y.Property(z => z.ConsumerId)
-                    .HasColumnName("ConsumerId")
-                    .HasConversion(toDbValue => toDbValue.Value, fromDbValue => new ConsumerId(fromDbValue));
                 y.Property(z => z.BusinessProcessId)
                     .HasColumnName("BusinessProcessId")
                     .HasConversion(toDbValue => toDbValue.Value, fromDbValue => new BusinessProcessId(fromDbValue));
@@ -109,7 +106,6 @@ namespace Processing.Infrastructure.Configuration.DataAccess.AccountingPoints
                         .HasColumnName("CustomerName");
                 });
                 y.Ignore(z => z.DomainEvents);
-                y.HasOne<Consumer>();
             });
 
             builder.OwnsMany<SupplierRegistration>("_supplierRegistrations", y =>
