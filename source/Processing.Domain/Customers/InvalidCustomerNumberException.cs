@@ -12,26 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.Consumers
+namespace Processing.Domain.Customers
 {
-    public class Customer : ValueObject
+    public class InvalidCustomerNumberException : BusinessRuleException
     {
-        private Customer(CustomerNumber number, string name)
+        public InvalidCustomerNumberException(string message)
+            : base(message)
         {
-            Number = number;
-            Name = name;
         }
 
-        public string Name { get;  }
-
-        public CustomerNumber Number { get; }
-
-        public static Customer Create(CustomerNumber customerNumber, string fullname)
+        public InvalidCustomerNumberException(string message, System.Exception innerException)
+            : base(message, innerException)
         {
-            return new Customer(customerNumber, fullname);
+        }
+
+        public InvalidCustomerNumberException()
+        {
         }
     }
 }

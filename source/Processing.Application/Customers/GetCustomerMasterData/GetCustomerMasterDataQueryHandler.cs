@@ -20,7 +20,7 @@ using Dapper;
 using NodaTime;
 using Processing.Application.Common;
 using Processing.Application.Common.Queries;
-using Processing.Domain.Consumers;
+using Processing.Domain.Customers;
 
 namespace Processing.Application.Customers.GetCustomerMasterData;
 

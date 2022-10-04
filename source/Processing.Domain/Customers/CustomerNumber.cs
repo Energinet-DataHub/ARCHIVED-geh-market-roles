@@ -14,10 +14,10 @@
 
 using System;
 using System.Collections.Generic;
-using Processing.Domain.Consumers.Rules;
+using Processing.Domain.Customers.Rules;
 using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.Consumers
+namespace Processing.Domain.Customers
 {
     public class CustomerNumber : ValueObject
     {

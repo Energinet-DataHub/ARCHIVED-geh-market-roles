@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Processing.Domain.Consumers;
+using Processing.Domain.Customers;
 using Xunit;
 
 namespace Processing.Tests.Domain.Customers;
