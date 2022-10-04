@@ -15,7 +15,7 @@
 using System;
 using NodaTime;
 using Processing.Domain.Common;
-using Processing.Domain.Consumers;
+using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;

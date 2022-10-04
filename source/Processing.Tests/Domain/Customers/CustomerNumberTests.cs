@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Processing.Domain.Consumers;
-using Processing.Domain.Consumers.Rules;
+using Processing.Domain.Customers;
+using Processing.Domain.Customers.Rules;
 using Xunit;
 
 namespace Processing.Tests.Domain.Customers;

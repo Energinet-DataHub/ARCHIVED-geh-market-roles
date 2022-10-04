@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using FluentValidation;
-using Processing.Domain.Consumers;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Application.Common.Validation.Consumers
