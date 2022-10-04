@@ -31,7 +31,7 @@ namespace Processing.Domain.Customers.Rules
 
         public bool IsBroken => !IsValidCprNumber();
 
-        public ValidationError ValidationError => new CprNumberFormatRuleError(_cprValue);
+        public ValidationError ValidationError => new InvalidCustomerNumber();
 
         private static bool LengthIsValid(string cprValue)
         {
