@@ -14,7 +14,7 @@
 
 using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.Customers.Rules
+namespace Processing.Domain.Customers
 {
     public class InvalidCustomerNumberException : BusinessRuleException
     {
