@@ -56,7 +56,6 @@ namespace Processing.IntegrationTests.Fixtures
                                    $"DELETE FROM [dbo].[SupplierRegistrations] " +
                                    $"DELETE FROM [dbo].[ProcessManagers] " +
                                    $"DELETE FROM [dbo].[BusinessProcesses] " +
-                                   $"DELETE FROM [dbo].[Consumers] " +
                                    $"DELETE FROM [dbo].[EnergySuppliers] " +
                                    $"DELETE FROM [dbo].[AccountingPoints] " +
                                    $"DELETE FROM [dbo].[OutboxMessages] " +
