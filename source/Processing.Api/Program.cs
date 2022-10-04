@@ -39,7 +39,6 @@ using Processing.Application.Common;
 using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Validation;
 using Processing.Domain.BusinessProcesses.MoveIn;
-using Processing.Domain.Consumers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;

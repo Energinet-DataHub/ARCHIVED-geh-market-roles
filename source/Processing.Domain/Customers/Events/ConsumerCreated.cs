@@ -13,30 +13,26 @@
 // limitations under the License.
 
 using System;
-using System.Runtime.Serialization;
 using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.Consumers
+namespace Processing.Domain.Customers.Events
 {
-    public class InvalidCvrNumberRuleException : BusinessRuleException
+    public class ConsumerCreated : DomainEvent
     {
-        public InvalidCvrNumberRuleException()
+        public ConsumerCreated(Guid consumerId, string? cprNumber, string? cvrNumber, string fullName)
         {
+            ConsumerId = consumerId;
+            CprNumber = cprNumber;
+            CvrNumber = cvrNumber;
+            FullName = fullName;
         }
 
-        public InvalidCvrNumberRuleException(string? message)
-            : base(message)
-        {
-        }
+        public Guid ConsumerId { get; }
 
-        public InvalidCvrNumberRuleException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+        public string? CprNumber { get; }
 
-        protected InvalidCvrNumberRuleException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+        public string? CvrNumber { get; }
+
+        public string FullName { get;  }
     }
 }

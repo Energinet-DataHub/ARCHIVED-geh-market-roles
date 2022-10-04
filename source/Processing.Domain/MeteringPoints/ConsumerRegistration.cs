@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using NodaTime;
-using Processing.Domain.Consumers;
+using Processing.Domain.Customers;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.MeteringPoints

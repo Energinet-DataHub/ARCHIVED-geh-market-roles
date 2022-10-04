@@ -14,17 +14,17 @@
 
 using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.Consumers.Rules
+namespace Processing.Domain.Customers.Rules
 {
-    public class CprNumberFormatRuleError : ValidationError
+    public class CvrNumberFormatRuleError : ValidationError
     {
-        public CprNumberFormatRuleError(string? cprValue)
+        public CvrNumberFormatRuleError(string? cvrValue)
         {
-            CprNumber = cprValue ?? string.Empty;
+            CvrNumber = cvrValue ?? string.Empty;
         }
 
-        public string CprNumber { get; }
+        public string CvrNumber { get; }
 
-        public override string Code { get; protected set; } = "InvalidCprNumber";
+        public override string Code { get; protected set; } = "InvalidCvrNumber";
     }
 }

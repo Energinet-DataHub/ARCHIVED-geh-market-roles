@@ -16,25 +16,25 @@ using System;
 using System.Runtime.Serialization;
 using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.Consumers
+namespace Processing.Domain.Customers
 {
-    public class InvalidCprNumberRuleException : BusinessRuleException
+    public class InvalidCvrNumberRuleException : BusinessRuleException
     {
-        public InvalidCprNumberRuleException()
+        public InvalidCvrNumberRuleException()
         {
         }
 
-        public InvalidCprNumberRuleException(string? message)
+        public InvalidCvrNumberRuleException(string? message)
             : base(message)
         {
         }
 
-        public InvalidCprNumberRuleException(string message, Exception innerException)
+        public InvalidCvrNumberRuleException(string message, Exception innerException)
             : base(message, innerException)
         {
         }
 
-        protected InvalidCprNumberRuleException(SerializationInfo info, StreamingContext context)
+        protected InvalidCvrNumberRuleException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }

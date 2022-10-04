@@ -14,10 +14,23 @@
 
 using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.Consumers
+namespace Processing.Domain.Customers
 {
-    public class InvalidCustomerNumber : ValidationError
+    public class Customer : ValueObject
     {
-        public override string Code { get; protected set; } = "InvalidCustomerNumber";
+        private Customer(CustomerNumber number, string name)
+        {
+            Number = number;
+            Name = name;
+        }
+
+        public string Name { get;  }
+
+        public CustomerNumber Number { get; }
+
+        public static Customer Create(CustomerNumber customerNumber, string fullname)
+        {
+            return new Customer(customerNumber, fullname);
+        }
     }
 }

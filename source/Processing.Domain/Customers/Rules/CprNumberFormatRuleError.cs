@@ -14,22 +14,17 @@
 
 using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.Consumers.Rules
+namespace Processing.Domain.Customers.Rules
 {
-    public class InvalidCustomerNumberException : BusinessRuleException
+    public class CprNumberFormatRuleError : ValidationError
     {
-        public InvalidCustomerNumberException(string message)
-            : base(message)
+        public CprNumberFormatRuleError(string? cprValue)
         {
+            CprNumber = cprValue ?? string.Empty;
         }
 
-        public InvalidCustomerNumberException(string message, System.Exception innerException)
-            : base(message, innerException)
-        {
-        }
+        public string CprNumber { get; }
 
-        public InvalidCustomerNumberException()
-        {
-        }
+        public override string Code { get; protected set; } = "InvalidCprNumber";
     }
 }

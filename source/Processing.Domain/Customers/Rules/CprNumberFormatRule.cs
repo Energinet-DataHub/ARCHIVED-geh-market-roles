@@ -16,7 +16,7 @@ using NodaTime.Text;
 using Processing.Domain.Helpers;
 using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.Consumers.Rules
+namespace Processing.Domain.Customers.Rules
 {
     internal class CprNumberFormatRule : IBusinessRule
     {
