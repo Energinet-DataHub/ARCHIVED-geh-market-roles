@@ -16,7 +16,7 @@ using NodaTime.Text;
 using Processing.Domain.Helpers;
 using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.Consumers.Rules
+namespace Processing.Domain.Customers.Rules
 {
     internal class CprNumberFormatRule : IBusinessRule
     {
@@ -31,7 +31,7 @@ namespace Processing.Domain.Consumers.Rules
 
         public bool IsBroken => !IsValidCprNumber();
 
-        public ValidationError ValidationError => new CprNumberFormatRuleError(_cprValue);
+        public ValidationError ValidationError => new InvalidCustomerNumber();
 
         private static bool LengthIsValid(string cprValue)
         {

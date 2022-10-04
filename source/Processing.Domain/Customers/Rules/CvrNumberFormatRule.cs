@@ -15,7 +15,7 @@
 using Processing.Domain.Helpers;
 using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.Consumers.Rules
+namespace Processing.Domain.Customers.Rules
 {
     internal class CvrNumberFormatRule : IBusinessRule
     {
@@ -31,7 +31,7 @@ namespace Processing.Domain.Consumers.Rules
 
         public bool IsBroken => !IsValidCvrNumber();
 
-        public ValidationError ValidationError => new CvrNumberFormatRuleError(_cvrValue);
+        public ValidationError ValidationError => new InvalidCustomerNumber();
 
         private static bool LengthIsValid(string cvrValue)
         {

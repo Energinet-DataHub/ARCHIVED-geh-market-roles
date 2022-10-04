@@ -17,7 +17,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using NodaTime;
-using Processing.Domain.Consumers;
+using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints.Events;
 using Processing.Domain.MeteringPoints.Rules.ChangeEnergySupplier;

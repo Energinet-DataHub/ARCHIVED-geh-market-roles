@@ -14,17 +14,10 @@
 
 using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.Consumers.Rules
+namespace Processing.Domain.Customers
 {
-    public class CprNumberFormatRuleError : ValidationError
+    public class InvalidCustomerNumber : ValidationError
     {
-        public CprNumberFormatRuleError(string? cprValue)
-        {
-            CprNumber = cprValue ?? string.Empty;
-        }
-
-        public string CprNumber { get; }
-
-        public override string Code { get; protected set; } = "InvalidCprNumber";
+        public override string Code { get; protected set; } = "InvalidCustomerNumber";
     }
 }
