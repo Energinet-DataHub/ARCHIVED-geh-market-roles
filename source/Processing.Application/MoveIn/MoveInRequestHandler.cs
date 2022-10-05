@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 using Processing.Application.Common;
 using Processing.Domain.BusinessProcesses.MoveIn;
 using Processing.Domain.Common;
-using Processing.Domain.Consumers;
+using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.EnergySuppliers.Errors;
 using Processing.Domain.MeteringPoints;
@@ -83,9 +83,9 @@ namespace Processing.Application.MoveIn
             return BusinessProcessResult.Ok(businessProcessId.Value.ToString());
         }
 
-        private static Domain.Consumers.Customer CreateCustomer(MoveInRequest request)
+        private static Domain.Customers.Customer CreateCustomer(MoveInRequest request)
         {
-            return Domain.Consumers.Customer.Create(CustomerNumber.Create(request.Customer.Number), request.Customer.Name);
+            return Domain.Customers.Customer.Create(CustomerNumber.Create(request.Customer.Number), request.Customer.Name);
         }
     }
 }

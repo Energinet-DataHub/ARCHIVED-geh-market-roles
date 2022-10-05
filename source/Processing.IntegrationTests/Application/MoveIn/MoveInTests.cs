@@ -25,7 +25,7 @@ using Processing.Application.Common;
 using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Processing;
 using Processing.Domain.BusinessProcesses.MoveIn.Errors;
-using Processing.Domain.Consumers;
+using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.EnergySuppliers.Errors;
 using Processing.Domain.MeteringPoints;

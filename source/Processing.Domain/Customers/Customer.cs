@@ -12,27 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Processing.Domain.SeedWork;
 
-namespace Processing.Domain.Consumers.Events
+namespace Processing.Domain.Customers
 {
-    public class ConsumerCreated : DomainEvent
+    public class Customer : ValueObject
     {
-        public ConsumerCreated(Guid consumerId, string? cprNumber, string? cvrNumber, string fullName)
+        private Customer(CustomerNumber number, string name)
         {
-            ConsumerId = consumerId;
-            CprNumber = cprNumber;
-            CvrNumber = cvrNumber;
-            FullName = fullName;
+            Number = number;
+            Name = name;
         }
 
-        public Guid ConsumerId { get; }
+        public string Name { get;  }
 
-        public string? CprNumber { get; }
+        public CustomerNumber Number { get; }
 
-        public string? CvrNumber { get; }
-
-        public string FullName { get;  }
+        public static Customer Create(CustomerNumber customerNumber, string fullname)
+        {
+            return new Customer(customerNumber, fullname);
+        }
     }
 }

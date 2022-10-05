@@ -15,7 +15,7 @@
 using System.Threading.Tasks;
 using MediatR;
 using Processing.Application.Common.TimeEvents;
-using Processing.Domain.Consumers;
+using Processing.Domain.Customers;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.SeedWork;
 using Processing.IntegrationTests.Factories;
