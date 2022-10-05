@@ -73,7 +73,8 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
                 Customer.Create(CustomerNumber.Create(SampleData.ConsumerSocialSecurityNumber), SampleData.ConsumerName),
                 CreateEnergySupplierId(),
                 _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)),
-                businessProcessId);
+                businessProcessId,
+                _systemDateTimeProvider.Now());
             _accountingPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
         }
     }
