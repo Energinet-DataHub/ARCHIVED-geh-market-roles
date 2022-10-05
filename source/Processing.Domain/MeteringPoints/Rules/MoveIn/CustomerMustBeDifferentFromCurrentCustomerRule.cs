@@ -36,7 +36,7 @@ namespace Processing.Domain.MeteringPoints.Rules.MoveIn
         {
             var currentCustomer = consumerRegistrations
                 .OrderByDescending(c => c.MoveInDate)
-                .Last(c => c.MoveInDate < today)
+                .LastOrDefault(c => c.MoveInDate < today)?
                 .Customer;
 
             if (currentCustomer == null)
