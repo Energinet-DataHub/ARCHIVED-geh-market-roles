@@ -127,7 +127,7 @@ public class ConsumerMoveInTests : TestBase
 
     private BusinessRulesValidationResult CanStartProcess(EffectiveDate moveInDate)
     {
-        return _customerMoveInProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now());
+        return _customerMoveInProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now(), _customer);
     }
 
     private EffectiveDate AsOfToday()
