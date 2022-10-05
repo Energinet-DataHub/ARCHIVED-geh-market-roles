@@ -153,16 +153,6 @@ namespace Processing.Domain.MeteringPoints
             }
         }
 
-        public BusinessRulesValidationResult ConsumerMoveInAcceptable(Instant moveInDate)
-        {
-            var rules = new Collection<IBusinessRule>()
-            {
-                new MoveInRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), moveInDate),
-            };
-
-            return new BusinessRulesValidationResult(rules);
-        }
-
         public BusinessRulesValidationResult ConsumerMoveInAcceptable(Instant moveInDate, Customer customer, Instant today)
         {
             var rules = new Collection<IBusinessRule>()
@@ -178,7 +168,7 @@ namespace Processing.Domain.MeteringPoints
         {
             if (energySupplierId == null) throw new ArgumentNullException(nameof(energySupplierId));
             if (businessProcessId == null) throw new ArgumentNullException(nameof(businessProcessId));
-            if (!ConsumerMoveInAcceptable(moveInDate).Success)
+            if (!ConsumerMoveInAcceptable(moveInDate, customer, today).Success)
             {
                 throw new BusinessProcessException(
                     "Cannot accept move in request due to violation of one or more business rules.");
