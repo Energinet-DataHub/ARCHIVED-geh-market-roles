@@ -32,19 +32,6 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
         }
 
 #pragma warning disable CA1822 // Methods should not be static
-        public BusinessRulesValidationResult CanStartProcess(AccountingPoint accountingPoint, EffectiveDate consumerMovesInOn, Instant today)
-        {
-            if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
-
-            var timePolicyCheckResult = _policy.Check(today, consumerMovesInOn);
-            if (timePolicyCheckResult.Success == false)
-            {
-                return timePolicyCheckResult;
-            }
-
-            return accountingPoint.ConsumerMoveInAcceptable(consumerMovesInOn.DateInUtc);
-        }
-
         public BusinessRulesValidationResult CanStartProcess(
             AccountingPoint accountingPoint,
             EffectiveDate consumerMovesInOn,
