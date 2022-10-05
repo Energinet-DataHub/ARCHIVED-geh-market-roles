@@ -23,27 +23,20 @@ namespace Processing.Domain.MeteringPoints.Rules.MoveIn
 {
     public class CustomerMustBeDifferentFromCurrentCustomerRule : IBusinessRule
     {
-        private readonly Customer _customer;
-        private readonly ReadOnlyCollection<ConsumerRegistration> _consumerRegistrations;
-        private readonly Instant _today;
-
         public CustomerMustBeDifferentFromCurrentCustomerRule(Customer customer, ReadOnlyCollection<ConsumerRegistration> consumerRegistrations, Instant today)
         {
-            _customer = customer;
-            _consumerRegistrations = consumerRegistrations;
-            _today = today;
-            CheckCustomer();
+            CheckCustomer(customer, consumerRegistrations, today);
         }
 
         public bool IsBroken { get; private set; }
 
         public ValidationError ValidationError { get; } = new CustomerMustBeDifferentFromCurrentCustomer();
 
-        private void CheckCustomer()
+        private void CheckCustomer(Customer customer, ReadOnlyCollection<ConsumerRegistration> consumerRegistrations, Instant today)
         {
-            var currentCustomer = _consumerRegistrations
+            var currentCustomer = consumerRegistrations
                 .OrderByDescending(c => c.MoveInDate)
-                .Last(c => c.MoveInDate < _today)
+                .Last(c => c.MoveInDate < today)
                 .Customer;
 
             if (currentCustomer == null)
@@ -52,7 +45,7 @@ namespace Processing.Domain.MeteringPoints.Rules.MoveIn
             }
             else
             {
-                IsBroken = currentCustomer.Equals(_customer);
+                IsBroken = currentCustomer.Equals(customer);
             }
         }
     }
