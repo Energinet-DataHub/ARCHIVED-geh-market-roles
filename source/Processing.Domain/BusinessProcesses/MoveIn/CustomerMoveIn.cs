@@ -32,9 +32,14 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
         }
 
 #pragma warning disable CA1822 // Methods should not be static
-        public BusinessRulesValidationResult CanStartProcess(AccountingPoint accountingPoint, EffectiveDate consumerMovesInOn, Instant today)
+        public BusinessRulesValidationResult CanStartProcess(
+            AccountingPoint accountingPoint,
+            EffectiveDate consumerMovesInOn,
+            Instant today,
+            Customer customer)
         {
             if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
+            if (customer == null) throw new ArgumentNullException(nameof(customer));
 
             var timePolicyCheckResult = _policy.Check(today, consumerMovesInOn);
             if (timePolicyCheckResult.Success == false)
@@ -42,7 +47,7 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
                 return timePolicyCheckResult;
             }
 
-            return accountingPoint.ConsumerMoveInAcceptable(consumerMovesInOn.DateInUtc);
+            return accountingPoint.ConsumerMoveInAcceptable(consumerMovesInOn.DateInUtc, customer, today);
         }
 
         public void StartProcess(AccountingPoint accountingPoint, EnergySupplier energySupplier, EffectiveDate consumerMovesInOn, Instant today, BusinessProcessId businessProcessId, Customer customer)
@@ -50,7 +55,7 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
             if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
             if (energySupplier == null) throw new ArgumentNullException(nameof(energySupplier));
             if (consumerMovesInOn == null) throw new ArgumentNullException(nameof(consumerMovesInOn));
-            accountingPoint.RegisterMoveIn(customer, energySupplier.EnergySupplierId, consumerMovesInOn.DateInUtc, businessProcessId);
+            accountingPoint.RegisterMoveIn(customer, energySupplier.EnergySupplierId, consumerMovesInOn.DateInUtc, businessProcessId, today);
             if (EffectiveDateIsInThePast(consumerMovesInOn, today))
             {
                 accountingPoint.EffectuateConsumerMoveIn(businessProcessId, today);

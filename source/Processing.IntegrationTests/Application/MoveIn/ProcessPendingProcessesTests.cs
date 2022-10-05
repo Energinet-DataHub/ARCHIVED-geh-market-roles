@@ -60,7 +60,7 @@ namespace Processing.IntegrationTests.Application.MoveIn
             var businessProcessId = BusinessProcessId.New();
             var customer =
                 Customer.Create(CustomerNumber.Create(SampleData.CustomerNumber), SampleData.ConsumerName);
-            accountingPoint.RegisterMoveIn(customer, supplier.EnergySupplierId, EffectiveDateFactory.InstantAsOfToday(), businessProcessId);
+            accountingPoint.RegisterMoveIn(customer, supplier.EnergySupplierId, EffectiveDateFactory.InstantAsOfToday(), businessProcessId, _systemDateTimeProvider.Now());
             SaveChanges();
             return businessProcessId;
         }
