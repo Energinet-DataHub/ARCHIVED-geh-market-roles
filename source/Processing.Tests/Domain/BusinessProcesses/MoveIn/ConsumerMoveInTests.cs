@@ -100,7 +100,7 @@ public class ConsumerMoveInTests : TestBase
         var moveProcess = new CustomerMoveIn(policy);
 
         var moveInDate = AsOf(SystemDateTimeProvider.Now().Plus(Duration.FromDays(10)));
-        var result = moveProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now());
+        var result = moveProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now(), _customer);
 
         AssertError<EffectiveDateIsNotWithinAllowedTimePeriod>(result, "EffectiveDateIsNotWithinAllowedTimePeriod");
     }
