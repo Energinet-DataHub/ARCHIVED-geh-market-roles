@@ -45,6 +45,24 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
             return accountingPoint.ConsumerMoveInAcceptable(consumerMovesInOn.DateInUtc);
         }
 
+        public BusinessRulesValidationResult CanStartProcess(
+            AccountingPoint accountingPoint,
+            EffectiveDate consumerMovesInOn,
+            Instant today,
+            Customer customer)
+        {
+            if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
+            if (customer == null) throw new ArgumentNullException(nameof(customer));
+
+            var timePolicyCheckResult = _policy.Check(today, consumerMovesInOn);
+            if (timePolicyCheckResult.Success == false)
+            {
+                return timePolicyCheckResult;
+            }
+
+            return accountingPoint.ConsumerMoveInAcceptable(consumerMovesInOn.DateInUtc, customer, today);
+        }
+
         public void StartProcess(AccountingPoint accountingPoint, EnergySupplier energySupplier, EffectiveDate consumerMovesInOn, Instant today, BusinessProcessId businessProcessId, Customer customer)
         {
             if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));

@@ -17,10 +17,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using NodaTime;
+using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints.Events;
 using Processing.Domain.MeteringPoints.Rules.ChangeEnergySupplier;
+using Processing.Domain.MeteringPoints.Rules.MoveIn;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.MeteringPoints
@@ -156,6 +158,17 @@ namespace Processing.Domain.MeteringPoints
             var rules = new Collection<IBusinessRule>()
             {
                 new MoveInRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), moveInDate),
+            };
+
+            return new BusinessRulesValidationResult(rules);
+        }
+
+        public BusinessRulesValidationResult ConsumerMoveInAcceptable(Instant moveInDate, Customer customer, Instant today)
+        {
+            var rules = new Collection<IBusinessRule>()
+            {
+                new MoveInRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), moveInDate),
+                new CustomerMustBeDifferentFromCurrentCustomerRule(customer, _consumerRegistrations.AsReadOnly(), today),
             };
 
             return new BusinessRulesValidationResult(rules);

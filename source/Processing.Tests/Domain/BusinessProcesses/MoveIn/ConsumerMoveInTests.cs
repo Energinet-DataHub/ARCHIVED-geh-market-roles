@@ -105,9 +105,24 @@ public class ConsumerMoveInTests : TestBase
         AssertError<EffectiveDateIsNotWithinAllowedTimePeriod>(result, "EffectiveDateIsNotWithinAllowedTimePeriod");
     }
 
+    [Fact]
+    public void Customer_must_be_different_from_current_customer()
+    {
+        GivenACustomerIsRegistered();
+
+        var result = _customerMoveInProcess.CanStartProcess(_accountingPoint, AsOfToday(), SystemDateTimeProvider.Now(), _customer);
+
+        AssertError<CustomerMustBeDifferentFromCurrentCustomer>(result, "CustomerMustBeDifferentFromCurrentCustomer");
+    }
+
     private static EffectiveDate AsOf(Instant date)
     {
         return EffectiveDateFactory.WithTimeOfDay(date.ToDateTimeUtc(), 22, 0, 0);
+    }
+
+    private void GivenACustomerIsRegistered()
+    {
+        StartProcess(AsOfYesterday());
     }
 
     private BusinessRulesValidationResult CanStartProcess(EffectiveDate moveInDate)
