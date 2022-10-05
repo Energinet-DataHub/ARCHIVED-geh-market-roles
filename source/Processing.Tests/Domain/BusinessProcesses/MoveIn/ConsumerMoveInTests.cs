@@ -100,9 +100,19 @@ public class ConsumerMoveInTests : TestBase
         var moveProcess = new CustomerMoveIn(policy);
 
         var moveInDate = AsOf(SystemDateTimeProvider.Now().Plus(Duration.FromDays(10)));
-        var result = moveProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now());
+        var result = moveProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now(), _customer);
 
         AssertError<EffectiveDateIsNotWithinAllowedTimePeriod>(result, "EffectiveDateIsNotWithinAllowedTimePeriod");
+    }
+
+    [Fact]
+    public void Customer_must_be_different_from_current_customer()
+    {
+        GivenACustomerIsRegistered();
+
+        var result = _customerMoveInProcess.CanStartProcess(_accountingPoint, AsOfToday(), SystemDateTimeProvider.Now(), _customer);
+
+        AssertError<CustomerMustBeDifferentFromCurrentCustomer>(result, "CustomerMustBeDifferentFromCurrentCustomer");
     }
 
     private static EffectiveDate AsOf(Instant date)
@@ -110,9 +120,14 @@ public class ConsumerMoveInTests : TestBase
         return EffectiveDateFactory.WithTimeOfDay(date.ToDateTimeUtc(), 22, 0, 0);
     }
 
+    private void GivenACustomerIsRegistered()
+    {
+        StartProcess(AsOfYesterday());
+    }
+
     private BusinessRulesValidationResult CanStartProcess(EffectiveDate moveInDate)
     {
-        return _customerMoveInProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now());
+        return _customerMoveInProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now(), _customer);
     }
 
     private EffectiveDate AsOfToday()

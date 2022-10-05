@@ -64,7 +64,8 @@ namespace Processing.Application.MoveIn
             }
 
             var consumerMovesInOn = EffectiveDate.Create(request.EffectiveDate);
-            var checkResult = _customerMoveInProcess.CanStartProcess(accountingPoint, consumerMovesInOn, _systemDateTimeProvider.Now());
+            var customer = CreateCustomer(request);
+            var checkResult = _customerMoveInProcess.CanStartProcess(accountingPoint, consumerMovesInOn, _systemDateTimeProvider.Now(), customer);
 
             if (!checkResult.Success)
             {
@@ -78,7 +79,7 @@ namespace Processing.Application.MoveIn
                 consumerMovesInOn,
                 _systemDateTimeProvider.Now(),
                 businessProcessId,
-                CreateCustomer(request));
+                customer);
 
             return BusinessProcessResult.Ok(businessProcessId.Value.ToString());
         }
