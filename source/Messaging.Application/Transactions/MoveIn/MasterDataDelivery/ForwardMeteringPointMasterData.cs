@@ -12,12 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Messaging.Domain.Actors;
+using System.Text.Json.Serialization;
+using Messaging.Application.Configuration.Commands.Commands;
+using Messaging.Application.MasterData;
 
-namespace Messaging.Application.Configuration
+namespace Messaging.Application.Transactions.MoveIn.MasterDataDelivery;
+
+public class ForwardMeteringPointMasterData : InternalCommand
 {
-    public static class DataHubDetails
+    [JsonConstructor]
+    public ForwardMeteringPointMasterData(string transactionId, MasterDataContent masterDataContent)
     {
-        public static ActorNumber IdentificationNumber => ActorNumber.Create("5790001330552");
+        TransactionId = transactionId;
+        MasterDataContent = masterDataContent;
     }
+
+    public string TransactionId { get; }
+
+    public MasterDataContent MasterDataContent { get; set; }
 }

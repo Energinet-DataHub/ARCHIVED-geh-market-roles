@@ -12,22 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Text.Json.Serialization;
 using Messaging.Application.Configuration.Commands.Commands;
-using Messaging.Application.MasterData;
 
-namespace Messaging.Application.Transactions.MoveIn;
+namespace Messaging.Application.Transactions.MoveIn.MasterDataDelivery;
 
-public class ForwardCustomerMasterData : InternalCommand
+public class SendCustomerMasterDataToGridOperator : InternalCommand
 {
-    [JsonConstructor]
-    public ForwardCustomerMasterData(string transactionId, CustomerMasterDataContent customerMasterDataContent)
+    public SendCustomerMasterDataToGridOperator(string transactionId)
     {
         TransactionId = transactionId;
-        CustomerMasterDataContent = customerMasterDataContent;
+    }
+
+    [JsonConstructor]
+    public SendCustomerMasterDataToGridOperator(Guid id, string transactionId)
+        : base(id)
+    {
+        TransactionId = transactionId;
     }
 
     public string TransactionId { get; }
-
-    public CustomerMasterDataContent CustomerMasterDataContent { get; }
 }

@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Application.OutgoingMessages.Common;
+using Processing.Domain.SeedWork;
 
-public static class MarketRoles
+namespace Processing.Domain.BusinessProcesses.MoveIn.Errors
 {
-    public const string MeteringPointAdministrator = "DDZ";
-    public const string EnergySupplier = "DDQ";
-    public const string GridOperator = "DDM";
+    public class CustomerMustBeDifferentFromCurrentCustomer : ValidationError
+    {
+        public override string Code { get; protected set; } = "CustomerMustBeDifferentFromCurrentCustomer";
+    }
 }

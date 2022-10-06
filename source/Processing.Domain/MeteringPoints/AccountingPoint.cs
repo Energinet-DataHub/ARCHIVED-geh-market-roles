@@ -21,6 +21,7 @@ using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints.Events;
 using Processing.Domain.MeteringPoints.Rules.ChangeEnergySupplier;
+using Processing.Domain.MeteringPoints.Rules.MoveIn;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.MeteringPoints
@@ -29,9 +30,9 @@ namespace Processing.Domain.MeteringPoints
     {
         private readonly MeteringPointType _meteringPointType;
         private readonly bool _isProductionObligated;
-        private readonly List<BusinessProcess> _businessProcesses = new List<BusinessProcess>();
-        private readonly List<ConsumerRegistration> _consumerRegistrations = new List<ConsumerRegistration>();
-        private readonly List<SupplierRegistration> _supplierRegistrations = new List<SupplierRegistration>();
+        private readonly List<BusinessProcess> _businessProcesses = new();
+        private readonly List<ConsumerRegistration> _consumerRegistrations = new();
+        private readonly List<SupplierRegistration> _supplierRegistrations = new();
         private PhysicalState _physicalState;
         private ElectricalHeating? _electricalHeating;
 
@@ -61,7 +62,7 @@ namespace Processing.Domain.MeteringPoints
 
         public AccountingPointId Id { get; }
 
-        public GsrnNumber GsrnNumber { get; private set; }
+        public GsrnNumber GsrnNumber { get; }
 
         public static AccountingPoint CreateProduction(AccountingPointId meteringPointId, GsrnNumber gsrnNumber, bool isObligated)
         {
@@ -99,8 +100,6 @@ namespace Processing.Domain.MeteringPoints
                 new MustHaveEnergySupplierAssociatedRule(GetCurrentSupplier(systemDateTimeProvider)),
                 new ChangeOfSupplierRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), supplyStartDate),
                 new MoveInRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), supplyStartDate),
-                // TODO: Ignore move out process until implementation is in scope
-                //new MoveOutRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), supplyStartDate),
                 new EffectiveDateCannotBeInThePastRule(supplyStartDate, systemDateTimeProvider.Now()),
                 new CannotBeCurrentSupplierRule(energySupplierId, GetCurrentSupplier(systemDateTimeProvider)),
             };
@@ -151,21 +150,22 @@ namespace Processing.Domain.MeteringPoints
             }
         }
 
-        public BusinessRulesValidationResult ConsumerMoveInAcceptable(Instant moveInDate)
+        public BusinessRulesValidationResult ConsumerMoveInAcceptable(Instant moveInDate, Customer customer, Instant today)
         {
             var rules = new Collection<IBusinessRule>()
             {
                 new MoveInRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), moveInDate),
+                new CustomerMustBeDifferentFromCurrentCustomerRule(customer, _consumerRegistrations.AsReadOnly(), today),
             };
 
             return new BusinessRulesValidationResult(rules);
         }
 
-        public void RegisterMoveIn(Customer customer, EnergySupplierId energySupplierId, Instant moveInDate, BusinessProcessId businessProcessId)
+        public void RegisterMoveIn(Customer customer, EnergySupplierId energySupplierId, Instant moveInDate, BusinessProcessId businessProcessId, Instant today)
         {
             if (energySupplierId == null) throw new ArgumentNullException(nameof(energySupplierId));
             if (businessProcessId == null) throw new ArgumentNullException(nameof(businessProcessId));
-            if (!ConsumerMoveInAcceptable(moveInDate).Success)
+            if (!ConsumerMoveInAcceptable(moveInDate, customer, today).Success)
             {
                 throw new BusinessProcessException(
                     "Cannot accept move in request due to violation of one or more business rules.");
