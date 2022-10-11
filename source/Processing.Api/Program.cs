@@ -136,7 +136,7 @@ namespace Processing.Api
             container.Register<CustomerMasterDataRequestListener>();
             container.Register<ActorCreatedListener>();
 
-            container.ConfigureMoveIn(7, 60, TimeOfDay.Create(0, 0, 0));
+            container.ConfigureMoveIn(16, 60, TimeOfDay.Create(0, 0, 0));
 
             var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING")
                                    ?? throw new InvalidOperationException(
