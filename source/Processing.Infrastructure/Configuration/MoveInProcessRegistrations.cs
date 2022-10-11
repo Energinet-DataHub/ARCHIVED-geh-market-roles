@@ -13,15 +13,32 @@
 // limitations under the License.
 
 using System;
+using FluentValidation;
 using NodaTime;
+using Processing.Application.MoveIn;
+using Processing.Application.MoveIn.Validation;
 using Processing.Domain.BusinessProcesses.MoveIn;
+using Processing.Infrastructure.RequestAdapters;
 using SimpleInjector;
 
 namespace Processing.Infrastructure.Configuration
 {
     public static class MoveInProcessRegistrations
     {
-        public static void ConfigureMoveInProcessTimePolicy(this Container container, int allowedNumberOfDaysBeforeToday, int allowedNumberOfDaysAfterToday, TimeOfDay requiredTimeOfDayInLocalTime)
+        public static void ConfigureMoveIn(
+            this Container container,
+            int allowedNumberOfDaysBeforeToday,
+            int allowedNumberOfDaysAfterToday,
+            TimeOfDay requiredTimeOfDayInLocalTime)
+        {
+            ArgumentNullException.ThrowIfNull(container);
+
+            container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
+            container.Register<IValidator<MoveInRequest>, InputValidationSet>(Lifestyle.Scoped);
+            ConfigureMoveInProcessTimePolicy(container, allowedNumberOfDaysBeforeToday, allowedNumberOfDaysAfterToday, requiredTimeOfDayInLocalTime);
+        }
+
+        private static void ConfigureMoveInProcessTimePolicy(Container container, int allowedNumberOfDaysBeforeToday, int allowedNumberOfDaysAfterToday, TimeOfDay requiredTimeOfDayInLocalTime)
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
             container.RegisterInstance<EffectiveDatePolicy>(
