@@ -132,12 +132,11 @@ namespace Processing.Api
             container.Register<IDomainEventsAccessor, DomainEventsAccessor>(Lifestyle.Scoped);
             container.Register<IDomainEventsDispatcher, DomainEventsDispatcher>(Lifestyle.Scoped);
             container.Register<MoveInHttpTrigger>(Lifestyle.Scoped);
-            container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
             container.Register<SystemTimer>();
             container.Register<CustomerMasterDataRequestListener>();
             container.Register<ActorCreatedListener>();
 
-            container.ConfigureMoveInProcessTimePolicy(7, 60, TimeOfDay.Create(0, 0, 0));
+            container.ConfigureMoveIn(7, 60, TimeOfDay.Create(0, 0, 0));
 
             var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING")
                                    ?? throw new InvalidOperationException(
@@ -161,7 +160,6 @@ namespace Processing.Api
 
             // Input validation(
             container.Register<IValidator<RequestChangeOfSupplier>, RequestChangeOfSupplierRuleSet>(Lifestyle.Scoped);
-            container.Register<IValidator<MoveInRequest>, InputValidationSet>(Lifestyle.Scoped);
 
             // Integration event publishing
             container.AddEventPublishing(

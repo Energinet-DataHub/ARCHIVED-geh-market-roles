@@ -102,8 +102,7 @@ namespace Processing.IntegrationTests
             _container.Register<IDbConnectionFactory>(() => new SqlDbConnectionFactory(databaseFixture.ConnectionString));
             _container.Register<ICorrelationContext, CorrelationContext>(Lifestyle.Scoped);
 
-            _container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
-            _container.ConfigureMoveInProcessTimePolicy(0, 0, TimeOfDay.Create(0, 0, 0));
+            _container.ConfigureMoveIn(0, 0, TimeOfDay.Create(0, 0, 0));
 
             // Integration event publishing
             _serviceBusSenderFactorySpy = new ServiceBusSenderFactorySpy();
@@ -114,7 +113,6 @@ namespace Processing.IntegrationTests
 
             // Input validation(
             _container.Register<IValidator<RequestChangeOfSupplier>, RequestChangeOfSupplierRuleSet>(Lifestyle.Scoped);
-            _container.Register<IValidator<MoveInRequest>, InputValidationSet>(Lifestyle.Scoped);
 
             _container.BuildMediator(
                 new[] { typeof(RequestChangeOfSupplierHandler).Assembly, typeof(PublishWhenEnergySupplierHasChanged).Assembly, },
