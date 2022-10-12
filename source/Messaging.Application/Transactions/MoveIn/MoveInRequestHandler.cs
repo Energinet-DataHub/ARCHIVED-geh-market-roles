@@ -95,7 +95,7 @@ namespace Messaging.Application.Transactions.MoveIn
             {
                 var reasons = await CreateReasonsFromAsync(businessProcessResult.ValidationErrors).ConfigureAwait(false);
                 _outgoingMessageStore.Add(RejectMessageFrom(reasons, transaction, request));
-                transaction.RejectedByBusinessProcess();
+                transaction.RejectedByBusinessProcess(reasons, DataHubDetails.IdentificationNumber, _marketActivityRecordParser, ActorNumber.Create(request.Message.SenderId));
             }
             else
             {
