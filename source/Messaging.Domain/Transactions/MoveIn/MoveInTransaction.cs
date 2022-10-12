@@ -14,10 +14,12 @@
 
 using Messaging.Domain.Actors;
 using Messaging.Domain.OutgoingMessages;
+using Messaging.Domain.OutgoingMessages.ConfirmRequestChangeOfSupplier;
 using Messaging.Domain.OutgoingMessages.RejectRequestChangeOfSupplier;
 using Messaging.Domain.SeedWork;
 using Messaging.Domain.Transactions.MoveIn.Events;
 using NodaTime;
+using MarketActivityRecord = Messaging.Domain.OutgoingMessages.RejectRequestChangeOfSupplier.MarketActivityRecord;
 
 namespace Messaging.Domain.Transactions.MoveIn
 {
@@ -147,12 +149,17 @@ namespace Messaging.Domain.Transactions.MoveIn
                 TransactionId,
                 MarketEvaluationPointId);
 
-            _outgoingMessages.Add(CreateOutgoingMessage(
-                StartedByMessageId,
-                DocumentType.ConfirmRequestChangeOfSupplier,
-                ProcessType.MoveIn.Code,
+            var confirmMessage = new ConfirmRequestChangeOfSupplierMessage(
                 receiverId,
-                marketActivityRecordParser.From(marketActivityRecord), senderId));
+                TransactionId,
+                ProcessType.MoveIn.Code,
+                MarketRole.EnergySupplier,
+                senderId,
+                MarketRole.MeteringPointAdministrator,
+                marketActivityRecordParser.From(marketActivityRecord),
+                marketActivityRecord);
+
+            _outgoingMessages.Add(confirmMessage);
 
             _businessProcessState = BusinessProcessState.Accepted;
             ProcessId = processId ?? throw new ArgumentNullException(nameof(processId));
