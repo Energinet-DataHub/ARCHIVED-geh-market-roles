@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text.Json;
 using Messaging.Domain.Actors;
 
 namespace Messaging.Domain.OutgoingMessages.ConfirmRequestChangeOfSupplier;
@@ -25,9 +26,16 @@ public class ConfirmRequestChangeOfSupplierMessage : OutgoingMessage
         MarketRole receiverRole,
         ActorNumber senderId,
         MarketRole senderRole,
-        string marketActivityRecordPayload,
         MarketActivityRecord marketActivityRecord)
-        : base(DocumentType.ConfirmRequestChangeOfSupplier, receiverId, transactionId, processType, receiverRole, senderId, senderRole, marketActivityRecordPayload)
+        : base(
+            DocumentType.ConfirmRequestChangeOfSupplier,
+            receiverId,
+            transactionId,
+            processType,
+            receiverRole,
+            senderId,
+            senderRole,
+            JsonSerializer.Serialize(marketActivityRecord))
     {
         MarketActivityRecord = marketActivityRecord;
     }

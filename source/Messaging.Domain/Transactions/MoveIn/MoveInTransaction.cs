@@ -156,7 +156,6 @@ namespace Messaging.Domain.Transactions.MoveIn
                 MarketRole.EnergySupplier,
                 senderId,
                 MarketRole.MeteringPointAdministrator,
-                marketActivityRecordParser.From(marketActivityRecord),
                 marketActivityRecord);
 
             _outgoingMessages.Add(confirmMessage);
