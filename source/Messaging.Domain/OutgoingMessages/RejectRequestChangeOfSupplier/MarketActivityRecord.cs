@@ -12,19 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using NodaTime;
-
-namespace Messaging.Application.OutgoingMessages.GenericNotification
+namespace Messaging.Domain.OutgoingMessages.RejectRequestChangeOfSupplier
 {
     public class MarketActivityRecord
     {
-        public MarketActivityRecord(string id, string originalTransactionId, string marketEvaluationPointId, Instant validityStart)
+        public MarketActivityRecord(string id, string originalTransactionId, string marketEvaluationPointId, IEnumerable<Reason> reasons)
         {
             Id = id;
             OriginalTransactionId = originalTransactionId;
             MarketEvaluationPointId = marketEvaluationPointId;
-            ValidityStart = validityStart;
+            Reasons = reasons;
         }
 
         public string Id { get; }
@@ -33,6 +30,6 @@ namespace Messaging.Application.OutgoingMessages.GenericNotification
 
         public string MarketEvaluationPointId { get; }
 
-        public Instant ValidityStart { get; }
+        public IEnumerable<Reason> Reasons { get; }
     }
 }

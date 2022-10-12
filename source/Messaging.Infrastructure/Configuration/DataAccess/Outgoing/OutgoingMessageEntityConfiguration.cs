@@ -15,6 +15,7 @@
 using System;
 using Messaging.Domain.Actors;
 using Messaging.Domain.OutgoingMessages;
+using Messaging.Domain.OutgoingMessages.ConfirmRequestChangeOfSupplier;
 using Messaging.Domain.SeedWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -42,7 +43,7 @@ namespace Messaging.Infrastructure.Configuration.DataAccess.Outgoing
                 .HasConversion(
                     toDbValue => toDbValue.ToString(),
                     fromDbValue => EnumerationType.FromName<MarketRole>(fromDbValue));
-            builder.Property(x => x.OriginalMessageId);
+            builder.Property(x => x.TransactionId);
             builder.Property(x => x.ProcessType);
             builder.Property(x => x.SenderId)
                 .HasConversion(
@@ -53,6 +54,12 @@ namespace Messaging.Infrastructure.Configuration.DataAccess.Outgoing
                     toDbValue => toDbValue.ToString(),
                     fromDbValue => EnumerationType.FromName<MarketRole>(fromDbValue));
             builder.Property(x => x.MarketActivityRecordPayload);
+
+            builder
+                .HasDiscriminator<string>("Discriminator")
+                .HasValue<OutgoingMessage>(nameof(OutgoingMessage))
+                .HasValue<ConfirmRequestChangeOfSupplierMessage>(DocumentType.ConfirmRequestChangeOfSupplier.Name)
+                .IsComplete(false);
         }
     }
 }

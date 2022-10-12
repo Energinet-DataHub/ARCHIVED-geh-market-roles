@@ -14,16 +14,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading.Tasks;
-using Dapper;
 using MediatR;
 using Messaging.Application.Configuration.DataAccess;
-using Messaging.Application.IncomingMessages;
 using Messaging.Application.IncomingMessages.RequestChangeOfSupplier;
 using Messaging.Application.OutgoingMessages;
 using Messaging.Application.OutgoingMessages.Requesting;
 using Messaging.Domain.OutgoingMessages;
+using Messaging.Domain.Transactions;
 using Messaging.Infrastructure.Configuration.InternalCommands;
 using Messaging.Infrastructure.OutgoingMessages.Common.Xml;
 using Messaging.Infrastructure.OutgoingMessages.Requesting;
@@ -52,8 +50,8 @@ namespace Messaging.IntegrationTests.Application.OutgoingMessages.Requesting
         {
             var incomingMessage1 = await MessageArrived().ConfigureAwait(false);
             var incomingMessage2 = await MessageArrived().ConfigureAwait(false);
-            var outgoingMessage1 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage1.Message.MessageId)!;
-            var outgoingMessage2 = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage2.Message.MessageId)!;
+            var outgoingMessage1 = _outgoingMessageStore.GetByTransactionId(incomingMessage1.MarketActivityRecord.Id)!;
+            var outgoingMessage2 = _outgoingMessageStore.GetByTransactionId(incomingMessage2.MarketActivityRecord.Id)!;
 
             var requestedMessageIds = new List<string> { outgoingMessage1.Id.ToString(), outgoingMessage2.Id.ToString(), };
             var request = CreateRequest(requestedMessageIds);
@@ -88,7 +86,7 @@ namespace Messaging.IntegrationTests.Application.OutgoingMessages.Requesting
             GivenTheRequestedDocumentFormatIsNotSupported();
 
             var incomingMessage = await MessageArrived().ConfigureAwait(false);
-            var outgoingMessage = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage.Message.MessageId)!;
+            var outgoingMessage = _outgoingMessageStore.GetByTransactionId(incomingMessage.MarketActivityRecord.Id)!;
 
             var requestedMessageIds = new List<string> { outgoingMessage.Id.ToString(), };
             var request = CreateRequest(requestedMessageIds);
@@ -102,7 +100,7 @@ namespace Messaging.IntegrationTests.Application.OutgoingMessages.Requesting
         public async Task Respond_with_error_if_requested_document_type_is_unknown()
         {
             var incomingMessage = await MessageArrived().ConfigureAwait(false);
-            var outgoingMessage = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage.Message.MessageId)!;
+            var outgoingMessage = _outgoingMessageStore.GetByTransactionId(incomingMessage.MarketActivityRecord.Id)!;
 
             var requestedMessageIds = new List<string> { outgoingMessage.Id.ToString(), };
             var request = CreateRequest(requestedMessageIds, "UnknownDocumentType");

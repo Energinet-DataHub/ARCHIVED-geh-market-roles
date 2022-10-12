@@ -12,17 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Application.OutgoingMessages.AccountingPointCharacteristics.MarketEvaluationPointDetails;
+namespace Messaging.Domain.OutgoingMessages.ConfirmRequestChangeAccountingPointCharacteristics;
 
-public class Series
-{
-    public Series(string product, string quantityMeasureUnit)
-    {
-        Product = product;
-        QuantityMeasureUnit = quantityMeasureUnit;
-    }
-
-    public string Product { get; }
-
-    public string QuantityMeasureUnit { get; }
-}
+public record MarketActivityRecord(string Id, string OriginalTransactionId, string MarketEvaluationPointId);

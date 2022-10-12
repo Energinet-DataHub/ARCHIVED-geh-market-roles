@@ -12,6 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Application.OutgoingMessages.ConfirmRequestChangeAccountingPointCharacteristics;
+namespace Messaging.Domain.OutgoingMessages.AccountingPointCharacteristics.MarketEvaluationPointDetails;
 
-public record MarketActivityRecord(string Id, string OriginalTransactionId, string MarketEvaluationPointId);
+public class UnitValue
+{
+    public UnitValue(string value, string unit)
+    {
+        Value = value;
+        Unit = unit;
+    }
+
+    public string Value { get; }
+
+    public string Unit { get; }
+}

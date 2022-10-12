@@ -16,10 +16,11 @@ using System;
 using System.Threading.Tasks;
 using Messaging.Application.Configuration;
 using Messaging.Application.OutgoingMessages;
-using Messaging.Application.OutgoingMessages.CharacteristicsOfACustomerAtAnAp;
 using Messaging.Application.OutgoingMessages.Common;
 using Messaging.Domain.Actors;
 using Messaging.Domain.OutgoingMessages;
+using Messaging.Domain.OutgoingMessages.CharacteristicsOfACustomerAtAnAp;
+using Messaging.Domain.Transactions;
 using Messaging.Domain.Transactions.MoveIn;
 
 namespace Messaging.Application.Transactions.MoveIn.MasterDataDelivery;

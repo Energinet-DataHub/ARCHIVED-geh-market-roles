@@ -12,7 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Application.OutgoingMessages.ConfirmRequestChangeOfSupplier
+namespace Messaging.Domain.OutgoingMessages.RejectRequestChangeOfSupplier;
+
+public class Reason
 {
-    public record MarketActivityRecord(string Id, string OriginalTransactionId, string MarketEvaluationPointId);
+    public Reason(string text, string code)
+    {
+        Text = text;
+        Code = code;
+    }
+
+    public string Code { get; }
+
+    public string Text { get; }
 }

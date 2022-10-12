@@ -12,26 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Application.OutgoingMessages.AccountingPointCharacteristics.MarketEvaluationPointDetails;
+using Messaging.Domain.SeedWork;
 
-public class StreetDetail
+namespace Messaging.Domain.Transactions;
+
+public sealed class ProcessType : EnumerationType
 {
-    public StreetDetail(string code, string name, string number, string floorIdentification, string suiteNumber)
+    public static readonly ProcessType MoveIn = new(0, nameof(MoveIn), "E65");
+
+    private ProcessType(int id, string name, string code)
+     : base(id, name)
     {
         Code = code;
-        Name = name;
-        Number = number;
-        FloorIdentification = floorIdentification;
-        SuiteNumber = suiteNumber;
     }
 
     public string Code { get; }
-
-    public string Name { get; }
-
-    public string Number { get; }
-
-    public string FloorIdentification { get; }
-
-    public string SuiteNumber { get; }
 }

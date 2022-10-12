@@ -12,18 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-
-namespace Messaging.Application.OutgoingMessages.RejectRequestChangeOfSupplier
+namespace Messaging.Domain.OutgoingMessages.ConfirmRequestChangeOfSupplier
 {
     public class MarketActivityRecord
     {
-        public MarketActivityRecord(string id, string originalTransactionId, string marketEvaluationPointId, IEnumerable<Reason> reasons)
+        public MarketActivityRecord(string id, string originalTransactionId, string marketEvaluationPointId)
         {
             Id = id;
             OriginalTransactionId = originalTransactionId;
             MarketEvaluationPointId = marketEvaluationPointId;
-            Reasons = reasons;
+        }
+
+        #pragma warning disable
+        private MarketActivityRecord()
+        {
         }
 
         public string Id { get; }
@@ -31,7 +33,5 @@ namespace Messaging.Application.OutgoingMessages.RejectRequestChangeOfSupplier
         public string OriginalTransactionId { get; }
 
         public string MarketEvaluationPointId { get; }
-
-        public IEnumerable<Reason> Reasons { get; }
     }
 }

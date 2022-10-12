@@ -12,25 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NodaTime;
+namespace Messaging.Domain.OutgoingMessages.AccountingPointCharacteristics.MarketEvaluationPointDetails;
 
-namespace Messaging.Application.OutgoingMessages.AccountingPointCharacteristics;
-
-public class MarketActivityRecord
+public class Mrid
 {
-    public MarketActivityRecord(string id, string? originalTransactionId, Instant validityStartDate, MarketEvaluationPointDetails.MarketEvaluationPoint marketEvaluationPt)
+    public Mrid(string id, string codingScheme)
     {
         Id = id;
-        OriginalTransactionId = originalTransactionId;
-        ValidityStartDate = validityStartDate;
-        MarketEvaluationPt = marketEvaluationPt;
+        CodingScheme = codingScheme;
     }
 
     public string Id { get; }
 
-    public string? OriginalTransactionId { get; }
-
-    public Instant ValidityStartDate { get; }
-
-    public MarketEvaluationPointDetails.MarketEvaluationPoint MarketEvaluationPt { get; }
+    public string CodingScheme { get; }
 }

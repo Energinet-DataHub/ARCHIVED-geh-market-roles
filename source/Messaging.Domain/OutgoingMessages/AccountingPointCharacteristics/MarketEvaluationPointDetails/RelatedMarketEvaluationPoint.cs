@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Application.OutgoingMessages.RejectRequestChangeOfSupplier;
+namespace Messaging.Domain.OutgoingMessages.AccountingPointCharacteristics.MarketEvaluationPointDetails;
 
-public class Reason
+public class RelatedMarketEvaluationPoint
 {
-    public Reason(string text, string code)
+    public RelatedMarketEvaluationPoint(Mrid id, string description)
     {
-        Text = text;
-        Code = code;
+        Id = id;
+        Description = description;
     }
 
-    public string Code { get; }
+    public Mrid Id { get; }
 
-    public string Text { get; }
+    public string Description { get; }
 }
