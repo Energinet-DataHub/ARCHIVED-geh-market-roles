@@ -51,6 +51,8 @@ namespace Messaging.Infrastructure.Configuration.DataAccess
 
         public DbSet<MarketEvaluationPoint> MarketEvaluationPoints { get; private set; }
 
+        public DbSet<ConfirmRequestChangeOfSupplierMessage> ConfirmRequestChangeOfSupplierMessages { get; private set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (modelBuilder == null) throw new ArgumentNullException(nameof(modelBuilder));

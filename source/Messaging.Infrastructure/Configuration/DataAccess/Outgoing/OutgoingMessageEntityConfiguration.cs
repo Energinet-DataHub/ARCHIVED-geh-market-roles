@@ -56,8 +56,9 @@ namespace Messaging.Infrastructure.Configuration.DataAccess.Outgoing
             builder.Property(x => x.MarketActivityRecordPayload);
 
             builder
-                .HasDiscriminator(x => x.DocumentType)
-                .HasValue<ConfirmRequestChangeOfSupplierMessage>(DocumentType.ConfirmRequestChangeOfSupplier)
+                .HasDiscriminator<string>("Discriminator")
+                .HasValue<OutgoingMessage>(nameof(OutgoingMessage))
+                .HasValue<ConfirmRequestChangeOfSupplierMessage>(DocumentType.ConfirmRequestChangeOfSupplier.Name)
                 .IsComplete(false);
         }
     }
