@@ -19,6 +19,7 @@ using Messaging.Application.OutgoingMessages.Common;
 using Messaging.Application.OutgoingMessages.GenericNotification;
 using Messaging.Domain.Actors;
 using Messaging.Domain.OutgoingMessages;
+using Messaging.Domain.Transactions;
 using Messaging.Domain.Transactions.MoveIn;
 using NodaTime;
 

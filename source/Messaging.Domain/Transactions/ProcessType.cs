@@ -12,17 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Messaging.Application.OutgoingMessages.RejectRequestChangeOfSupplier;
+using Messaging.Domain.SeedWork;
 
-public class Reason
+namespace Messaging.Domain.Transactions;
+
+public sealed class ProcessType : EnumerationType
 {
-    public Reason(string text, string code)
+    public static readonly ProcessType MoveIn = new(0, nameof(MoveIn), "E65");
+
+    private ProcessType(int id, string name, string code)
+     : base(id, name)
     {
-        Text = text;
         Code = code;
     }
 
     public string Code { get; }
-
-    public string Text { get; }
 }

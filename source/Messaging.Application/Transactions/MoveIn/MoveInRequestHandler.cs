@@ -23,12 +23,14 @@ using Messaging.Application.IncomingMessages.RequestChangeOfSupplier;
 using Messaging.Application.OutgoingMessages;
 using Messaging.Application.OutgoingMessages.Common;
 using Messaging.Application.OutgoingMessages.Common.Reasons;
-using Messaging.Application.OutgoingMessages.RejectRequestChangeOfSupplier;
 using Messaging.Domain.Actors;
 using Messaging.Domain.MasterData.MarketEvaluationPoints;
 using Messaging.Domain.OutgoingMessages;
+using Messaging.Domain.OutgoingMessages.RejectRequestChangeOfSupplier;
+using Messaging.Domain.Transactions;
 using Messaging.Domain.Transactions.MoveIn;
 using NodaTime.Text;
+using MarketActivityRecord = Messaging.Domain.OutgoingMessages.RejectRequestChangeOfSupplier.MarketActivityRecord;
 
 namespace Messaging.Application.Transactions.MoveIn
 {
@@ -128,9 +130,7 @@ namespace Messaging.Application.Transactions.MoveIn
         private async Task<Unit> RejectInvalidRequestMessageAsync(MoveInTransaction transaction, RequestChangeOfSupplierTransaction request, string error)
         {
             var reasons = await CreateReasonsFromAsync(new Collection<string>() { error }).ConfigureAwait(false);
-            _outgoingMessageStore.Add(RejectMessageFrom(reasons, transaction, request));
-            transaction.RejectedByBusinessProcess();
-
+            transaction.RejectedByBusinessProcess(reasons, DataHubDetails.IdentificationNumber, _marketActivityRecordParser, ActorNumber.Create(request.Message.SenderId));
             _moveInTransactionRepository.Add(transaction);
             return Unit.Value;
         }
@@ -163,7 +163,7 @@ namespace Messaging.Application.Transactions.MoveIn
 
         private OutgoingMessage RejectMessageFrom(IReadOnlyCollection<Reason> reasons, MoveInTransaction transaction, RequestChangeOfSupplierTransaction requestChangeOfSupplierTransaction)
         {
-            var marketActivityRecord = new OutgoingMessages.RejectRequestChangeOfSupplier.MarketActivityRecord(
+            var marketActivityRecord = new MarketActivityRecord(
                 Guid.NewGuid().ToString(),
                 transaction.TransactionId,
                 transaction.MarketEvaluationPointId,

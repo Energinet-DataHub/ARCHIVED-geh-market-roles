@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Messaging.Application.OutgoingMessages.Common;
+using Messaging.Domain.OutgoingMessages;
 using Messaging.Infrastructure.Configuration.Serialization;
 
 namespace Messaging.Infrastructure.Common

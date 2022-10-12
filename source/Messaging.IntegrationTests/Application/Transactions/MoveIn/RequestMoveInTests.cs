@@ -25,6 +25,7 @@ using Messaging.Application.SchemaStore;
 using Messaging.Application.Transactions.MoveIn;
 using Messaging.Application.Xml;
 using Messaging.Domain.OutgoingMessages;
+using Messaging.Domain.Transactions;
 using Messaging.Domain.Transactions.MoveIn;
 using Messaging.Infrastructure.Configuration.InternalCommands;
 using Messaging.Infrastructure.Transactions;
@@ -74,7 +75,7 @@ namespace Messaging.IntegrationTests.Application.Transactions.MoveIn
         {
             await GivenRequestHasBeenAccepted().ConfigureAwait(false);
 
-            var confirmMessage = _outgoingMessageStore.GetByOriginalMessageId(SampleData.OriginalMessageId)!;
+            var confirmMessage = _outgoingMessageStore.GetByTransactionId(SampleData.OriginalMessageId)!;
             await RequestMessage(confirmMessage.Id.ToString(), DocumentType.ConfirmRequestChangeOfSupplier).ConfigureAwait(false);
 
             await AsserConfirmMessage(confirmMessage).ConfigureAwait(false);
@@ -110,7 +111,7 @@ namespace Messaging.IntegrationTests.Application.Transactions.MoveIn
                 .Build();
 
             await InvokeCommandAsync(incomingMessage).ConfigureAwait(false);
-            var rejectMessage = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage.Message.MessageId)!;
+            var rejectMessage = _outgoingMessageStore.GetByTransactionId(incomingMessage.Message.MessageId)!;
             await RequestMessage(rejectMessage.Id.ToString(), DocumentType.RejectRequestChangeOfSupplier).ConfigureAwait(false);
 
             await AssertRejectMessage(rejectMessage).ConfigureAwait(false);
@@ -127,7 +128,7 @@ namespace Messaging.IntegrationTests.Application.Transactions.MoveIn
                 .Build();
 
             await InvokeCommandAsync(incomingMessage).ConfigureAwait(false);
-            var rejectMessage = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage.Message.MessageId)!;
+            var rejectMessage = _outgoingMessageStore.GetByTransactionId(SampleData.TransactionId)!;
             await RequestMessage(rejectMessage.Id.ToString(), DocumentType.RejectRequestChangeOfSupplier).ConfigureAwait(false);
 
             await AssertRejectMessage(rejectMessage).ConfigureAwait(false);
@@ -145,7 +146,7 @@ namespace Messaging.IntegrationTests.Application.Transactions.MoveIn
                 .Build();
 
             await InvokeCommandAsync(incomingMessage).ConfigureAwait(false);
-            var rejectMessage = _outgoingMessageStore.GetByOriginalMessageId(incomingMessage.Message.MessageId)!;
+            var rejectMessage = _outgoingMessageStore.GetByTransactionId(SampleData.TransactionId)!;
             await RequestMessage(rejectMessage.Id.ToString(), DocumentType.RejectRequestChangeOfSupplier).ConfigureAwait(false);
 
             await AssertRejectMessage(rejectMessage).ConfigureAwait(false);

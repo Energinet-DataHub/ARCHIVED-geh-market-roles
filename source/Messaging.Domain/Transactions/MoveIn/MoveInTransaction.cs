@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Messaging.Domain.Actors;
 using Messaging.Domain.OutgoingMessages;
+using Messaging.Domain.OutgoingMessages.RejectRequestChangeOfSupplier;
 using Messaging.Domain.SeedWork;
 using Messaging.Domain.Transactions.MoveIn.Events;
 using NodaTime;
@@ -137,6 +139,43 @@ namespace Messaging.Domain.Transactions.MoveIn
                 _businessProcessState = BusinessProcessState.Rejected;
                 AddDomainEvent(new MoveInWasRejected(TransactionId));
             }
+        }
+
+        public void RejectedByBusinessProcess(IReadOnlyCollection<Reason> reasons, ActorNumber senderId, IMarketActivityRecordParser marketActivityRecordParser, ActorNumber receiverId)
+        {
+            if (_businessProcessState == BusinessProcessState.Pending)
+            {
+                var marketActivityRecord = new MarketActivityRecord(
+                    Guid.NewGuid().ToString(),
+                    TransactionId,
+                    MarketEvaluationPointId,
+                    reasons);
+
+                _outgoingMessages.Add(CreateOutgoingMessage(
+                    StartedByMessageId,
+                    DocumentType.RejectRequestChangeOfSupplier,
+                    ProcessType.MoveIn.Code,
+                    receiverId,
+                    marketActivityRecordParser.From(marketActivityRecord),
+                    senderId));
+
+                _businessProcessState = BusinessProcessState.Rejected;
+                AddDomainEvent(new MoveInWasRejected(TransactionId));
+            }
+        }
+
+        #pragma warning disable
+        private static OutgoingMessage CreateOutgoingMessage(string id, DocumentType documentType, string processType, ActorNumber receiverId, string marketActivityRecordPayload, ActorNumber senderId)
+        {
+            return new OutgoingMessage(
+                documentType,
+                receiverId,
+                id,
+                processType,
+                MarketRole.EnergySupplier,
+                senderId,
+                MarketRole.MeteringPointAdministrator,
+                marketActivityRecordPayload);
         }
 
         public void MarkMeteringPointMasterDataAsSent()
