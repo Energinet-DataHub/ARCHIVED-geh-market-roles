@@ -36,8 +36,6 @@ using Processing.Api.MoveIn;
 using Processing.Application.ChangeOfSupplier;
 using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.Common;
-using Processing.Application.MoveIn;
-using Processing.Application.MoveIn.Validation;
 using Processing.Domain.BusinessProcesses.MoveIn;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
@@ -50,7 +48,6 @@ using Processing.Infrastructure.Configuration.DataAccess.AccountingPoints;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
 using Processing.Infrastructure.Configuration.DomainEventDispatching;
 using Processing.Infrastructure.Configuration.Serialization;
-using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Users;
 using SimpleInjector;
 
@@ -132,12 +129,11 @@ namespace Processing.Api
             container.Register<IDomainEventsAccessor, DomainEventsAccessor>(Lifestyle.Scoped);
             container.Register<IDomainEventsDispatcher, DomainEventsDispatcher>(Lifestyle.Scoped);
             container.Register<MoveInHttpTrigger>(Lifestyle.Scoped);
-            container.Register<JsonMoveInAdapter>(Lifestyle.Scoped);
             container.Register<SystemTimer>();
             container.Register<CustomerMasterDataRequestListener>();
             container.Register<ActorCreatedListener>();
 
-            container.ConfigureMoveInProcessTimePolicy(7, 60, TimeOfDay.Create(0, 0, 0));
+            container.ConfigureMoveIn(16, 60, TimeOfDay.Create(0, 0, 0));
 
             var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING")
                                    ?? throw new InvalidOperationException(
@@ -161,7 +157,6 @@ namespace Processing.Api
 
             // Input validation(
             container.Register<IValidator<RequestChangeOfSupplier>, RequestChangeOfSupplierRuleSet>(Lifestyle.Scoped);
-            container.Register<IValidator<MoveInRequest>, InputValidationSet>(Lifestyle.Scoped);
 
             // Integration event publishing
             container.AddEventPublishing(
