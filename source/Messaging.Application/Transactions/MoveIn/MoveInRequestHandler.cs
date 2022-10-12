@@ -37,7 +37,6 @@ namespace Messaging.Application.Transactions.MoveIn
     public class MoveInRequestHandler : IRequestHandler<RequestChangeOfSupplierTransaction, Unit>
     {
         private readonly IMoveInTransactionRepository _moveInTransactionRepository;
-        private readonly IOutgoingMessageStore _outgoingMessageStore;
         private readonly IMarketActivityRecordParser _marketActivityRecordParser;
         private readonly IMoveInRequester _moveInRequester;
         private readonly IValidationErrorTranslator _validationErrorTranslator;
@@ -52,7 +51,6 @@ namespace Messaging.Application.Transactions.MoveIn
             IMarketEvaluationPointRepository marketEvaluationPointRepository)
         {
             _moveInTransactionRepository = moveInTransactionRepository;
-            _outgoingMessageStore = outgoingMessageStore;
             _marketActivityRecordParser = marketActivityRecordParser;
             _moveInRequester = moveInRequester;
             _validationErrorTranslator = validationErrorTranslator;
@@ -94,15 +92,16 @@ namespace Messaging.Application.Transactions.MoveIn
             if (businessProcessResult.Success == false)
             {
                 var reasons = await CreateReasonsFromAsync(businessProcessResult.ValidationErrors).ConfigureAwait(false);
-                _outgoingMessageStore.Add(RejectMessageFrom(reasons, transaction, request));
                 transaction.RejectedByBusinessProcess(reasons, DataHubDetails.IdentificationNumber, _marketActivityRecordParser, ActorNumber.Create(request.Message.SenderId));
             }
             else
             {
-                _outgoingMessageStore.Add(ConfirmMessageFrom(transaction, request));
                 transaction.AcceptedByBusinessProcess(
                     businessProcessResult.ProcessId ?? throw new MoveInException("Business process id cannot be empty."),
-                    request.MarketActivityRecord.MarketEvaluationPointId ?? throw new MoveInException("Market evaluation point number cannot be empty."));
+                    request.MarketActivityRecord.MarketEvaluationPointId ?? throw new MoveInException("Market evaluation point number cannot be empty."),
+                    ActorNumber.Create(request.Message.SenderId),
+                    _marketActivityRecordParser,
+                    DataHubDetails.IdentificationNumber);
             }
 
             _moveInTransactionRepository.Add(transaction);
@@ -148,7 +147,7 @@ namespace Messaging.Application.Transactions.MoveIn
 
         private OutgoingMessage ConfirmMessageFrom(MoveInTransaction transaction, RequestChangeOfSupplierTransaction requestChangeOfSupplierTransaction)
         {
-            var marketActivityRecord = new OutgoingMessages.ConfirmRequestChangeOfSupplier.MarketActivityRecord(
+            var marketActivityRecord = new Domain.OutgoingMessages.ConfirmRequestChangeOfSupplier.MarketActivityRecord(
                 Guid.NewGuid().ToString(),
                 transaction.TransactionId,
                 transaction.MarketEvaluationPointId);

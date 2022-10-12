@@ -132,6 +132,33 @@ namespace Messaging.Domain.Transactions.MoveIn
             AddDomainEvent(new MoveInWasAccepted(ProcessId, marketEvaluationPointNumber, TransactionId));
         }
 
+        public void AcceptedByBusinessProcess(string processId, string marketEvaluationPointNumber, ActorNumber receiverId, IMarketActivityRecordParser marketActivityRecordParser, ActorNumber senderId)
+        {
+            if (_state != State.Started)
+            {
+                throw new MoveInException($"Cannot accept transaction while in state '{_state.ToString()}'");
+            }
+
+            if (_businessProcessState == BusinessProcessState.Accepted)
+                return;
+
+            var marketActivityRecord = new OutgoingMessages.ConfirmRequestChangeOfSupplier.MarketActivityRecord(
+                Guid.NewGuid().ToString(),
+                TransactionId,
+                MarketEvaluationPointId);
+
+            _outgoingMessages.Add(CreateOutgoingMessage(
+                StartedByMessageId,
+                DocumentType.ConfirmRequestChangeOfSupplier,
+                ProcessType.MoveIn.Code,
+                receiverId,
+                marketActivityRecordParser.From(marketActivityRecord), senderId));
+
+            _businessProcessState = BusinessProcessState.Accepted;
+            ProcessId = processId ?? throw new ArgumentNullException(nameof(processId));
+            AddDomainEvent(new MoveInWasAccepted(ProcessId, marketEvaluationPointNumber, TransactionId));
+        }
+
         public void RejectedByBusinessProcess()
         {
             if (_businessProcessState == BusinessProcessState.Pending)
