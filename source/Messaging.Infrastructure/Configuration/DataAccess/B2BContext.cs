@@ -16,11 +16,13 @@ using System;
 using Contracts.BusinessRequests.MoveIn;
 using Messaging.Domain.MasterData.MarketEvaluationPoints;
 using Messaging.Domain.OutgoingMessages;
+using Messaging.Domain.OutgoingMessages.ConfirmRequestChangeOfSupplier;
 using Messaging.Domain.Transactions.MoveIn;
 using Messaging.Infrastructure.Configuration.DataAccess.Outgoing;
 using Messaging.Infrastructure.Configuration.InternalCommands;
 using Messaging.Infrastructure.Configuration.Serialization;
 using Messaging.Infrastructure.MasterData.MarketEvaluationPoints;
+using Messaging.Infrastructure.OutgoingMessages.ConfirmRequestChangeOfSupplier;
 using Messaging.Infrastructure.Transactions;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,6 +59,10 @@ namespace Messaging.Infrastructure.Configuration.DataAccess
             modelBuilder.ApplyConfiguration(new OutgoingMessageEntityConfiguration());
             modelBuilder.ApplyConfiguration(new QueuedInternalCommandEntityConfiguration());
             modelBuilder.ApplyConfiguration(new MarketEvaluationPointEntityConfiguration());
+
+            modelBuilder.Entity<ConfirmRequestChangeOfSupplierMessage>()
+                .HasBaseType<OutgoingMessage>();
+            modelBuilder.Entity<ConfirmRequestChangeOfSupplierMessage>().OwnsOne(x => x.MarketActivityRecord);
         }
     }
 }

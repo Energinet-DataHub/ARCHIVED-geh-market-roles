@@ -18,11 +18,31 @@ namespace Messaging.Domain.OutgoingMessages.ConfirmRequestChangeOfSupplier;
 
 public class ConfirmRequestChangeOfSupplierMessage : OutgoingMessage
 {
-    public ConfirmRequestChangeOfSupplierMessage(ActorNumber receiverId, string transactionId, string processType, MarketRole receiverRole, ActorNumber senderId, MarketRole senderRole, string marketActivityRecordPayload, MarketActivityRecord marketActivityRecord)
+    public ConfirmRequestChangeOfSupplierMessage(
+        ActorNumber receiverId,
+        string transactionId,
+        string processType,
+        MarketRole receiverRole,
+        ActorNumber senderId,
+        MarketRole senderRole,
+        string marketActivityRecordPayload,
+        MarketActivityRecord marketActivityRecord)
         : base(DocumentType.ConfirmRequestChangeOfSupplier, receiverId, transactionId, processType, receiverRole, senderId, senderRole, marketActivityRecordPayload)
     {
         MarketActivityRecord = marketActivityRecord;
     }
 
-    public MarketActivityRecord MarketActivityRecord { get; }
+    private ConfirmRequestChangeOfSupplierMessage(
+        ActorNumber receiverId,
+        string transactionId,
+        string processType,
+        MarketRole receiverRole,
+        ActorNumber senderId,
+        MarketRole senderRole,
+        string marketActivityRecordPayload)
+        : base(DocumentType.ConfirmRequestChangeOfSupplier, receiverId, transactionId, processType, receiverRole, senderId, senderRole, marketActivityRecordPayload)
+    {
+    }
+
+    public MarketActivityRecord? MarketActivityRecord { get; }
 }

@@ -23,6 +23,11 @@ namespace Messaging.Domain.OutgoingMessages.ConfirmRequestChangeOfSupplier
             MarketEvaluationPointId = marketEvaluationPointId;
         }
 
+        #pragma warning disable
+        private MarketActivityRecord()
+        {
+        }
+
         public string Id { get; }
 
         public string OriginalTransactionId { get; }
