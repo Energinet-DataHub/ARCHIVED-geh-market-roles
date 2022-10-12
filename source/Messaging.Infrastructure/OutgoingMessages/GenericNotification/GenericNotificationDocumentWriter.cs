@@ -18,8 +18,8 @@ using System.Threading.Tasks;
 using System.Xml;
 using Messaging.Application.OutgoingMessages.Common;
 using Messaging.Application.OutgoingMessages.Common.Xml;
-using Messaging.Application.OutgoingMessages.GenericNotification;
 using Messaging.Domain.OutgoingMessages;
+using Messaging.Domain.OutgoingMessages.GenericNotification;
 using Messaging.Infrastructure.OutgoingMessages.Common.Xml;
 
 namespace Messaging.Infrastructure.OutgoingMessages.GenericNotification;

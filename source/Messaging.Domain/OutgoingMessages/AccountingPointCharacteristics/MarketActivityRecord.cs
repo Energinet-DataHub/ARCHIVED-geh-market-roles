@@ -12,29 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using Messaging.Domain.OutgoingMessages.RejectRequestChangeOfSupplier;
+using NodaTime;
 
-namespace Messaging.Application.OutgoingMessages.RejectRequestChangeAccountingPointCharacteristics;
+namespace Messaging.Domain.OutgoingMessages.AccountingPointCharacteristics;
 
 public class MarketActivityRecord
 {
-    public MarketActivityRecord(string id, string businessProcessReference, string originalTransactionId, string marketEvaluationPointId, IEnumerable<Reason> reasons)
+    public MarketActivityRecord(string id, string? originalTransactionId, Instant validityStartDate, MarketEvaluationPointDetails.MarketEvaluationPoint marketEvaluationPt)
     {
         Id = id;
-        BusinessProcessReference = businessProcessReference;
         OriginalTransactionId = originalTransactionId;
-        MarketEvaluationPointId = marketEvaluationPointId;
-        Reasons = reasons;
+        ValidityStartDate = validityStartDate;
+        MarketEvaluationPt = marketEvaluationPt;
     }
 
     public string Id { get; }
 
-    public string BusinessProcessReference { get; }
+    public string? OriginalTransactionId { get; }
 
-    public string OriginalTransactionId { get; }
+    public Instant ValidityStartDate { get; }
 
-    public string MarketEvaluationPointId { get; }
-
-    public IEnumerable<Reason> Reasons { get; }
+    public MarketEvaluationPointDetails.MarketEvaluationPoint MarketEvaluationPt { get; }
 }

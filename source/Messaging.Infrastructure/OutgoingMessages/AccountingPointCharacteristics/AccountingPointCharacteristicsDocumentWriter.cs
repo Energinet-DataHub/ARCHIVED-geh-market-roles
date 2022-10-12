@@ -16,11 +16,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml;
-using Messaging.Application.OutgoingMessages.AccountingPointCharacteristics;
-using Messaging.Application.OutgoingMessages.AccountingPointCharacteristics.MarketEvaluationPointDetails;
 using Messaging.Application.OutgoingMessages.Common;
 using Messaging.Application.OutgoingMessages.Common.Xml;
 using Messaging.Domain.OutgoingMessages;
+using Messaging.Domain.OutgoingMessages.AccountingPointCharacteristics;
+using Messaging.Domain.OutgoingMessages.AccountingPointCharacteristics.MarketEvaluationPointDetails;
 using Messaging.Infrastructure.OutgoingMessages.Common.Xml;
 
 namespace Messaging.Infrastructure.OutgoingMessages.AccountingPointCharacteristics;
@@ -148,7 +148,7 @@ public class AccountingPointCharacteristicsDocumentWriter : DocumentWriter
         }
     }
 
-    private async Task WriteMarketEvaluationPointAsync(Application.OutgoingMessages.AccountingPointCharacteristics.MarketEvaluationPointDetails.MarketEvaluationPoint marketEvaluationPoint, XmlWriter writer)
+    private async Task WriteMarketEvaluationPointAsync(MarketEvaluationPoint marketEvaluationPoint, XmlWriter writer)
     {
         await writer.WriteStartElementAsync(DocumentDetails.Prefix, "MarketEvaluationPoint", null).ConfigureAwait(false);
         await WriteMridAsync("mRID", marketEvaluationPoint.MRID, writer).ConfigureAwait(false);
