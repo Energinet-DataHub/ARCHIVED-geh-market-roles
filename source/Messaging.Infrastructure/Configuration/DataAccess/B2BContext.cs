@@ -63,8 +63,15 @@ namespace Messaging.Infrastructure.Configuration.DataAccess
             modelBuilder.ApplyConfiguration(new MarketEvaluationPointEntityConfiguration());
 
             modelBuilder.Entity<ConfirmRequestChangeOfSupplierMessage>()
-                .HasBaseType<OutgoingMessage>();
-            modelBuilder.Entity<ConfirmRequestChangeOfSupplierMessage>().OwnsOne(x => x.MarketActivityRecord);
+                .OwnsOne(x => x.MarketActivityRecord, model =>
+                {
+                    model.Property(x => x.Id)
+                        .HasColumnName("MarketActivityRecord_OriginalTransactionId");
+                    model.Property(x => x.OriginalTransactionId)
+                        .HasColumnName("MarketActivityRecord_Id");
+                    model.Property(x => x.MarketEvaluationPointId)
+                        .HasColumnName("MarketActivityRecord_MarketEvaluationPointId");
+                });
         }
     }
 }
