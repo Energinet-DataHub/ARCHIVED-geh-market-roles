@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Messaging.Domain;
+
 namespace Messaging.Application.IncomingMessages.RequestChangeAccountPointCharacteristics;
 public record MarketActivityRecord(
     string Id,

@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Messaging.Application.IncomingMessages;
 using Messaging.CimMessageAdapter.Errors;
+using Messaging.Domain;
 using MessageHeader = Messaging.Application.IncomingMessages.MessageHeader;
 
 namespace Messaging.CimMessageAdapter.Messages

@@ -14,6 +14,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Messaging.Domain;
 
 namespace Messaging.Application.IncomingMessages;
 
