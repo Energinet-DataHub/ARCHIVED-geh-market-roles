@@ -48,9 +48,18 @@ public class ConfirmRequestChangeOfSupplierMessage : OutgoingMessage
         ActorNumber senderId,
         MarketRole senderRole,
         string marketActivityRecordPayload)
-        : base(DocumentType.ConfirmRequestChangeOfSupplier, receiverId, transactionId, processType, receiverRole, senderId, senderRole, marketActivityRecordPayload)
+        : base(
+            DocumentType.ConfirmRequestChangeOfSupplier,
+            receiverId,
+            transactionId,
+            processType,
+            receiverRole,
+            senderId,
+            senderRole,
+            marketActivityRecordPayload)
     {
+        MarketActivityRecord = JsonSerializer.Deserialize<MarketActivityRecord>(marketActivityRecordPayload)!;
     }
 
-    public MarketActivityRecord? MarketActivityRecord { get; }
+    public MarketActivityRecord MarketActivityRecord { get; }
 }

@@ -25,6 +25,7 @@ using Messaging.Infrastructure.MasterData.MarketEvaluationPoints;
 using Messaging.Infrastructure.OutgoingMessages.ConfirmRequestChangeOfSupplier;
 using Messaging.Infrastructure.Transactions;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Messaging.Infrastructure.Configuration.DataAccess
 {
@@ -63,15 +64,22 @@ namespace Messaging.Infrastructure.Configuration.DataAccess
             modelBuilder.ApplyConfiguration(new MarketEvaluationPointEntityConfiguration());
 
             modelBuilder.Entity<ConfirmRequestChangeOfSupplierMessage>()
-                .OwnsOne(x => x.MarketActivityRecord, model =>
-                {
-                    model.Property(x => x.Id)
-                        .HasColumnName("MarketActivityRecord_OriginalTransactionId");
-                    model.Property(x => x.OriginalTransactionId)
-                        .HasColumnName("MarketActivityRecord_Id");
-                    model.Property(x => x.MarketEvaluationPointId)
-                        .HasColumnName("MarketActivityRecord_MarketEvaluationPointId");
-                });
+                .Ignore(x => x.MarketActivityRecord)
+                .Property(x => x.MarketActivityRecordPayload);
+            // .Property(entity => entity.MarketActivityRecord)
+            // .HasColumnName("MarketActivityRecordPayload")
+            // .HasConversion(
+            //     toDbValue => JsonConvert.SerializeObject(toDbValue),
+            //     fromDbValue => JsonConvert.DeserializeObject<MarketActivityRecord>(fromDbValue));
+            // .OwnsOne(x => x.MarketActivityRecord, model =>
+            // {
+            //     model.Property(x => x.Id)
+            //         .HasColumnName("MarketActivityRecord_OriginalTransactionId");
+            //     model.Property(x => x.OriginalTransactionId)
+            //         .HasColumnName("MarketActivityRecord_Id");
+            //     model.Property(x => x.MarketEvaluationPointId)
+            //         .HasColumnName("MarketActivityRecord_MarketEvaluationPointId");
+            // });
         }
     }
 }
