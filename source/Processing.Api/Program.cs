@@ -160,7 +160,7 @@ namespace Processing.Api
 
             // Integration event publishing
             container.AddEventPublishing(
-                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_INTEGRATION_EVENTS")!,
+                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND")!,
                 Environment.GetEnvironmentVariable("INTEGRATION_EVENT_TOPIC_NAME")!);
 
             // Health check

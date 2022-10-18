@@ -24,7 +24,7 @@ public class CompositionRootTests
     {
         var program = new Program();
         Environment.SetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING", "SomeString");
-        Environment.SetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_INTEGRATION_EVENTS", "Endpoint=sb://somespace.windows.net/;SharedAccessKeyName=somekey;SharedAccessKey=somevalue");
+        Environment.SetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND", "Endpoint=sb://somespace.windows.net/;SharedAccessKeyName=somekey;SharedAccessKey=somevalue");
         Environment.SetEnvironmentVariable("MARKET_ROLES_SERVICE_BUS_SENDER_CONNECTION_STRING", "Endpoint=sb://somespace.windows.net/;SharedAccessKeyName=somekey;SharedAccessKey=somevalue");
         Environment.SetEnvironmentVariable("CUSTOMER_MASTER_DATA_RESPONSE_QUEUE_NAME", "somevalue");
         program.ConfigureApplication();
