@@ -91,10 +91,10 @@ namespace Processing.Api
             services.AddLiveHealthCheck();
             services.AddSqlServerHealthCheck(Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING")!);
             services.AddExternalServiceBusTopicsHealthCheck(
-                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_MANAGE_FOR_INTEGRATION_EVENTS")!,
+                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_MANAGE")!,
                 "consumer-moved-in");
             services.AddExternalServiceBusSubscriptionsHealthCheck(
-                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_MANAGE_FOR_INTEGRATION_EVENTS")!,
+                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_MANAGE")!,
                 Environment.GetEnvironmentVariable("INTEGRATION_EVENT_TOPIC_NAME")!,
                 Environment.GetEnvironmentVariable("MARKET_PARTICIPANT_CHANGED_ACTOR_CREATED_SUBSCRIPTION_NAME")!,
                 Environment.GetEnvironmentVariable("METERING_POINT_CREATED_EVENT_ENERGY_SUPPLYING_SUBSCRIPTION_NAME")!);
