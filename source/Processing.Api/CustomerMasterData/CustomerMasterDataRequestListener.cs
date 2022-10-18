@@ -43,7 +43,7 @@ namespace Processing.Api.CustomerMasterData
 
         [Function("CustomerMasterDataRequestListener")]
         public async Task RunAsync(
-            [ServiceBusTrigger("%CUSTOMER_MASTER_DATA_REQUEST_QUEUE_NAME%", Connection = "MARKET_ROLES_SERVICE_BUS_LISTEN_CONNECTION_STRING")] byte[] data,
+            [ServiceBusTrigger("%CUSTOMER_MASTER_DATA_REQUEST_QUEUE_NAME%", Connection = "SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_LISTENER ")] byte[] data,
             FunctionContext context)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
