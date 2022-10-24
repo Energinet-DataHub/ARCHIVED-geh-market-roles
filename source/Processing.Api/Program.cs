@@ -171,7 +171,7 @@ namespace Processing.Api
 
             // Master data request
             var serviceBusConnectionString =
-                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND ");
+                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND");
             var queueName = Environment.GetEnvironmentVariable("CUSTOMER_MASTER_DATA_RESPONSE_QUEUE_NAME");
             container.Register<ServiceBusSender>(
                 () =>
