@@ -17,8 +17,10 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts.BusinessRequests.ChangeCustomerCharacteristics;
+using Dapper;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
+using Processing.Application.Common;
 using Processing.Infrastructure.RequestAdapters;
 using Processing.IntegrationTests.Fixtures;
 using Xunit;
@@ -28,11 +30,21 @@ using Response = Contracts.BusinessRequests.MoveIn.Response;
 namespace Processing.IntegrationTests.Application.ChangeCustomerCharacteristics
 {
     [IntegrationTest]
-    public class ChangeCustomerCharacteristicsTests : TestBase
+    public class ChangeCustomerCharacteristicsTests : TestBase, IAsyncLifetime
     {
         public ChangeCustomerCharacteristicsTests([NotNull] DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
+        }
+
+        public async Task InitializeAsync()
+        {
+            await CreateMoveInTransaction().ConfigureAwait(false);
+        }
+
+        public Task DisposeAsync()
+        {
+            return Task.CompletedTask;
         }
 
         [Fact]
@@ -41,9 +53,9 @@ namespace Processing.IntegrationTests.Application.ChangeCustomerCharacteristics
             var requestAdapter = GetService<JsonChangeCustomerCharacteristicsAdapter>();
 
             var request = new Request(
-                SampleData.GsrnNumber,
-                SampleData.MoveInDate.ToString(),
-                new Customer(SampleData.CustomerNumber, SampleData.ConsumerName),
+                Processing.IntegrationTests.Application.SampleData.GsrnNumber,
+                Processing.IntegrationTests.Application.SampleData.MoveInDate.ToString(),
+                new Customer(Processing.IntegrationTests.Application.SampleData.CustomerNumber, Processing.IntegrationTests.Application.SampleData.ConsumerName),
                 Guid.NewGuid().ToString());
 
             var response = await requestAdapter.ReceiveAsync(SerializeToStream(request));
@@ -63,6 +75,50 @@ namespace Processing.IntegrationTests.Application.ChangeCustomerCharacteristics
             streamWriter.Flush();
             stream.Seek(0, SeekOrigin.Begin);
             return stream;
+        }
+
+        private async Task CreateMoveInTransaction()
+        {
+            var sql = @$"INSERT INTO [b2b].[MoveInTransactions]
+                            ([TransactionId],
+                             [ProcessId],
+                             [MarketEvaluationPointId],
+                             [EffectiveDate],
+                             [CurrentEnergySupplierId],
+                             [State],
+                             [StartedByMessageId],
+                             [NewEnergySupplierId],
+                             [ConsumerId],
+                             [ConsumerName],
+                             [ConsumerIdType],
+                             [CurrentEnergySupplierNotificationState],
+                             [MeteringPointMasterDataState],
+                             [CustomerMasterDataState],
+                             [BusinessProcessState],
+                             [GridOperatorNotificationState],
+                             [GridOperator_MessageDeliveryState_CustomerMasterData],
+                             [CustomerMasterData])
+                            VALUES ('{SampleData.TransactionId}',
+                              '{SampleData.ProcessId}',
+                              '{SampleData.MarketEvaluationPointId}',
+                              '{SampleData.EffectiveDate}',
+                              '{SampleData.CurrentEnergySupplierId}',
+                              '{SampleData.State}',
+                              '{SampleData.StartedByMessageId}',
+                              '{SampleData.NewEnergySupplierId}',
+                              '{SampleData.ConsumerId}',
+                              '{SampleData.ConsumerName}',
+                              '{SampleData.ConsumerIdType}',
+                              '{SampleData.CurrentEnergySupplierNotificationState}',
+                              '{SampleData.MeteringPointMasterDataState}',
+                              '{SampleData.CustomerMasterDataState}',
+                              '{SampleData.BusinessProcessState}',
+                              '{SampleData.GridOperatorNotificationState}',
+                              '{SampleData.GridOperatorMessageDeliveryStateCustomerMasterData}',
+                              '{SampleData.CustomerMasterData}')";
+            await GetService<IDbConnectionFactory>().GetOpenConnection().ExecuteAsync(
+                sql,
+                new { }).ConfigureAwait(false);
         }
     }
 }
