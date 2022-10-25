@@ -30,6 +30,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Processing.Application.ChangeCustomerCharacteristics;
 using Processing.Application.ChangeOfSupplier;
 using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.Common;
@@ -57,6 +58,7 @@ using Processing.IntegrationTests.TestDoubles;
 using SimpleInjector;
 using SimpleInjector.Lifestyles;
 using Xunit;
+using InputValidationSet = Processing.Application.ChangeCustomerCharacteristics.Validation.InputValidationSet;
 using RequestChangeOfSupplier = Processing.Application.ChangeOfSupplier.RequestChangeOfSupplier;
 
 namespace Processing.IntegrationTests
@@ -103,6 +105,9 @@ namespace Processing.IntegrationTests
             _container.Register<ICorrelationContext, CorrelationContext>(Lifestyle.Scoped);
 
             _container.ConfigureMoveIn(0, 0, TimeOfDay.Create(0, 0, 0));
+
+            _container.Register<JsonChangeCustomerCharacteristicsAdapter>(Lifestyle.Scoped);
+            _container.Register<IValidator<ChangeCustomerCharacteristicsRequest>, InputValidationSet>(Lifestyle.Scoped);
 
             // Integration event publishing
             _serviceBusSenderFactorySpy = new ServiceBusSenderFactorySpy();
