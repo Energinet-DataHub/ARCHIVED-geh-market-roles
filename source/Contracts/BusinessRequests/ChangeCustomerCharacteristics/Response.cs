@@ -12,15 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Processing.Application.Common;
+namespace Contracts.BusinessRequests.ChangeCustomerCharacteristics;
 
-namespace Processing.Application.ChangeCustomerCharacteristics;
-
-public record ChangeCustomerCharacteristicsRequest(
-    string AccountingPointId,
-    string EffectiveDate,
-    Customer Customer) : IBusinessRequest;
-
-public record Customer(
-    string Id,
-    string Name);
+public record Response(IEnumerable<string> ValidationErrors, string ProcessId = "");

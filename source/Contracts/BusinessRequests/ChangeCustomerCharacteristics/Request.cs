@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Processing.Application.Common;
+namespace Contracts.BusinessRequests.ChangeCustomerCharacteristics;
 
-namespace Processing.Application.ChangeCustomerCharacteristics;
-
-public record ChangeCustomerCharacteristicsRequest(
+public record Request(
     string AccountingPointId,
     string EffectiveDate,
-    Customer Customer) : IBusinessRequest;
+    Customer Customer);
 
 public record Customer(
     string Id,

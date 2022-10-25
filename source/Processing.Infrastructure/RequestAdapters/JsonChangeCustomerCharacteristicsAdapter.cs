@@ -18,6 +18,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts.BusinessRequests.ChangeCustomerCharacteristics;
+using MediatR;
 using Processing.Application.ChangeCustomerCharacteristics;
 using Processing.Application.Common;
 using Processing.Infrastructure.Configuration.Serialization;
@@ -27,10 +28,12 @@ namespace Processing.Infrastructure.RequestAdapters
     public class JsonChangeCustomerCharacteristicsAdapter
     {
         private readonly IJsonSerializer _serializer;
+        private readonly IMediator _mediator;
 
-        public JsonChangeCustomerCharacteristicsAdapter(IJsonSerializer serializer)
+        public JsonChangeCustomerCharacteristicsAdapter(IJsonSerializer serializer, IMediator mediator)
         {
             _serializer = serializer;
+            _mediator = mediator;
         }
 
         public async Task<Result> ReceiveAsync(Stream request)
@@ -46,7 +49,12 @@ namespace Processing.Infrastructure.RequestAdapters
 
         private static ChangeCustomerCharacteristicsRequest MapToCommandFrom(Request request)
         {
-            var command = new ChangeCustomerCharacteristicsRequest();
+            var command = new ChangeCustomerCharacteristicsRequest(
+                request.AccountingPointId,
+                request.EffectiveDate,
+                new Application.ChangeCustomerCharacteristics.Customer(
+                    request.Customer.Id,
+                    request.Customer.Name));
             return command;
         }
 
