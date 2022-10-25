@@ -15,6 +15,7 @@
 using System;
 using FluentValidation;
 using NodaTime;
+using Processing.Application.ChangeCustomerCharacteristics;
 using Processing.Application.MoveIn;
 using Processing.Application.MoveIn.Validation;
 using Processing.Domain.BusinessProcesses.MoveIn;
