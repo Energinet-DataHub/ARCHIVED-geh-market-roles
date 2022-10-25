@@ -33,6 +33,8 @@ using Processing.Api.CustomerMasterData;
 using Processing.Api.EventListeners;
 using Processing.Api.Monitor;
 using Processing.Api.MoveIn;
+using Processing.Application.ChangeCustomerCharacteristics;
+using Processing.Application.ChangeCustomerCharacteristics.Validation;
 using Processing.Application.ChangeOfSupplier;
 using Processing.Application.ChangeOfSupplier.Validation;
 using Processing.Application.Common;
@@ -48,6 +50,7 @@ using Processing.Infrastructure.Configuration.DataAccess.AccountingPoints;
 using Processing.Infrastructure.Configuration.DataAccess.EnergySuppliers;
 using Processing.Infrastructure.Configuration.DomainEventDispatching;
 using Processing.Infrastructure.Configuration.Serialization;
+using Processing.Infrastructure.RequestAdapters;
 using Processing.Infrastructure.Users;
 using SimpleInjector;
 
@@ -134,6 +137,9 @@ namespace Processing.Api
             container.Register<ActorCreatedListener>();
 
             container.ConfigureMoveIn(16, 60, TimeOfDay.Create(0, 0, 0));
+
+            container.Register<JsonChangeCustomerCharacteristicsAdapter>(Lifestyle.Scoped);
+            container.Register<IValidator<ChangeCustomerCharacteristicsRequest>, InputValidationSet>(Lifestyle.Scoped);
 
             var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING")
                                    ?? throw new InvalidOperationException(
