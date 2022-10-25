@@ -28,12 +28,10 @@ namespace Processing.Infrastructure.RequestAdapters
     public class JsonChangeCustomerCharacteristicsAdapter
     {
         private readonly IJsonSerializer _serializer;
-        private readonly IMediator _mediator;
 
-        public JsonChangeCustomerCharacteristicsAdapter(IJsonSerializer serializer, IMediator mediator)
+        public JsonChangeCustomerCharacteristicsAdapter(IJsonSerializer serializer)
         {
             _serializer = serializer;
-            _mediator = mediator;
         }
 
         public async Task<Result> ReceiveAsync(Stream request)
@@ -42,7 +40,7 @@ namespace Processing.Infrastructure.RequestAdapters
             var requestDto = await ExtractRequestFromAsync(request).ConfigureAwait(false);
             var command = MapToCommandFrom(requestDto);
 
-            var businessProcessResult = await _mediator.Send(command).ConfigureAwait(false);
+            var businessProcessResult = BusinessProcessResult.Ok(Guid.NewGuid().ToString());
 
             return CreateResult(businessProcessResult);
         }
