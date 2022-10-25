@@ -17,7 +17,8 @@ namespace Contracts.BusinessRequests.ChangeCustomerCharacteristics;
 public record Request(
     string AccountingPointId,
     string EffectiveDate,
-    Customer Customer);
+    Customer Customer,
+    string ProcessId);
 
 public record Customer(
     string Id,

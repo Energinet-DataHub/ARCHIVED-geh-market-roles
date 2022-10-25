@@ -13,13 +13,15 @@
 // limitations under the License.
 
 using Processing.Application.Common;
+using Processing.Domain.MeteringPoints;
 
 namespace Processing.Application.ChangeCustomerCharacteristics;
 
 public record ChangeCustomerCharacteristicsRequest(
     string AccountingPointId,
     string EffectiveDate,
-    Customer Customer) : IBusinessRequest;
+    Customer Customer,
+    BusinessProcessId ProcessId) : IBusinessRequest;
 
 public record Customer(
     string Id,

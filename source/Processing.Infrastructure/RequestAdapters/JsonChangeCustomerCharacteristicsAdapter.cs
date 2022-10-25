@@ -21,6 +21,7 @@ using Contracts.BusinessRequests.ChangeCustomerCharacteristics;
 using MediatR;
 using Processing.Application.ChangeCustomerCharacteristics;
 using Processing.Application.Common;
+using Processing.Domain.MeteringPoints;
 using Processing.Infrastructure.Configuration.Serialization;
 
 namespace Processing.Infrastructure.RequestAdapters
@@ -54,7 +55,8 @@ namespace Processing.Infrastructure.RequestAdapters
                 request.EffectiveDate,
                 new Application.ChangeCustomerCharacteristics.Customer(
                     request.Customer.Id,
-                    request.Customer.Name));
+                    request.Customer.Name),
+                BusinessProcessId.Create(request.ProcessId));
             return command;
         }
 
