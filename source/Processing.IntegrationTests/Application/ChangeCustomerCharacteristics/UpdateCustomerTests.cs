@@ -12,19 +12,49 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading.Tasks;
+using Dapper;
 using JetBrains.Annotations;
+using NodaTime;
 using Processing.Application.ChangeCustomerCharacteristics;
+using Processing.Application.Common;
+using Processing.Domain.Customers;
+using Processing.Domain.EnergySuppliers;
+using Processing.Domain.MeteringPoints;
 using Processing.IntegrationTests.Fixtures;
 using Xunit;
+using Customer = Processing.Application.ChangeCustomerCharacteristics.Customer;
 
 namespace Processing.IntegrationTests.Application.ChangeCustomerCharacteristics
 {
-    public class UpdateCustomerTests : TestBase
+    public class UpdateCustomerTests : TestBase, IAsyncLifetime
     {
+        private AccountingPoint? _accountingPoint;
+
         public UpdateCustomerTests([NotNull] DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
+        }
+
+        public Task InitializeAsync()
+        {
+            _accountingPoint = AccountingPoint.CreateConsumption(AccountingPointId.New(), GsrnNumber.Create(SampleData.GsrnNumber));
+            GetService<IAccountingPointRepository>().Add(_accountingPoint);
+            var energySupplier = new EnergySupplier(EnergySupplierId.New(), GlnNumber.Create(SampleData.GlnNumber));
+            GetService<IEnergySupplierRepository>().Add(energySupplier);
+            _accountingPoint.RegisterMoveIn(
+                Domain.Customers.Customer.Create(CustomerNumber.Create("2605199134"), "Initial Test Name"),
+                energySupplier.EnergySupplierId,
+                SystemDateTimeProvider.Now(),
+                BusinessProcessId.Create(SampleData.ProcessId),
+                SystemDateTimeProvider.Now());
+            return GetService<IUnitOfWork>().CommitAsync();
+        }
+
+        public Task DisposeAsync()
+        {
+            return Task.CompletedTask;
         }
 
         [Fact]
