@@ -12,14 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Processing.Application.Common;
 
 namespace Processing.Application.ChangeCustomerCharacteristics;
 
-public record ChangeCustomerCharacteristicsRequest(
-    string ProcessId,
-    Customer Customer) : IBusinessRequest;
-
-public record Customer(
-    string Id,
-    string Name);
+public class ChangeCustomerCharacteristicsRequestHandler : IBusinessRequestHandler<ChangeCustomerCharacteristicsRequest>
+{
+    public Task<BusinessProcessResult> Handle(ChangeCustomerCharacteristicsRequest request, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(BusinessProcessResult.Ok(Guid.NewGuid().ToString()));
+    }
+}
