@@ -48,9 +48,10 @@ namespace Processing.Infrastructure.RequestAdapters
         private static ChangeCustomerCharacteristicsRequest MapToCommandFrom(Request request)
         {
             var command = new ChangeCustomerCharacteristicsRequest(
+                request.AccountingPointId,
                 Guid.NewGuid().ToString(),
                 new Application.ChangeCustomerCharacteristics.Customer(
-                    request.Customer.Id,
+                    request.Customer.Number,
                     request.Customer.Name));
             return command;
         }

@@ -16,7 +16,6 @@ using System;
 using System.Threading.Tasks;
 using Dapper;
 using JetBrains.Annotations;
-using NodaTime;
 using Processing.Application.ChangeCustomerCharacteristics;
 using Processing.Application.Common;
 using Processing.Domain.Customers;
@@ -64,14 +63,31 @@ namespace Processing.IntegrationTests.Application.ChangeCustomerCharacteristics
 
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
-            Assert.NotNull(result);
+            await AssertCustomerMasterData().ConfigureAwait(false);
         }
 
         private static ChangeCustomerCharacteristicsRequest CreateRequest()
         {
             return new ChangeCustomerCharacteristicsRequest(
+                SampleData.GsrnNumber,
                 SampleData.ProcessId,
-                new Customer(SampleData.ConsumerName, SampleData.CustomerNumber));
+                new Customer(SampleData.CustomerNumber, SampleData.ConsumerName));
+        }
+
+        private async Task AssertCustomerMasterData()
+        {
+            var sql = $"SELECT CustomerName AS {nameof(DataModel.CustomerName)}, " +
+                      $"CustomerNumber AS {nameof(DataModel.CustomerNumber)} " +
+                      $"FROM [dbo].ConsumerRegistrations " +
+                      $"WHERE BusinessProcessId = @ProcessId";
+            var customerDataConsumerRegistration = await GetService<IDbConnectionFactory>().GetOpenConnection().QuerySingleOrDefaultAsync<DataModel>(
+                sql,
+                new { ProcessId = SampleData.ProcessId }).ConfigureAwait(false);
+
+            Assert.Equal(SampleData.ConsumerName, customerDataConsumerRegistration.CustomerName);
+            Assert.Equal(SampleData.CustomerNumber, customerDataConsumerRegistration.CustomerNumber);
         }
     }
+
+    public record DataModel(string CustomerName, string CustomerNumber);
 }

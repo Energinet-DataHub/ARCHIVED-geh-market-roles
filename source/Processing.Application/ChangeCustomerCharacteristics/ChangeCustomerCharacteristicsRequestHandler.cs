@@ -16,13 +16,36 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Processing.Application.Common;
+using Processing.Domain.Customers;
+using Processing.Domain.MeteringPoints;
+using Processing.Domain.MeteringPoints.Errors;
 
 namespace Processing.Application.ChangeCustomerCharacteristics;
 
 public class ChangeCustomerCharacteristicsRequestHandler : IBusinessRequestHandler<ChangeCustomerCharacteristicsRequest>
 {
-    public Task<BusinessProcessResult> Handle(ChangeCustomerCharacteristicsRequest request, CancellationToken cancellationToken)
+    private readonly IAccountingPointRepository _accountingPointRepository;
+
+    public ChangeCustomerCharacteristicsRequestHandler(IAccountingPointRepository accountingPointRepository)
     {
-        return Task.FromResult(BusinessProcessResult.Ok(Guid.NewGuid().ToString()));
+        _accountingPointRepository = accountingPointRepository;
+    }
+
+    public async Task<BusinessProcessResult> Handle(ChangeCustomerCharacteristicsRequest request, CancellationToken cancellationToken)
+    {
+        if (request == null) throw new ArgumentNullException(nameof(request));
+        var accountingPoint = await
+            _accountingPointRepository.GetByGsrnNumberAsync(GsrnNumber.Create(request.AccountingPointId)).ConfigureAwait(false);
+
+        if (accountingPoint is null)
+        {
+            return BusinessProcessResult.Fail(new UnknownAccountingPoint());
+        }
+
+        var customer = Domain.Customers.Customer.Create(CustomerNumber.Create(request.Customer.Number), request.Customer.Name);
+
+        accountingPoint.UpdateConsumerCustomer(BusinessProcessId.Create(request.ProcessId), customer);
+
+        return BusinessProcessResult.Ok(request.ProcessId);
     }
 }

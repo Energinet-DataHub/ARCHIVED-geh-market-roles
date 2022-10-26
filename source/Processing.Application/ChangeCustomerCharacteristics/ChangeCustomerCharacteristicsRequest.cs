@@ -17,9 +17,10 @@ using Processing.Application.Common;
 namespace Processing.Application.ChangeCustomerCharacteristics;
 
 public record ChangeCustomerCharacteristicsRequest(
+    string AccountingPointId,
     string ProcessId,
     Customer Customer) : IBusinessRequest;
 
 public record Customer(
-    string Id,
+    string Number,
     string Name);
