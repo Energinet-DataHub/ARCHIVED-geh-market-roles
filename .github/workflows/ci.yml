@@ -102,6 +102,11 @@ jobs:
     with:
       TESTS_DLL_FILE_PATH: '\source\Processing.IntegrationTests\bin\Release\net6.0\Processing.IntegrationTests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 12
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
+      AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
+      AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
 
   # Run all tests in 'Processing.Tests.dll'
   processing_tests:
@@ -111,12 +116,6 @@ jobs:
     with:
       TESTS_DLL_FILE_PATH: '\source\Processing.Tests\bin\Release\net6.0\Processing.Tests.dll'
       DOWNLOAD_ATTEMPT_LIMIT: 12
-
-      # AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      # AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      # AZURE_SPN_ID: ${{ secrets.AZURE_SPN_ID_OIDC }}
-      # AZURE_KEYVAULT_URL: ${{ secrets.AZURE_KEYVAULT_URL }}
-      # AZURE_SECRETS_KEYVAULT_URL: ${{ secrets.AZURE_SECRETS_KEYVAULT_URL }}
 
   #
   # Branch policy status check
