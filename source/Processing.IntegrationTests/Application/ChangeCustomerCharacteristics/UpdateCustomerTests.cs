@@ -66,10 +66,10 @@ namespace Processing.IntegrationTests.Application.ChangeCustomerCharacteristics
             await AssertCustomerMasterData().ConfigureAwait(false);
         }
 
-        private static ChangeCustomerCharacteristicsRequest CreateRequest()
+        private ChangeCustomerCharacteristicsRequest CreateRequest()
         {
             return new ChangeCustomerCharacteristicsRequest(
-                SampleData.GsrnNumber,
+                _accountingPoint?.Id.Value.ToString()!,
                 SampleData.ProcessId,
                 new Customer(SampleData.CustomerNumber, SampleData.ConsumerName));
         }

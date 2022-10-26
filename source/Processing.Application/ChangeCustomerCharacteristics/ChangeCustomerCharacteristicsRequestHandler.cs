@@ -35,7 +35,7 @@ public class ChangeCustomerCharacteristicsRequestHandler : IBusinessRequestHandl
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
         var accountingPoint = await
-            _accountingPointRepository.GetByGsrnNumberAsync(GsrnNumber.Create(request.AccountingPointId)).ConfigureAwait(false);
+            _accountingPointRepository.GetByIdAsync(AccountingPointId.Create(Guid.Parse(request.AccountingPointId))).ConfigureAwait(false);
 
         if (accountingPoint is null)
         {
