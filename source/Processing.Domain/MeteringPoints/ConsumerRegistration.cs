@@ -35,7 +35,7 @@ namespace Processing.Domain.MeteringPoints
 
         public ConsumerRegistrationId Id { get; }
 
-        public Customer? Customer { get; }
+        public Customer? Customer { get; private set; }
 
         public Instant? MoveInDate { get; private set; }
 
@@ -44,6 +44,11 @@ namespace Processing.Domain.MeteringPoints
         public void SetMoveInDate(Instant effectiveDate)
         {
             MoveInDate = effectiveDate;
+        }
+
+        public void UpdateCustomer(Customer customer)
+        {
+            Customer = customer;
         }
     }
 }
