@@ -94,15 +94,15 @@ namespace Processing.Api
             services.AddLiveHealthCheck();
             services.AddSqlServerHealthCheck(Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING")!);
             services.AddExternalServiceBusTopicsHealthCheck(
-                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_MANAGE_FOR_INTEGRATION_EVENTS")!,
+                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_MANAGE")!,
                 "consumer-moved-in");
             services.AddExternalServiceBusSubscriptionsHealthCheck(
-                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_MANAGE_FOR_INTEGRATION_EVENTS")!,
+                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_MANAGE")!,
                 Environment.GetEnvironmentVariable("INTEGRATION_EVENT_TOPIC_NAME")!,
                 Environment.GetEnvironmentVariable("MARKET_PARTICIPANT_CHANGED_ACTOR_CREATED_SUBSCRIPTION_NAME")!,
                 Environment.GetEnvironmentVariable("METERING_POINT_CREATED_EVENT_ENERGY_SUPPLYING_SUBSCRIPTION_NAME")!);
-            services.AddInternalDomainServiceBusQueuesHealthCheck(
-                Environment.GetEnvironmentVariable("MARKET_ROLES_SERVICE_BUS_MANAGE_CONNECTION_STRING")!,
+            services.AddExternalDomainServiceBusQueuesHealthCheck(
+                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_MANAGE")!,
                 Environment.GetEnvironmentVariable("CUSTOMER_MASTER_DATA_RESPONSE_QUEUE_NAME")!,
                 Environment.GetEnvironmentVariable("CUSTOMER_MASTER_DATA_REQUEST_QUEUE_NAME")!);
         }
@@ -166,7 +166,7 @@ namespace Processing.Api
 
             // Integration event publishing
             container.AddEventPublishing(
-                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_INTEGRATION_EVENTS")!,
+                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND")!,
                 Environment.GetEnvironmentVariable("INTEGRATION_EVENT_TOPIC_NAME")!);
 
             // Health check
@@ -177,7 +177,7 @@ namespace Processing.Api
 
             // Master data request
             var serviceBusConnectionString =
-                Environment.GetEnvironmentVariable("MARKET_ROLES_SERVICE_BUS_SENDER_CONNECTION_STRING");
+                Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_SEND");
             var queueName = Environment.GetEnvironmentVariable("CUSTOMER_MASTER_DATA_RESPONSE_QUEUE_NAME");
             container.Register<ServiceBusSender>(
                 () =>
