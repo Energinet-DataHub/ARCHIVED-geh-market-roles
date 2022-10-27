@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using JetBrains.Annotations;
@@ -21,6 +22,7 @@ using Processing.Application.Common;
 using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
+using Processing.Domain.MeteringPoints.Errors;
 using Processing.IntegrationTests.Fixtures;
 using Xunit;
 using Customer = Processing.Application.ChangeCustomerCharacteristics.Customer;
@@ -64,6 +66,22 @@ namespace Processing.IntegrationTests.Application.ChangeCustomerCharacteristics
             var result = await SendRequestAsync(request).ConfigureAwait(false);
 
             await AssertCustomerMasterData().ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task Accounting_point_must_be_available()
+        {
+            var request = CreateRequest()
+                with
+                {
+                    AccountingPointNumber = "571234567891234551",
+                };
+
+            var result = await SendRequestAsync(request).ConfigureAwait(false);
+            var error = result.ValidationErrors.FirstOrDefault();
+
+            Assert.NotNull(error);
+            Assert.Equal("UnknownAccountingPoint", error?.Code);
         }
 
         private static ChangeCustomerCharacteristicsRequest CreateRequest()
