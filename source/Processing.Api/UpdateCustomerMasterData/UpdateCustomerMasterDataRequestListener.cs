@@ -18,11 +18,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Processing.Api.UpdateCustomerMasterData;
 
-public class UpdateCustomerDataRequestListener
+public class UpdateCustomerMasterDataRequestListener
 {
-    private readonly ILogger<UpdateCustomerDataRequestListener> _logger;
+    private readonly ILogger<UpdateCustomerMasterDataRequestListener> _logger;
 
-    public UpdateCustomerDataRequestListener(ILogger<UpdateCustomerDataRequestListener> logger)
+    public UpdateCustomerMasterDataRequestListener(ILogger<UpdateCustomerMasterDataRequestListener> logger)
     {
         _logger = logger;
     }
