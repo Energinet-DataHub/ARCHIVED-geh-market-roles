@@ -16,7 +16,7 @@ using System;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace Processing.Api.ChangeCustomerCharacteristics;
+namespace Processing.Api.UpdateCustomerMasterData;
 
 public class UpdateCustomerDataRequestListener
 {
