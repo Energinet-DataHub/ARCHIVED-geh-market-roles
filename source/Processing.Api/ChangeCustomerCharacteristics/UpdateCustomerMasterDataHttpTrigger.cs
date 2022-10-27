@@ -27,8 +27,8 @@ public class UpdateCustomerDataHttpTrigger
         _logger = logger;
     }
 
-    [Function("UpdateCustomerDataHttpTrigger")]
-    public void Run([ServiceBusTrigger("%CUSTOMER_MASTER_DATA_UPDATE_QUEUE_NAME%", Connection = "SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_LISTENER")] byte[] data, FunctionContext context)
+    [Function("UpdateCustomerMasterDataHttpTrigger")]
+    public void Run([ServiceBusTrigger("%CUSTOMER_MASTER_DATA_UPDATE_REQUEST_QUEUE_NAME%", Connection = "SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_LISTENER")] byte[] data, FunctionContext context)
     {
         if (data == null) throw new ArgumentNullException(nameof(data));
         if (context == null) throw new ArgumentNullException(nameof(context));
