@@ -19,7 +19,8 @@ namespace Processing.Application.ChangeCustomerCharacteristics;
 public record ChangeCustomerCharacteristicsRequest(
     string AccountingPointNumber,
     string ProcessId,
-    Customer Customer) : IBusinessRequest;
+    Customer? Customer,
+    Customer? SecondCustomer) : IBusinessRequest;
 
 public record Customer(
     string Number,

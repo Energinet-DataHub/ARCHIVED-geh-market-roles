@@ -89,13 +89,16 @@ namespace Processing.IntegrationTests.Application.ChangeCustomerCharacteristics
             return new ChangeCustomerCharacteristicsRequest(
                 SampleData.GsrnNumber,
                 SampleData.ProcessId,
-                new Customer(SampleData.CustomerNumber, SampleData.ConsumerName));
+                new Customer(SampleData.CustomerNumber, SampleData.ConsumerName),
+                new Customer(SampleData.SecondConsumerNumber, SampleData.SecondConsumerName));
         }
 
         private async Task AssertCustomerMasterData()
         {
             var sql = $"SELECT CustomerName AS {nameof(DataModel.CustomerName)}, " +
-                      $"CustomerNumber AS {nameof(DataModel.CustomerNumber)} " +
+                      $"CustomerNumber AS {nameof(DataModel.CustomerNumber)}, " +
+                      $"SecondCustomerName AS {nameof(DataModel.SecondCustomerName)}, " +
+                      $"SecondCustomerNumber AS {nameof(DataModel.SecondCustomerNumber)} " +
                       $"FROM [dbo].ConsumerRegistrations " +
                       $"WHERE BusinessProcessId = @ProcessId";
             var customerDataConsumerRegistration = await GetService<IDbConnectionFactory>().GetOpenConnection().QuerySingleOrDefaultAsync<DataModel>(
@@ -104,8 +107,10 @@ namespace Processing.IntegrationTests.Application.ChangeCustomerCharacteristics
 
             Assert.Equal(SampleData.ConsumerName, customerDataConsumerRegistration.CustomerName);
             Assert.Equal(SampleData.CustomerNumber, customerDataConsumerRegistration.CustomerNumber);
+            Assert.Equal(SampleData.SecondConsumerName, customerDataConsumerRegistration.SecondCustomerName);
+            Assert.Equal(SampleData.SecondConsumerNumber, customerDataConsumerRegistration.SecondCustomerNumber);
         }
     }
 
-    public record DataModel(string CustomerName, string CustomerNumber);
+    public record DataModel(string CustomerName, string CustomerNumber, string SecondCustomerName, string SecondCustomerNumber);
 }

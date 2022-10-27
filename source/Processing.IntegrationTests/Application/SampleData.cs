@@ -32,6 +32,10 @@ namespace Processing.IntegrationTests.Application
 
         public static string ConsumerName => "Test Testesen";
 
+        public static string SecondConsumerName => "Test Testesen 2";
+
+        public static string SecondConsumerNumber => "1005214321";
+
         public static string MoveInDate
         {
             get

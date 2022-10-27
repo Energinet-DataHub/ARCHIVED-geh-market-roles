@@ -42,9 +42,19 @@ public class ChangeCustomerCharacteristicsRequestHandler : IBusinessRequestHandl
             return BusinessProcessResult.Fail(new UnknownAccountingPoint());
         }
 
-        var customer = Domain.Customers.Customer.Create(CustomerNumber.Create(request.Customer.Number), request.Customer.Name);
+        if (request.Customer != null)
+        {
+            var customer = Domain.Customers.Customer.Create(CustomerNumber.Create(request.Customer.Number), request.Customer.Name);
+            accountingPoint.UpdateConsumerCustomer(BusinessProcessId.Create(request.ProcessId), customer);
+        }
 
-        accountingPoint.UpdateConsumerCustomer(BusinessProcessId.Create(request.ProcessId), customer);
+        if (request.SecondCustomer != null)
+        {
+            var secondCustomer = Domain.Customers.Customer.Create(
+                CustomerNumber.Create(request.SecondCustomer.Number),
+                request.SecondCustomer.Name);
+            accountingPoint.UpdateConsumerSecondCustomer(BusinessProcessId.Create(request.ProcessId), secondCustomer);
+        }
 
         return BusinessProcessResult.Ok(request.ProcessId);
     }

@@ -52,6 +52,9 @@ namespace Processing.Infrastructure.RequestAdapters
                 Guid.NewGuid().ToString(),
                 new Application.ChangeCustomerCharacteristics.Customer(
                     request.Customer.Number,
+                    request.Customer.Name),
+                new Application.ChangeCustomerCharacteristics.Customer(
+                    request.Customer.Number,
                     request.Customer.Name));
             return command;
         }
