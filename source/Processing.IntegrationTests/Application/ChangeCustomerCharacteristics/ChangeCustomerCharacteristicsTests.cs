@@ -42,7 +42,7 @@ namespace Processing.IntegrationTests.Application.ChangeCustomerCharacteristics
             var request = new Request(
                 SampleData.GsrnNumber,
                 SampleData.MoveInDate.ToString(),
-                new Customer(SampleData.CustomerNumber, SampleData.ConsumerName));
+                new Contracts.BusinessRequests.ChangeCustomerCharacteristics.Customer(SampleData.CustomerNumber, SampleData.ConsumerName));
 
             var response = await requestAdapter.ReceiveAsync(SerializeToStream(request));
 

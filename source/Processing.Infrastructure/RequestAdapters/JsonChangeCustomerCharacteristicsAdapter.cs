@@ -49,9 +49,9 @@ namespace Processing.Infrastructure.RequestAdapters
         {
             var command = new ChangeCustomerCharacteristicsRequest(
                 request.AccountingPointId,
-                request.EffectiveDate,
+                Guid.NewGuid().ToString(),
                 new Application.ChangeCustomerCharacteristics.Customer(
-                    request.Customer.Id,
+                    request.Customer.Number,
                     request.Customer.Name));
             return command;
         }
