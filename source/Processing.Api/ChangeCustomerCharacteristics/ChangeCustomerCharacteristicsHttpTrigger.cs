@@ -20,7 +20,7 @@ using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Processing.Infrastructure.RequestAdapters;
 
-namespace Processing.Api.UpdateCustomerMasterData;
+namespace Processing.Api.ChangeCustomerCharacteristics;
 
 public class ChangeCustomerCharacteristicsHttpTrigger
 {
