@@ -18,6 +18,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using Energinet.DataHub.Core.Logging.RequestResponseMiddleware;
 using Energinet.DataHub.MessageHub.Client.DataAvailable;
 using Energinet.DataHub.MessageHub.Client.Storage;
 using Messaging.Api.Configuration.Middleware.Authentication.Bearer;
@@ -73,7 +74,7 @@ namespace Messaging.Api
                 .ConfigureFunctionsWorkerDefaults(worker =>
                 {
                     worker.UseMiddleware<CorrelationIdMiddleware>();
-                    /*worker.UseMiddleware<RequestResponseLoggingMiddleware>();*/
+                    worker.UseMiddleware<RequestResponseLoggingMiddleware>();
                     worker.UseMiddleware<BearerAuthenticationMiddleware>();
                     worker.UseMiddleware<ClaimsEnrichmentMiddleware>();
                     worker.UseMiddleware<MarketActorAuthenticatorMiddleware>();
