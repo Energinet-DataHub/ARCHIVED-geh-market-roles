@@ -18,16 +18,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Processing.Api.ChangeCustomerCharacteristics;
 
-public class UpdateCustomerDataHttpTrigger
+public class UpdateCustomerDataRequestListener
 {
-    private readonly ILogger<UpdateCustomerDataHttpTrigger> _logger;
+    private readonly ILogger<UpdateCustomerDataRequestListener> _logger;
 
-    public UpdateCustomerDataHttpTrigger(ILogger<UpdateCustomerDataHttpTrigger> logger)
+    public UpdateCustomerDataRequestListener(ILogger<UpdateCustomerDataRequestListener> logger)
     {
         _logger = logger;
     }
 
-    [Function("UpdateCustomerMasterDataHttpTrigger")]
+    [Function("UpdateCustomerMasterDataRequestListener")]
     public void Run([ServiceBusTrigger("%CUSTOMER_MASTER_DATA_UPDATE_REQUEST_QUEUE_NAME%", Connection = "SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_LISTENER")] byte[] data, FunctionContext context)
     {
         if (data == null) throw new ArgumentNullException(nameof(data));
