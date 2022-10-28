@@ -104,7 +104,8 @@ namespace Processing.Api
             services.AddExternalDomainServiceBusQueuesHealthCheck(
                 Environment.GetEnvironmentVariable("SERVICE_BUS_CONNECTION_STRING_FOR_DOMAIN_RELAY_MANAGE")!,
                 Environment.GetEnvironmentVariable("CUSTOMER_MASTER_DATA_RESPONSE_QUEUE_NAME")!,
-                Environment.GetEnvironmentVariable("CUSTOMER_MASTER_DATA_REQUEST_QUEUE_NAME")!);
+                Environment.GetEnvironmentVariable("CUSTOMER_MASTER_DATA_REQUEST_QUEUE_NAME")!,
+                Environment.GetEnvironmentVariable("CUSTOMER_MASTER_DATA_UPDATE_REQUEST_QUEUE_NAME")!);
         }
 
         protected override void ConfigureContainer(Container container)
