@@ -16,7 +16,7 @@ using Processing.Application.Common;
 
 namespace Processing.Application.ChangeCustomerCharacteristics;
 
-public record ChangeCustomerCharacteristicsRequest(
+public record ChangeCustomerMasterDataRequest(
     string AccountingPointNumber,
     string ProcessId,
     Customer? Customer,

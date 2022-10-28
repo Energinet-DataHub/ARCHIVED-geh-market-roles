@@ -81,9 +81,9 @@ namespace Processing.IntegrationTests.Application.ChangeCustomerCharacteristics
             Assert.Equal("UnknownAccountingPoint", error?.Code);
         }
 
-        private static ChangeCustomerCharacteristicsRequest CreateRequest()
+        private static ChangeCustomerMasterDataRequest CreateRequest()
         {
-            return new ChangeCustomerCharacteristicsRequest(
+            return new ChangeCustomerMasterDataRequest(
                 SampleData.GsrnNumber,
                 SampleData.ProcessId,
                 new Customer(SampleData.CustomerNumber, SampleData.ConsumerName),

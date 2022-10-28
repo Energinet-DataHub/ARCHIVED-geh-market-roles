@@ -15,23 +15,24 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Processing.Application.ChangeCustomerCharacteristics;
 using Processing.Application.Common;
 using Processing.Domain.Customers;
 using Processing.Domain.MeteringPoints;
 using Processing.Domain.MeteringPoints.Errors;
 
-namespace Processing.Application.ChangeCustomerCharacteristics;
+namespace Processing.Application.ChangeCustomerMasterData;
 
-public class ChangeCustomerCharacteristicsRequestHandler : IBusinessRequestHandler<ChangeCustomerCharacteristicsRequest>
+public class ChangeCustomerMasterDataRequestHandler : IBusinessRequestHandler<ChangeCustomerMasterDataRequest>
 {
     private readonly IAccountingPointRepository _accountingPointRepository;
 
-    public ChangeCustomerCharacteristicsRequestHandler(IAccountingPointRepository accountingPointRepository)
+    public ChangeCustomerMasterDataRequestHandler(IAccountingPointRepository accountingPointRepository)
     {
         _accountingPointRepository = accountingPointRepository;
     }
 
-    public async Task<BusinessProcessResult> Handle(ChangeCustomerCharacteristicsRequest request, CancellationToken cancellationToken)
+    public async Task<BusinessProcessResult> Handle(ChangeCustomerMasterDataRequest request, CancellationToken cancellationToken)
     {
         if (request == null) throw new ArgumentNullException(nameof(request));
         var accountingPoint = await

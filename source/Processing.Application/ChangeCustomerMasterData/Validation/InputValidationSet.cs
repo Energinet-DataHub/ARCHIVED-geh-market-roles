@@ -16,7 +16,7 @@ using FluentValidation;
 
 namespace Processing.Application.ChangeCustomerCharacteristics.Validation;
 
-public class InputValidationSet : AbstractValidator<ChangeCustomerCharacteristicsRequest>
+public class InputValidationSet : AbstractValidator<ChangeCustomerMasterDataRequest>
 {
     public InputValidationSet()
     {
