@@ -106,7 +106,6 @@ namespace Processing.IntegrationTests
 
             _container.ConfigureMoveIn(0, 0, TimeOfDay.Create(0, 0, 0));
 
-            _container.Register<JsonChangeCustomerCharacteristicsAdapter>(Lifestyle.Scoped);
             _container.Register<IValidator<ChangeCustomerCharacteristicsRequest>, InputValidationSet>(Lifestyle.Scoped);
 
             // Integration event publishing

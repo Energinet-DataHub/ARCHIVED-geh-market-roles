@@ -138,7 +138,6 @@ namespace Processing.Api
 
             container.ConfigureMoveIn(16, 60, TimeOfDay.Create(0, 0, 0));
 
-            container.Register<JsonChangeCustomerCharacteristicsAdapter>(Lifestyle.Scoped);
             container.Register<IValidator<ChangeCustomerCharacteristicsRequest>, InputValidationSet>(Lifestyle.Scoped);
 
             var connectionString = Environment.GetEnvironmentVariable("MARKET_DATA_DB_CONNECTION_STRING")
