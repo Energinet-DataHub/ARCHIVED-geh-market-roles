@@ -12,17 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using JetBrains.Annotations;
 using Processing.Application.ChangeCustomerCharacteristics;
 using Processing.Application.Common;
 using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
-using Processing.Domain.MeteringPoints.Errors;
 using Processing.IntegrationTests.Fixtures;
 using Xunit;
 using Customer = Processing.Application.ChangeCustomerCharacteristics.Customer;
@@ -33,7 +30,7 @@ namespace Processing.IntegrationTests.Application.ChangeCustomerCharacteristics
     {
         private AccountingPoint? _accountingPoint;
 
-        public UpdateCustomerTests([NotNull] DatabaseFixture databaseFixture)
+        public UpdateCustomerTests(DatabaseFixture databaseFixture)
             : base(databaseFixture)
         {
         }
