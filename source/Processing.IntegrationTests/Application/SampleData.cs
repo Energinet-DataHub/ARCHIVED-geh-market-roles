@@ -15,6 +15,7 @@
 using System;
 using System.Globalization;
 using NodaTime;
+using Processing.IntegrationTests.Factories;
 
 namespace Processing.IntegrationTests.Application
 {
@@ -36,14 +37,6 @@ namespace Processing.IntegrationTests.Application
 
         public static string SecondConsumerNumber => "1005214321";
 
-        public static string MoveInDate
-        {
-            get
-            {
-                var today = SystemClock.Instance.GetCurrentInstant().ToDateTimeUtc();
-                var parsed = new DateTime(today.Year, today.Month, today.Day, 22, 0, 0);
-                return parsed.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'", CultureInfo.InvariantCulture);
-            }
-        }
+        public static string MoveInDate => EffectiveDateFactory.AsOfToday().ToString();
     }
 }
