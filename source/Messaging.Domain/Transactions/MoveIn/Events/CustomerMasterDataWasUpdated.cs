@@ -12,25 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Globalization;
-using NodaTime;
-using Processing.IntegrationTests.Factories;
+using Messaging.Domain.SeedWork;
 
-namespace Processing.IntegrationTests.Application
+namespace Messaging.Domain.Transactions.MoveIn.Events;
+
+public class CustomerMasterDataWasUpdated : DomainEvent
 {
-    public static class SampleData
+    public CustomerMasterDataWasUpdated(string transactionId)
     {
-        public static string GsrnNumber => "571234567891234568";
-
-        public static string EnergySupplierId => "03b97a60-8145-4599-981f-c4ab5035d978";
-
-        public static string CustomerNumber => "2601211234";
-
-        public static string GlnNumber => "5790000555550";
-
-        public static string ConsumerName => "Test Testesen";
-
-        public static string MoveInDate => EffectiveDateFactory.AsOfToday().ToString();
+        TransactionId = transactionId;
     }
+
+    public string TransactionId { get; }
 }
