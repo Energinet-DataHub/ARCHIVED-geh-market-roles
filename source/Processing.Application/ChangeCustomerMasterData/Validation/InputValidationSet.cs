@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Processing.Application.Common;
+using FluentValidation;
 
-namespace Processing.Application.ChangeCustomerCharacteristics;
+namespace Processing.Application.ChangeCustomerCharacteristics.Validation;
 
-public record ChangeCustomerCharacteristicsRequest(
-    string AccountingPointId,
-    string EffectiveDate,
-    Customer Customer) : IBusinessRequest;
-
-public record Customer(
-    string Id,
-    string Name);
+public class InputValidationSet : AbstractValidator<ChangeCustomerMasterDataRequest>
+{
+    public InputValidationSet()
+    {
+    }
+}
