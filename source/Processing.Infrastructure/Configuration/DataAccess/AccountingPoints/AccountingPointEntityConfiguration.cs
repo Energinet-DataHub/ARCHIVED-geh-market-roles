@@ -105,6 +105,16 @@ namespace Processing.Infrastructure.Configuration.DataAccess.AccountingPoints
                     b.Property(n => n.Name)
                         .HasColumnName("CustomerName");
                 });
+                y.OwnsOne<Customer>(x => x.SecondCustomer, b =>
+                {
+                    b.Property(n => n.Number)
+                        .HasColumnName("SecondCustomerNumber")
+                        .HasConversion(
+                            toDbValue => toDbValue.Value,
+                            fromDbValue => CustomerNumber.Create(fromDbValue));
+                    b.Property(n => n.Name)
+                        .HasColumnName("SecondCustomerName");
+                });
                 y.Ignore(z => z.DomainEvents);
             });
 
