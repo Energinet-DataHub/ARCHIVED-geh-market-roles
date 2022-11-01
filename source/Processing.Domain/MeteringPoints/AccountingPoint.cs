@@ -209,9 +209,38 @@ namespace Processing.Domain.MeteringPoints
             AddDomainEvent(new ChangeOfSupplierCancelled(Id, GsrnNumber, businessProcess.BusinessProcessId));
         }
 
+        public void UpdateConsumerCustomer(BusinessProcessId processId, Customer customer)
+        {
+            var consumer = GetConsumerRegistration(processId);
+
+            if (consumer is null)
+            {
+                throw new BusinessProcessException("Can't find consumer registration to update customer on");
+            }
+
+            consumer.UpdateCustomer(customer);
+        }
+
+        public void UpdateConsumerSecondCustomer(BusinessProcessId processId, Customer customer)
+        {
+            var consumer = GetConsumerRegistration(processId);
+
+            if (consumer is null)
+            {
+                throw new BusinessProcessException("Can't find consumer registration to update second customer on");
+            }
+
+            consumer.UpdateSecondCustomer(customer);
+        }
+
         private static void StartOfSupplyForFutureSupplier(BusinessProcess businessProcess, SupplierRegistration supplierRegistration)
         {
             supplierRegistration.StartOfSupply(businessProcess.EffectiveDate);
+        }
+
+        private ConsumerRegistration? GetConsumerRegistration(BusinessProcessId processId)
+        {
+            return _consumerRegistrations.Find(consumerRegistration => consumerRegistration.BusinessProcessId.Equals(processId));
         }
 
         private SupplierRegistration GetFutureSupplierRegistration(BusinessProcess businessProcess)
