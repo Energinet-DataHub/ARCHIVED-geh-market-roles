@@ -152,8 +152,25 @@ namespace Processing.Domain.MeteringPoints
             }
         }
 
-        public void RegisterMoveIn(Customer customer, EnergySupplierId energySupplierId, Instant moveInDate, BusinessProcessId businessProcessId, Instant today)
+        // public void RegisterMoveIn(Customer customer, EnergySupplierId energySupplierId, Instant moveInDate, BusinessProcessId businessProcessId, Instant today)
+        // {
+        //     if (energySupplierId == null) throw new ArgumentNullException(nameof(energySupplierId));
+        //     if (businessProcessId == null) throw new ArgumentNullException(nameof(businessProcessId));
+        //
+        //     var businessProcess = CreateBusinessProcess(moveInDate, BusinessProcessType.MoveIn, businessProcessId);
+        //     _consumerRegistrations.Add(new ConsumerRegistration(customer, businessProcess.BusinessProcessId));
+        //     _supplierRegistrations.Add(new SupplierRegistration(energySupplierId, businessProcess.BusinessProcessId));
+        //
+        //     AddDomainEvent(new ConsumerMoveInAccepted(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, energySupplierId.Value, moveInDate));
+        // }
+        public void AddContract(Customer customer, Instant moveInDate, BusinessProcessId businessProcessId, EnergySupplierId energySupplierId)
         {
+            if (!AddContractIsAcceptable(customer, moveInDate).Success)
+            {
+                throw new BusinessProcessException(
+                    "Cannot accept move in request due to violation of one or more business rules.");
+            }
+
             if (energySupplierId == null) throw new ArgumentNullException(nameof(energySupplierId));
             if (businessProcessId == null) throw new ArgumentNullException(nameof(businessProcessId));
 
@@ -163,15 +180,6 @@ namespace Processing.Domain.MeteringPoints
             _supplierRegistrations.Add(new SupplierRegistration(energySupplierId, businessProcess.BusinessProcessId));
 
             AddDomainEvent(new ConsumerMoveInAccepted(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, energySupplierId.Value, moveInDate));
-        }
-
-        public void AddContract(Customer customer, Instant moveInDate)
-        {
-            if (!AddContractIsAcceptable(customer, moveInDate).Success)
-            {
-                throw new BusinessProcessException(
-                    "Cannot accept move in request due to violation of one or more business rules.");
-            }
 
             _contract = Contract.Create(customer);
 

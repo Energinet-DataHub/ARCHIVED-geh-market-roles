@@ -74,7 +74,7 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             var moveInDate = _systemDateTimeProvider.Now().Minus(Duration.FromDays(1));
             var businessProcessId = BusinessProcessId.New();
 
-            meteringPoint.RegisterMoveIn(CreateCustomer(), energySupplierId, moveInDate, businessProcessId, _systemDateTimeProvider.Now());
+            meteringPoint.AddContract(CreateCustomer(), moveInDate, businessProcessId, energySupplierId);
             meteringPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
             meteringPoint.AcceptChangeOfSupplier(CreateSupplierId(), _systemDateTimeProvider.Now(), _systemDateTimeProvider, BusinessProcessId.New());
 
@@ -89,7 +89,7 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             var meteringPoint = CreateMeteringPoint(MeteringPointType.Consumption);
             var moveInDate = _systemDateTimeProvider.Now();
             var businessProcessId = BusinessProcessId.New();
-            meteringPoint.RegisterMoveIn(CreateCustomer(), CreateSupplierId(), moveInDate,  businessProcessId, _systemDateTimeProvider.Now());
+            meteringPoint.AddContract(CreateCustomer(), moveInDate,  businessProcessId, CreateSupplierId());
 
             var result = CanChangeSupplier(meteringPoint);
 
@@ -128,7 +128,7 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             var energySupplierId = CreateSupplierId();
             var moveInDate = _systemDateTimeProvider.Now().Minus(Duration.FromDays(1));
             var businessProcessId = BusinessProcessId.New();
-            meteringPoint.RegisterMoveIn(CreateCustomer(), energySupplierId, moveInDate, businessProcessId, _systemDateTimeProvider.Now());
+            meteringPoint.AddContract(CreateCustomer(), moveInDate, businessProcessId, energySupplierId);
             meteringPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
 
             meteringPoint.AcceptChangeOfSupplier(CreateSupplierId(), _systemDateTimeProvider.Now(), _systemDateTimeProvider, BusinessProcessId.New());

@@ -145,6 +145,18 @@ public class ConsumerMoveInTests : TestBase
         AssertError<MoveInRegisteredOnSameDateIsNotAllowedRuleError>(result);
     }
 
+    [Fact]
+    public void Cannot_move_in_on_a_date_where_a_move_in_is_already_registered_with_contract()
+    {
+        var moveInDate = AsOfToday();
+
+        StartProcess(moveInDate);
+
+        var result = CanStartProcess(moveInDate);
+
+        AssertError<MoveInRegisteredOnSameDateIsNotAllowedRuleError>(result);
+    }
+
     private static EffectiveDate AsOf(Instant date)
     {
         return EffectiveDateFactory.WithTimeOfDay(date.ToDateTimeUtc(), 22, 0, 0);

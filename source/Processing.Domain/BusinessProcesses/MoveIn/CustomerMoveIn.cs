@@ -55,9 +55,8 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
             if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
             if (energySupplier == null) throw new ArgumentNullException(nameof(energySupplier));
             if (consumerMovesInOn == null) throw new ArgumentNullException(nameof(consumerMovesInOn));
-            accountingPoint.AddContract(customer, consumerMovesInOn.DateInUtc);
-            accountingPoint.RegisterMoveIn(customer, energySupplier.EnergySupplierId, consumerMovesInOn.DateInUtc, businessProcessId, today);
-
+            accountingPoint.AddContract(customer, consumerMovesInOn.DateInUtc, businessProcessId, energySupplier.EnergySupplierId);
+            // accountingPoint.RegisterMoveIn(customer, energySupplier.EnergySupplierId, consumerMovesInOn.DateInUtc, businessProcessId, today);
             if (EffectiveDateIsInThePast(consumerMovesInOn, today))
             {
                 accountingPoint.EffectuateConsumerMoveIn(businessProcessId, today);

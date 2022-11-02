@@ -71,7 +71,7 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
         {
             var accountingPoint = AccountingPoint.CreateConsumption(AccountingPointId.New(), GsrnNumber.Create("571234567891234568"));
             var businessProcessId = BusinessProcessId.New();
-            accountingPoint.RegisterMoveIn(CreateCustomer(), CreateEnergySupplierId(), _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)), businessProcessId, _systemDateTimeProvider.Now());
+            accountingPoint.AddContract(CreateCustomer(), _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)), businessProcessId, CreateEnergySupplierId());
             accountingPoint.EffectuateConsumerMoveIn(businessProcessId, _systemDateTimeProvider.Now());
             return (accountingPoint, businessProcessId);
         }

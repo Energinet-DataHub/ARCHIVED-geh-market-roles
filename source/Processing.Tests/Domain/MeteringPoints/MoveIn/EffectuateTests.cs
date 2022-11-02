@@ -79,7 +79,7 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
 
         private void GivenMoveInHasBeenAccepted(Instant moveInDate)
         {
-            _accountingPoint.RegisterMoveIn(_customer, _energySupplierId, moveInDate, _businessProcessId, _systemDateTimeProvider.Now());
+            _accountingPoint.AddContract(_customer, moveInDate, _businessProcessId, _energySupplierId);
         }
 
         private void WhenCompletingMoveIn(BusinessProcessId? businessProcessId = null)
