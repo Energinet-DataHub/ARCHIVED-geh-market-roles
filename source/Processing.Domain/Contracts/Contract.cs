@@ -13,25 +13,41 @@
 // limitations under the License.
 
 using System;
+using NodaTime;
 using Processing.Domain.Customers;
+using Processing.Domain.EnergySuppliers;
+using Processing.Domain.MeteringPoints;
 
 namespace Processing.Domain.Contracts
 {
     public class Contract
     {
-        private Contract(Customer customer)
+        private Contract(Customer customer, BusinessProcessId businessProcessId, EnergySupplierId energySupplierId)
         {
             ContractId = Guid.NewGuid();
             Customer = customer;
+            BusinessProcessId = businessProcessId;
+            EnergySupplierId = energySupplierId;
         }
 
         public Guid ContractId { get; }
 
         public Customer Customer { get; }
 
-        internal static Contract Create(Customer customer)
+        public BusinessProcessId BusinessProcessId { get; }
+
+        public Instant? EffectiveDate { get; private set; }
+
+        public EnergySupplierId EnergySupplierId { get; private set; }
+
+        public void SetEffectiveDate(Instant effectiveDate)
         {
-            return new Contract(customer);
+            EffectiveDate = effectiveDate;
+        }
+
+        internal static Contract Create(Customer customer, BusinessProcessId businessProcessId, EnergySupplierId energySupplierId)
+        {
+            return new Contract(customer, businessProcessId, energySupplierId);
         }
     }
 }

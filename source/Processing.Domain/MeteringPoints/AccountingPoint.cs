@@ -179,7 +179,7 @@ namespace Processing.Domain.MeteringPoints
             _consumerRegistrations.Add(new ConsumerRegistration(customer, businessProcess.BusinessProcessId));
             _supplierRegistrations.Add(new SupplierRegistration(energySupplierId, businessProcess.BusinessProcessId));
 
-            _contract = Contract.Create(customer);
+            _contract = Contract.Create(customer, businessProcess.BusinessProcessId, energySupplierId);
 
             return _contract;
         }
@@ -214,6 +214,24 @@ namespace Processing.Domain.MeteringPoints
                 businessProcess.EffectiveDate));
 
             AddDomainEvent(new EnergySupplierChanged(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, newSupplier.EnergySupplierId.Value, businessProcess.EffectiveDate));
+        }
+
+        public void EffectuateConsumerMoveIn(Contract contract, Instant today)
+        {
+            if (contract == null) throw new ArgumentNullException(nameof(contract));
+            var businessProcess = GetBusinessProcess(contract.BusinessProcessId, BusinessProcessType.MoveIn);
+
+            businessProcess.Effectuate(today);
+
+            contract.SetEffectiveDate(businessProcess.EffectiveDate);
+
+            AddDomainEvent(new ConsumerMovedIn(
+                Id.Value,
+                GsrnNumber.Value,
+                businessProcess.BusinessProcessId.Value,
+                businessProcess.EffectiveDate));
+
+            AddDomainEvent(new EnergySupplierChanged(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, contract.EnergySupplierId.Value, businessProcess.EffectiveDate));
         }
 
         public void CancelChangeOfSupplier(BusinessProcessId processId)

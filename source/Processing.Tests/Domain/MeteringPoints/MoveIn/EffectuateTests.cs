@@ -15,6 +15,7 @@
 using System;
 using System.Linq;
 using NodaTime;
+using Processing.Domain.Contracts;
 using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
@@ -47,10 +48,10 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         [Fact]
         public void Effectuate_WhenAheadOfEffectiveDate_IsNotPossible()
         {
-            GivenMoveInHasBeenAccepted(_systemDateTimeProvider.Now().Plus(Duration.FromDays(1)));
+            var contract = GivenMoveInHasBeenAccepted(_systemDateTimeProvider.Now().Plus(Duration.FromDays(1)));
 
             Assert.Throws<BusinessProcessException>(() =>
-                WhenCompletingMoveIn());
+                WhenCompletingMoveIn(contract));
         }
 
         [Fact]
@@ -77,14 +78,19 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
             if (consumerMovedIn != null) Assert.NotNull(consumerMovedIn.MoveInDate);
         }
 
-        private void GivenMoveInHasBeenAccepted(Instant moveInDate)
+        private Contract GivenMoveInHasBeenAccepted(Instant moveInDate)
         {
-            _accountingPoint.CreateContract(_customer, moveInDate, _businessProcessId, _energySupplierId);
+            return _accountingPoint.CreateContract(_customer, moveInDate, _businessProcessId, _energySupplierId);
         }
 
         private void WhenCompletingMoveIn(BusinessProcessId? businessProcessId = null)
         {
             _accountingPoint.EffectuateConsumerMoveIn(businessProcessId ?? _businessProcessId, _systemDateTimeProvider.Now());
+        }
+
+        private void WhenCompletingMoveIn(Contract contract)
+        {
+            _accountingPoint.EffectuateConsumerMoveIn(contract, _systemDateTimeProvider.Now());
         }
     }
 }
