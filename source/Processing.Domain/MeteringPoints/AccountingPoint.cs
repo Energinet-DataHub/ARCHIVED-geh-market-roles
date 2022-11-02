@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using NodaTime;
+using Processing.Domain.Contracts;
 using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints.Events;
@@ -35,6 +36,7 @@ namespace Processing.Domain.MeteringPoints
         private readonly List<SupplierRegistration> _supplierRegistrations = new();
         private PhysicalState _physicalState;
         private ElectricalHeating? _electricalHeating;
+        private Contract? _contract;
 
         // constructor to satisfy EF
         public AccountingPoint(GsrnNumber gsrnNumber, MeteringPointType meteringPointType, PhysicalState physicalState)
@@ -155,7 +157,6 @@ namespace Processing.Domain.MeteringPoints
             var rules = new Collection<IBusinessRule>()
             {
                 new MoveInRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), moveInDate),
-                new CustomerMustBeDifferentFromCurrentCustomerRule(customer, _consumerRegistrations.AsReadOnly(), today),
             };
 
             return new BusinessRulesValidationResult(rules);
@@ -177,6 +178,29 @@ namespace Processing.Domain.MeteringPoints
             _supplierRegistrations.Add(new SupplierRegistration(energySupplierId, businessProcess.BusinessProcessId));
 
             AddDomainEvent(new ConsumerMoveInAccepted(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, energySupplierId.Value, moveInDate));
+        }
+
+        public void AddContract(Customer customer)
+        {
+            if (!AddContractIsAcceptable(customer).Success)
+            {
+                throw new BusinessProcessException(
+                    "Cannot accept move in request due to violation of one or more business rules.");
+            }
+
+            _contract = Contract.Create(customer);
+
+            AddDomainEvent(new ContractIsAdded(_contract.ContractId));
+        }
+
+        public BusinessRulesValidationResult AddContractIsAcceptable(Customer customer)
+        {
+            var rules = new Collection<IBusinessRule>()
+            {
+                new CustomerMustBeDifferentFromCurrentCustomerRule(customer, _contract),
+            };
+
+            return new BusinessRulesValidationResult(rules);
         }
 
         public void EffectuateConsumerMoveIn(BusinessProcessId processId, Instant today)

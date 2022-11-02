@@ -47,6 +47,11 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
                 return timePolicyCheckResult;
             }
 
+            if (!accountingPoint.AddContractIsAcceptable(customer).Success)
+            {
+                return accountingPoint.AddContractIsAcceptable(customer);
+            }
+
             return accountingPoint.ConsumerMoveInAcceptable(consumerMovesInOn.DateInUtc, customer, today);
         }
 
@@ -56,6 +61,7 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
             if (energySupplier == null) throw new ArgumentNullException(nameof(energySupplier));
             if (consumerMovesInOn == null) throw new ArgumentNullException(nameof(consumerMovesInOn));
             accountingPoint.RegisterMoveIn(customer, energySupplier.EnergySupplierId, consumerMovesInOn.DateInUtc, businessProcessId, today);
+            accountingPoint.AddContract(customer);
             if (EffectiveDateIsInThePast(consumerMovesInOn, today))
             {
                 accountingPoint.EffectuateConsumerMoveIn(businessProcessId, today);

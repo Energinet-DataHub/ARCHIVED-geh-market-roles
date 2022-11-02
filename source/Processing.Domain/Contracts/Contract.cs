@@ -13,11 +13,25 @@
 // limitations under the License.
 
 using System;
+using Processing.Domain.Customers;
 
-namespace Processing.IntegrationTests.Contract
+namespace Processing.Domain.Contracts
 {
-    public static class SampleData
+    public class Contract
     {
-        public static Guid BusinessProcessId => Guid.Parse("2D3A3249-7A63-4BAD-87AD-5D86130B5679");
+        private Contract(Customer customer)
+        {
+            ContractId = Guid.NewGuid();
+            Customer = customer;
+        }
+
+        public Guid ContractId { get; }
+
+        public Customer Customer { get; }
+
+        public static Contract Create(Customer customer)
+        {
+            return new Contract(customer);
+        }
     }
 }
