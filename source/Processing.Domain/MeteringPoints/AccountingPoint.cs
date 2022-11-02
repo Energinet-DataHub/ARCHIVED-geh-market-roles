@@ -216,24 +216,6 @@ namespace Processing.Domain.MeteringPoints
             AddDomainEvent(new EnergySupplierChanged(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, newSupplier.EnergySupplierId.Value, businessProcess.EffectiveDate));
         }
 
-        public void EffectuateConsumerMoveIn(Contract contract, Instant today)
-        {
-            if (contract == null) throw new ArgumentNullException(nameof(contract));
-            var businessProcess = GetBusinessProcess(contract.BusinessProcessId, BusinessProcessType.MoveIn);
-
-            businessProcess.Effectuate(today);
-
-            contract.SetEffectiveDate(businessProcess.EffectiveDate);
-
-            AddDomainEvent(new ConsumerMovedIn(
-                Id.Value,
-                GsrnNumber.Value,
-                businessProcess.BusinessProcessId.Value,
-                businessProcess.EffectiveDate));
-
-            AddDomainEvent(new EnergySupplierChanged(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, contract.EnergySupplierId.Value, businessProcess.EffectiveDate));
-        }
-
         public void CancelChangeOfSupplier(BusinessProcessId processId)
         {
             if (processId is null) throw new ArgumentNullException(nameof(processId));

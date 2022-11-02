@@ -48,10 +48,10 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         [Fact]
         public void Effectuate_WhenAheadOfEffectiveDate_IsNotPossible()
         {
-            var contract = GivenMoveInHasBeenAccepted(_systemDateTimeProvider.Now().Plus(Duration.FromDays(1)));
+            GivenMoveInHasBeenAccepted(_systemDateTimeProvider.Now().Plus(Duration.FromDays(1)));
 
             Assert.Throws<BusinessProcessException>(() =>
-                WhenCompletingMoveIn(contract));
+                WhenCompletingMoveIn());
         }
 
         [Fact]
@@ -86,11 +86,6 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         private void WhenCompletingMoveIn(BusinessProcessId? businessProcessId = null)
         {
             _accountingPoint.EffectuateConsumerMoveIn(businessProcessId ?? _businessProcessId, _systemDateTimeProvider.Now());
-        }
-
-        private void WhenCompletingMoveIn(Contract contract)
-        {
-            _accountingPoint.EffectuateConsumerMoveIn(contract, _systemDateTimeProvider.Now());
         }
     }
 }
