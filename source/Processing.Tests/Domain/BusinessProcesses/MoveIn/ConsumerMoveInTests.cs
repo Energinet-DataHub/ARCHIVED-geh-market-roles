@@ -133,6 +133,18 @@ public class ConsumerMoveInTests : TestBase
         AssertError<CustomerMustBeDifferentFromCurrentCustomer>(result, "CustomerMustBeDifferentFromCurrentCustomer");
     }
 
+    [Fact]
+    public void Cannot_register_a_move_in_on_a_date_where_a_move_in_is_already_effectuated_with_contract()
+    {
+        var moveInDate = AsOfToday();
+        StartProcess(moveInDate);
+        _accountingPoint.EffectuateConsumerMoveIn(_processId, SystemDateTimeProvider.Now());
+
+        var result = CanStartProcess(moveInDate);
+
+        AssertError<MoveInRegisteredOnSameDateIsNotAllowedRuleError>(result);
+    }
+
     private static EffectiveDate AsOf(Instant date)
     {
         return EffectiveDateFactory.WithTimeOfDay(date.ToDateTimeUtc(), 22, 0, 0);

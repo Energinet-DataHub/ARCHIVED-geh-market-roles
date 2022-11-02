@@ -152,25 +152,10 @@ namespace Processing.Domain.MeteringPoints
             }
         }
 
-        public BusinessRulesValidationResult ConsumerMoveInAcceptable(Instant moveInDate, Customer customer, Instant today)
-        {
-            var rules = new Collection<IBusinessRule>()
-            {
-                new MoveInRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), moveInDate),
-            };
-
-            return new BusinessRulesValidationResult(rules);
-        }
-
         public void RegisterMoveIn(Customer customer, EnergySupplierId energySupplierId, Instant moveInDate, BusinessProcessId businessProcessId, Instant today)
         {
             if (energySupplierId == null) throw new ArgumentNullException(nameof(energySupplierId));
             if (businessProcessId == null) throw new ArgumentNullException(nameof(businessProcessId));
-            if (!ConsumerMoveInAcceptable(moveInDate, customer, today).Success)
-            {
-                throw new BusinessProcessException(
-                    "Cannot accept move in request due to violation of one or more business rules.");
-            }
 
             var businessProcess = CreateBusinessProcess(moveInDate, BusinessProcessType.MoveIn, businessProcessId);
             _businessProcesses.Add(businessProcess);
@@ -180,9 +165,9 @@ namespace Processing.Domain.MeteringPoints
             AddDomainEvent(new ConsumerMoveInAccepted(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, energySupplierId.Value, moveInDate));
         }
 
-        public void AddContract(Customer customer)
+        public void AddContract(Customer customer, Instant moveInDate)
         {
-            if (!AddContractIsAcceptable(customer).Success)
+            if (!AddContractIsAcceptable(customer, moveInDate).Success)
             {
                 throw new BusinessProcessException(
                     "Cannot accept move in request due to violation of one or more business rules.");
@@ -193,11 +178,12 @@ namespace Processing.Domain.MeteringPoints
             AddDomainEvent(new ContractIsAdded(_contract.ContractId));
         }
 
-        public BusinessRulesValidationResult AddContractIsAcceptable(Customer customer)
+        public BusinessRulesValidationResult AddContractIsAcceptable(Customer customer, Instant moveInDate)
         {
             var rules = new Collection<IBusinessRule>()
             {
                 new CustomerMustBeDifferentFromCurrentCustomerRule(customer, _contract),
+                new MoveInRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), moveInDate),
             };
 
             return new BusinessRulesValidationResult(rules);
