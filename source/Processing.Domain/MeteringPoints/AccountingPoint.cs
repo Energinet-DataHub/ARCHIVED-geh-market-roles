@@ -36,7 +36,6 @@ namespace Processing.Domain.MeteringPoints
         private readonly List<SupplierRegistration> _supplierRegistrations = new();
         private PhysicalState _physicalState;
         private ElectricalHeating? _electricalHeating;
-        private Contract? _contract;
 
         // constructor to satisfy EF
         public AccountingPoint(GsrnNumber gsrnNumber, MeteringPointType meteringPointType, PhysicalState physicalState)
@@ -163,9 +162,14 @@ namespace Processing.Domain.MeteringPoints
         //
         //     AddDomainEvent(new ConsumerMoveInAccepted(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, energySupplierId.Value, moveInDate));
         // }
-        public Contract CreateContract(Customer customer, Instant moveInDate, BusinessProcessId businessProcessId, EnergySupplierId energySupplierId)
+        public Contract CreateContract(
+            Customer customer,
+            Instant moveInDate,
+            BusinessProcessId businessProcessId,
+            EnergySupplierId energySupplierId,
+            Contract? currentContract = null)
         {
-            if (!AddContractIsAcceptable(customer, moveInDate).Success)
+            if (!AddContractIsAcceptable(customer, moveInDate, currentContract).Success)
             {
                 throw new BusinessProcessException(
                     "Cannot accept move in request due to violation of one or more business rules.");
@@ -179,16 +183,14 @@ namespace Processing.Domain.MeteringPoints
             _consumerRegistrations.Add(new ConsumerRegistration(customer, businessProcess.BusinessProcessId));
             _supplierRegistrations.Add(new SupplierRegistration(energySupplierId, businessProcess.BusinessProcessId));
 
-            _contract = Contract.Create(customer, businessProcess.BusinessProcessId, energySupplierId);
-
-            return _contract;
+            return Contract.Create(customer, businessProcess.BusinessProcessId, energySupplierId);
         }
 
-        public BusinessRulesValidationResult AddContractIsAcceptable(Customer customer, Instant moveInDate)
+        public BusinessRulesValidationResult AddContractIsAcceptable(Customer customer, Instant moveInDate, Contract? currentContract)
         {
             var rules = new Collection<IBusinessRule>()
             {
-                new CustomerMustBeDifferentFromCurrentCustomerRule(customer, _contract),
+                new CustomerMustBeDifferentFromCurrentCustomerRule(customer, currentContract),
                 new MoveInRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), moveInDate),
             };
 

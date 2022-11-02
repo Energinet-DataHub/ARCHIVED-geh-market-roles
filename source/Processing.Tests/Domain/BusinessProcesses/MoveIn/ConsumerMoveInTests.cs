@@ -85,9 +85,9 @@ public class ConsumerMoveInTests : TestBase
     [Fact]
     public void Customer_must_be_different_from_current_customer()
     {
-        GivenACustomerIsRegistered();
+        var contract = GivenACustomerIsRegistered();
 
-        var result = _customerMoveInProcess.CanStartProcess(_accountingPoint, AsOfToday(), SystemDateTimeProvider.Now(), _customer);
+        var result = _customerMoveInProcess.CanStartProcess(_accountingPoint, AsOfToday(), SystemDateTimeProvider.Now(), _customer, contract);
 
         AssertError<CustomerMustBeDifferentFromCurrentCustomer>(result, "CustomerMustBeDifferentFromCurrentCustomer");
     }
@@ -121,9 +121,9 @@ public class ConsumerMoveInTests : TestBase
         return EffectiveDateFactory.WithTimeOfDay(date.ToDateTimeUtc(), 22, 0, 0);
     }
 
-    private void GivenACustomerIsRegistered()
+    private Contract GivenACustomerIsRegistered()
     {
-        StartProcess(AsOfYesterday());
+        return StartProcess(AsOfYesterday());
     }
 
     private BusinessRulesValidationResult CanStartProcess(EffectiveDate moveInDate)

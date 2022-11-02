@@ -36,14 +36,7 @@ namespace Processing.Domain.Contracts
 
         public BusinessProcessId BusinessProcessId { get; }
 
-        public Instant? EffectiveDate { get; private set; }
-
         public EnergySupplierId EnergySupplierId { get; private set; }
-
-        public void SetEffectiveDate(Instant effectiveDate)
-        {
-            EffectiveDate = effectiveDate;
-        }
 
         internal static Contract Create(Customer customer, BusinessProcessId businessProcessId, EnergySupplierId energySupplierId)
         {

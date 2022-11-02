@@ -37,7 +37,8 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
             AccountingPoint accountingPoint,
             EffectiveDate consumerMovesInOn,
             Instant today,
-            Customer customer)
+            Customer customer,
+            Contract? currentContract = null)
         {
             if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
             if (customer == null) throw new ArgumentNullException(nameof(customer));
@@ -48,15 +49,22 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
                 return timePolicyCheckResult;
             }
 
-            return accountingPoint.AddContractIsAcceptable(customer, consumerMovesInOn.DateInUtc);
+            return accountingPoint.AddContractIsAcceptable(customer, consumerMovesInOn.DateInUtc, currentContract);
         }
 
-        public Contract StartProcess(AccountingPoint accountingPoint, EnergySupplier energySupplier, EffectiveDate consumerMovesInOn, Instant today, BusinessProcessId businessProcessId, Customer customer)
+        public Contract StartProcess(
+            AccountingPoint accountingPoint,
+            EnergySupplier energySupplier,
+            EffectiveDate consumerMovesInOn,
+            Instant today,
+            BusinessProcessId businessProcessId,
+            Customer customer,
+            Contract? currentContract = null)
         {
             if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
             if (energySupplier == null) throw new ArgumentNullException(nameof(energySupplier));
             if (consumerMovesInOn == null) throw new ArgumentNullException(nameof(consumerMovesInOn));
-            var contract = accountingPoint.CreateContract(customer, consumerMovesInOn.DateInUtc, businessProcessId, energySupplier.EnergySupplierId);
+            var contract = accountingPoint.CreateContract(customer, consumerMovesInOn.DateInUtc, businessProcessId, energySupplier.EnergySupplierId, currentContract);
             // accountingPoint.RegisterMoveIn(customer, energySupplier.EnergySupplierId, consumerMovesInOn.DateInUtc, businessProcessId, today);
             if (EffectiveDateIsInThePast(consumerMovesInOn, today))
             {
