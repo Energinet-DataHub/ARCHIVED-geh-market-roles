@@ -179,8 +179,6 @@ namespace Processing.Domain.MeteringPoints
             _consumerRegistrations.Add(new ConsumerRegistration(customer, businessProcess.BusinessProcessId));
             _supplierRegistrations.Add(new SupplierRegistration(energySupplierId, businessProcess.BusinessProcessId));
 
-            AddDomainEvent(new ConsumerMoveInAccepted(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, energySupplierId.Value, moveInDate));
-
             _contract = Contract.Create(customer);
 
             AddDomainEvent(new ContractIsAdded(_contract.ContractId));

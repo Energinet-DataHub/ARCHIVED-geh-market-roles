@@ -61,23 +61,34 @@ public class ConsumerMoveInTests : TestBase
     }
 
     [Fact]
+    public void Effective_date_must_be_within_allowed_time_range()
+    {
+        var maxNumberOfDaysAheadOfcurrentDate = 5;
+        var policy = EffectiveDatePolicyFactory.CreateEffectiveDatePolicy(maxNumberOfDaysAheadOfcurrentDate);
+        var moveProcess = new CustomerMoveIn(policy);
+
+        var moveInDate = AsOf(SystemDateTimeProvider.Now().Plus(Duration.FromDays(10)));
+        var result = moveProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now(), _customer);
+
+        AssertError<EffectiveDateIsNotWithinAllowedTimePeriod>(result, "EffectiveDateIsNotWithinAllowedTimePeriod");
+    }
+
+    [Fact]
     public void Consumer_move_in_is_accepted()
     {
         StartProcess(AsOfToday());
 
-        Assert.Contains(_accountingPoint.DomainEvents, e => e is ConsumerMoveInAccepted);
+        Assert.Contains(_accountingPoint.DomainEvents, e => e is ContractIsAdded);
     }
 
     [Fact]
-    public void Cannot_move_in_on_a_date_where_a_move_in_is_already_registered()
+    public void Customer_must_be_different_from_current_customer()
     {
-        var moveInDate = AsOfToday();
+        GivenACustomerIsRegistered();
 
-        StartProcess(moveInDate);
+        var result = _customerMoveInProcess.CanStartProcess(_accountingPoint, AsOfToday(), SystemDateTimeProvider.Now(), _customer);
 
-        var result = CanStartProcess(moveInDate);
-
-        AssertError<MoveInRegisteredOnSameDateIsNotAllowedRuleError>(result);
+        AssertError<CustomerMustBeDifferentFromCurrentCustomer>(result, "CustomerMustBeDifferentFromCurrentCustomer");
     }
 
     [Fact]
@@ -93,60 +104,7 @@ public class ConsumerMoveInTests : TestBase
     }
 
     [Fact]
-    public void Effective_date_must_be_within_allowed_time_range()
-    {
-        var maxNumberOfDaysAheadOfcurrentDate = 5;
-        var policy = EffectiveDatePolicyFactory.CreateEffectiveDatePolicy(maxNumberOfDaysAheadOfcurrentDate);
-        var moveProcess = new CustomerMoveIn(policy);
-
-        var moveInDate = AsOf(SystemDateTimeProvider.Now().Plus(Duration.FromDays(10)));
-        var result = moveProcess.CanStartProcess(_accountingPoint, moveInDate, SystemDateTimeProvider.Now(), _customer);
-
-        AssertError<EffectiveDateIsNotWithinAllowedTimePeriod>(result, "EffectiveDateIsNotWithinAllowedTimePeriod");
-    }
-
-    [Fact]
-    public void Customer_must_be_different_from_current_customer()
-    {
-        GivenACustomerIsRegistered();
-
-        var result = _customerMoveInProcess.CanStartProcess(_accountingPoint, AsOfToday(), SystemDateTimeProvider.Now(), _customer);
-
-        AssertError<CustomerMustBeDifferentFromCurrentCustomer>(result, "CustomerMustBeDifferentFromCurrentCustomer");
-    }
-
-    [Fact]
-    public void Consumer_move_in_is_accepted_with_contract()
-    {
-        StartProcess(AsOfToday());
-
-        Assert.Contains(_accountingPoint.DomainEvents, e => e is ContractIsAdded);
-    }
-
-    [Fact]
-    public void Customer_must_be_different_from_current_customer_with_contract()
-    {
-        GivenACustomerIsRegistered();
-
-        var result = _customerMoveInProcess.CanStartProcess(_accountingPoint, AsOfToday(), SystemDateTimeProvider.Now(), _customer);
-
-        AssertError<CustomerMustBeDifferentFromCurrentCustomer>(result, "CustomerMustBeDifferentFromCurrentCustomer");
-    }
-
-    [Fact]
-    public void Cannot_register_a_move_in_on_a_date_where_a_move_in_is_already_effectuated_with_contract()
-    {
-        var moveInDate = AsOfToday();
-        StartProcess(moveInDate);
-        _accountingPoint.EffectuateConsumerMoveIn(_processId, SystemDateTimeProvider.Now());
-
-        var result = CanStartProcess(moveInDate);
-
-        AssertError<MoveInRegisteredOnSameDateIsNotAllowedRuleError>(result);
-    }
-
-    [Fact]
-    public void Cannot_move_in_on_a_date_where_a_move_in_is_already_registered_with_contract()
+    public void Cannot_move_in_on_a_date_where_a_move_in_is_already_registered()
     {
         var moveInDate = AsOfToday();
 
