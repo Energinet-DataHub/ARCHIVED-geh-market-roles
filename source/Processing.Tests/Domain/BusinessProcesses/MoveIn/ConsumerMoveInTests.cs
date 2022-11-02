@@ -16,6 +16,7 @@ using NodaTime;
 using Processing.Domain.BusinessProcesses.MoveIn;
 using Processing.Domain.BusinessProcesses.MoveIn.Errors;
 using Processing.Domain.Common;
+using Processing.Domain.Contracts;
 using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
@@ -76,9 +77,9 @@ public class ConsumerMoveInTests : TestBase
     [Fact]
     public void Consumer_move_in_is_accepted()
     {
-        StartProcess(AsOfToday());
+        var contract = StartProcess(AsOfToday());
 
-        Assert.Contains(_accountingPoint.DomainEvents, e => e is ContractIsAdded);
+        Assert.NotNull(contract);
     }
 
     [Fact]
@@ -140,9 +141,9 @@ public class ConsumerMoveInTests : TestBase
         return EffectiveDateFactory.WithTimeOfDay(SystemDateTimeProvider.Now().Minus(Duration.FromDays(1)).ToDateTimeUtc(), 22, 0, 0);
     }
 
-    private void StartProcess(EffectiveDate moveInDate)
+    private Contract StartProcess(EffectiveDate moveInDate)
     {
-        _customerMoveInProcess.StartProcess(
+        return _customerMoveInProcess.StartProcess(
             _accountingPoint,
             _energySupplier,
             moveInDate,

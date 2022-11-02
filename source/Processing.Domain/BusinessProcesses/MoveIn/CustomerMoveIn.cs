@@ -15,6 +15,7 @@
 using System;
 using NodaTime;
 using Processing.Domain.Common;
+using Processing.Domain.Contracts;
 using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
@@ -50,17 +51,19 @@ namespace Processing.Domain.BusinessProcesses.MoveIn
             return accountingPoint.AddContractIsAcceptable(customer, consumerMovesInOn.DateInUtc);
         }
 
-        public void StartProcess(AccountingPoint accountingPoint, EnergySupplier energySupplier, EffectiveDate consumerMovesInOn, Instant today, BusinessProcessId businessProcessId, Customer customer)
+        public Contract StartProcess(AccountingPoint accountingPoint, EnergySupplier energySupplier, EffectiveDate consumerMovesInOn, Instant today, BusinessProcessId businessProcessId, Customer customer)
         {
             if (accountingPoint == null) throw new ArgumentNullException(nameof(accountingPoint));
             if (energySupplier == null) throw new ArgumentNullException(nameof(energySupplier));
             if (consumerMovesInOn == null) throw new ArgumentNullException(nameof(consumerMovesInOn));
-            accountingPoint.AddContract(customer, consumerMovesInOn.DateInUtc, businessProcessId, energySupplier.EnergySupplierId);
+            var contract = accountingPoint.CreateContract(customer, consumerMovesInOn.DateInUtc, businessProcessId, energySupplier.EnergySupplierId);
             // accountingPoint.RegisterMoveIn(customer, energySupplier.EnergySupplierId, consumerMovesInOn.DateInUtc, businessProcessId, today);
             if (EffectiveDateIsInThePast(consumerMovesInOn, today))
             {
                 accountingPoint.EffectuateConsumerMoveIn(businessProcessId, today);
             }
+
+            return contract;
         }
 
         private static bool EffectiveDateIsInThePast(EffectiveDate consumerMovesInOn, Instant today)

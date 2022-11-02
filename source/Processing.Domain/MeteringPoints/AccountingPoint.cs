@@ -163,7 +163,7 @@ namespace Processing.Domain.MeteringPoints
         //
         //     AddDomainEvent(new ConsumerMoveInAccepted(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, energySupplierId.Value, moveInDate));
         // }
-        public void AddContract(Customer customer, Instant moveInDate, BusinessProcessId businessProcessId, EnergySupplierId energySupplierId)
+        public Contract CreateContract(Customer customer, Instant moveInDate, BusinessProcessId businessProcessId, EnergySupplierId energySupplierId)
         {
             if (!AddContractIsAcceptable(customer, moveInDate).Success)
             {
@@ -181,7 +181,7 @@ namespace Processing.Domain.MeteringPoints
 
             _contract = Contract.Create(customer);
 
-            AddDomainEvent(new ContractIsAdded(_contract.ContractId));
+            return _contract;
         }
 
         public BusinessRulesValidationResult AddContractIsAcceptable(Customer customer, Instant moveInDate)

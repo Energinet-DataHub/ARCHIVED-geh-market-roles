@@ -69,7 +69,7 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
         private void GivenAccountingPointHasEnergySupplier()
         {
             var businessProcessId = BusinessProcessId.New();
-            _accountingPoint.AddContract(
+            _accountingPoint.CreateContract(
                 Customer.Create(CustomerNumber.Create(SampleData.ConsumerSocialSecurityNumber), SampleData.ConsumerName),
                 _systemDateTimeProvider.Now().Minus(Duration.FromDays(365)),
                 businessProcessId,

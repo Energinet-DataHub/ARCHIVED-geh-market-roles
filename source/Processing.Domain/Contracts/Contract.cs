@@ -29,7 +29,7 @@ namespace Processing.Domain.Contracts
 
         public Customer Customer { get; }
 
-        public static Contract Create(Customer customer)
+        internal static Contract Create(Customer customer)
         {
             return new Contract(customer);
         }
