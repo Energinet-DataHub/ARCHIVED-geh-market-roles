@@ -99,7 +99,36 @@ namespace Processing.Domain.MeteringPoints
                 new MeteringPointMustBeEnergySuppliableRule(_meteringPointType),
                 new ProductionMeteringPointMustBeObligatedRule(_meteringPointType, _isProductionObligated),
                 new CannotBeInStateOfClosedDownRule(_physicalState),
-                new MustHaveEnergySupplierAssociatedRule(GetCurrentSupplier(systemDateTimeProvider)),
+                // new MustHaveEnergySupplierAssociatedRule(GetCurrentSupplier(systemDateTimeProvider)),
+                new ChangeOfSupplierRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), supplyStartDate),
+                new MoveInRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), supplyStartDate),
+                new EffectiveDateCannotBeInThePastRule(supplyStartDate, systemDateTimeProvider.Now()),
+                new CannotBeCurrentSupplierRule(energySupplierId, GetCurrentSupplier(systemDateTimeProvider)),
+            };
+
+            return new BusinessRulesValidationResult(rules);
+        }
+
+        public BusinessRulesValidationResult ChangeSupplierAcceptable(EnergySupplierId energySupplierId, Instant supplyStartDate, ISystemDateTimeProvider systemDateTimeProvider, Contract activeContract)
+        {
+            if (energySupplierId is null)
+            {
+                throw new ArgumentNullException(nameof(energySupplierId));
+            }
+
+            if (systemDateTimeProvider == null)
+            {
+                throw new ArgumentNullException(nameof(systemDateTimeProvider));
+            }
+
+            if (activeContract == null) throw new ArgumentNullException(nameof(activeContract));
+
+            var rules = new Collection<IBusinessRule>()
+            {
+                new MeteringPointMustBeEnergySuppliableRule(_meteringPointType),
+                new ProductionMeteringPointMustBeObligatedRule(_meteringPointType, _isProductionObligated),
+                new CannotBeInStateOfClosedDownRule(_physicalState),
+                new MustHaveEnergySupplierAssociatedRule(activeContract.ContractDetails.EnergySupplierId),
                 new ChangeOfSupplierRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), supplyStartDate),
                 new MoveInRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), supplyStartDate),
                 new EffectiveDateCannotBeInThePastRule(supplyStartDate, systemDateTimeProvider.Now()),
@@ -125,6 +154,34 @@ namespace Processing.Domain.MeteringPoints
             _supplierRegistrations.Add(new SupplierRegistration(energySupplierId, businessProcess.BusinessProcessId));
 
             AddDomainEvent(new EnergySupplierChangeRegistered(Id, GsrnNumber, businessProcess.BusinessProcessId, supplyStartDate, energySupplierId));
+        }
+
+        public Contract AcceptChangeOfSupplier(Contract activeContract, Instant supplyStartDate, EnergySupplierId energySupplierId, ISystemDateTimeProvider systemDateTimeProvider, BusinessProcessId businessProcessId)
+        {
+            if (activeContract == null) throw new ArgumentNullException(nameof(activeContract));
+            if (energySupplierId == null) throw new ArgumentNullException(nameof(energySupplierId));
+            if (systemDateTimeProvider == null) throw new ArgumentNullException(nameof(systemDateTimeProvider));
+            if (businessProcessId == null) throw new ArgumentNullException(nameof(businessProcessId));
+            if (!ChangeSupplierAcceptable(energySupplierId, supplyStartDate, systemDateTimeProvider, activeContract).Success)
+            {
+                throw new BusinessProcessException(
+                    "Cannot accept change of supplier request due to violation of one or more business rules.");
+            }
+
+            var businessProcess = CreateBusinessProcess(supplyStartDate, BusinessProcessType.ChangeOfSupplier, businessProcessId);
+            _businessProcesses.Add(businessProcess);
+            _supplierRegistrations.Add(new SupplierRegistration(energySupplierId, businessProcess.BusinessProcessId));
+
+            AddDomainEvent(new EnergySupplierChangeRegistered(Id, GsrnNumber, businessProcess.BusinessProcessId, supplyStartDate, energySupplierId));
+
+            return Contract.Create(
+                Customer.Create(
+                    activeContract.ContractDetails.Customer.Number,
+                    activeContract.ContractDetails.Customer.Name),
+                BusinessProcessId.New(),
+                energySupplierId,
+                EffectiveDate.Create(supplyStartDate.ToDateTimeUtc()),
+                Id);
         }
 
         public void EffectuateChangeOfSupplier(BusinessProcessId processId, ISystemDateTimeProvider systemDateTimeProvider)

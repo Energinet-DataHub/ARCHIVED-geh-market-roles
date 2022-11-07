@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Processing.Domain.EnergySuppliers;
 using Processing.Domain.SeedWork;
 
 namespace Processing.Domain.MeteringPoints.Rules.ChangeEnergySupplier
 {
     public class MustHaveEnergySupplierAssociatedRule : IBusinessRule
     {
-        private readonly SupplierRegistration? _supplierRegistration;
+        private readonly EnergySupplierId? _energySupplierId;
 
-        internal MustHaveEnergySupplierAssociatedRule(SupplierRegistration? supplierRegistration)
+        internal MustHaveEnergySupplierAssociatedRule(EnergySupplierId? energySupplierId)
         {
-            _supplierRegistration = supplierRegistration;
+            _energySupplierId = energySupplierId;
         }
 
-        public bool IsBroken => _supplierRegistration is null;
+        public bool IsBroken => _energySupplierId is null;
 
         public ValidationError ValidationError => new MustHaveEnergySupplierAssociatedRuleError();
     }
