@@ -14,6 +14,7 @@
 
 using System;
 using NodaTime;
+using Processing.Domain.Contracts;
 using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
@@ -56,15 +57,16 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             Assert.Contains(result.Errors, error => error is CannotBeInStateOfClosedDownRuleError);
         }
 
-        // [Fact]
-        // public void Accept_WhenNoEnergySupplierIsAssociated_IsNotPossible()
-        // {
-        //     var meteringPoint = CreateMeteringPoint(MeteringPointType.Production);
-        //
-        //     var result = CanChangeSupplier(meteringPoint);
-        //
-        //     Assert.Contains(result.Errors, error => error is MustHaveEnergySupplierAssociatedRuleError);
-        // }
+        [Fact]
+        public void Accept_WhenNoEnergySupplierIsAssociated_IsNotPossible()
+        {
+            var meteringPoint = CreateMeteringPoint(MeteringPointType.Production);
+
+            var result = CanChangeSupplier(meteringPoint, _systemDateTimeProvider.Now(), null);
+
+            Assert.Contains(result.Errors, error => error is MustHaveEnergySupplierAssociatedRuleError);
+        }
+
         [Fact]
         public void Accept_WhenChangeOfSupplierIsRegisteredOnSameDate_IsNotPossible()
         {
@@ -178,6 +180,15 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
             return MeteringPointType.FromName<MeteringPointType>(meteringPointTypeName);
         }
 
+        private Contract CreateContract(AccountingPoint accountingPoint)
+        {
+            return accountingPoint.CreateContract(
+                CreateCustomer(),
+                _systemDateTimeProvider.Now().Minus(Duration.FromDays(1)),
+                BusinessProcessId.New(),
+                CreateSupplierId());
+        }
+
         private BusinessRulesValidationResult CanChangeSupplier(AccountingPoint accountingPoint)
         {
             return accountingPoint.ChangeSupplierAcceptable(CreateSupplierId(), _systemDateTimeProvider.Now(), _systemDateTimeProvider);
@@ -186,6 +197,11 @@ namespace Processing.Tests.Domain.MeteringPoints.ChangeOfSupplier
         private BusinessRulesValidationResult CanChangeSupplier(AccountingPoint accountingPoint, Instant effectuationDate)
         {
             return accountingPoint.ChangeSupplierAcceptable(CreateSupplierId(), effectuationDate, _systemDateTimeProvider);
+        }
+
+        private BusinessRulesValidationResult CanChangeSupplier(AccountingPoint accountingPoint, Instant effectuationDate, Contract? contract)
+        {
+            return accountingPoint.ChangeSupplierAcceptable(CreateSupplierId(), effectuationDate, _systemDateTimeProvider, contract);
         }
     }
 }

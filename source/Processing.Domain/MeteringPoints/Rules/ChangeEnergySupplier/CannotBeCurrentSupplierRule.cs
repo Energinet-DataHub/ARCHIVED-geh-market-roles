@@ -19,9 +19,9 @@ namespace Processing.Domain.MeteringPoints.Rules.ChangeEnergySupplier
 {
     public class CannotBeCurrentSupplierRule : IBusinessRule
     {
-        internal CannotBeCurrentSupplierRule(EnergySupplierId energySupplierId, SupplierRegistration? currentSupplier)
+        internal CannotBeCurrentSupplierRule(EnergySupplierId energySupplierId, EnergySupplierId? currentSupplier)
         {
-            IsBroken = currentSupplier?.EnergySupplierId == energySupplierId;
+            IsBroken = currentSupplier == energySupplierId;
         }
 
         public bool IsBroken { get; }

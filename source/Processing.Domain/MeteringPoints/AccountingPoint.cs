@@ -103,13 +103,13 @@ namespace Processing.Domain.MeteringPoints
                 new ChangeOfSupplierRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), supplyStartDate),
                 new MoveInRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), supplyStartDate),
                 new EffectiveDateCannotBeInThePastRule(supplyStartDate, systemDateTimeProvider.Now()),
-                new CannotBeCurrentSupplierRule(energySupplierId, GetCurrentSupplier(systemDateTimeProvider)),
+                // new CannotBeCurrentSupplierRule(energySupplierId, GetCurrentSupplier(systemDateTimeProvider)),
             };
 
             return new BusinessRulesValidationResult(rules);
         }
 
-        public BusinessRulesValidationResult ChangeSupplierAcceptable(EnergySupplierId energySupplierId, Instant supplyStartDate, ISystemDateTimeProvider systemDateTimeProvider, Contract activeContract)
+        public BusinessRulesValidationResult ChangeSupplierAcceptable(EnergySupplierId energySupplierId, Instant supplyStartDate, ISystemDateTimeProvider systemDateTimeProvider, Contract? activeContract)
         {
             if (energySupplierId is null)
             {
@@ -121,18 +121,16 @@ namespace Processing.Domain.MeteringPoints
                 throw new ArgumentNullException(nameof(systemDateTimeProvider));
             }
 
-            if (activeContract == null) throw new ArgumentNullException(nameof(activeContract));
-
             var rules = new Collection<IBusinessRule>()
             {
                 new MeteringPointMustBeEnergySuppliableRule(_meteringPointType),
                 new ProductionMeteringPointMustBeObligatedRule(_meteringPointType, _isProductionObligated),
                 new CannotBeInStateOfClosedDownRule(_physicalState),
-                new MustHaveEnergySupplierAssociatedRule(activeContract.ContractDetails.EnergySupplierId),
+                new MustHaveEnergySupplierAssociatedRule(activeContract?.ContractDetails.EnergySupplierId),
                 new ChangeOfSupplierRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), supplyStartDate),
                 new MoveInRegisteredOnSameDateIsNotAllowedRule(_businessProcesses.AsReadOnly(), supplyStartDate),
                 new EffectiveDateCannotBeInThePastRule(supplyStartDate, systemDateTimeProvider.Now()),
-                new CannotBeCurrentSupplierRule(energySupplierId, GetCurrentSupplier(systemDateTimeProvider)),
+                new CannotBeCurrentSupplierRule(energySupplierId, activeContract?.ContractDetails.EnergySupplierId),
             };
 
             return new BusinessRulesValidationResult(rules);
