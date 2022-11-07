@@ -42,7 +42,7 @@ namespace Processing.Domain.MeteringPoints.Rules.MoveIn
             }
             else
             {
-                IsBroken = contract.Customer.Equals(customer);
+                IsBroken = contract.ContractDetails.Customer.Equals(customer);
             }
         }
     }

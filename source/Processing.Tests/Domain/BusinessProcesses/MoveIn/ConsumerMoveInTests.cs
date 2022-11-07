@@ -80,6 +80,7 @@ public class ConsumerMoveInTests : TestBase
         var contract = StartProcess(AsOfToday());
 
         Assert.NotNull(contract);
+        Assert.Equal(_accountingPoint.Id, contract.AccountingPointId);
     }
 
     [Fact]

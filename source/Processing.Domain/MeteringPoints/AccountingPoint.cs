@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using NodaTime;
+using Processing.Domain.Common;
 using Processing.Domain.Contracts;
 using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
@@ -183,7 +184,7 @@ namespace Processing.Domain.MeteringPoints
             _consumerRegistrations.Add(new ConsumerRegistration(customer, businessProcess.BusinessProcessId));
             _supplierRegistrations.Add(new SupplierRegistration(energySupplierId, businessProcess.BusinessProcessId));
 
-            return Contract.Create(customer, businessProcess.BusinessProcessId, energySupplierId);
+            return Contract.Create(customer, businessProcess.BusinessProcessId, energySupplierId, EffectiveDate.Create(moveInDate.ToDateTimeUtc()), Id);
         }
 
         public BusinessRulesValidationResult AddContractIsAcceptable(Customer customer, Instant moveInDate, Contract? currentContract)
@@ -216,6 +217,22 @@ namespace Processing.Domain.MeteringPoints
                 businessProcess.EffectiveDate));
 
             AddDomainEvent(new EnergySupplierChanged(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, newSupplier.EnergySupplierId.Value, businessProcess.EffectiveDate));
+        }
+
+        public void EffectuateConsumerMoveIn(Contract contract, Instant today)
+        {
+            if (contract == null) throw new ArgumentNullException(nameof(contract));
+            var businessProcess = GetBusinessProcess(contract.BusinessProcessId, BusinessProcessType.MoveIn);
+
+            businessProcess.Effectuate(today);
+
+            AddDomainEvent(new ConsumerMovedIn(
+                Id.Value,
+                GsrnNumber.Value,
+                businessProcess.BusinessProcessId.Value,
+                businessProcess.EffectiveDate));
+
+            AddDomainEvent(new EnergySupplierChanged(Id.Value, GsrnNumber.Value, businessProcess.BusinessProcessId.Value, contract.ContractDetails.EnergySupplierId.Value, businessProcess.EffectiveDate));
         }
 
         public void CancelChangeOfSupplier(BusinessProcessId processId)

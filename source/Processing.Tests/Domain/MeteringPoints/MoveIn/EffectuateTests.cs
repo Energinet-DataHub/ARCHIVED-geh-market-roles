@@ -66,9 +66,9 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         [Fact]
         public void Effectuate_WhenEffectiveDateIsDue_IsSuccessful()
         {
-            GivenMoveInHasBeenAccepted(_systemDateTimeProvider.Now());
+            var contract = GivenMoveInHasBeenAccepted(_systemDateTimeProvider.Now());
 
-            WhenCompletingMoveIn();
+            WhenCompletingMoveIn(contract);
 
             Assert.Contains(_accountingPoint.DomainEvents, @event => @event is EnergySupplierChanged);
             Assert.Contains(_accountingPoint.DomainEvents, @event => @event is ConsumerMovedIn);
@@ -86,6 +86,11 @@ namespace Processing.Tests.Domain.MeteringPoints.MoveIn
         private void WhenCompletingMoveIn(BusinessProcessId? businessProcessId = null)
         {
             _accountingPoint.EffectuateConsumerMoveIn(businessProcessId ?? _businessProcessId, _systemDateTimeProvider.Now());
+        }
+
+        private void WhenCompletingMoveIn(Contract contract)
+        {
+            _accountingPoint.EffectuateConsumerMoveIn(contract, _systemDateTimeProvider.Now());
         }
     }
 }

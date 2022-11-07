@@ -14,6 +14,7 @@
 
 using System;
 using NodaTime;
+using Processing.Domain.Common;
 using Processing.Domain.Customers;
 using Processing.Domain.EnergySuppliers;
 using Processing.Domain.MeteringPoints;
@@ -22,25 +23,33 @@ namespace Processing.Domain.Contracts
 {
     public class Contract
     {
-        private Contract(Customer customer, BusinessProcessId businessProcessId, EnergySupplierId energySupplierId)
+        private Contract(
+            Customer customer,
+            BusinessProcessId businessProcessId,
+            EnergySupplierId energySupplierId,
+            EffectiveDate effectiveDate,
+            AccountingPointId accountingPointId)
         {
             ContractId = Guid.NewGuid();
-            Customer = customer;
             BusinessProcessId = businessProcessId;
-            EnergySupplierId = energySupplierId;
+            EffectiveDate = effectiveDate;
+            AccountingPointId = accountingPointId;
+            ContractDetails = ContractDetails.Create(customer, energySupplierId);
         }
 
         public Guid ContractId { get; }
 
-        public Customer Customer { get; }
-
         public BusinessProcessId BusinessProcessId { get; }
 
-        public EnergySupplierId EnergySupplierId { get; private set; }
+        public ContractDetails ContractDetails { get; }
 
-        internal static Contract Create(Customer customer, BusinessProcessId businessProcessId, EnergySupplierId energySupplierId)
+        public EffectiveDate EffectiveDate { get; set; }
+
+        public AccountingPointId AccountingPointId { get; set; }
+
+        internal static Contract Create(Customer customer, BusinessProcessId businessProcessId, EnergySupplierId energySupplierId, EffectiveDate effectiveDate, AccountingPointId accountingPointId)
         {
-            return new Contract(customer, businessProcessId, energySupplierId);
+            return new Contract(customer, businessProcessId, energySupplierId, effectiveDate, accountingPointId);
         }
     }
 }
