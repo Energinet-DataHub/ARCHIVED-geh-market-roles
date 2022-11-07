@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Linq;
 using Energinet.DataHub.MarketRoles.ApplyDBMigrationsApp.Helpers;
 
@@ -24,8 +25,10 @@ namespace Energinet.DataHub.MarketRoles.ApplyDBMigrationsApp
             var connectionString = ConnectionStringFactory.GetConnectionString(args);
             var filter = EnvironmentFilter.GetFilter(args);
             var isDryRun = args.Contains("dryRun");
+            var isManagedIdentity = args.Contains("isManagedIdentity");
 
-            var upgrader = UpgradeFactory.GetUpgradeEngine(connectionString, filter, isDryRun);
+            Console.WriteLine($"Args have been resolved to: dryRun = ${isDryRun}, isManagedIdentity = ${isManagedIdentity}");
+            var upgrader = UpgradeFactory.GetUpgradeEngine(connectionString, filter, isDryRun, isManagedIdentity);
 
             var result = upgrader.PerformUpgrade();
 
