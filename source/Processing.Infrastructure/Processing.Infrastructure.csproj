@@ -33,6 +33,7 @@ limitations under the License.
     <PackageReference Include="Grpc.Tools" Version="2.45.0" PrivateAssets="All" />
     <PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.20.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.3" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
     <PackageReference Include="NodaTime" Version="3.0.10" />
@@ -40,6 +41,7 @@ limitations under the License.
     <PackageReference Include="Polly" Version="7.2.2" />
     <PackageReference Include="SimpleInjector" Version="5.3.3" />
     <PackageReference Include="SimplerSoftware.EntityFrameworkCore.SqlServer.NodaTime" Version="6.0.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 
   <ItemGroup>
