@@ -54,6 +54,7 @@ using Messaging.Infrastructure.OutgoingMessages.CharacteristicsOfACustomerAtAnAp
 using Messaging.Infrastructure.OutgoingMessages.ConfirmRequestChangeAccountingPointCharacteristics;
 using Messaging.Infrastructure.OutgoingMessages.ConfirmRequestChangeOfSupplier;
 using Messaging.Infrastructure.OutgoingMessages.GenericNotification;
+using Messaging.Infrastructure.OutgoingMessages.Peek;
 using Messaging.Infrastructure.OutgoingMessages.RejectRequestChangeAccountingPointCharacteristics;
 using Messaging.Infrastructure.OutgoingMessages.RejectRequestChangeOfSupplier;
 using Messaging.Infrastructure.OutgoingMessages.Requesting;
@@ -95,6 +96,7 @@ namespace Messaging.Infrastructure.Configuration
             AddProcessing();
             ReadModelHandlingConfiguration.AddReadModelHandling(services);
             UpdateCustomerMasterDataConfiguration.Configure(services);
+            PeekConfiguration.Configure(services);
         }
 
         public static CompositionRoot Initialize(IServiceCollection services)
@@ -157,7 +159,6 @@ namespace Messaging.Infrastructure.Configuration
             _services.AddSingleton<IActorLookup, ActorLookup>();
             _services.AddScoped<MessageAvailabilityPublisher>();
             _services.AddScoped<IOutgoingMessageStore, OutgoingMessageStore>();
-            _services.AddTransient<INotificationHandler<TenSecondsHasHasPassed>, PublishNewMessagesOnTimeHasPassed>();
             return this;
         }
 
@@ -288,6 +289,7 @@ namespace Messaging.Infrastructure.Configuration
             _services.AddScoped<DomainEventsAccessor>();
             _services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehaviour<,>));
             _services.AddTransient(typeof(IPipelineBehavior<,>), typeof(RaiseDomainEventsBehaviour<,>));
+            _services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AssignOutgoingMessagesToBundlesBehaviour<,>));
         }
     }
 }
