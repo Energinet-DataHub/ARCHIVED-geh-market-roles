@@ -22,7 +22,7 @@ using Xunit;
 
 namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishing
 {
-    public class ServiceBusMessageDispatcherTests : TestBase
+    public class ServiceBusMessageDispatcherTests : TestBase, IAsyncLifetime
     {
         private readonly ServiceBusMessageDispatcher _serviceBusMessageDispatcher;
         private readonly ServiceBusSenderFactorySpy _serviceBusSenderFactory;
@@ -60,6 +60,16 @@ namespace Processing.IntegrationTests.Infrastructure.Configuration.EventPublishi
             };
 
             await Assert.ThrowsAsync<InvalidOperationException>(() => _serviceBusMessageDispatcher.DispatchAsync(integrationEvent));
+        }
+
+        public Task InitializeAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public async Task DisposeAsync()
+        {
+            await _serviceBusSenderFactory.DisposeAsync().ConfigureAwait(false);
         }
     }
 }
