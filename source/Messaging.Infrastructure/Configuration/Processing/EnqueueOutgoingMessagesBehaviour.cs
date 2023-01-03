@@ -52,6 +52,10 @@ public class EnqueueOutgoingMessagesBehaviour<TRequest, TResponse> : IPipelineBe
             .Where(entity => entity.State == EntityState.Added)
             .Select(entity => entity.Entity).ToList();
 
+        var sql = @$"INSERT INTO [B2B].[EnqueuedMessages]
+        SELECT *
+        FROM @TVP;";
+
         foreach (var message in outgoingMessages)
         {
             await _outgoingMessageEnqueuer.EnqueueAsync(
