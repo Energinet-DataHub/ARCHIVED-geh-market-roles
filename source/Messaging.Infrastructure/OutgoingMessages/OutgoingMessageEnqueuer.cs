@@ -13,10 +13,14 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 using Messaging.Application.Configuration.DataAccess;
 using Messaging.Domain.OutgoingMessages.Peek;
+using Microsoft.Data.SqlClient;
 
 namespace Messaging.Infrastructure.OutgoingMessages;
 
@@ -29,6 +33,44 @@ public class OutgoingMessageEnqueuer
     {
         _databaseConnectionFactory = databaseConnectionFactory;
         _unitOfWork = unitOfWork;
+    }
+
+    public async Task EnqueueMessagesAsync(ReadOnlyCollection<EnqueuedMessage> messages)
+    {
+        if (messages == null) throw new ArgumentNullException(nameof(messages));
+
+        const string sql = @"INSERT INTO [B2B].[EnqueuedMessages] (Id, MessageType, MessageCategory,ReceiverId, ReceiverRole, SenderId, SenderRole, ProcessType,MessageRecord)
+        SELECT (Id, MessageType, MessageCategory,ReceiverId, ReceiverRole, SenderId, SenderRole, ProcessType,MessageRecord)
+        FROM @TVP;";
+
+        using var connection = (SqlConnection)await _databaseConnectionFactory.GetConnectionAndOpenAsync().ConfigureAwait(false);
+        using var command = connection.CreateCommand();
+        using var dt = new DataTable("EnqueuedMessageType", "dbo");
+
+        dt.Columns.AddRange(new[]
+        {
+            new DataColumn("Id", typeof(Guid)),
+            new DataColumn("MessageType", typeof(string)),
+            new DataColumn("MessageCategory", typeof(string)),
+            new DataColumn("ReceiverId", typeof(string)),
+            new DataColumn("ReceiverRole", typeof(string)),
+            new DataColumn("SenderId", typeof(string)),
+            new DataColumn("SenderRole", typeof(string)),
+            new DataColumn("ProcessType", typeof(string)),
+            new DataColumn("MessageRecord", typeof(string)),
+        });
+
+        foreach (var message in messages)
+        {
+            dt.Rows.Add(message.Id, message.MessageType, message.Category, message.ReceiverId, message.ReceiverRole, message.SenderId, message.SenderRole, message.ProcessType, message.MessageRecord);
+        }
+
+        command.CommandText = sql;
+        var parameter = command.Parameters.AddWithValue("TVP", dt);
+        parameter.SqlDbType = SqlDbType.Structured;
+        parameter.TypeName = "dbo.EnqueuedMessageType";
+
+        await command.ExecuteNonQueryAsync().ConfigureAwait(false);
     }
 
     public async Task EnqueueAsync(EnqueuedMessage message)

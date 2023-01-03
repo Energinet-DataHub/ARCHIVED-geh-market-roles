@@ -50,26 +50,21 @@ public class EnqueueOutgoingMessagesBehaviour<TRequest, TResponse> : IPipelineBe
             .ChangeTracker
             .Entries<OutgoingMessage>()
             .Where(entity => entity.State == EntityState.Added)
-            .Select(entity => entity.Entity).ToList();
+            .Select(entity => entity.Entity)
+            .Select(message => new EnqueuedMessage(
+                message.Id,
+                message.ReceiverId.Value,
+                message.ReceiverRole.Name,
+                message.SenderId.Value,
+                message.SenderRole.Name,
+                message.MessageType.Name,
+                message.MessageType.Category.Name,
+                message.ProcessType,
+                message.MessageRecord))
+            .ToList()
+            .AsReadOnly();
 
-        var sql = @$"INSERT INTO [B2B].[EnqueuedMessages]
-        SELECT *
-        FROM @TVP;";
-
-        foreach (var message in outgoingMessages)
-        {
-            await _outgoingMessageEnqueuer.EnqueueAsync(
-                new EnqueuedMessage(
-                    message.Id,
-                    message.ReceiverId.Value,
-                    message.ReceiverRole.Name,
-                    message.SenderId.Value,
-                    message.SenderRole.Name,
-                    message.MessageType.Name,
-                    message.MessageType.Category.Name,
-                    message.ProcessType,
-                    message.MessageRecord)).ConfigureAwait(false);
-        }
+        await _outgoingMessageEnqueuer.EnqueueMessagesAsync(outgoingMessages).ConfigureAwait(false);
 
         return result;
     }
