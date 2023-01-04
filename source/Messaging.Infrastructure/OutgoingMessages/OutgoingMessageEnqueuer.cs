@@ -39,8 +39,8 @@ public class OutgoingMessageEnqueuer
     {
         if (messages == null) throw new ArgumentNullException(nameof(messages));
 
-        const string sql = @"INSERT INTO [B2B].[EnqueuedMessages] (Id, MessageType, MessageCategory,ReceiverId, ReceiverRole, SenderId, SenderRole, ProcessType,MessageRecord)
-        SELECT (Id, MessageType, MessageCategory,ReceiverId, ReceiverRole, SenderId, SenderRole, ProcessType,MessageRecord)
+        const string sql = @"INSERT INTO [B2B].[EnqueuedMessages] (Id, MessageType, MessageCategory, ReceiverId, ReceiverRole, SenderId, SenderRole, ProcessType, MessageRecord)
+        SELECT Id, MessageType, MessageCategory, ReceiverId, ReceiverRole, SenderId, SenderRole, ProcessType, MessageRecord
         FROM @TVP;";
 
         using var connection = (SqlConnection)await _databaseConnectionFactory.GetConnectionAndOpenAsync().ConfigureAwait(false);
