@@ -1,0 +1,23 @@
+@startuml Basic Sample
+left to right direction
+
+!define ICONURL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v2.4.0
+!includeurl ICONURL/common.puml
+!includeurl ICONURL/devicons/msql_server.puml
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Container_Ext(trigger, "Load Testing Tool", "Grafana K6")
+Container(performanceTest, "Performance Test", "ASP.NET")
+Container(messagingapi, "Messaging.API", "Azure function APP")
+ContainerDb(db, "Database", "SQL ", $sprite="msql_server")
+
+
+Rel(trigger, performanceTest, Invoke Peek/Dequeue)
+Rel(trigger, messagingapi, Request ActorToken & ActorNumber)
+
+Rel(performanceTest, messagingapi, Create test data)
+
+Rel(messagingapi, db, "Update/Delete")
+
+@enduml
