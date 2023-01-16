@@ -17,9 +17,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Contracts.BusinessRequests.MoveIn;
 using Dapper;
 using Energinet.DataHub.EnergySupplying.IntegrationEvents;
+using EnergySupplying.Contracts.BusinessRequests.MoveIn;
 using Newtonsoft.Json;
 using Processing.Application.Common;
 using Processing.Application.MoveIn;
@@ -38,7 +38,7 @@ using Processing.Infrastructure.RequestAdapters;
 using Processing.IntegrationTests.Fixtures;
 using Xunit;
 using Xunit.Categories;
-using Customer = Contracts.BusinessRequests.MoveIn.Customer;
+using Customer = EnergySupplying.Contracts.BusinessRequests.MoveIn.Customer;
 
 namespace Processing.IntegrationTests.Application.MoveIn
 {
