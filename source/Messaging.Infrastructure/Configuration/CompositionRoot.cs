@@ -117,7 +117,14 @@ namespace Messaging.Infrastructure.Configuration
         {
             _services.AddDbContext<B2BContext>(x =>
             {
-                x.UseSqlServer(connectionString, y => y.UseNodaTime());
+                x.UseSqlServer(connectionString, sqlServerOptionsAction: sqlOptions =>
+                {
+                    sqlOptions.UseNodaTime();
+                    sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(60),
+                        errorNumbersToAdd: null);
+                });
             });
             return this;
         }
