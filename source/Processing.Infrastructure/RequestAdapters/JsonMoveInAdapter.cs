@@ -17,7 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Contracts.BusinessRequests.MoveIn;
+using EnergySupplying.Contracts.BusinessRequests.MoveIn;
 using MediatR;
 using Processing.Application.Common;
 using Processing.Application.MoveIn;
