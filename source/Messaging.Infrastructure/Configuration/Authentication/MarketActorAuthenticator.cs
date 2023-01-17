@@ -20,16 +20,19 @@ using System.Threading.Tasks;
 using Messaging.Application.Actors;
 using Messaging.Application.Configuration.Authentication;
 using Messaging.Domain.Actors;
+using Microsoft.Extensions.Logging;
 
 namespace Messaging.Infrastructure.Configuration.Authentication
 {
     public class MarketActorAuthenticator : IMarketActorAuthenticator
     {
         private readonly IActorLookup _actorLookup;
+        private readonly ILogger _logger;
 
-        public MarketActorAuthenticator(IActorLookup actorLookup)
+        public MarketActorAuthenticator(IActorLookup actorLookup, ILogger logger)
         {
             _actorLookup = actorLookup;
+            _logger = logger;
         }
 
         public MarketActorIdentity CurrentIdentity { get; private set; } = new NotAuthenticated();
@@ -41,6 +44,7 @@ namespace Messaging.Infrastructure.Configuration.Authentication
             var userIdFromSts = GetClaimValueFrom(claimsPrincipal, ClaimsMap.UserId);
             if (string.IsNullOrWhiteSpace(userIdFromSts))
             {
+                _logger.LogInformation("ActorIsNotAuthorized: userIdFromSts is not set");
                 ActorIsNotAuthorized();
                 return;
             }
@@ -48,6 +52,7 @@ namespace Messaging.Infrastructure.Configuration.Authentication
             var actorNumber = await _actorLookup.GetActorNumberByB2CIdAsync(Guid.Parse(userIdFromSts)).ConfigureAwait(false);
             if (actorNumber is null)
             {
+                _logger.LogInformation("ActorIsNotAuthorized: actorNumber not found");
                 ActorIsNotAuthorized();
                 return;
             }
@@ -55,6 +60,7 @@ namespace Messaging.Infrastructure.Configuration.Authentication
             var roles = ParseRoles(claimsPrincipal);
             if (roles.Count == 0)
             {
+                _logger.LogInformation("ActorIsNotAuthorized: roles count is zero");
                 ActorIsNotAuthorized();
                 return;
             }

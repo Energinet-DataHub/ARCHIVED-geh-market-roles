@@ -19,6 +19,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Messaging.Application.Actors;
 using Messaging.Infrastructure.Actors;
+using Microsoft.Extensions.Logging;
 
 namespace Messaging.Infrastructure.Configuration.Authentication;
 
@@ -26,8 +27,8 @@ public class DevMarketActorAuthenticator : MarketActorAuthenticator
 {
     private readonly IActorRegistry _actorRegistry;
 
-    public DevMarketActorAuthenticator(IActorLookup actorLookup, IActorRegistry actorRegistry)
-        : base(actorLookup)
+    public DevMarketActorAuthenticator(IActorLookup actorLookup, IActorRegistry actorRegistry, ILogger logger)
+        : base(actorLookup, logger)
     {
         _actorRegistry = actorRegistry;
     }

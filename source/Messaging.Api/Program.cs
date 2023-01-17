@@ -97,14 +97,16 @@ namespace Messaging.Api
                         .AddBearerAuthentication(tokenValidationParameters)
                         .AddAuthentication(sp =>
                         {
+                            var factory = sp.GetRequiredService<ILoggerFactory>();
                             if (runtime.IsRunningLocally() || runtime.PERFORMANCE_TEST_ENABLED)
                             {
                                 return new DevMarketActorAuthenticator(
                                     sp.GetRequiredService<IActorLookup>(),
-                                    sp.GetRequiredService<IActorRegistry>());
+                                    sp.GetRequiredService<IActorRegistry>(),
+                                    factory.CreateLogger<DevMarketActorAuthenticator>());
                             }
 
-                            return new MarketActorAuthenticator(sp.GetRequiredService<IActorLookup>());
+                            return new MarketActorAuthenticator(sp.GetRequiredService<IActorLookup>(), factory.CreateLogger<MarketActorAuthenticator>());
                         })
                         .AddDatabaseConnectionFactory(databaseConnectionString!)
                         .AddSystemClock(new SystemDateTimeProvider())
