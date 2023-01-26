@@ -17,6 +17,7 @@ using Processing.Domain.MeteringPoints;
 
 namespace Processing.Application.Common.Processing
 {
+    [Serializable]
     public class InvalidProcessManagerStateException : BusinessProcessException
     {
         public InvalidProcessManagerStateException()
@@ -30,6 +31,11 @@ namespace Processing.Application.Common.Processing
 
         public InvalidProcessManagerStateException(string message)
             : base(message)
+        {
+        }
+
+        protected InvalidProcessManagerStateException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext)
+            : base(serializationInfo, streamingContext)
         {
         }
     }
