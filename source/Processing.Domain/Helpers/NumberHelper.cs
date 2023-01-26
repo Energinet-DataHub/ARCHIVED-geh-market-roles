@@ -14,7 +14,7 @@
 
 namespace Processing.Domain.Helpers
 {
-    internal class NumberHelper
+    internal static class NumberHelper
     {
         /// <summary>
         /// Checks if the value is an int and also outputs the parsed number.
