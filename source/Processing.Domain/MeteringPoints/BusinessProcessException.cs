@@ -16,6 +16,7 @@ using System;
 
 namespace Processing.Domain.MeteringPoints
 {
+    [Serializable]
     public class BusinessProcessException : Exception
     {
         public BusinessProcessException()
@@ -29,6 +30,11 @@ namespace Processing.Domain.MeteringPoints
 
         public BusinessProcessException(string message, Exception innerException)
             : base(message, innerException)
+        {
+        }
+
+        protected BusinessProcessException(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext)
+            : base(serializationInfo, streamingContext)
         {
         }
     }
