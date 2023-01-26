@@ -34,7 +34,6 @@ namespace Processing.Domain.MeteringPoints
         private readonly List<ConsumerRegistration> _consumerRegistrations = new();
         private readonly List<SupplierRegistration> _supplierRegistrations = new();
         private PhysicalState _physicalState;
-        private ElectricalHeating? _electricalHeating;
 
         // constructor to satisfy EF
         public AccountingPoint(GsrnNumber gsrnNumber, MeteringPointType meteringPointType, PhysicalState physicalState)
@@ -74,10 +73,12 @@ namespace Processing.Domain.MeteringPoints
             return new AccountingPoint(meteringPointId, gsrnNumber, MeteringPointType.Consumption);
         }
 
-        public void SetElectricalHeating(ElectricalHeating electricalHeating)
+        public void SetElectricalHeating(ElectricalHeating? electricalHeating)
         {
-            _electricalHeating = electricalHeating;
-            AddDomainEvent(new ElectricalHeatingWasSet(Id.Value, _electricalHeating.EffectiveDate.DateInUtc));
+            if (electricalHeating is not null)
+            {
+                AddDomainEvent(new ElectricalHeatingWasSet(Id.Value, electricalHeating.EffectiveDate.DateInUtc));
+            }
         }
 
         public BusinessRulesValidationResult ChangeSupplierAcceptable(EnergySupplierId energySupplierId, Instant supplyStartDate, ISystemDateTimeProvider systemDateTimeProvider)
